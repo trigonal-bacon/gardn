@@ -1,0 +1,66 @@
+#pragma once
+
+#include <Shared/Binary.hh>
+#include <Shared/EntityDef.hh>
+#include <Shared/Vector.hh>
+
+#include <cstdint>
+
+typedef EntityId entid;
+typedef uint8_t uint8;
+typedef uint32_t uint32;
+typedef int32_t int32;
+typedef std::string string;
+
+enum Components {
+    #define COMPONENT(name) k##name,
+    PERCOMPONENT
+    #undef COMPONENT
+    kComponentCount
+};
+
+enum Fields {
+    #define SINGLE(name, type) k##name,
+    #define MULTIPLE(name, type, amt) k##name,
+    PERFIELD
+    #undef SINGLE
+    #undef MULTIPLE
+    kFieldCount
+};
+
+class Entity {
+    public:
+        Entity();
+        void init();
+        void reset_protocol();
+        uint32_t components;
+        EntityId id;
+        uint8_t pending_delete;
+    #define SINGLE(name, type) type name;
+    #define MULTIPLE(name, type, amt) type name[amt];
+    PERFIELD
+    #undef SINGLE
+    #undef MULTIPLE
+    #define SINGLE(name, type) uint8_t state_##name;
+    #define MULTIPLE(name, type, amt) uint8_t state_##name; uint8_t state_per_##name[amt];
+    PERFIELD
+    #undef SINGLE
+    #undef MULTIPLE
+    void add_component(uint32_t);
+    uint8_t has_component(uint32_t);
+    #define SINGLE(name, type, reset) type name;
+    #define MULTIPLE(name, type, amt, reset) type name[amt];
+    PER_EXTRA_FIELD
+    #undef SINGLE
+    #undef MULTIPLE
+    #ifdef SERVERSIDE
+        void write(Writer *, uint8_t);
+        #define SINGLE(name, type) void set_##name(type const);
+        #define MULTIPLE(name, type, amt) void set_##name(uint32_t, type const);
+        PERFIELD
+        #undef SINGLE
+        #undef MULTIPLE
+    #else
+        void read(Reader *);
+    #endif
+    };
