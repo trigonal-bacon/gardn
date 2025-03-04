@@ -33,3 +33,15 @@ bool operator==(const EntityId &a, const EntityId &b) {
 void EntityId::print() {
     std::cout << '<' << hash << ',' << id << '>';
 }
+
+LoadoutSlot::LoadoutSlot() {
+    reset();
+}
+
+void LoadoutSlot::reset() {
+    id = PetalID::kNone;
+    for (uint32_t i = 0; i < 3; ++i) {
+        petals[i].reload = 0;
+        petals[i].ent_id = NULL_ENTITY;
+    }
+}

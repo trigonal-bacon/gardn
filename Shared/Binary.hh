@@ -27,6 +27,7 @@ public:
     void write_uint32(uint32_t);
     void write_int32(int32_t);
     void write_float(float);
+    void write_Float(Float);
     void write_entid(EntityId const &);
     void write_string(std::string const &);
 };
@@ -47,5 +48,6 @@ public:
     void read_int32(int32_t &);
     void read_float(float &);
     void read_entid(EntityId &);
+    void read_Float(Float &);
     void read_string(std::string &);
 };

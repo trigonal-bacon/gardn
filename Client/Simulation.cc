@@ -7,11 +7,22 @@ void Simulation::tick() {
 }
 
 void Simulation::tick_lerp(double dt) {
-    double lerp_amt = 1 - (pow(1 - 0.15, dt * 60 / 1000));
+    double lerp_amt = 1 - (pow(1 - 0.05, dt * 60 / 1000));
     for (uint32_t i = 0; i < active_entities.length; ++i) {
         Entity &ent = get_ent(active_entities[i]);
         double amt = ent.touched ? lerp_amt : 1;
         ent.touched = 1;
+        if (ent.has_component(kPhysics)) {
+            ent.x.step(amt);
+            ent.y.step(amt);
+            ent.radius.step(amt);
+            ent.angle.step(amt);
+        }
+        if (ent.has_component(kCamera)) {
+            ent.camera_x.step(amt);
+            ent.camera_y.step(amt);
+            ent.fov.step(amt);
+        }
         if (ent.has_component(kFlower)) {
             LERP(ent.eye_x, cosf(ent.eye_angle)*3, amt);
             LERP(ent.eye_y, sinf(ent.eye_angle)*3, amt);

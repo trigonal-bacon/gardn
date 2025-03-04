@@ -27,6 +27,16 @@ void Writer::write_float(float v) {
     write_int32(v * 1024);
 }
 
+#ifdef SERVERSIDE
+void Writer::write_Float(float v) {
+    write_int32(v * 1024);
+}
+#else
+void Writer::write_Float(LerpFloat v) {
+    write_int32(((float) v) * 1024);
+}
+#endif
+
 void Writer::write_entid(EntityId const &id) {
     write_uint32(id.id);
     if (id.id) write_uint32(id.hash);
@@ -86,6 +96,16 @@ void Reader::read_int32(int32_t &ref) {
 void Reader::read_float(float &ref) {
     ref = read_float();
 }
+
+#ifdef SERVERSIDE
+void Reader::read_Float(float &ref) {
+    ref = read_float();
+}
+#else
+void Reader::read_Float(LerpFloat &ref) {
+    ref = read_float();
+}
+#endif
 
 void Reader::read_entid(EntityId &ref) {
     ref = read_entid();

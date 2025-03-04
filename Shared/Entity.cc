@@ -9,6 +9,7 @@ Entity::Entity() {
 
 void Entity::init() {
     components = 0;
+    pending_delete = 0;
     #define SINGLE(name, type) name = {};
     #define MULTIPLE(name, type, amt) for (uint32_t n = 0; n < amt; ++n) { name[n] = {}; }
     PERFIELD

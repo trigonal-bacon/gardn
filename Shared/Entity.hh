@@ -2,6 +2,7 @@
 
 #include <Shared/Binary.hh>
 #include <Shared/EntityDef.hh>
+#include <Shared/Helpers.hh>
 #include <Shared/Vector.hh>
 
 #include <cstdint>

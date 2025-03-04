@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Shared/StaticData.hh>
+
 #include <cstdint>
 
 #define PERCOMPONENT \
@@ -17,16 +19,20 @@ FIELDS_Flower \
 FIELDS_Petal
 
 #define FIELDS_Physics \
-SINGLE(x, float) \
-SINGLE(y, float) \
-SINGLE(radius, float) \
-SINGLE(angle, float)
+SINGLE(x, Float) \
+SINGLE(y, Float) \
+SINGLE(radius, Float) \
+SINGLE(angle, Float) \
+SINGLE(deletion_tick, uint8)
 
 #define FIELDS_Camera \
-SINGLE(camera_x, float) \
-SINGLE(camera_y, float) \
-SINGLE(fov, float) \
-SINGLE(player, entid)
+SINGLE(camera_x, Float) \
+SINGLE(camera_y, Float) \
+SINGLE(fov, Float) \
+SINGLE(player, entid) \
+SINGLE(loadout_count, uint8) \
+MULTIPLE(loadout_ids, uint8, 2 * MAX_SLOT_COUNT) \
+MULTIPLE(loadout_reloads, uint8, MAX_SLOT_COUNT)
 
 #define FIELDS_Relations \
 SINGLE(team, entid) \
@@ -44,7 +50,10 @@ SINGLE(petal_rarity, uint8)
 #define PER_EXTRA_FIELD \
     SINGLE(velocity, Vector, .set(0,0)) \
     SINGLE(acceleration, Vector, .set(0,0)) \
-    SINGLE(friction, float, =0)
+    SINGLE(friction, float, =0) \
+    MULTIPLE(loadout, LoadoutSlot, MAX_SLOT_COUNT, .reset()) \
+    SINGLE(petal_rotation, float, =0) \
+    SINGLE(input, uint8_t, =0)
 #else
 #define PER_EXTRA_FIELD \
     SINGLE(touched, uint8_t, =0) \
@@ -68,3 +77,17 @@ bool operator<(const EntityId &, const EntityId &);
 bool operator==(const EntityId &, const EntityId &);
 
 extern EntityId NULL_ENTITY;
+
+class LoadoutPetal {
+public:
+    uint32_t reload;
+    EntityId ent_id;
+};
+
+class LoadoutSlot {
+public:
+    uint8_t id;
+    LoadoutPetal petals[3];
+    LoadoutSlot();
+    void reset();
+};

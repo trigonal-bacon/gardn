@@ -17,12 +17,10 @@ void Client::init(Server *server) {
 }
 
 void Client::remove() {
-    /*
-    if (global_server.simulation.ent_exists(camera)) {
-        global_server.simulation.request_delete(camera);
+    if (game_server->simulation.ent_exists(camera)) {
+        game_server->simulation.request_delete(camera);
     }
     std::cout << "deleting client " << this << "\n";
-    */
 }
 
 uint8_t Client::alive() {

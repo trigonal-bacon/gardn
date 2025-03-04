@@ -61,21 +61,17 @@ void Server::run() {
                         else accel.normalize().set_magnitude(m / 200 * PLAYER_ACCELERATION);
                         player.acceleration = accel;
                     }
-                    //player.input = reader.read_uint8() & 3;
+                    player.input = reader.read_uint8() & 3;
                     break;
                 }
                 case kServerbound::kClientSpawn: {
                     if (client->alive()) break;
                     Entity &camera = game_server->simulation.get_ent(client->camera);
-                    camera.set_camera_x(frand() * ARENA_WIDTH);
-                    camera.set_camera_y(frand() * ARENA_HEIGHT);
                     Entity &player = alloc_player(camera);
+                    player_spawn(&game_server->simulation, camera, player);
                     break;
-                    //Entity &player = global_server.simulation.alloc_player(camera);
                 }
             }
-			//std::cout << "client message recv\n";
-            //ws->send(message, opCode, 0);
         },
         .dropped = [](auto *ws, std::string_view /*message*/, uWS::OpCode /*opCode*/) {
             std::cout << "dropped packet, uh oh\n";

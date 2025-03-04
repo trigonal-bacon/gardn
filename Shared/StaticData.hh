@@ -12,6 +12,8 @@
 #define PLAYER_ACCELERATION (2)
 #define DEFAULT_FRICTION (0.2)
 
+#define MAX_SLOT_COUNT (8)
+
 class PetalID {
 public:
     enum {
@@ -22,14 +24,28 @@ public:
     };
 };
 
+class RarityID {
+public:
+    enum {
+        kCommon,
+        kUnusual,
+        kRare,
+        kEpic,
+        kLegendary,
+        kMythic,
+        kMaxRarities
+    };
+};
+
 struct PetalData {
     char const *name;
     float health;
     float damage;
+    float radius;
     float reload;
     float secondary_reload;
-    uint32_t count;
+    uint8_t count;
+    uint8_t rarity;
 };
 
-extern struct PetalData PETAL_DATA[PetalId::kNumPetals];
-
+extern struct PetalData PETAL_DATA[PetalID::kNumPetals];

@@ -56,3 +56,17 @@ public:
         return -1;
     };
 };
+
+class LerpFloat {
+    float value;
+    float lerp_value;
+public:
+    uint32_t touched;
+    LerpFloat();
+    void operator=(float);
+    operator float() const;
+    void step(float);
+};
+
+SERVER_ONLY(typedef float Float;)
+CLIENT_ONLY(typedef LerpFloat Float;)

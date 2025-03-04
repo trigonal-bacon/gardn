@@ -6,7 +6,9 @@ project(gardn-client)
 include_directories(..)
 
 set(SRCS
+    Assets/Petal.cc
     Render/RenderFlower.cc
+    Render/RenderPetal.cc
     Render/Renderer.cc
     Game.cc
     Input.cc
@@ -18,10 +20,11 @@ set(SRCS
     ../Shared/EntityDef.cc
     ../Shared/Helpers.cc
     ../Shared/Simulation.cc
+    ../Shared/StaticData.cc
     ../Shared/Vector.cc
 )
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DCLIENT_SIDE=1 -std=c++20")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DCLIENTSIDE=1 -std=c++20")
 set(CMAKE_CXX_COMPILER "em++")
 if(DEBUG)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DDEBUG=1 -gdwarf-4 -sNO_DISABLE_EXCEPTION_CATCHING")

@@ -35,3 +35,24 @@ float angle_lerp(float start, float end, float t)
         return fmod((end - start) * t + start + 2 * M_PI, 2 * M_PI);
     }
 }
+
+LerpFloat::LerpFloat() {
+    value = lerp_value = 0;
+    touched = 0;
+}
+
+void LerpFloat::operator=(float v) {
+    value = v;
+    if (!touched) {
+        lerp_value = v;
+        touched = 1;
+    }
+}
+
+LerpFloat::operator float() const {
+    return lerp_value;
+}
+
+void LerpFloat::step(float amt) {
+    lerp_value = lerp(lerp_value, value, amt);
+}

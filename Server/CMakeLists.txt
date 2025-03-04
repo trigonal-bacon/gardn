@@ -5,6 +5,7 @@ include_directories(..)
 
 set(SOURCES
     Process/Motion.cc
+    Process/PlayerEntity.cc
     Client.cc
     Main.cc
     Server.cc
@@ -16,6 +17,7 @@ set(SOURCES
     ../Shared/EntityDef.cc
     ../Shared/Helpers.cc
     ../Shared/Simulation.cc
+    ../Shared/StaticData.cc
     ../Shared/Vector.cc
 )
 

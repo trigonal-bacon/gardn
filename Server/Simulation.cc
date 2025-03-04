@@ -5,7 +5,9 @@
 #include <Server/Server.hh>
 #include <Server/SpatialHash.hh>
 
-void update_client(Simulation *sim, Client *client) {
+#include <iostream>
+
+static void update_client(Simulation *sim, Client *client) {
     if (!sim->ent_exists(client->camera)) return;
     std::set<EntityId> in_view;
     in_view.insert(client->camera);
@@ -50,8 +52,13 @@ void Simulation::tick() {
     for (uint32_t i = 0; i < active_entities.length; ++i) {
         Entity &ent = get_ent(active_entities[i]);
         //ent.set_damaged(0); //very ugly but whatever, will make component vectors later
-        if (ent.has_component(kPhysics)) spatial_hash.insert(ent);
+        if (ent.has_component(kPhysics)) {
+            if (ent.deletion_tick > 0) request_delete(ent.id);
+            else spatial_hash.insert(ent);
+        }
     }
+
+    tick_player_entities(this);
     for (uint32_t i = 0; i < active_entities.length; ++i) {
         Entity &ent = get_ent(active_entities[i]);
         //ent.set_damaged(0); //very ugly but whatever, will make component vectors later
@@ -61,25 +68,11 @@ void Simulation::tick() {
 }
 
 void Simulation::post_tick() {
-    /*
-    //delete all pending deletes or advance deletion tick by one
-    for (uint32_t i = 0; i < active_entities.length; ++i) {
-        assert(ent_exists(active_entities[i]));
-        Entity &ent = get_ent(active_entities[i]);
-        if (ent.pending_delete && ent.has_component(kPhysics)) {
-            if (ent.deletion_tick == 0) _ent_on_delete(this, ent);
-            ent.set_deletion_tick(ent.deletion_tick + 1);
-            if (pending_delete.index_of(ent.id) == -1) pending_delete.push(ent.id);
-        }
-    }
-
-    calculate_leaderboard();
-*/
     for (Client *client: game_server->clients) update_client(this, client);
     //send_state & reset all remaining active entities
     //reset state of all entities FIRST
     for (uint32_t i = 0; i < active_entities.length; ++i) {
-        assert(ent_exists(active_entities[i]));
+        assert(ent_exists(active_entities[i])); //no deletions mid tick
         Entity &ent = get_ent(active_entities[i]);
         ent.reset_protocol();
     }
@@ -87,8 +80,13 @@ void Simulation::post_tick() {
         //guarantee entity exists
         assert(ent_exists(pending_delete[i]));
         Entity &ent = get_ent(pending_delete[i]);
-        if (!ent.has_component(kPhysics) || 1 /* ent.deletion_tick > 5 */) delete_ent(pending_delete[i]);
+        if (!ent.has_component(kPhysics)) delete_ent(pending_delete[i]);
+        else {
+            if (ent.deletion_tick >= 0) delete_ent(pending_delete[i]);
+            else ent.set_deletion_tick(ent.deletion_tick + 1);
+        }
     }
     pending_delete.clear();
+    active_entities.clear();
     spatial_hash.clear();
 }

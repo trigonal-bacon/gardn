@@ -18,8 +18,8 @@ Entity &Simulation::alloc_ent() {
     for (uint32_t i = 1; i < ENTITY_CAP; ++i) {
         if (entity_tracker[i]) continue;
         entity_tracker[i] = 1;
-        DEBUG_ONLY(std::cout << "ent_create <" << hash_tracker[i] << ',' << i << ">\n";)
         entities[i].init();
+        DEBUG_ONLY(std::cout << "ent_create <" << hash_tracker[i] << ',' << i << ">\n";)
         entities[i].id = EntityId(i, hash_tracker[i]);
         return entities[i];
     }
@@ -62,7 +62,7 @@ void Simulation::delete_ent(EntityId &id) {
     DEBUG_ONLY(std::cout << "ent_delete <" << id.hash << ',' << id.id << ">\n";)
     assert(ent_exists(id));
     entity_tracker[id.id] = 0;
-    ++hash_tracker[id.id];
+    hash_tracker[id.id]++;
 }
 
 void Simulation::pre_tick() {
