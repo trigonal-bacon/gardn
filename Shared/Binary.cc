@@ -103,7 +103,7 @@ void Reader::read_Float(float &ref) {
 }
 #else
 void Reader::read_Float(LerpFloat &ref) {
-    ref = read_float();
+    ref.set(read_float());
 }
 #endif
 

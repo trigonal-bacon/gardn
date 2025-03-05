@@ -1,31 +1,39 @@
 #include <Shared/Simulation.hh>
 
 #include <cmath>
+#include <iostream>
 
 void Simulation::tick() {
     pre_tick();
 }
 
 void Simulation::tick_lerp(double dt) {
-    double lerp_amt = 1 - (pow(1 - 0.05, dt * 60 / 1000));
+    double amt = 1 - (pow(1 - 0.3, dt * 60 / 1000));
     for (uint32_t i = 0; i < active_entities.length; ++i) {
         Entity &ent = get_ent(active_entities[i]);
-        double amt = ent.touched ? lerp_amt : 1;
-        ent.touched = 1;
         if (ent.has_component(kPhysics)) {
+            float prevx = ent.x;
+            float prevy = ent.y;
             ent.x.step(amt);
             ent.y.step(amt);
+            Vector vel(ent.x - prevx, ent.y - prevy);
+            ent.animation += (1 + 0.3 * vel.magnitude()) * 0.1;
             ent.radius.step(amt);
-            ent.angle.step(amt);
+            ent.angle.step_angle(amt);
+            ent.deletion_tick.step(amt);
         }
         if (ent.has_component(kCamera)) {
             ent.camera_x.step(amt);
             ent.camera_y.step(amt);
             ent.fov.step(amt);
         }
+        if (ent.has_component(kHealth)) {
+            ent.health_ratio.step(amt);
+            ent.damaged.step(amt);
+        }
         if (ent.has_component(kFlower)) {
-            LERP(ent.eye_x, cosf(ent.eye_angle)*3, amt);
-            LERP(ent.eye_y, sinf(ent.eye_angle)*3, amt);
+            LERP(ent.eye_x, cosf(ent.eye_angle) * 3, amt);
+            LERP(ent.eye_y, sinf(ent.eye_angle) * 3, amt);
             if (BIT_AT(ent.face_flags, 0)) LERP(ent.mouth, 5, amt)
             else if (BIT_AT(ent.face_flags, 1)) LERP(ent.mouth, 8, amt)
             else LERP(ent.mouth, 15, amt)

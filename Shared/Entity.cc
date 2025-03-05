@@ -35,7 +35,7 @@ void Entity::add_component(uint32_t comp) {
     assert(!has_component(comp));
     components |= 1 << comp;
 }
-uint8_t Entity::has_component(uint32_t comp) {
+uint8_t Entity::has_component(uint32_t comp) const {
     return (components >> comp) & 1;
 }
 

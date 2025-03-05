@@ -2,7 +2,9 @@
 
 #include <Server/Process/Process.hh>
 #include <Server/Client.hh>
+#include <Server/EntityFunctions.hh>
 #include <Server/Server.hh>
+#include <Server/Spawn.hh>
 #include <Server/SpatialHash.hh>
 
 #include <iostream>
@@ -49,20 +51,36 @@ static void update_client(Simulation *sim, Client *client) {
 
 void Simulation::tick() {
     pre_tick();
+    if (frand() < 0.01) alloc_mob(frand() * 2);
     for (uint32_t i = 0; i < active_entities.length; ++i) {
         Entity &ent = get_ent(active_entities[i]);
         //ent.set_damaged(0); //very ugly but whatever, will make component vectors later
         if (ent.has_component(kPhysics)) {
             if (ent.deletion_tick > 0) request_delete(ent.id);
-            else spatial_hash.insert(ent);
+            spatial_hash.insert(ent);
         }
     }
-
+    for (uint32_t i = 0; i < active_entities.length; ++i) {
+        Entity &ent = get_ent(active_entities[i]);
+        //ent.set_damaged(0); //very ugly but whatever, will make component vectors later
+        if (ent.has_component(kMob)) tick_ai_behavior(this, ent);
+    }
     tick_player_entities(this);
     for (uint32_t i = 0; i < active_entities.length; ++i) {
         Entity &ent = get_ent(active_entities[i]);
         //ent.set_damaged(0); //very ugly but whatever, will make component vectors later
+        if (ent.has_component(kHealth)) tick_health_behavior(this, ent);
+    }
+    spatial_hash.collide(on_collide);
+    for (uint32_t i = 0; i < active_entities.length; ++i) {
+        Entity &ent = get_ent(active_entities[i]);
+        //ent.set_damaged(0); //very ugly but whatever, will make component vectors later
         if (ent.has_component(kPhysics)) tick_entity_motion(this, ent);
+    }
+    for (uint32_t i = 0; i < active_entities.length; ++i) {
+        Entity &ent = get_ent(active_entities[i]);
+        //ent.set_damaged(0); //very ugly but whatever, will make component vectors later
+        if (ent.has_component(kDrop)) tick_drop_behavior(this, ent);
     }
     post_tick();
 }
@@ -82,8 +100,13 @@ void Simulation::post_tick() {
         Entity &ent = get_ent(pending_delete[i]);
         if (!ent.has_component(kPhysics)) delete_ent(pending_delete[i]);
         else {
-            if (ent.deletion_tick >= 0) delete_ent(pending_delete[i]);
-            else ent.set_deletion_tick(ent.deletion_tick + 1);
+            if (ent.deletion_tick >= 4) {
+                delete_ent(pending_delete[i]);
+            } else {
+                if (ent.deletion_tick == 0) entity_on_death(this, ent);
+                ent.set_deletion_tick(ent.deletion_tick + 1);
+            }
+            ent.pending_delete = 0;
         }
     }
     pending_delete.clear();

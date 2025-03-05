@@ -42,10 +42,15 @@ LerpFloat::LerpFloat() {
 }
 
 void LerpFloat::operator=(float v) {
+    value = lerp_value = v;
+    touched = 0;
+}
+
+void LerpFloat::set(float v) {
     value = v;
     if (!touched) {
-        lerp_value = v;
         touched = 1;
+        lerp_value = v;
     }
 }
 
@@ -55,4 +60,8 @@ LerpFloat::operator float() const {
 
 void LerpFloat::step(float amt) {
     lerp_value = lerp(lerp_value, value, amt);
+}
+
+void LerpFloat::step_angle(float amt) {
+    lerp_value = angle_lerp(lerp_value, value, amt);
 }

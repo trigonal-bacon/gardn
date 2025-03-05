@@ -9,21 +9,27 @@
     COMPONENT(Camera) \
     COMPONENT(Relations) \
     COMPONENT(Flower) \
-    COMPONENT(Petal)
+    COMPONENT(Petal) \
+    COMPONENT(Health) \
+    COMPONENT(Mob) \
+    COMPONENT(Drop)
 
 #define PERFIELD \
 FIELDS_Physics \
 FIELDS_Camera \
 FIELDS_Relations \
 FIELDS_Flower \
-FIELDS_Petal
+FIELDS_Petal \
+FIELDS_Health \
+FIELDS_Mob \
+FIELDS_Drop
 
 #define FIELDS_Physics \
 SINGLE(x, Float) \
 SINGLE(y, Float) \
 SINGLE(radius, Float) \
 SINGLE(angle, Float) \
-SINGLE(deletion_tick, uint8)
+SINGLE(deletion_tick, Float)
 
 #define FIELDS_Camera \
 SINGLE(camera_x, Float) \
@@ -43,23 +49,48 @@ SINGLE(face_flags, uint8) \
 SINGLE(eye_angle, float)
 
 #define FIELDS_Petal \
-SINGLE(petal_id, uint8) \
-SINGLE(petal_rarity, uint8)
+SINGLE(petal_id, uint8)
+
+#define FIELDS_Health \
+SINGLE(health_ratio, Float) \
+SINGLE(damaged, Float)
+
+#define FIELDS_Mob \
+SINGLE(mob_id, uint8)
+
+#define FIELDS_Drop \
+SINGLE(drop_id, uint8)
 
 #ifdef SERVERSIDE
 #define PER_EXTRA_FIELD \
     SINGLE(velocity, Vector, .set(0,0)) \
+    SINGLE(collision_velocity, Vector, .set(0,0)) \
     SINGLE(acceleration, Vector, .set(0,0)) \
     SINGLE(friction, float, =0) \
+    SINGLE(mass, float, =1) \
+    \
     MULTIPLE(loadout, LoadoutSlot, MAX_SLOT_COUNT, .reset()) \
     SINGLE(petal_rotation, float, =0) \
-    SINGLE(input, uint8_t, =0)
+    SINGLE(input, uint8_t, =0) \
+    \
+    SINGLE(health, float, =0) \
+    SINGLE(max_health, float, =0) \
+    SINGLE(damage, float, =0) \
+    SINGLE(immunity_ticks, uint32_t, =0) \
+    SINGLE(armor, float, =0) \
+    \
+    SINGLE(ai_tick, uint32_t, =0) \
+    SINGLE(ai_state, uint8_t, =0) \
+    SINGLE(target, EntityId, =NULL_ENTITY) \
+    \
+    SINGLE(despawn_tick, uint32_t, =0)
+
 #else
 #define PER_EXTRA_FIELD \
-    SINGLE(touched, uint8_t, =0) \
     SINGLE(eye_x, float, =3) \
     SINGLE(eye_y, float, =0) \
-    SINGLE(mouth, float, =15)
+    SINGLE(mouth, float, =15) \
+    SINGLE(animation, float, =0)
 #endif
 
 class EntityId {

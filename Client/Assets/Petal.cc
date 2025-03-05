@@ -11,8 +11,8 @@ void draw_static_petal_single(uint8_t id, Renderer &ctx) {
             break;
         case PetalID::kBasic:
         case PetalID::kLight:
-        //case PetalID::kTwin:
-        //case PetalID::kTriplet:
+        case PetalID::kTwin:
+        case PetalID::kTriplet:
             ctx.set_fill(0xffffffff);
             ctx.set_stroke(0xffcfcfcf);
             ctx.set_line_width(3);
@@ -249,12 +249,24 @@ void draw_static_petal_single(uint8_t id, Renderer &ctx) {
 void draw_static_petal(uint8_t id, Renderer &ctx) {
     for (uint32_t i = 0; i < PETAL_DATA[id].count; ++i) {
         RenderContext context(&ctx);
-        //float rad = PETAL_DATA[id].extras.clump_radius;
-        //rad += (rad == 0) * 10;
-        //ctx.rotate(i * 2 * M_PI / PETAL_DATA[id].count);
-        //if (PETAL_DATA[id].count > 1) ctx.translate(rad, 0);
+        float rad = 10;
+        if (PETAL_DATA[id].attributes.clump_radius) rad = PETAL_DATA[id].attributes.clump_radius;
+        ctx.rotate(i * 2 * M_PI / PETAL_DATA[id].count);
+        if (PETAL_DATA[id].count > 1) ctx.translate(rad, 0);
         //if (id == PetalID::kLeaf) ctx.rotate(-1);
         //if (id == PetalID::kWing || id == PetalID::kMissile) ctx.rotate(1);
         draw_static_petal_single(id, ctx);
     }
+}
+
+void draw_loadout_background(Renderer &ctx, uint32_t color) {
+    ctx.set_fill(Renderer::HSV(color, 1.0));
+    ctx.set_stroke(Renderer::HSV(color, 0.8));
+    ctx.set_line_width(10);
+    ctx.round_line_join();
+    ctx.round_line_cap();
+    ctx.begin_path();
+    ctx.rect(-30, -30, 60, 60);
+    ctx.stroke();
+    ctx.fill();
 }

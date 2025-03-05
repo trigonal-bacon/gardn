@@ -26,12 +26,12 @@ Entity &Simulation::alloc_ent() {
     assert(!"Entity cap reached");
 }
 
-Entity &Simulation::get_ent(EntityId &id) {
+Entity &Simulation::get_ent(EntityId const &id) {
     assert(ent_exists(id));
     return entities[id.id];
 }
 
-void Simulation::force_alloc_ent(EntityId &id) {
+void Simulation::force_alloc_ent(EntityId const &id) {
     assert(id.id < ENTITY_CAP);
     DEBUG_ONLY(std::cout << "ent_create <" << id.hash << ',' << id.id << ">\n";)
     assert(!entity_tracker[id.id]);
@@ -41,26 +41,26 @@ void Simulation::force_alloc_ent(EntityId &id) {
     entities[id.id].id = id;
 }
 
-uint8_t Simulation::ent_exists(EntityId &id) {
+uint8_t Simulation::ent_exists(EntityId const &id) const {
     assert(id.id < ENTITY_CAP);
     return entity_tracker[id.id] && hash_tracker[id.id] == id.hash;
 }
 
-uint8_t Simulation::ent_alive(EntityId &id) {
+uint8_t Simulation::ent_alive(EntityId const &id) const {
     return ent_exists(id) && entities[id.id].pending_delete == 0;
 }
 
-void Simulation::request_delete(EntityId &id) {
+void Simulation::request_delete(EntityId const &id) {
     DEBUG_ONLY(std::cout << "ent_request_delete <" << id.hash << ',' << id.id << ">\n";)
-    assert(ent_exists(id));
+    DEBUG_ONLY(assert(ent_exists(id)));
     if (entities[id.id].pending_delete) return;
     entities[id.id].pending_delete = 1;
     pending_delete.push(id);
 }
 
-void Simulation::delete_ent(EntityId &id) {
+void Simulation::delete_ent(EntityId const &id) {
     DEBUG_ONLY(std::cout << "ent_delete <" << id.hash << ',' << id.id << ">\n";)
-    assert(ent_exists(id));
+    DEBUG_ONLY(assert(ent_exists(id)));
     entity_tracker[id.id] = 0;
     hash_tracker[id.id]++;
 }

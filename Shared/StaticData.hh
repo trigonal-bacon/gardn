@@ -9,8 +9,8 @@
 #define ARENA_WIDTH (1000)
 #define ARENA_HEIGHT (1000)
 
-#define PLAYER_ACCELERATION (2)
-#define DEFAULT_FRICTION (0.2)
+#define PLAYER_ACCELERATION (2.5)
+#define DEFAULT_FRICTION (0.25)
 
 #define MAX_SLOT_COUNT (8)
 
@@ -20,7 +20,18 @@ public:
         kNone,
         kBasic,
         kLight,
+        kTwin,
+        kTriplet,
         kNumPetals
+    };
+};
+
+class MobID {
+public:
+    enum : uint8_t {
+        kBabyAnt,
+        kWorkerAnt,
+        kNumMobs
     };
 };
 
@@ -33,8 +44,22 @@ public:
         kEpic,
         kLegendary,
         kMythic,
-        kMaxRarities
+        kNumRarities
     };
+};
+
+class AIState {
+public:
+    enum {
+        kIdle,
+        kIdleMoving,
+        kBasicAggro
+    };
+};
+
+struct PetalAttributes {
+    float clump_radius;
+    float secondary_reload;
 };
 
 struct PetalData {
@@ -43,9 +68,27 @@ struct PetalData {
     float damage;
     float radius;
     float reload;
-    float secondary_reload;
     uint8_t count;
     uint8_t rarity;
+    struct PetalAttributes attributes;
+};
+
+struct MobDrop {
+    uint8_t id;
+    float chance;
+};
+
+struct MobData {
+    char const *name;
+    uint8_t rarity;
+    float health;
+    float damage;
+    float radius;
+    float xp;
+    MobDrop drops[6];
 };
 
 extern struct PetalData PETAL_DATA[PetalID::kNumPetals];
+extern struct MobData MOB_DATA[MobID::kNumMobs];
+
+extern uint32_t RARITY_COLORS[RarityID::kNumRarities];

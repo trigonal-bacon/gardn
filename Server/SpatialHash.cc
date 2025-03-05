@@ -28,11 +28,11 @@ void SpatialHash::collide(std::function<void(Simulation *, Entity &, Entity &)> 
                     std::vector<EntityId> &cell2 = cells[x+1][y];
                     for (uint32_t j = 0; j < cell2.size(); ++j) on_collide(simulation, simulation->get_ent(cell[i]), simulation->get_ent(cell2[j]));
                     if (y > 0) {
-                        cell2 = cells[x+1][y-1];
+                        std::vector<EntityId> &cell2 = cells[x+1][y-1];
                         for (uint32_t j = 0; j < cell2.size(); ++j) on_collide(simulation, simulation->get_ent(cell[i]), simulation->get_ent(cell2[j]));
                     }
                     if (y < MAX_GRID_Y - 1) {
-                        cell2 = cells[x+1][y+1];
+                        std::vector<EntityId> &cell2 = cells[x+1][y+1];
                         for (uint32_t j = 0; j < cell2.size(); ++j) on_collide(simulation, simulation->get_ent(cell[i]), simulation->get_ent(cell2[j]));
                     }
                 }

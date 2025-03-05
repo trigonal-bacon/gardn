@@ -6,6 +6,7 @@
 #include <iostream>
 
 Game *gardn = nullptr;
+static double g_last_time = 0;
 
 Game::Game() {
     gardn = this;
@@ -26,7 +27,8 @@ uint8_t Game::in_game() {
 void Game::tick(double time) {
     renderer.reset_transform();
     simulation.tick();
-    simulation.tick_lerp(time);
+    simulation.tick_lerp(time - g_last_time);
+    g_last_time = time;
     renderer.context.reset();
 
     if (in_game()) render_game();
@@ -87,11 +89,36 @@ void Game::render_game() {
     }
     for (uint32_t i = 0; i < simulation.active_entities.length; ++i) {
         Entity &ent = simulation.get_ent(simulation.active_entities[i]);
+        if (ent.has_component(kDrop)) {
+            RenderContext context(&renderer);
+            renderer.translate(ent.x, ent.y);
+            render_drop(renderer, ent);
+        }
+    }
+    for (uint32_t i = 0; i < simulation.active_entities.length; ++i) {
+        Entity &ent = simulation.get_ent(simulation.active_entities[i]);
+        if (ent.has_component(kHealth)) {
+            RenderContext context(&renderer);
+            renderer.translate(ent.x, ent.y);
+            render_health(renderer, ent);
+        }
+    }
+    for (uint32_t i = 0; i < simulation.active_entities.length; ++i) {
+        Entity &ent = simulation.get_ent(simulation.active_entities[i]);
         if (ent.has_component(kPetal)) {
             RenderContext context(&renderer);
             renderer.translate(ent.x, ent.y);
             renderer.rotate(ent.angle);
             render_petal(renderer, ent);
+        }
+    }
+    for (uint32_t i = 0; i < simulation.active_entities.length; ++i) {
+        Entity &ent = simulation.get_ent(simulation.active_entities[i]);
+        if (ent.has_component(kMob)) {
+            RenderContext context(&renderer);
+            renderer.translate(ent.x, ent.y);
+            renderer.rotate(ent.angle);
+            render_mob(renderer, ent);
         }
     }
     for (uint32_t i = 0; i < simulation.active_entities.length; ++i) {

@@ -48,7 +48,7 @@ class Entity {
     #undef SINGLE
     #undef MULTIPLE
     void add_component(uint32_t);
-    uint8_t has_component(uint32_t);
+    uint8_t has_component(uint32_t) const;
     #define SINGLE(name, type, reset) type name;
     #define MULTIPLE(name, type, amt, reset) type name[amt];
     PER_EXTRA_FIELD

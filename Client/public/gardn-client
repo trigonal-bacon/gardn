@@ -848,42 +848,42 @@ async function createWasm() {
 // === Body ===
 
 var ASM_CONSTS = {
-  106528: ($0) => { Module.ctxs[$0].save(); },  
- 106556: ($0) => { Module.ctxs[$0].restore(); },  
- 106587: () => { if (Module.availableCtxs.length) { const index = Module.availableCtxs.shift(); if (index == 0) return 0; const ocanvas = new OffscreenCanvas(1, 1); Module.ctxs[index] = ocanvas.getContext('2d'); return index; } throw new Error( 'Out of Contexts: Can be fixed by allowing more contexts'); return -1; },  
- 106890: ($0) => { if ($0 == 0) throw new Error('Tried to delete the main context'); Module.ctxs[$0] = null; Module.availableCtxs.push($0); },  
- 107015: ($0, $1, $2, $3, $4) => { Module.ctxs[$0].fillStyle = "rgba("+$3+","+$2+","+$1+","+$4/255+")"; },  
- 107088: ($0, $1, $2, $3, $4) => { Module.ctxs[$0].strokeStyle = "rgba("+$3+","+$2+","+$1+","+$4/255+")"; },  
- 107163: ($0, $1) => { Module.ctxs[$0].lineWidth = $1; },  
- 107199: ($0, $1) => { Module.ctxs[$0].font = $1 + "px Ubuntu"; },  
- 107244: ($0, $1) => { Module.ctxs[$0].globalAlpha = $1; },  
- 107282: ($0) => { Module.ctxs[$0].lineCap = "round"; },  
- 107321: ($0) => { Module.ctxs[$0].lineJoin = "round"; },  
- 107361: ($0) => { Module.ctxs[$0].textAlign = "center"; },  
- 107403: ($0) => { Module.ctxs[$0].textBaseline = "middle"; },  
- 107448: ($0) => { Module.ctxs[$0].beginPath(); },  
- 107481: ($0, $1, $2) => { Module.ctxs[$0].moveTo($1, $2); },  
- 107517: ($0, $1, $2) => { Module.ctxs[$0].lineTo($1, $2); },  
- 107553: ($0, $1, $2, $3, $4) => { Module.ctxs[$0].quadraticCurveTo($1, $2, $3, $4); },  
- 107607: ($0, $1, $2, $3, $4, $5, $6) => { Module.ctxs[$0].bezierCurveTo($1, $2, $3, $4, $5, $6); },  
- 107666: ($0, $1, $2, $3, $4, $5, $6) => { Module.ctxs[$0].arc($1, $2, $3, $4, $5, !!$6); },  
- 107717: ($0, $1, $2, $3, $4, $5) => { Module.ctxs[$0].ellipse($1, $2, $3, $4, $5, 2 * Math.PI, 0); },  
- 107782: ($0, $1, $2, $3, $4) => { Module.ctxs[$0].fillRect($1, $2, $3, $4); },  
- 107828: ($0, $1, $2, $3, $4) => { Module.ctxs[$0].strokeRect($1, $2, $3, $4); },  
- 107876: ($0, $1, $2, $3, $4) => { Module.ctxs[$0].rect($1, $2, $3, $4); },  
- 107918: ($0) => { Module.ctxs[$0].closePath(); },  
- 107951: ($0) => { Module.ctxs[$0].fill(); },  
- 107979: ($0) => { Module.ctxs[$0].stroke(); },  
- 108009: ($0) => { Module.ctxs[$0].clip(); },  
- 108037: ($0, $1, $2) => { Module.ctxs[$0].fillText(Module.TextDecoder.decode(HEAPU8.subarray($1, $1+$2)),0,0); },  
- 108126: ($0, $1, $2) => { Module.ctxs[$0].strokeText(Module.TextDecoder.decode(HEAPU8.subarray($1, $1+$2)),0,0); },  
- 108217: ($0, $1, $2) => { return Module.ctxs[$0].measureText(Module.TextDecoder.decode(HEAPU8.subarray($1, $1+$2)),0,0).width; },  
- 108322: ($0, $1, $2, $3, $4, $5, $6) => { Module.ctxs[$0].setTransform($1, $2, $4, $5, $3, $6); },  
- 108380: () => { Module.canvas = document.createElement("canvas"); Module.canvas.id = "canvas"; Module.canvas.width = innerWidth * devicePixelRatio; Module.canvas.height = innerHeight * devicePixelRatio; Module.canvas.oncontextmenu = function() { return false; }; window.onbeforeunload = function(e) { return "Are you sure?"; }; document.body.appendChild(Module.canvas); Module.ctxs = [Module.canvas.getContext('2d')]; Module.availableCtxs = new Array(256).fill(0).map(function(_, i) { return i; }); Module.TextDecoder = new TextDecoder('utf8'); },  
- 108913: () => { window.addEventListener("keydown", (e) => { _key_event(e.which, 0); }); window.addEventListener("keyup", (e) => { _key_event(e.which, 1); }); window.addEventListener("mousedown", (e) => { _mouse_event(e.clientX * devicePixelRatio, e.clientY * devicePixelRatio, 0, +!!e.button); }); window.addEventListener("mousemove", (e) => { _mouse_event(e.clientX * devicePixelRatio, e.clientY * devicePixelRatio, 1, +!!e.button); }); window.addEventListener("mouseup", (e) => { _mouse_event(e.clientX * devicePixelRatio, e.clientY * devicePixelRatio, 2, +!!e.button); }); },  
- 109477: () => { function loop(time) { Module.canvas.width = innerWidth * devicePixelRatio; Module.canvas.height = innerHeight * devicePixelRatio; _loop(time, Module.canvas.width, Module.canvas.height); requestAnimationFrame(loop); }; requestAnimationFrame(loop); },  
- 109728: ($0, $1) => { let string = UTF8ToString($1); function connect() { let socket = Module.socket = new WebSocket(string); socket.binaryType = "arraybuffer"; socket.onopen = function() { console.log("Connected"); _on_message(0); }; socket.onclose = function(a) { console.log("Disconnected"); _on_message(2, a.code); setTimeout(connect, 1000); }; socket.onmessage = function(event) { HEAPU8.set(new Uint8Array(event.data), $0); _on_message(1, event.data.length); }; } setTimeout(connect, 1000); },  
- 110207: ($0, $1) => { if (Module.socket?.readyState == 1) { Module.socket.send(HEAPU8.subarray($0, $0+$1)); } }
+  106744: ($0) => { Module.ctxs[$0].save(); },  
+ 106772: ($0) => { Module.ctxs[$0].restore(); },  
+ 106803: () => { if (Module.availableCtxs.length) { const index = Module.availableCtxs.shift(); if (index == 0) return 0; const ocanvas = new OffscreenCanvas(1, 1); Module.ctxs[index] = ocanvas.getContext('2d'); return index; } throw new Error( 'Out of Contexts: Can be fixed by allowing more contexts'); return -1; },  
+ 107106: ($0) => { if ($0 == 0) throw new Error('Tried to delete the main context'); Module.ctxs[$0] = null; Module.availableCtxs.push($0); },  
+ 107231: ($0, $1, $2, $3, $4) => { Module.ctxs[$0].fillStyle = "rgba("+$3+","+$2+","+$1+","+$4/255+")"; },  
+ 107304: ($0, $1, $2, $3, $4) => { Module.ctxs[$0].strokeStyle = "rgba("+$3+","+$2+","+$1+","+$4/255+")"; },  
+ 107379: ($0, $1) => { Module.ctxs[$0].lineWidth = $1; },  
+ 107415: ($0, $1) => { Module.ctxs[$0].font = $1 + "px Ubuntu"; },  
+ 107460: ($0, $1) => { Module.ctxs[$0].globalAlpha = $1; },  
+ 107498: ($0) => { Module.ctxs[$0].lineCap = "round"; },  
+ 107537: ($0) => { Module.ctxs[$0].lineJoin = "round"; },  
+ 107577: ($0) => { Module.ctxs[$0].textAlign = "center"; },  
+ 107619: ($0) => { Module.ctxs[$0].textBaseline = "middle"; },  
+ 107664: ($0) => { Module.ctxs[$0].beginPath(); },  
+ 107697: ($0, $1, $2) => { Module.ctxs[$0].moveTo($1, $2); },  
+ 107733: ($0, $1, $2) => { Module.ctxs[$0].lineTo($1, $2); },  
+ 107769: ($0, $1, $2, $3, $4) => { Module.ctxs[$0].quadraticCurveTo($1, $2, $3, $4); },  
+ 107823: ($0, $1, $2, $3, $4, $5, $6) => { Module.ctxs[$0].bezierCurveTo($1, $2, $3, $4, $5, $6); },  
+ 107882: ($0, $1, $2, $3, $4, $5, $6) => { Module.ctxs[$0].arc($1, $2, $3, $4, $5, !!$6); },  
+ 107933: ($0, $1, $2, $3, $4, $5) => { Module.ctxs[$0].ellipse($1, $2, $3, $4, $5, 2 * Math.PI, 0); },  
+ 107998: ($0, $1, $2, $3, $4) => { Module.ctxs[$0].fillRect($1, $2, $3, $4); },  
+ 108044: ($0, $1, $2, $3, $4) => { Module.ctxs[$0].strokeRect($1, $2, $3, $4); },  
+ 108092: ($0, $1, $2, $3, $4) => { Module.ctxs[$0].rect($1, $2, $3, $4); },  
+ 108134: ($0) => { Module.ctxs[$0].closePath(); },  
+ 108167: ($0) => { Module.ctxs[$0].fill(); },  
+ 108195: ($0) => { Module.ctxs[$0].stroke(); },  
+ 108225: ($0) => { Module.ctxs[$0].clip(); },  
+ 108253: ($0, $1, $2) => { Module.ctxs[$0].fillText(Module.TextDecoder.decode(HEAPU8.subarray($1, $1+$2)),0,0); },  
+ 108342: ($0, $1, $2) => { Module.ctxs[$0].strokeText(Module.TextDecoder.decode(HEAPU8.subarray($1, $1+$2)),0,0); },  
+ 108433: ($0, $1, $2) => { return Module.ctxs[$0].measureText(Module.TextDecoder.decode(HEAPU8.subarray($1, $1+$2)),0,0).width; },  
+ 108538: ($0, $1, $2, $3, $4, $5, $6) => { Module.ctxs[$0].setTransform($1, $2, $4, $5, $3, $6); },  
+ 108596: () => { Module.canvas = document.createElement("canvas"); Module.canvas.id = "canvas"; Module.canvas.width = innerWidth * devicePixelRatio; Module.canvas.height = innerHeight * devicePixelRatio; Module.canvas.oncontextmenu = function() { return false; }; window.onbeforeunload = function(e) { return "Are you sure?"; }; document.body.appendChild(Module.canvas); Module.ctxs = [Module.canvas.getContext('2d')]; Module.availableCtxs = new Array(256).fill(0).map(function(_, i) { return i; }); Module.TextDecoder = new TextDecoder('utf8'); },  
+ 109129: () => { window.addEventListener("keydown", (e) => { _key_event(e.which, 0); }); window.addEventListener("keyup", (e) => { _key_event(e.which, 1); }); window.addEventListener("mousedown", (e) => { _mouse_event(e.clientX * devicePixelRatio, e.clientY * devicePixelRatio, 0, +!!e.button); }); window.addEventListener("mousemove", (e) => { _mouse_event(e.clientX * devicePixelRatio, e.clientY * devicePixelRatio, 1, +!!e.button); }); window.addEventListener("mouseup", (e) => { _mouse_event(e.clientX * devicePixelRatio, e.clientY * devicePixelRatio, 2, +!!e.button); }); },  
+ 109693: () => { function loop(time) { Module.canvas.width = innerWidth * devicePixelRatio; Module.canvas.height = innerHeight * devicePixelRatio; _loop(time, Module.canvas.width, Module.canvas.height); requestAnimationFrame(loop); }; requestAnimationFrame(loop); },  
+ 109944: ($0, $1) => { let string = UTF8ToString($1); function connect() { let socket = Module.socket = new WebSocket(string); socket.binaryType = "arraybuffer"; socket.onopen = function() { console.log("Connected"); _on_message(0); }; socket.onclose = function(a) { console.log("Disconnected"); _on_message(2, a.code); setTimeout(connect, 1000); }; socket.onmessage = function(event) { HEAPU8.set(new Uint8Array(event.data), $0); _on_message(1, event.data.length); }; } setTimeout(connect, 1000); },  
+ 110423: ($0, $1) => { if (Module.socket?.readyState == 1) { Module.socket.send(HEAPU8.subarray($0, $0+$1)); } }
 };
 
 // end include: preamble.js
@@ -4419,6 +4419,28 @@ var ___get_exception_message = createExportWrapper('__get_exception_message', 3)
 var ___cxa_can_catch = createExportWrapper('__cxa_can_catch', 3);
 var ___cxa_get_exception_ptr = createExportWrapper('__cxa_get_exception_ptr', 1);
 
+function invoke_vif(index,a1,a2) {
+  var sp = stackSave();
+  try {
+    getWasmTableEntry(index)(a1,a2);
+  } catch(e) {
+    stackRestore(sp);
+    if (!(e instanceof EmscriptenEH)) throw e;
+    _setThrew(1, 0);
+  }
+}
+
+function invoke_viff(index,a1,a2,a3) {
+  var sp = stackSave();
+  try {
+    getWasmTableEntry(index)(a1,a2,a3);
+  } catch(e) {
+    stackRestore(sp);
+    if (!(e instanceof EmscriptenEH)) throw e;
+    _setThrew(1, 0);
+  }
+}
+
 function invoke_vii(index,a1,a2) {
   var sp = stackSave();
   try {
@@ -4456,17 +4478,6 @@ function invoke_vifff(index,a1,a2,a3,a4) {
   var sp = stackSave();
   try {
     getWasmTableEntry(index)(a1,a2,a3,a4);
-  } catch(e) {
-    stackRestore(sp);
-    if (!(e instanceof EmscriptenEH)) throw e;
-    _setThrew(1, 0);
-  }
-}
-
-function invoke_viff(index,a1,a2,a3) {
-  var sp = stackSave();
-  try {
-    getWasmTableEntry(index)(a1,a2,a3);
   } catch(e) {
     stackRestore(sp);
     if (!(e instanceof EmscriptenEH)) throw e;
@@ -4544,17 +4555,6 @@ function invoke_fi(index,a1) {
   var sp = stackSave();
   try {
     return getWasmTableEntry(index)(a1);
-  } catch(e) {
-    stackRestore(sp);
-    if (!(e instanceof EmscriptenEH)) throw e;
-    _setThrew(1, 0);
-  }
-}
-
-function invoke_vif(index,a1,a2) {
-  var sp = stackSave();
-  try {
-    getWasmTableEntry(index)(a1,a2);
   } catch(e) {
     stackRestore(sp);
     if (!(e instanceof EmscriptenEH)) throw e;

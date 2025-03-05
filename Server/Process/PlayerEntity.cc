@@ -5,8 +5,6 @@
 #include <Shared/Simulation.hh>
 #include <Shared/StaticData.hh>
 
-#include <iostream>
-
 static int count_petals(Entity &ent) {
     int count = 0;
     for (uint8_t i = 0; i < ent.loadout_count; ++i) {
@@ -56,7 +54,7 @@ void player_behavior(Simulation *sim, Entity &player) {
                     else if (BIT_AT(player.input, 1)) wanting *= 40;
                     else wanting *= 60;
                     wanting += delta;
-                    wanting *= 0.2;
+                    wanting *= 0.4;
                     petal.acceleration = wanting;
                 } else {
 

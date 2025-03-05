@@ -64,8 +64,10 @@ public:
     uint32_t touched;
     LerpFloat();
     void operator=(float);
+    void set(float);
     operator float() const;
     void step(float);
+    void step_angle(float);
 };
 
 SERVER_ONLY(typedef float Float;)

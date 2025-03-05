@@ -22,12 +22,12 @@ public:
     Simulation();
     void reset();
     Entity &alloc_ent();
-    Entity &get_ent(EntityId &);
-    void force_alloc_ent(EntityId &);
-    uint8_t ent_exists(EntityId &);
-    uint8_t ent_alive(EntityId &);
-    void request_delete(EntityId &);
-    void delete_ent(EntityId &); //DANGEROUS
+    Entity &get_ent(EntityId const &);
+    void force_alloc_ent(EntityId const &);
+    uint8_t ent_exists(EntityId const &) const;
+    uint8_t ent_alive(EntityId const &) const;
+    void request_delete(EntityId const &);
+    void delete_ent(EntityId const &); //DANGEROUS
     void pre_tick();
     void tick();
     void post_tick();

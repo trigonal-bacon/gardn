@@ -7,8 +7,8 @@
 #include <iostream>
 
 void render_flower(Renderer &ctx, Entity &ent) {
-    //ctx.set_global_alpha(1 - ent.lerp_deletion_tick * 0.2);
-    //ctx.scale(1 + 0.1 * ent.lerp_deletion_tick);
+    ctx.set_global_alpha(1 - ent.deletion_tick * 0.2);
+    ctx.scale(1 + 0.1 * ent.deletion_tick);
     /*
     {
         //nametag
@@ -26,7 +26,7 @@ void render_flower(Renderer &ctx, Entity &ent) {
         ctx.fill_text(ptr);
     }
     */
-    //ctx.add_color_filter(0xffac0000, ent.damage_flash);
+    ctx.add_color_filter(0xffac0000, ent.damaged / 2);
     uint32_t base_color = 0xffffe763;
     if (BIT_AT(ent.face_flags, 2)) base_color = 0xffce76db;
     ctx.set_stroke(Renderer::HSV(base_color, 0.8));
