@@ -4,13 +4,24 @@ struct PetalData PETAL_DATA[PetalID::kNumPetals] = {
     {"None", 0.0, 0.0, 0.0, 1.0, 0, RarityID::kCommon, {}},
     {"Basic", 10.0, 10.0, 20.0, 2.5, 1, RarityID::kCommon, {}},
     {"Light", 5.0, 7.0, 14.0, 1.0, 1, RarityID::kCommon, {}},
+    {"Heavy", 20.0, 20.0, 20.0, 4.5, 1, RarityID::kCommon, {}},
+    {"Stinger", 5.0, 35.0, 14.0, 1.0, 1, RarityID::kUnusual, {}},
+    {"Leaf", 8.0, 10.0, 20.0, 1.0, 1, RarityID::kUnusual, {.constant_heal = 1}},
     {"Twin", 5.0, 7.0, 14.0, 1.0, 2, RarityID::kUnusual, {}},
+    {"Rose", 5.0, 5.0, 20.0, 3.5, 1, RarityID::kUnusual, { .secondary_reload = 1.5, .burst_heal = 10}},
     {"Triplet", 5.0, 7.0, 14.0, 1.0, 3, RarityID::kEpic, {}}
 };
 
 struct MobData MOB_DATA[MobID::kNumMobs] = {
-    {"Baby Ant", RarityID::kCommon, 15.0, 10.0, 14.0, 1.0, {}},
-    {"Worker Ant", RarityID::kCommon, 20.0, 10.0, 14.0, 1.5, {}}
+    {"Baby Ant", RarityID::kCommon, 15.0, 10.0, 14.0, 1.0, {
+        {PetalID::kLight, 0.36},{PetalID::kTwin, 0.12}, {PetalID::kLeaf, 0.09}
+    }},
+    {"Worker Ant", RarityID::kCommon, 20.0, 10.0, 14.0, 1.5, {
+        {PetalID::kLight, 0.36},{PetalID::kTwin, 0.12}, {PetalID::kLeaf, 0.09}
+    }},
+    {"Bee", RarityID::kCommon, 20.0, 35.0, 20.0, 2.0, {
+        {PetalID::kStinger, 1}, {PetalID::kRose, 1}
+    }}
 };
 
 uint32_t RARITY_COLORS[RarityID::kNumRarities] = { 

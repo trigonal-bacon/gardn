@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <vector>
 
 //MSPT * TPS = 1000
 #define MSPT (40)
@@ -20,7 +21,11 @@ public:
         kNone,
         kBasic,
         kLight,
+        kHeavy,
+        kStinger,
+        kLeaf,
         kTwin,
+        kRose,
         kTriplet,
         kNumPetals
     };
@@ -31,6 +36,7 @@ public:
     enum : uint8_t {
         kBabyAnt,
         kWorkerAnt,
+        kBee,
         kNumMobs
     };
 };
@@ -60,6 +66,8 @@ public:
 struct PetalAttributes {
     float clump_radius;
     float secondary_reload;
+    float constant_heal;
+    float burst_heal;
 };
 
 struct PetalData {
@@ -85,7 +93,7 @@ struct MobData {
     float damage;
     float radius;
     float xp;
-    MobDrop drops[6];
+    std::vector<MobDrop> drops;
 };
 
 extern struct PetalData PETAL_DATA[PetalID::kNumPetals];

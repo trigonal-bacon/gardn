@@ -40,6 +40,7 @@ LoadoutSlot::LoadoutSlot() {
 
 void LoadoutSlot::reset() {
     id = PetalID::kNone;
+    already_spawned = 0;
     for (uint32_t i = 0; i < 3; ++i) {
         petals[i].reload = 0;
         petals[i].ent_id = NULL_ENTITY;

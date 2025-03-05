@@ -62,6 +62,7 @@ void tick_ai_behavior(Simulation *sim, Entity &ent) {
     if (ent.pending_delete) return;
     switch(ent.mob_id) {
         case MobID::kBabyAnt:
+        case MobID::kBee:
             tick_default_passive(sim, ent);
             break;
         case MobID::kWorkerAnt:

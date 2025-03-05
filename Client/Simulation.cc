@@ -8,7 +8,7 @@ void Simulation::tick() {
 }
 
 void Simulation::tick_lerp(double dt) {
-    double amt = 1 - (pow(1 - 0.3, dt * 60 / 1000));
+    double amt = 1 - (pow(1 - 0.2, dt * 60 / 1000));
     for (uint32_t i = 0; i < active_entities.length; ++i) {
         Entity &ent = get_ent(active_entities[i]);
         if (ent.has_component(kPhysics)) {
@@ -20,7 +20,7 @@ void Simulation::tick_lerp(double dt) {
             ent.animation += (1 + 0.3 * vel.magnitude()) * 0.1;
             ent.radius.step(amt);
             ent.angle.step_angle(amt);
-            ent.deletion_tick.step(amt);
+            ent.deletion_tick.step(amt * 1.25);
         }
         if (ent.has_component(kCamera)) {
             ent.camera_x.step(amt);

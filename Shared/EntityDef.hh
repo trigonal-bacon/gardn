@@ -83,7 +83,8 @@ SINGLE(drop_id, uint8)
     SINGLE(ai_state, uint8_t, =0) \
     SINGLE(target, EntityId, =NULL_ENTITY) \
     \
-    SINGLE(despawn_tick, uint32_t, =0)
+    SINGLE(despawn_tick, uint32_t, =0) \
+    SINGLE(secondary_reload, uint32_t, =0)
 
 #else
 #define PER_EXTRA_FIELD \
@@ -118,6 +119,7 @@ public:
 class LoadoutSlot {
 public:
     uint8_t id;
+    uint8_t already_spawned;
     LoadoutPetal petals[3];
     LoadoutSlot();
     void reset();

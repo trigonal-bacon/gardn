@@ -4,13 +4,12 @@
 #include <Shared/Helpers.hh>
 #include <Shared/StaticData.hh>
 
-
 Entity &alloc_drop(uint8_t drop_id) {
     Entity &drop = game_server->simulation.alloc_ent();
     drop.add_component(kPhysics);
     drop.set_radius(3);
     drop.set_angle(0);
-    drop.friction = DEFAULT_FRICTION;
+    drop.friction = 0.25;
     drop.add_component(kRelations);
     drop.set_team(NULL_ENTITY);
     drop.set_parent(NULL_ENTITY);

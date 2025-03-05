@@ -51,10 +51,9 @@ static void update_client(Simulation *sim, Client *client) {
 
 void Simulation::tick() {
     pre_tick();
-    if (frand() < 0.01) alloc_mob(frand() * 2);
+    if (frand() < 0.01) alloc_mob(frand() * MobID::kNumMobs);
     for (uint32_t i = 0; i < active_entities.length; ++i) {
         Entity &ent = get_ent(active_entities[i]);
-        //ent.set_damaged(0); //very ugly but whatever, will make component vectors later
         if (ent.has_component(kPhysics)) {
             if (ent.deletion_tick > 0) request_delete(ent.id);
             spatial_hash.insert(ent);
