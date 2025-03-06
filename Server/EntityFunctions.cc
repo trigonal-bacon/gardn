@@ -26,12 +26,13 @@ void inflict_damage(Simulation *sim, Entity &attacker, Entity &defender, float a
 
 void inflict_heal(Simulation *sim, Entity &ent, float amt) {
     assert(ent.has_component(kHealth));
-    if (ent.pending_delete) return;
+    if (ent.pending_delete || ent.health <= 0) return;
     ent.health = fclamp(ent.health + amt, 0, ent.max_health);
 }
 
 void entity_on_death(Simulation *sim, Entity &ent) {
     if (ent.has_component(kMob)) {
+        if (ent.team != NULL_ENTITY) return;
         struct MobData const &mob_data = MOB_DATA[ent.mob_id];
         std::vector<struct MobDrop> const &drops = mob_data.drops;
         std::vector<uint8_t> success_drops = {};
@@ -44,7 +45,7 @@ void entity_on_death(Simulation *sim, Entity &ent) {
                 Entity &drop = alloc_drop(success_drops[i]);
                 drop.set_x(ent.x);
                 drop.set_y(ent.y);
-                drop.velocity.unit_normal(i * 2 * M_PI / count).set_magnitude(PLAYER_ACCELERATION * 5);
+                drop.velocity.unit_normal(i * 2 * M_PI / count).set_magnitude(PLAYER_ACCELERATION * 8.5);
             }
         } else if (success_drops.size() == 1) {
             Entity &drop = alloc_drop(success_drops[0]);
@@ -55,4 +56,22 @@ void entity_on_death(Simulation *sim, Entity &ent) {
         //drop.set_x(ent.x);
         //drop.set_y(ent.y);
     }
+}
+
+EntityId find_nearest_enemy(Simulation *simulation, Entity &entity, float radius) {
+    EntityId ret;
+    float min_dist = radius;
+    simulation->spatial_hash.query(entity.x, entity.y, radius, radius, [&](Simulation *sim, Entity &ent){
+        if (ent.team == entity.team) return;
+        if (ent.immunity_ticks > 0) return;
+        if (!ent.has_component(kMob) && !ent.has_component(kFlower)) return;
+        if (simulation->ent_alive(entity.parent)) {
+            Entity &parent = simulation->get_ent(entity.parent);
+            float dist = Vector(ent.x-parent.x,ent.y-parent.y).magnitude();
+            if (dist > radius) return;
+        }
+        float dist = Vector(ent.x-entity.x,ent.y-entity.y).magnitude();
+        if (dist < min_dist) { min_dist = dist; ret = ent.id; }
+    });
+    return ret;
 }

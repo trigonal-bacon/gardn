@@ -51,7 +51,7 @@ static void update_client(Simulation *sim, Client *client) {
 
 void Simulation::tick() {
     pre_tick();
-    if (frand() < 0.01) alloc_mob(frand() * MobID::kNumMobs);
+    if (frand() < 0.01) alloc_mob(frand() * (float) MobID::kNumMobs);
     for (uint32_t i = 0; i < active_entities.length; ++i) {
         Entity &ent = get_ent(active_entities[i]);
         if (ent.has_component(kPhysics)) {
@@ -59,28 +59,14 @@ void Simulation::tick() {
             spatial_hash.insert(ent);
         }
     }
-    for (uint32_t i = 0; i < active_entities.length; ++i) {
-        Entity &ent = get_ent(active_entities[i]);
-        //ent.set_damaged(0); //very ugly but whatever, will make component vectors later
-        if (ent.has_component(kMob)) tick_ai_behavior(this, ent);
-    }
-    tick_player_entities(this);
-    for (uint32_t i = 0; i < active_entities.length; ++i) {
-        Entity &ent = get_ent(active_entities[i]);
-        //ent.set_damaged(0); //very ugly but whatever, will make component vectors later
-        if (ent.has_component(kHealth)) tick_health_behavior(this, ent);
-    }
+
+    for_each<kMob>(tick_ai_behavior);
+    for_each<kPetal>(tick_petal_behavior);
+    for_each<kFlower>(tick_player_behavior);
+    for_each<kHealth>(tick_health_behavior);
     spatial_hash.collide(on_collide);
-    for (uint32_t i = 0; i < active_entities.length; ++i) {
-        Entity &ent = get_ent(active_entities[i]);
-        //ent.set_damaged(0); //very ugly but whatever, will make component vectors later
-        if (ent.has_component(kPhysics)) tick_entity_motion(this, ent);
-    }
-    for (uint32_t i = 0; i < active_entities.length; ++i) {
-        Entity &ent = get_ent(active_entities[i]);
-        //ent.set_damaged(0); //very ugly but whatever, will make component vectors later
-        if (ent.has_component(kDrop)) tick_drop_behavior(this, ent);
-    }
+    for_each<kPhysics>(tick_entity_motion);
+    for_each<kDrop>(tick_drop_behavior);
     post_tick();
 }
 

@@ -8,6 +8,7 @@ void tick_entity_motion(Simulation *sim, Entity &ent) {
     ent.velocity *= 1 - ent.friction;
     ent.velocity += ent.acceleration;
     {
+        /*
         if (ent.collision_velocity.magnitude() > 0) {
             Vector col_vel = ent.collision_velocity;
             col_vel.normalize();
@@ -18,9 +19,11 @@ void tick_entity_motion(Simulation *sim, Entity &ent) {
                 ent.velocity.y -= col_vel.y * align;
             }
         }
+            */
     }
-    ent.set_x(ent.x + ent.velocity.x + ent.collision_velocity.x);
-    ent.set_y(ent.y + ent.velocity.y + ent.collision_velocity.y);
+    ent.velocity += ent.collision_velocity;
+    ent.set_x(ent.x + ent.velocity.x);
+    ent.set_y(ent.y + ent.velocity.y);
     if (!ent.has_component(kPetal)) {
         ent.set_x(fclamp(ent.x, ent.radius, ARENA_WIDTH - ent.radius));
         ent.set_y(fclamp(ent.y, ent.radius, ARENA_HEIGHT - ent.radius));

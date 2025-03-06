@@ -10,4 +10,4 @@ void inflict_heal(Simulation *, Entity &, float);
 
 void entity_on_death(Simulation *, Entity &);
 
-//EntityId find_nearest_enemy(Simulation *, Entity &, float);
+EntityId find_nearest_enemy(Simulation *, Entity &, float);

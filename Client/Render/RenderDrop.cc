@@ -22,7 +22,11 @@ void render_drop(Renderer &ctx, Entity &ent) {
     ctx.fill();
     draw_loadout_background(ctx, RARITY_COLORS[rarity]);
     ctx.translate(0, -5);
-    draw_static_petal(ent.drop_id, ctx);
+    {
+        RenderContext r(&ctx);
+        if (PETAL_DATA[ent.drop_id].radius > 30) ctx.scale(30 / PETAL_DATA[ent.drop_id].radius);
+        draw_static_petal(ent.drop_id, ctx);
+    }
     ctx.set_text_size(14);
     ctx.set_line_width(14 * 0.12);
     ctx.set_fill(0xffffffff);

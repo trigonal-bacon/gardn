@@ -7,6 +7,7 @@
 #include <Server/SpatialHash.hh>
 #endif
 
+#include <functional>
 #include <string>
 
 static const uint32_t ENTITY_CAP = 4096;
@@ -31,6 +32,9 @@ public:
     void pre_tick();
     void tick();
     void post_tick();
+
+    template <uint8_t T>
+    void for_each(std::function<void (Simulation *, Entity &)>);
 #ifdef SERVERSIDE
     //Entity &alloc_mob(uint8_t);
     //Entity &alloc_player(Entity &);

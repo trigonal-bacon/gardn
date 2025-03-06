@@ -26,7 +26,11 @@ public:
         kLeaf,
         kTwin,
         kRose,
+        kMissile,
         kTriplet,
+        kAntEgg,
+        kBeetleEgg,
+        kTringer,
         kNumPetals
     };
 };
@@ -36,7 +40,12 @@ public:
     enum : uint8_t {
         kBabyAnt,
         kWorkerAnt,
+        kSoldierAnt,
         kBee,
+        kLadybug,
+        kBeetle,
+        kMassiveLadybug,
+        kMassiveBeetle,
         kNumMobs
     };
 };
@@ -64,10 +73,18 @@ public:
 };
 
 struct PetalAttributes {
+    enum {
+        kPassiveRot,
+        kNoRot,
+        kFollowRot
+    };
     float clump_radius;
     float secondary_reload;
     float constant_heal;
     float burst_heal;
+    uint8_t defend_only;
+    float icon_angle;
+    uint8_t rotation_style;
 };
 
 struct PetalData {

@@ -72,3 +72,10 @@ public:
 
 SERVER_ONLY(typedef float Float;)
 CLIENT_ONLY(typedef LerpFloat Float;)
+
+class SeedGenerator {
+    uint32_t seed;
+public:
+    SeedGenerator(uint32_t);
+    float next();
+};

@@ -47,7 +47,7 @@ uint8_t Simulation::ent_exists(EntityId const &id) const {
 }
 
 uint8_t Simulation::ent_alive(EntityId const &id) const {
-    return ent_exists(id) && entities[id.id].pending_delete == 0;
+    return ent_exists(id) && entities[id.id].pending_delete == 0 && entities[id.id].deletion_tick == 0;
 }
 
 void Simulation::request_delete(EntityId const &id) {
@@ -72,3 +72,17 @@ void Simulation::pre_tick() {
         active_entities.push(entities[i].id);
     }
 }
+
+#define COMPONENT(name) \
+template<> \
+void Simulation::for_each<k##name>(std::function<void(Simulation *, Entity &)> cb) { \
+    for (uint32_t i = 0; i < active_entities.length; ++i) { \
+        Entity &ent = get_ent(active_entities[i]); \
+        if (ent.pending_delete) continue; \
+        if (ent.has_component(k##name)) cb(this, ent); \
+    } \
+}
+
+PERCOMPONENT
+
+#undef COMPONENT

@@ -23,7 +23,7 @@ void draw_static_petal_single(uint8_t id, Renderer &ctx) {
             ctx.stroke();
             break;
         case PetalID::kStinger: {
-        //case PetalID::kTringer:
+        case PetalID::kTringer:
             ctx.set_fill(0xff333333);
             ctx.set_stroke(0xff292929);
             ctx.set_line_width(3);
@@ -66,6 +66,39 @@ void draw_static_petal_single(uint8_t id, Renderer &ctx) {
             ctx.fill();
             ctx.stroke();
             break;
+        case PetalID::kAntEgg:
+            ctx.set_stroke(0xffcfc295);
+            ctx.set_fill(0xfffff0b8);
+            ctx.set_line_width(3);
+            ctx.begin_path();
+            ctx.arc(0,0,r);
+            ctx.fill();
+            ctx.stroke();
+            break;
+        case PetalID::kBeetleEgg:
+            ctx.begin_path();
+            ctx.ellipse(0,0,r * 0.85, r * 1.15);
+            ctx.set_fill(0xfffff0b8);
+            ctx.fill();
+            ctx.set_stroke(0xffcfc295);
+            ctx.set_line_width(3);
+            ctx.stroke();
+            break;
+        case PetalID::kMissile:
+            ctx.scale(r / 10);
+            ctx.set_fill(0xff222222);
+            ctx.set_stroke(0xff222222);
+            ctx.set_line_width(5.0);
+            ctx.round_line_cap();
+            ctx.round_line_join();
+            ctx.begin_path();
+            ctx.move_to(11.0, 0.0);
+            ctx.line_to(-11.0, -6.0);
+            ctx.line_to(-11.0, 6.0);
+            ctx.line_to(11.0, 0.0);
+            ctx.fill();
+            ctx.stroke();
+            break;
         /*
         case PetalID::kWing:
             ctx.begin_path();
@@ -78,16 +111,6 @@ void draw_static_petal_single(uint8_t id, Renderer &ctx) {
             ctx.round_line_cap();
             ctx.round_line_join();
             ctx.stroke();
-            break;
-        case PetalID::kEgg:
-            ctx.set_fill(0xffcfc295);
-            ctx.begin_path();
-            ctx.arc(0,0,PETAL_DATA[id].radius);
-            ctx.fill();
-            ctx.set_fill(0xfffff0b8);
-            ctx.begin_path();
-            ctx.arc(0,0,PETAL_DATA[id].radius * 0.8);
-            ctx.fill();
             break;
         case PetalID::kBeetleEgg:
             ctx.begin_path();
@@ -249,14 +272,14 @@ void draw_static_petal_single(uint8_t id, Renderer &ctx) {
 }
 
 void draw_static_petal(uint8_t id, Renderer &ctx) {
-    for (uint32_t i = 0; i < PETAL_DATA[id].count; ++i) {
+    struct PetalData const &data = PETAL_DATA[id];
+    for (uint32_t i = 0; i < data.count; ++i) {
         RenderContext context(&ctx);
         float rad = 10;
-        if (PETAL_DATA[id].attributes.clump_radius) rad = PETAL_DATA[id].attributes.clump_radius;
-        ctx.rotate(i * 2 * M_PI / PETAL_DATA[id].count);
-        if (PETAL_DATA[id].count > 1) ctx.translate(rad, 0);
-        if (id == PetalID::kLeaf) ctx.rotate(-1);
-        //if (id == PetalID::kWing || id == PetalID::kMissile) ctx.rotate(1);
+        if (data.attributes.clump_radius) rad = data.attributes.clump_radius;
+        ctx.rotate(i * 2 * M_PI / data.count);
+        if (data.count > 1) ctx.translate(rad, 0);
+        ctx.rotate(data.attributes.icon_angle);
         draw_static_petal_single(id, ctx);
     }
 }

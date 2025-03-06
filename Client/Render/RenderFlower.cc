@@ -26,7 +26,7 @@ void render_flower(Renderer &ctx, Entity &ent) {
         ctx.fill_text(ptr);
     }
     */
-    ctx.add_color_filter(0xffac0000, ent.damaged / 2);
+    ctx.add_color_filter(0xffac0000, ent.damage_flash * 0.8);
     uint32_t base_color = 0xffffe763;
     if (BIT_AT(ent.face_flags, 2)) base_color = 0xffce76db;
     ctx.set_stroke(Renderer::HSV(base_color, 0.8));

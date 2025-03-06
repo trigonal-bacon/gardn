@@ -53,7 +53,7 @@ SINGLE(petal_id, uint8)
 
 #define FIELDS_Health \
 SINGLE(health_ratio, Float) \
-SINGLE(damaged, Float)
+SINGLE(damaged, uint8)
 
 #define FIELDS_Mob \
 SINGLE(mob_id, uint8)
@@ -72,6 +72,7 @@ SINGLE(drop_id, uint8)
     MULTIPLE(loadout, LoadoutSlot, MAX_SLOT_COUNT, .reset()) \
     SINGLE(petal_rotation, float, =0) \
     SINGLE(input, uint8_t, =0) \
+    SINGLE(rotation_count, uint8_t, =1) \
     \
     SINGLE(health, float, =0) \
     SINGLE(max_health, float, =0) \
@@ -84,14 +85,16 @@ SINGLE(drop_id, uint8)
     SINGLE(target, EntityId, =NULL_ENTITY) \
     \
     SINGLE(despawn_tick, uint32_t, =0) \
-    SINGLE(secondary_reload, uint32_t, =0)
+    SINGLE(secondary_reload, uint32_t, =0) \
+    SINGLE(owner_slot, LoadoutPetal *, =nullptr)
 
 #else
 #define PER_EXTRA_FIELD \
     SINGLE(eye_x, float, =3) \
     SINGLE(eye_y, float, =0) \
     SINGLE(mouth, float, =15) \
-    SINGLE(animation, float, =0)
+    SINGLE(animation, float, =0) \
+    SINGLE(damage_flash, float, =0)
 #endif
 
 class EntityId {

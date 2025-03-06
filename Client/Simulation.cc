@@ -29,7 +29,8 @@ void Simulation::tick_lerp(double dt) {
         }
         if (ent.has_component(kHealth)) {
             ent.health_ratio.step(amt);
-            ent.damaged.step(amt);
+            if (ent.damaged == 1 && ent.damage_flash < 0.25) ent.damage_flash = 1;
+            else LERP(ent.damage_flash, 0, amt);
         }
         if (ent.has_component(kFlower)) {
             LERP(ent.eye_x, cosf(ent.eye_angle) * 3, amt);

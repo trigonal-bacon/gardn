@@ -20,10 +20,10 @@ static bool should_interact(Entity const &ent1, Entity const &ent2) {
     //return true;
 //}
 
-static void pickup_drop(Simulation *simulation, Entity &player, Entity &drop) {
-    if (!simulation->ent_alive(player.parent)) return;
+static void pickup_drop(Simulation *sim, Entity &player, Entity &drop) {
+    if (!sim->ent_alive(player.parent)) return;
     if (drop.despawn_tick < 0.5 * TPS) return;
-    Entity &camera = simulation->get_ent(player.parent);
+    Entity &camera = sim->get_ent(player.parent);
 
     for (uint32_t i = 0; i < MAX_SLOT_COUNT; ++i) {
         if (camera.loadout[i].id != PetalID::kNone) continue;
@@ -31,7 +31,7 @@ static void pickup_drop(Simulation *simulation, Entity &player, Entity &drop) {
         camera.loadout[i].id = drop.drop_id;
         drop.set_x(player.x);
         drop.set_y(player.y);
-        simulation->request_delete(drop.id);
+        sim->request_delete(drop.id);
         return;
     }
     for (uint32_t i = MAX_SLOT_COUNT; i < camera.loadout_count + MAX_SLOT_COUNT; ++i) {
@@ -39,12 +39,12 @@ static void pickup_drop(Simulation *simulation, Entity &player, Entity &drop) {
         camera.set_loadout_ids(i, drop.drop_id);
         drop.set_x(player.x);
         drop.set_y(player.y);
-        simulation->request_delete(drop.id);
+        sim->request_delete(drop.id);
         return;
     }
 }
 
-void on_collide(Simulation *simulation, Entity &ent1, Entity &ent2) {
+void on_collide(Simulation *sim, Entity &ent1, Entity &ent2) {
     //check if collide (distance independent)
     if (!should_interact(ent1, ent2)) return;
     //distance dependent check
@@ -55,7 +55,7 @@ void on_collide(Simulation *simulation, Entity &ent1, Entity &ent2) {
         if (separation.x == 0 && separation.y == 0) separation.unit_normal(frand() * 2 * 3.14159);
         separation.normalize();
         float ratio = ent2.mass / (ent1.mass + ent2.mass);
-        float bounce_factor = 0.25;
+        float bounce_factor = 0.05;
         Vector sep = separation;
         sep *= ratio * dist * (1 + bounce_factor);
         ent1.collision_velocity += sep;
@@ -65,13 +65,15 @@ void on_collide(Simulation *simulation, Entity &ent1, Entity &ent2) {
     }
 
     if (ent1.has_component(kHealth) && ent2.has_component(kHealth) && !(ent1.team == ent2.team)) {
-        inflict_damage(simulation, ent1, ent2, ent1.damage);
-        inflict_damage(simulation, ent2, ent1, ent2.damage);
+        if (ent1.health > 0 && ent2.health > 0) {
+            inflict_damage(sim, ent1, ent2, ent1.damage);
+            inflict_damage(sim, ent2, ent1, ent2.damage);
+        }
     }
 
     if (ent1.has_component(kDrop) && ent2.has_component(kFlower)) {
-        pickup_drop(simulation, ent2, ent1);
+        pickup_drop(sim, ent2, ent1);
     } else if (ent2.has_component(kDrop) && ent1.has_component(kFlower)) {
-        pickup_drop(simulation, ent1, ent2);
+        pickup_drop(sim, ent1, ent2);
     }
 }

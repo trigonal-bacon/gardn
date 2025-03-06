@@ -27,6 +27,7 @@ Entity &alloc_mob(uint8_t mob_id) {
     mob.set_x(frand() * ARENA_WIDTH);
     mob.set_y(frand() * ARENA_HEIGHT);
     mob.friction = DEFAULT_FRICTION;
+    mob.mass = 1 + (mob.radius * mob.radius / 100);
     mob.add_component(kHealth);
     mob.add_component(kRelations);
     mob.set_team(NULL_ENTITY);
@@ -69,7 +70,7 @@ Entity &alloc_petal(uint8_t petal_id, Entity &parent) {
     petal.add_component(kPhysics);
     petal.set_radius(10);
     petal.friction = DEFAULT_FRICTION;
-    petal.mass = 0.2;
+    petal.mass = 0.05;
     petal.friction = 0.5;
     petal.add_component(kRelations);
     petal.add_component(kPetal);
@@ -95,6 +96,6 @@ void player_spawn(Simulation *sim, Entity &camera, Entity &player) {
     camera.set_loadout_count(5);
     for (uint32_t i = 0; i < camera.loadout_count; ++i) {
         camera.loadout[i].reset();
-        if (i < 2) camera.loadout[i].id = PetalID::kBasic;
+        if (i < 4) camera.loadout[i].id = PetalID::kBeetleEgg;
     }
 }

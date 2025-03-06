@@ -65,3 +65,13 @@ void LerpFloat::step(float amt) {
 void LerpFloat::step_angle(float amt) {
     lerp_value = angle_lerp(lerp_value, value, amt);
 }
+
+SeedGenerator::SeedGenerator(uint32_t s) : seed(s) {}
+
+float SeedGenerator::next() {
+    seed *= 167436543;
+    seed += 5832385;
+    seed *= (76372345 + seed);
+    seed += 937323;
+    return (seed % 65536) / 65536.0f;
+}
