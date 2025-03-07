@@ -25,10 +25,15 @@ struct PetalData PETAL_DATA[PetalID::kNumPetals] = {
         .icon_angle = 1,
         .rotation_style = PetalAttributes::kFollowRot 
     }},
-    {"Dandelion", 5.0, 5.0, 20.0, 1.0, 2, RarityID::kRare, {
+    {"Dandelion", 10.0, 10.0, 20.0, 1.0, 1, RarityID::kRare, {
         .icon_angle = 1,
         .rotation_style = PetalAttributes::kFollowRot 
     }},
+    {"Bubble", 1.0, 0.0, 24.0, 0.1, 1, RarityID::kRare, {
+        .secondary_reload = 0.1,
+        .defend_only = 1,
+    }},
+    {"Faster", 5.0, 7.0, 14.0, 0.5, 1, RarityID::kRare, {}},
     {"Triplet", 5.0, 7.0, 14.0, 1.0, 3, RarityID::kEpic, {}},
     {"Egg", 15.0, 1.0, 25.0, 1.0, 2, RarityID::kEpic, { 
         .secondary_reload = 4.5,
@@ -36,17 +41,17 @@ struct PetalData PETAL_DATA[PetalID::kNumPetals] = {
         .rotation_style = PetalAttributes::kNoRot 
     }},
     {"Egg", 15.0, 1.0, 25.0, 1.0, 1, RarityID::kLegendary, { 
-        .secondary_reload = 4.5,
+        .secondary_reload = 3.5,
         .defend_only = 1,
         .rotation_style = PetalAttributes::kNoRot 
     }},
     {"Stinger", 5.0, 35.0, 14.0, 5.0, 3, RarityID::kLegendary, {
         .clump_radius = 10
     }},
-    {"Shield", 50000.0, 1.0, 50.0, 5.0, 1, RarityID::kMythic, {
-        .defend_only = 1,
+    {"Shield", 1000.0, 1.0, 50.0, 5.0, 1, RarityID::kMythic, {
         .rotation_style = PetalAttributes::kNoRot
-    }}
+    }},
+    {"Third Eye", 0.0, 0.0, 0.0, 0.0, 0, RarityID::kMythic, {}}
 };
 
 struct MobData MOB_DATA[MobID::kNumMobs] = {

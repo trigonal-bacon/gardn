@@ -132,6 +132,46 @@ void draw_static_petal_single(uint8_t id, Renderer &ctx) {
             ctx.fill();
             ctx.stroke();
             break;
+        case PetalID::kBubble:
+            ctx.begin_path();
+            ctx.arc(0,0,r);
+            ctx.set_stroke(0xb2ffffff);
+            ctx.set_line_width(3);
+            ctx.stroke();
+            ctx.begin_path();
+            ctx.arc(0,0,r-1.5);
+            ctx.set_fill(0x59ffffff);
+            ctx.fill();
+            ctx.begin_path();
+            ctx.arc(r/3,-r/3,r/4);
+            ctx.set_fill(0x59ffffff);
+            ctx.fill();
+            break;
+        case PetalID::kFaster:
+            ctx.set_fill(0xfffeffc9);
+            ctx.set_stroke(0xffcecfa3);
+            ctx.set_line_width(3);
+            ctx.begin_path();
+            ctx.arc(0,0,r);
+            ctx.fill();
+            ctx.stroke();
+            break;
+        case PetalID::kThirdEye:
+            ctx.scale(0.5);
+            ctx.set_fill(0xff222222);
+            ctx.begin_path();
+            ctx.move_to(1, 15);
+            ctx.qcurve_to(16, 0, 1, -15);
+            ctx.qcurve_to(0, -12, -1, -15);
+            ctx.qcurve_to(-16, 0, -1, 15);
+            ctx.qcurve_to(0, 12, 1, 15);
+            ctx.fill();
+            ctx.set_fill(0xffffffff);
+            ctx.begin_path();
+            ctx.arc(0, 0, 6);
+            ctx.fill();
+            break;
+
         /*
         case PetalID::kWing:
             ctx.begin_path();
@@ -306,7 +346,9 @@ void draw_static_petal_single(uint8_t id, Renderer &ctx) {
 
 void draw_static_petal(uint8_t id, Renderer &ctx) {
     struct PetalData const &data = PETAL_DATA[id];
-    for (uint32_t i = 0; i < data.count; ++i) {
+    uint32_t count = data.count;
+    if (count == 0) count = 1;
+    for (uint32_t i = 0; i < count; ++i) {
         RenderContext context(&ctx);
         float rad = 10;
         if (data.attributes.clump_radius) rad = data.attributes.clump_radius;

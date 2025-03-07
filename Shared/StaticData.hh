@@ -10,7 +10,7 @@
 #define TPS (25)
 
 #define ARENA_WIDTH (5000)
-#define ARENA_HEIGHT (5000)
+#define ARENA_HEIGHT (500)
 
 #define PLAYER_ACCELERATION (2.5)
 #define DEFAULT_FRICTION (0.25)
@@ -33,11 +33,14 @@ public:
         kIris,
         kMissile,
         kDandelion,
+        kBubble,
+        kFaster,
         kTriplet,
         kAntEgg,
         kBeetleEgg,
         kTringer,
         kShield,
+        kThirdEye,
         kNumPetals
     };
 };

@@ -54,14 +54,14 @@ Renderer::~Renderer() {
 }
 
 uint32_t Renderer::HSV(uint32_t c, float v) {
-    return MIX(c, 0xff000000, v);
+    return MIX(0xff000000, c, v);
 }
 
-uint32_t Renderer::MIX(uint32_t c, uint32_t c2, float v) {
-    uint8_t b = fclamp((c & 255) * v + (c2 & 255) * (1 - v), 0, 255);
-    uint8_t g = fclamp(((c >> 8) & 255) * v + ((c2 >> 8) & 255) * (1 - v), 0, 255);
-    uint8_t r = fclamp(((c >> 16) & 255) * v + ((c2 >> 16) & 255) * (1 - v), 0, 255);
-    uint8_t a = fclamp(((c >> 24) & 255) * v + ((c2 >> 24) & 255) * (1 - v), 0, 255);
+uint32_t Renderer::MIX(uint32_t base, uint32_t mix, float v) {
+    uint8_t b = fclamp((mix & 255) * v + (base & 255) * (1 - v), 0, 255);
+    uint8_t g = fclamp(((mix >> 8) & 255) * v + ((base >> 8) & 255) * (1 - v), 0, 255);
+    uint8_t r = fclamp(((mix >> 16) & 255) * v + ((base >> 16) & 255) * (1 - v), 0, 255);
+    uint8_t a = base >> 24;//fclamp(((c >> 24) & 255) * v + ((c2 >> 24) & 255) * (1 - v), 0, 255);
     return (a << 24) | (r << 16) | (g << 8) | b;
 }
 
@@ -71,14 +71,14 @@ void Renderer::add_color_filter(uint32_t c, float v) {
 }
 
 void Renderer::set_fill(uint32_t v) {
-    v = MIX(context.color_filter, v, context.amount);
+    v = MIX(v, context.color_filter, context.amount);
     EM_ASM({
     Module.ctxs[$0].fillStyle = "rgba("+$3+","+$2+","+$1+","+$4/255+")";
     }, id, v & 255, (v >> 8) & 255, (v >> 16) & 255, v >> 24);
 }
 
 void Renderer::set_stroke(uint32_t v) {
-    v = MIX(context.color_filter, v, context.amount);
+    v = MIX(v, context.color_filter, context.amount);
     EM_ASM({
     Module.ctxs[$0].strokeStyle = "rgba("+$3+","+$2+","+$1+","+$4/255+")";
     }, id, v & 255, (v >> 8) & 255, (v >> 16) & 255, v >> 24);

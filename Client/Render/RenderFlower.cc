@@ -1,5 +1,6 @@
 #include <Client/Render/RenderEntity.hh>
 
+#include <Client/Assets/Assets.hh>
 #include <Client/Render/Renderer.hh>
 
 #include <Shared/Entity.hh>
@@ -73,5 +74,15 @@ void render_flower(Renderer &ctx, Entity &ent) {
         ctx.line_to(0, 6);
         ctx.line_to(-12, 0);
         ctx.fill();
+    }
+    if (BIT_AT(ent.face_flags, 4))
+    {
+        RenderContext g(&ctx);
+        ctx.translate(0, -14);
+        ctx.scale(0.5);
+        //rr_renderer_scale(renderer, 0.625);
+        draw_static_petal(PetalID::kThirdEye, ctx);
+        //ctx.scale(1.6);
+        //rr_renderer_translate(renderer, 0, 15);
     }
 }

@@ -9,13 +9,13 @@
 static void default_tick_idle(Simulation *sim, Entity &ent) {
     if (ent.ai_tick >= 0.5 * TPS) {
         ent.ai_tick = 0;
+        ent.set_angle(frand() * 2 * M_PI);
         ent.ai_state = AIState::kIdleMoving;
     }
 }
 
 static void default_tick_idle_moving(Simulation *sim, Entity &ent) {
     if (ent.ai_tick > 2 * TPS) {
-        ent.set_angle(frand() * 2 * M_PI);
         ent.ai_tick = 0;
         ent.ai_state = AIState::kIdle;
         return;
@@ -36,7 +36,7 @@ static void default_tick_returning(Simulation *sim, Entity &ent) {
     Vector delta(parent.x - ent.x, parent.y - ent.y);
     if (delta.magnitude() > 300) {
         ent.ai_tick = 0;
-    } else if (ent.ai_tick > 2 * TPS) {
+    } else if (ent.ai_tick > 2 * TPS || delta.magnitude() < 100) {
         ent.ai_tick = 0;
         ent.ai_state = AIState::kIdle;
         return;
@@ -99,7 +99,7 @@ static void tick_default_aggro(Simulation *sim, Entity &ent, float speed) {
             ent.ai_tick = 0;
         }
         ent.target = find_nearest_enemy(sim, ent, 600);
-        tick_default_passive(sim, ent);;
+        tick_default_passive(sim, ent);
     }
 }
 

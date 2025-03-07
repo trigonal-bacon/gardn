@@ -122,11 +122,11 @@ void player_spawn(Simulation *sim, Entity &camera, Entity &player) {
     camera.set_camera_y(spawn_y);
     player.set_x(spawn_x);
     player.set_y(spawn_y);
-    camera.set_loadout_count(5);
+    camera.set_loadout_count(8);
     for (uint32_t i = 0; i < camera.loadout_count; ++i) {
         camera.loadout[i].reset();
-        if (i < 4) camera.loadout[i].id = PetalID::kDandelion;
-        else camera.loadout[i].id = PetalID::kRose;
+        if (i < 7) camera.loadout[i].id = PetalID::kAntEgg;
+        else camera.loadout[i].id = PetalID::kThirdEye;
     }
     for (uint32_t i = camera.loadout_count; i < MAX_SLOT_COUNT + camera.loadout_count; ++i) {
         camera.set_loadout_ids(i, PetalID::kNone);
