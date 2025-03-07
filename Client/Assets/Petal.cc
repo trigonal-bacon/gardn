@@ -10,6 +10,14 @@ void draw_static_petal_single(uint8_t id, Renderer &ctx) {
     switch(id) {
         case PetalID::kNone:
             break;
+        case PetalID::kDandelion:
+            ctx.set_stroke(0xff222222);
+            ctx.round_line_cap();
+            ctx.set_line_width(7);
+            ctx.begin_path();
+            ctx.move_to(0,0);
+            ctx.line_to(-1.6 * r, 0);
+            ctx.stroke();
         case PetalID::kBasic:
         case PetalID::kLight:
         case PetalID::kTwin:
@@ -96,6 +104,31 @@ void draw_static_petal_single(uint8_t id, Renderer &ctx) {
             ctx.line_to(-11.0, -6.0);
             ctx.line_to(-11.0, 6.0);
             ctx.line_to(11.0, 0.0);
+            ctx.fill();
+            ctx.stroke();
+            break;
+        case PetalID::kShield:
+            ctx.scale(r / 10);
+            ctx.set_fill(0xffaaaaaa);
+            ctx.set_stroke(0xff888888);
+            ctx.set_line_width(3);
+            ctx.round_line_cap();
+            ctx.round_line_join();
+            ctx.begin_path();
+            ctx.move_to(0,-10);
+            ctx.qcurve_to(6,-8,12,-10);
+            ctx.qcurve_to(12,4,0,10);
+            ctx.qcurve_to(-12,4,-12,-10);
+            ctx.qcurve_to(-6,-8,0,-10);
+            ctx.fill();
+            ctx.stroke();
+            break;
+        case PetalID::kIris:
+            ctx.set_fill(0xffce76db);
+            ctx.set_stroke(0xffa760b1);
+            ctx.set_line_width(3);
+            ctx.begin_path();
+            ctx.arc(0,0,r);
             ctx.fill();
             ctx.stroke();
             break;

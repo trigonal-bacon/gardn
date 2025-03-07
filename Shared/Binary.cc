@@ -37,7 +37,7 @@ void Writer::write_Float(LerpFloat v) {
 }
 #endif
 
-void Writer::write_entid(EntityId const &id) {
+void Writer::write_entid(EntityID const &id) {
     write_uint32(id.id);
     if (id.id) write_uint32(id.hash);
 }
@@ -75,7 +75,7 @@ float Reader::read_float() {
     return read_int32() / 1024.0;
 }
 
-EntityId Reader::read_entid() {
+EntityID Reader::read_entid() {
     uint16_t id = read_uint32();
     uint16_t hash = id ? read_uint32() : 0;
     return {id, hash};
@@ -107,7 +107,7 @@ void Reader::read_Float(LerpFloat &ref) {
 }
 #endif
 
-void Reader::read_entid(EntityId &ref) {
+void Reader::read_entid(EntityID &ref) {
     ref = read_entid();
 }
 

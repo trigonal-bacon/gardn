@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Shared/Helpers.hh>
+
 #include <cstdint>
 #include <vector>
 
@@ -7,11 +9,13 @@
 #define MSPT (40)
 #define TPS (25)
 
-#define ARENA_WIDTH (1000)
-#define ARENA_HEIGHT (1000)
+#define ARENA_WIDTH (5000)
+#define ARENA_HEIGHT (5000)
 
 #define PLAYER_ACCELERATION (2.5)
 #define DEFAULT_FRICTION (0.25)
+
+#define SUMMON_RETREAT_RADIUS (600)
 
 #define MAX_SLOT_COUNT (8)
 
@@ -26,11 +30,14 @@ public:
         kLeaf,
         kTwin,
         kRose,
+        kIris,
         kMissile,
+        kDandelion,
         kTriplet,
         kAntEgg,
         kBeetleEgg,
         kTringer,
+        kShield,
         kNumPetals
     };
 };
@@ -46,6 +53,11 @@ public:
         kBeetle,
         kMassiveLadybug,
         kMassiveBeetle,
+        kHornet,
+        kCactus,
+        kRock,
+        kCentipede,
+        kSpider,
         kNumMobs
     };
 };
@@ -68,8 +80,14 @@ public:
     enum {
         kIdle,
         kIdleMoving,
+        kReturning,
         kBasicAggro
     };
+};
+
+struct Poison {
+    float damage;
+    float time;
 };
 
 struct PetalAttributes {
@@ -85,6 +103,7 @@ struct PetalAttributes {
     uint8_t defend_only;
     float icon_angle;
     uint8_t rotation_style;
+    struct Poison poison_damage;
 };
 
 struct PetalData {
@@ -98,6 +117,11 @@ struct PetalData {
     struct PetalAttributes attributes;
 };
 
+struct MobAttributes {
+    float aggro_radius = 600;
+    uint8_t segments = 0;
+};
+
 struct MobDrop {
     uint8_t id;
     float chance;
@@ -106,11 +130,12 @@ struct MobDrop {
 struct MobData {
     char const *name;
     uint8_t rarity;
-    float health;
+    RangeValue health;
     float damage;
-    float radius;
+    RangeValue radius;
     float xp;
     std::vector<MobDrop> drops;
+    struct MobAttributes attributes;
 };
 
 extern struct PetalData PETAL_DATA[PetalID::kNumPetals];

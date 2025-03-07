@@ -17,7 +17,7 @@ static const uint32_t MAX_GRID_Y = div_round_up(ARENA_HEIGHT, GRID_SIZE);
 class SpatialHash {
 public:
     Simulation *simulation;
-    std::vector<EntityId> cells[MAX_GRID_X][MAX_GRID_Y];
+    std::vector<EntityID> cells[MAX_GRID_X][MAX_GRID_Y];
     SpatialHash(Simulation *);
     void clear();
     void insert(Entity &);

@@ -10,8 +10,8 @@ class Server;
 
 class Client {
 public:
-    EntityId camera;
-    std::set<EntityId> last_in_view;
+    EntityID camera;
+    std::set<EntityID> last_in_view;
     uWS::WebSocket<false, true, Client> *ws;
     Client();
     void init(Server *);

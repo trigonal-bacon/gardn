@@ -11,7 +11,7 @@
 
 static void update_client(Simulation *sim, Client *client) {
     if (!sim->ent_exists(client->camera)) return;
-    std::set<EntityId> in_view;
+    std::set<EntityID> in_view;
     in_view.insert(client->camera);
     Entity &camera = sim->get_ent(client->camera);
     if (sim->ent_exists(camera.player)) {
@@ -27,12 +27,12 @@ static void update_client(Simulation *sim, Client *client) {
         in_view.insert(ent.id);
     });
 
-    for (EntityId i: client->last_in_view) {
+    for (EntityID i: client->last_in_view) {
         if (!in_view.contains(i)) writer.write_entid(i);
     }
     writer.write_entid(NULL_ENTITY);
     //upcreates
-    for (EntityId id: in_view) {
+    for (EntityID id: in_view) {
         assert(sim->ent_exists(id));
         Entity &ent = sim->get_ent(id);
         uint8_t create = !client->last_in_view.contains(id);
@@ -43,7 +43,7 @@ static void update_client(Simulation *sim, Client *client) {
     writer.write_entid(NULL_ENTITY);
     //set client->last_in_view
     client->last_in_view.clear();
-    for (EntityId i: in_view) client->last_in_view.insert(i);
+    for (EntityID i: in_view) client->last_in_view.insert(i);
 
     std::string_view message(reinterpret_cast<char const *>(writer.packet), writer.at - writer.packet);
     client->ws->send(message, uWS::OpCode::BINARY, 0);
@@ -51,7 +51,7 @@ static void update_client(Simulation *sim, Client *client) {
 
 void Simulation::tick() {
     pre_tick();
-    if (frand() < 0.01) alloc_mob(frand() * (float) MobID::kNumMobs);
+    if (frand() < 0.002) alloc_mob(frand() * (float) MobID::kNumMobs);
     for (uint32_t i = 0; i < active_entities.length; ++i) {
         Entity &ent = get_ent(active_entities[i]);
         if (ent.has_component(kPhysics)) {
@@ -60,6 +60,7 @@ void Simulation::tick() {
         }
     }
 
+    for_each<kSegmented>(tick_segment_behavior);
     for_each<kMob>(tick_ai_behavior);
     for_each<kPetal>(tick_petal_behavior);
     for_each<kFlower>(tick_player_behavior);

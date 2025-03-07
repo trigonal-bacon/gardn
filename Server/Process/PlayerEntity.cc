@@ -40,10 +40,6 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
                 petal_slot.ent_id = NULL_ENTITY;
                 if (petal_slot.reload >= petal_data.reload * TPS) {
                     Entity &petal = alloc_petal(slot.id, player);
-                    petal.set_x(player.x);
-                    petal.set_y(player.y);
-                    petal.set_parent(player.id);
-                    petal.set_team(player.parent);
                     petal_slot.ent_id = petal.id;
                     petal_slot.reload = 0;
                     petal.owner_slot = &petal_slot;
@@ -87,6 +83,8 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
     player.petal_rotation += 0.1;
     if (BIT_AT(player.input, 0)) player.set_face_flags(player.face_flags | 1);
     else if (BIT_AT(player.input, 1)) player.set_face_flags(player.face_flags | 2);
+    if (player.poison.time > 0) player.set_face_flags(player.face_flags | 4);
+    if (player.dandy_ticks > 0) player.set_face_flags(player.face_flags | 8);
     camera.rotation_count = rot_pos;
 }
 
@@ -118,13 +116,14 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
                     sim->request_delete(petal.id);
                     return;
                 }
-                delta.normalize().set_magnitude(PLAYER_ACCELERATION * 8);
+                if (player.has_component(kFlower)) delta.normalize().set_magnitude(PLAYER_ACCELERATION * 10);
+                else delta.normalize().set_magnitude(PLAYER_ACCELERATION * 5);
                 petal.acceleration = delta;
                 break;
             }
             case PetalID::kBeetleEgg:
             case PetalID::kAntEgg: {
-                uint8_t spawn_id = (petal.petal_id == PetalID::kAntEgg) ? MobID::kSoldierAnt : MobID::kMassiveBeetle;
+                uint8_t spawn_id = (petal.petal_id == PetalID::kAntEgg) ? MobID::kSoldierAnt : MobID::kBeetle;
                 Entity &mob = alloc_mob(spawn_id);
                 mob.set_team(petal.team);
                 mob.set_parent(petal.parent);
@@ -153,7 +152,7 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
         if (petal.secondary_reload > petal_data.attributes.secondary_reload * TPS) {
             switch (petal.petal_id) {
                 case PetalID::kRose:
-                    if (player.health != player.max_health) petal.despawn_tick++;
+                    if (player.health != player.max_health && player.dandy_ticks == 0) petal.despawn_tick++;
                     break;
                 case PetalID::kMissile:
                     if (BIT_AT(player.input, 0)) {

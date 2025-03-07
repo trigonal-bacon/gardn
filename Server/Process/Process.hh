@@ -9,4 +9,5 @@ void tick_entity_motion(Simulation *, Entity &);
 void tick_health_behavior(Simulation *, Entity &);
 void tick_petal_behavior(Simulation *, Entity &);
 void tick_player_behavior(Simulation *, Entity &);
+void tick_segment_behavior(Simulation *, Entity &);
 void on_collide(Simulation *, Entity &, Entity &);

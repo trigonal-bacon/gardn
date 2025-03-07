@@ -7,7 +7,7 @@
 
 #include <cstdint>
 
-typedef EntityId entid;
+typedef EntityID entid;
 typedef uint8_t uint8;
 typedef uint32_t uint32;
 typedef int32_t int32;
@@ -35,7 +35,7 @@ class Entity {
         void init();
         void reset_protocol();
         uint32_t components;
-        EntityId id;
+        EntityID id;
         uint8_t pending_delete;
     #define SINGLE(name, type) type name;
     #define MULTIPLE(name, type, amt) type name[amt];

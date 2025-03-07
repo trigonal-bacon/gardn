@@ -848,42 +848,42 @@ async function createWasm() {
 // === Body ===
 
 var ASM_CONSTS = {
-  107560: ($0) => { Module.ctxs[$0].save(); },  
- 107588: ($0) => { Module.ctxs[$0].restore(); },  
- 107619: () => { if (Module.availableCtxs.length) { const index = Module.availableCtxs.shift(); if (index == 0) return 0; const ocanvas = new OffscreenCanvas(1, 1); Module.ctxs[index] = ocanvas.getContext('2d'); return index; } throw new Error( 'Out of Contexts: Can be fixed by allowing more contexts'); return -1; },  
- 107922: ($0) => { if ($0 == 0) throw new Error('Tried to delete the main context'); Module.ctxs[$0] = null; Module.availableCtxs.push($0); },  
- 108047: ($0, $1, $2, $3, $4) => { Module.ctxs[$0].fillStyle = "rgba("+$3+","+$2+","+$1+","+$4/255+")"; },  
- 108120: ($0, $1, $2, $3, $4) => { Module.ctxs[$0].strokeStyle = "rgba("+$3+","+$2+","+$1+","+$4/255+")"; },  
- 108195: ($0, $1) => { Module.ctxs[$0].lineWidth = $1; },  
- 108231: ($0, $1) => { Module.ctxs[$0].font = $1 + "px Ubuntu"; },  
- 108276: ($0, $1) => { Module.ctxs[$0].globalAlpha = $1; },  
- 108314: ($0) => { Module.ctxs[$0].lineCap = "round"; },  
- 108353: ($0) => { Module.ctxs[$0].lineJoin = "round"; },  
- 108393: ($0) => { Module.ctxs[$0].textAlign = "center"; },  
- 108435: ($0) => { Module.ctxs[$0].textBaseline = "middle"; },  
- 108480: ($0) => { Module.ctxs[$0].beginPath(); },  
- 108513: ($0, $1, $2) => { Module.ctxs[$0].moveTo($1, $2); },  
- 108549: ($0, $1, $2) => { Module.ctxs[$0].lineTo($1, $2); },  
- 108585: ($0, $1, $2, $3, $4) => { Module.ctxs[$0].quadraticCurveTo($1, $2, $3, $4); },  
- 108639: ($0, $1, $2, $3, $4, $5, $6) => { Module.ctxs[$0].bezierCurveTo($1, $2, $3, $4, $5, $6); },  
- 108698: ($0, $1, $2, $3, $4, $5, $6) => { Module.ctxs[$0].arc($1, $2, $3, $4, $5, !!$6); },  
- 108749: ($0, $1, $2, $3, $4, $5) => { Module.ctxs[$0].ellipse($1, $2, $3, $4, $5, 2 * Math.PI, 0); },  
- 108814: ($0, $1, $2, $3, $4) => { Module.ctxs[$0].fillRect($1, $2, $3, $4); },  
- 108860: ($0, $1, $2, $3, $4) => { Module.ctxs[$0].strokeRect($1, $2, $3, $4); },  
- 108908: ($0, $1, $2, $3, $4) => { Module.ctxs[$0].rect($1, $2, $3, $4); },  
- 108950: ($0) => { Module.ctxs[$0].closePath(); },  
- 108983: ($0) => { Module.ctxs[$0].fill(); },  
- 109011: ($0) => { Module.ctxs[$0].stroke(); },  
- 109041: ($0) => { Module.ctxs[$0].clip(); },  
- 109069: ($0, $1, $2) => { Module.ctxs[$0].fillText(Module.TextDecoder.decode(HEAPU8.subarray($1, $1+$2)),0,0); },  
- 109158: ($0, $1, $2) => { Module.ctxs[$0].strokeText(Module.TextDecoder.decode(HEAPU8.subarray($1, $1+$2)),0,0); },  
- 109249: ($0, $1, $2) => { return Module.ctxs[$0].measureText(Module.TextDecoder.decode(HEAPU8.subarray($1, $1+$2)),0,0).width; },  
- 109354: ($0, $1, $2, $3, $4, $5, $6) => { Module.ctxs[$0].setTransform($1, $2, $4, $5, $3, $6); },  
- 109412: () => { Module.canvas = document.createElement("canvas"); Module.canvas.id = "canvas"; Module.canvas.width = innerWidth * devicePixelRatio; Module.canvas.height = innerHeight * devicePixelRatio; Module.canvas.oncontextmenu = function() { return false; }; window.onbeforeunload = function(e) { return "Are you sure?"; }; document.body.appendChild(Module.canvas); Module.ctxs = [Module.canvas.getContext('2d')]; Module.availableCtxs = new Array(256).fill(0).map(function(_, i) { return i; }); Module.TextDecoder = new TextDecoder('utf8'); },  
- 109945: () => { window.addEventListener("keydown", (e) => { _key_event(e.which, 0); }); window.addEventListener("keyup", (e) => { _key_event(e.which, 1); }); window.addEventListener("mousedown", (e) => { _mouse_event(e.clientX * devicePixelRatio, e.clientY * devicePixelRatio, 0, +!!e.button); }); window.addEventListener("mousemove", (e) => { _mouse_event(e.clientX * devicePixelRatio, e.clientY * devicePixelRatio, 1, +!!e.button); }); window.addEventListener("mouseup", (e) => { _mouse_event(e.clientX * devicePixelRatio, e.clientY * devicePixelRatio, 2, +!!e.button); }); },  
- 110509: () => { function loop(time) { Module.canvas.width = innerWidth * devicePixelRatio; Module.canvas.height = innerHeight * devicePixelRatio; _loop(time, Module.canvas.width, Module.canvas.height); requestAnimationFrame(loop); }; requestAnimationFrame(loop); },  
- 110760: ($0, $1) => { let string = UTF8ToString($1); function connect() { let socket = Module.socket = new WebSocket(string); socket.binaryType = "arraybuffer"; socket.onopen = function() { console.log("Connected"); _on_message(0); }; socket.onclose = function(a) { console.log("Disconnected"); _on_message(2, a.code); setTimeout(connect, 1000); }; socket.onmessage = function(event) { HEAPU8.set(new Uint8Array(event.data), $0); _on_message(1, event.data.length); }; } setTimeout(connect, 1000); },  
- 111239: ($0, $1) => { if (Module.socket?.readyState == 1) { Module.socket.send(HEAPU8.subarray($0, $0+$1)); } }
+  108008: ($0) => { Module.ctxs[$0].save(); },  
+ 108036: ($0) => { Module.ctxs[$0].restore(); },  
+ 108067: () => { if (Module.availableCtxs.length) { const index = Module.availableCtxs.shift(); if (index == 0) return 0; const ocanvas = new OffscreenCanvas(1, 1); Module.ctxs[index] = ocanvas.getContext('2d'); return index; } throw new Error( 'Out of Contexts: Can be fixed by allowing more contexts'); return -1; },  
+ 108370: ($0) => { if ($0 == 0) throw new Error('Tried to delete the main context'); Module.ctxs[$0] = null; Module.availableCtxs.push($0); },  
+ 108495: ($0, $1, $2, $3, $4) => { Module.ctxs[$0].fillStyle = "rgba("+$3+","+$2+","+$1+","+$4/255+")"; },  
+ 108568: ($0, $1, $2, $3, $4) => { Module.ctxs[$0].strokeStyle = "rgba("+$3+","+$2+","+$1+","+$4/255+")"; },  
+ 108643: ($0, $1) => { Module.ctxs[$0].lineWidth = $1; },  
+ 108679: ($0, $1) => { Module.ctxs[$0].font = $1 + "px Ubuntu"; },  
+ 108724: ($0, $1) => { Module.ctxs[$0].globalAlpha = $1; },  
+ 108762: ($0) => { Module.ctxs[$0].lineCap = "round"; },  
+ 108801: ($0) => { Module.ctxs[$0].lineJoin = "round"; },  
+ 108841: ($0) => { Module.ctxs[$0].textAlign = "center"; },  
+ 108883: ($0) => { Module.ctxs[$0].textBaseline = "middle"; },  
+ 108928: ($0) => { Module.ctxs[$0].beginPath(); },  
+ 108961: ($0, $1, $2) => { Module.ctxs[$0].moveTo($1, $2); },  
+ 108997: ($0, $1, $2) => { Module.ctxs[$0].lineTo($1, $2); },  
+ 109033: ($0, $1, $2, $3, $4) => { Module.ctxs[$0].quadraticCurveTo($1, $2, $3, $4); },  
+ 109087: ($0, $1, $2, $3, $4, $5, $6) => { Module.ctxs[$0].bezierCurveTo($1, $2, $3, $4, $5, $6); },  
+ 109146: ($0, $1, $2, $3, $4, $5, $6) => { Module.ctxs[$0].arc($1, $2, $3, $4, $5, !!$6); },  
+ 109197: ($0, $1, $2, $3, $4, $5) => { Module.ctxs[$0].ellipse($1, $2, $3, $4, $5, 2 * Math.PI, 0); },  
+ 109262: ($0, $1, $2, $3, $4) => { Module.ctxs[$0].fillRect($1, $2, $3, $4); },  
+ 109308: ($0, $1, $2, $3, $4) => { Module.ctxs[$0].strokeRect($1, $2, $3, $4); },  
+ 109356: ($0, $1, $2, $3, $4) => { Module.ctxs[$0].rect($1, $2, $3, $4); },  
+ 109398: ($0) => { Module.ctxs[$0].closePath(); },  
+ 109431: ($0) => { Module.ctxs[$0].fill(); },  
+ 109459: ($0) => { Module.ctxs[$0].stroke(); },  
+ 109489: ($0) => { Module.ctxs[$0].clip(); },  
+ 109517: ($0, $1, $2) => { Module.ctxs[$0].fillText(Module.TextDecoder.decode(HEAPU8.subarray($1, $1+$2)),0,0); },  
+ 109606: ($0, $1, $2) => { Module.ctxs[$0].strokeText(Module.TextDecoder.decode(HEAPU8.subarray($1, $1+$2)),0,0); },  
+ 109697: ($0, $1, $2) => { return Module.ctxs[$0].measureText(Module.TextDecoder.decode(HEAPU8.subarray($1, $1+$2)),0,0).width; },  
+ 109802: ($0, $1, $2, $3, $4, $5, $6) => { Module.ctxs[$0].setTransform($1, $2, $4, $5, $3, $6); },  
+ 109860: () => { Module.canvas = document.createElement("canvas"); Module.canvas.id = "canvas"; Module.canvas.width = innerWidth * devicePixelRatio; Module.canvas.height = innerHeight * devicePixelRatio; Module.canvas.oncontextmenu = function() { return false; }; window.onbeforeunload = function(e) { return "Are you sure?"; }; document.body.appendChild(Module.canvas); Module.ctxs = [Module.canvas.getContext('2d')]; Module.availableCtxs = new Array(256).fill(0).map(function(_, i) { return i; }); Module.TextDecoder = new TextDecoder('utf8'); },  
+ 110393: () => { window.addEventListener("keydown", (e) => { _key_event(e.which, 0); }); window.addEventListener("keyup", (e) => { _key_event(e.which, 1); }); window.addEventListener("mousedown", (e) => { _mouse_event(e.clientX * devicePixelRatio, e.clientY * devicePixelRatio, 0, +!!e.button); }); window.addEventListener("mousemove", (e) => { _mouse_event(e.clientX * devicePixelRatio, e.clientY * devicePixelRatio, 1, +!!e.button); }); window.addEventListener("mouseup", (e) => { _mouse_event(e.clientX * devicePixelRatio, e.clientY * devicePixelRatio, 2, +!!e.button); }); },  
+ 110957: () => { function loop(time) { Module.canvas.width = innerWidth * devicePixelRatio; Module.canvas.height = innerHeight * devicePixelRatio; _loop(time, Module.canvas.width, Module.canvas.height); requestAnimationFrame(loop); }; requestAnimationFrame(loop); },  
+ 111208: ($0, $1) => { let string = UTF8ToString($1); function connect() { let socket = Module.socket = new WebSocket(string); socket.binaryType = "arraybuffer"; socket.onopen = function() { console.log("Connected"); _on_message(0); }; socket.onclose = function(a) { console.log("Disconnected"); _on_message(2, a.code); setTimeout(connect, 1000); }; socket.onmessage = function(event) { HEAPU8.set(new Uint8Array(event.data), $0); _on_message(1, event.data.length); }; } setTimeout(connect, 1000); },  
+ 111687: ($0, $1) => { if (Module.socket?.readyState == 1) { Module.socket.send(HEAPU8.subarray($0, $0+$1)); } }
 };
 
 // end include: preamble.js
@@ -4347,6 +4347,10 @@ var wasmImports = {
   /** @export */
   invoke_ii,
   /** @export */
+  invoke_iid,
+  /** @export */
+  invoke_iidd,
+  /** @export */
   invoke_iii,
   /** @export */
   invoke_iiii,
@@ -4566,6 +4570,28 @@ function invoke_viii(index,a1,a2,a3) {
   var sp = stackSave();
   try {
     getWasmTableEntry(index)(a1,a2,a3);
+  } catch(e) {
+    stackRestore(sp);
+    if (!(e instanceof EmscriptenEH)) throw e;
+    _setThrew(1, 0);
+  }
+}
+
+function invoke_iid(index,a1,a2) {
+  var sp = stackSave();
+  try {
+    return getWasmTableEntry(index)(a1,a2);
+  } catch(e) {
+    stackRestore(sp);
+    if (!(e instanceof EmscriptenEH)) throw e;
+    _setThrew(1, 0);
+  }
+}
+
+function invoke_iidd(index,a1,a2,a3) {
+  var sp = stackSave();
+  try {
+    return getWasmTableEntry(index)(a1,a2,a3);
   } catch(e) {
     stackRestore(sp);
     if (!(e instanceof EmscriptenEH)) throw e;

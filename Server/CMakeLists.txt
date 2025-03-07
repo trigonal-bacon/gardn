@@ -10,6 +10,7 @@ set(SOURCES
     Process/Health.cc
     Process/Motion.cc
     Process/PlayerEntity.cc
+    Process/Segment.cc
     Client.cc
     EntityFunctions.cc
     Main.cc

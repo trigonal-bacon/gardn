@@ -75,3 +75,16 @@ float SeedGenerator::next() {
     seed += 937323;
     return (seed % 65536) / 65536.0f;
 }
+
+RangeValue::RangeValue(double l, double u) {
+    upper = u;
+    lower = l;
+}
+
+RangeValue::RangeValue(double l) {
+    lower = upper = l;
+}
+
+float RangeValue::get_single(float a) const {
+    return lower + (upper - lower) * fclamp(a, 0, 1);
+}

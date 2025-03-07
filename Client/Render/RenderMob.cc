@@ -15,5 +15,7 @@ void render_mob(Renderer &ctx, Entity &ent) {
     ctx.set_global_alpha(1 - ent.deletion_tick * 0.2);
     ctx.scale(1 + 0.1 * ent.deletion_tick);
     ctx.add_color_filter(0xffac0000, ent.damage_flash * 0.8);
-    draw_static_mob(ent.mob_id, ctx, {ent.animation, ent.radius, ent.id.id, 0});
+    uint32_t flags = 0;
+    flags |= (ent.is_tail << 1);
+    draw_static_mob(ent.mob_id, ctx, {ent.animation, ent.radius, ent.id.id, flags});
 }

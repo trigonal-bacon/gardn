@@ -28,7 +28,7 @@ public:
     void write_int32(int32_t);
     void write_float(float);
     void write_Float(Float);
-    void write_entid(EntityId const &);
+    void write_entid(EntityID const &);
     void write_string(std::string const &);
 };
 
@@ -41,13 +41,13 @@ public:
     uint32_t read_uint32();
     int32_t read_int32();
     float read_float();
-    EntityId read_entid();
+    EntityID read_entid();
 
     void read_uint8(uint8_t &);
     void read_uint32(uint32_t &);
     void read_int32(int32_t &);
     void read_float(float &);
-    void read_entid(EntityId &);
+    void read_entid(EntityID &);
     void read_Float(Float &);
     void read_string(std::string &);
 };

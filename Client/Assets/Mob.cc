@@ -288,7 +288,166 @@ void draw_static_mob(uint8_t mob_id, Renderer &ctx, MobRenderAttributes attr) {
             ctx.arc(17,12,5);
             ctx.fill();
             break;
-        default:
+        case MobID::kHornet:
+            SET_BASE_COLOR(0xffffe763);
+            ctx.set_fill(0xff333333);
+            ctx.set_stroke(0xff292929);
+            ctx.set_line_width(5);
+            ctx.round_line_cap();
+            ctx.round_line_join();
+            ctx.begin_path();
+            ctx.move_to(-25,-6);
+            ctx.line_to(-47,0);
+            ctx.line_to(-25,6);
+            ctx.fill();
+            ctx.stroke();
+            ctx.set_fill(base_color);
+            ctx.begin_path();
+            ctx.ellipse(0,0,30,20);
+            ctx.fill();
+            {
+                RenderContext context(&ctx);
+                ctx.clip();
+                ctx.set_fill(0xff333333);
+                ctx.fill_rect(-30,-20,10,40);
+                ctx.fill_rect(-10,-20,10,40);
+                ctx.fill_rect(10,-20,10,40);
+            }
+            ctx.set_stroke(Renderer::HSV(base_color, 0.8));
+            ctx.set_line_width(5);
+            ctx.begin_path();
+            ctx.ellipse(0,0,30,20);
+            ctx.stroke();
+            ctx.set_stroke(0xff333333);
+            ctx.set_line_width(3);
+            ctx.begin_path();
+            ctx.move_to(25, 5);
+            ctx.qcurve_to(40, 10, 50, 15);
+            ctx.qcurve_to(40, 5, 25, 5);
+            ctx.move_to(25, -5);
+            ctx.qcurve_to(40, -10, 50, -15);
+            ctx.qcurve_to(40, -5, 25, -5);
+            ctx.fill();
+            ctx.stroke();
+            break;
+        case MobID::kCactus: {
+            SET_BASE_COLOR(0xff32a852);
+            uint32_t vertices = radius / 10 + 5;
+            {
+                RenderContext context(&ctx);
+                ctx.set_fill(0xff222222);
+                ctx.begin_path();
+                for (uint32_t i = 0; i < vertices; ++i) {
+                    ctx.move_to(10+radius,0);
+                    ctx.line_to(0.5+radius,3);
+                    ctx.line_to(0.5+radius,-3);
+                    ctx.line_to(10+radius,0);
+                    ctx.rotate(M_PI * 2 / vertices);
+                }
+                ctx.fill();
+            }
+            ctx.set_fill(base_color);
+            ctx.set_stroke(Renderer::HSV(base_color, 0.8));
+            ctx.set_line_width(5);
+            ctx.round_line_cap();
+            ctx.round_line_join();
+            ctx.begin_path();
+            ctx.move_to(radius,0);
+            for (uint32_t i = 0; i < vertices; ++i) {
+                float base_angle = M_PI * 2 * i / vertices;
+                ctx.qcurve_to(radius*0.9*cosf(base_angle+M_PI/vertices),radius*0.9*sinf(base_angle+M_PI/vertices),radius*cosf(base_angle+2*M_PI/vertices),radius*sinf(base_angle+2*M_PI/vertices));
+            }
+            ctx.fill();
+            ctx.stroke();
+            break;
+        }
+        case MobID::kRock: {
+            SET_BASE_COLOR(0xff777777);
+            SeedGenerator gen(radius * 284 + 476);
+            ctx.set_fill(base_color);
+            ctx.set_stroke(Renderer::HSV(base_color, 0.8));
+            ctx.set_line_width(5);
+            ctx.round_line_cap();
+            ctx.round_line_join();
+            ctx.begin_path();
+            float deflection = radius * 0.1;
+            ctx.move_to(radius + (2 * gen.next() - 1) * deflection,(2 * gen.next() - 1) * deflection);
+            uint32_t sides = 4 + radius / 10;
+            for (uint32_t i = 1; i < sides; ++i) {
+                float angle = 2 * M_PI * i / sides;
+                ctx.line_to(cosf(angle) * radius + (2 * gen.next() - 1) * deflection, sinf(angle) * radius + (2 * gen.next() - 1) * deflection);
+            }
+            ctx.close_path();
+            ctx.fill();
+            ctx.stroke();
+            break;
+        }
+        case MobID::kCentipede:
+            SET_BASE_COLOR(0xff8ac255);
+            ctx.set_fill(0xff333333);
+            ctx.begin_path();
+            ctx.arc(0,-30,15);
+            ctx.fill();
+            ctx.begin_path();
+            ctx.arc(0,30,15);
+            ctx.fill();
+            ctx.begin_path();
+            ctx.arc(0,0,35);
+            ctx.set_fill(base_color);
+            ctx.fill();
+            ctx.set_stroke(Renderer::HSV(base_color, 0.8));
+            ctx.set_line_width(7);
+            ctx.stroke();
+            if (!BIT_AT(flags, 1)) {
+                ctx.begin_path();
+                ctx.move_to(25,-10);
+                ctx.qcurve_to(45,-10,55,-30);
+                ctx.set_stroke(0xff333333);
+                ctx.set_line_width(3);
+                ctx.stroke();
+                ctx.begin_path();
+                ctx.arc(55,-30,5);
+                ctx.set_fill(0xff333333);
+                ctx.fill();
+                ctx.begin_path();
+                ctx.move_to(25,10);
+                ctx.qcurve_to(45,10,55,30);
+                ctx.stroke();
+                ctx.begin_path();
+                ctx.arc(55,30,5);
+                ctx.fill();
+            }
+            break;
+        case MobID::kSpider:
+            ctx.set_stroke(0xff333333);
+            ctx.set_line_width(5);
+            ctx.round_line_cap();
+            ctx.begin_path();
+            #define draw_leg(angle) \
+            { \
+                float cos = cosf(angle) * 35; \
+                float sin = sinf(angle) * 35; \
+                ctx.move_to(0,0); \
+                ctx.qcurve_to(sin * 0.8, cos * 0.5, sin, cos); \
+            }
+            draw_leg(-M_PI + 0.9 + sinf(attr.animation) * 0.2)
+            draw_leg(-M_PI + 0.3 + cosf(attr.animation) * 0.2)
+            draw_leg(-M_PI - 0.3 + sinf(attr.animation) * 0.2)
+            draw_leg(-M_PI - 0.9 - cosf(attr.animation) * 0.2)
+            draw_leg(-0.9 - sinf(attr.animation) * 0.2)
+            draw_leg(-0.3 + cosf(attr.animation) * 0.2)
+            draw_leg(0.3 - sinf(attr.animation) * 0.2)
+            draw_leg(0.9 - cosf(attr.animation) * 0.2)
+            ctx.stroke();
+            ctx.begin_path();
+            ctx.arc(0,0,radius);
+            ctx.set_fill(0xff4f412e);
+            ctx.fill();
+            ctx.set_stroke(0xff403525);
+            ctx.set_line_width(5);
+            ctx.stroke();
+            break;
+            default:
             assert(!"Didn't cover mob render");
             break;
     }

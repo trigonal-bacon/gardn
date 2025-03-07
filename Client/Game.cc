@@ -138,7 +138,7 @@ void Game::on_message(uint8_t *ptr, uint32_t len) {
         case kClientbound::kClientUpdate: {
             simulation_ready = 1;
             camera_id = reader.read_entid();
-            EntityId curr_id = reader.read_entid();
+            EntityID curr_id = reader.read_entid();
             while(1) {
                 if (curr_id.null()) break;
                 assert(simulation.ent_exists(curr_id));

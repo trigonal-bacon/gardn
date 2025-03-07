@@ -17,7 +17,7 @@ void Simulation::tick_lerp(double dt) {
             ent.x.step(amt);
             ent.y.step(amt);
             Vector vel(ent.x - prevx, ent.y - prevy);
-            ent.animation += (1 + 0.3 * vel.magnitude()) * 0.1;
+            ent.animation += (1 + 0.5 * vel.magnitude()) * 0.08;
             ent.radius.step(amt);
             ent.angle.step_angle(amt);
             ent.deletion_tick.step(amt * 1.25);
@@ -35,7 +35,9 @@ void Simulation::tick_lerp(double dt) {
         if (ent.has_component(kFlower)) {
             LERP(ent.eye_x, cosf(ent.eye_angle) * 3, amt);
             LERP(ent.eye_y, sinf(ent.eye_angle) * 3, amt);
-            if (BIT_AT(ent.face_flags, 0)) LERP(ent.mouth, 5, amt)
+            if (BIT_AT(ent.face_flags, 0) 
+               || BIT_AT(ent.face_flags, 2) 
+               || BIT_AT(ent.face_flags, 3)) LERP(ent.mouth, 5, amt)
             else if (BIT_AT(ent.face_flags, 1)) LERP(ent.mouth, 8, amt)
             else LERP(ent.mouth, 15, amt)
         }

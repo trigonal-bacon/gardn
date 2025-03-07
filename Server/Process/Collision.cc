@@ -66,8 +66,8 @@ void on_collide(Simulation *sim, Entity &ent1, Entity &ent2) {
 
     if (ent1.has_component(kHealth) && ent2.has_component(kHealth) && !(ent1.team == ent2.team)) {
         if (ent1.health > 0 && ent2.health > 0) {
-            inflict_damage(sim, ent1, ent2, ent1.damage);
-            inflict_damage(sim, ent2, ent1, ent2.damage);
+            inflict_damage(sim, ent1.id, ent2, ent1.damage);
+            inflict_damage(sim, ent2.id, ent1, ent2.damage);
         }
     }
 

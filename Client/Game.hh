@@ -12,7 +12,7 @@ public:
     Renderer renderer;
     Input input;
     Socket socket;
-    EntityId camera_id;
+    EntityID camera_id;
 
     float scale;
     uint8_t simulation_ready;

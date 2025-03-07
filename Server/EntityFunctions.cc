@@ -9,17 +9,32 @@
 
 #include <vector>
 
-void inflict_damage(Simulation *sim, Entity &attacker, Entity &defender, float amt) {
+void inflict_damage(Simulation *sim, EntityID const &atk_id, Entity &defender, float amt) {
     assert(!defender.pending_delete);
     assert(defender.has_component(kHealth));
     if (amt <= defender.armor) return;
     defender.set_damaged(1);
     defender.health = fclamp(defender.health - amt, 0, defender.health);
+    if (!sim->ent_alive(atk_id)) return;
+    Entity &attacker = sim->get_ent(atk_id);
+    if (defender.poison.time < attacker.poison_damage.time * TPS) {
+        defender.poison.time = attacker.poison_damage.time * TPS;
+        defender.poison.damage = attacker.poison_damage.damage / TPS;
+    }
+    if (defender.has_component(kPetal)) {
+        switch (defender.petal_id) {
+            case PetalID::kDandelion:
+                attacker.dandy_ticks = 10 * TPS;
+                break;
+            default:
+                break;
+        }
+    }
     if (!sim->ent_alive(defender.target)) {
         if (attacker.has_component(kPetal)) {
             defender.target = attacker.parent;
         } else {
-            defender.target = attacker.id;
+            defender.target = atk_id;
         }
     }
 }
@@ -27,6 +42,7 @@ void inflict_damage(Simulation *sim, Entity &attacker, Entity &defender, float a
 void inflict_heal(Simulation *sim, Entity &ent, float amt) {
     assert(ent.has_component(kHealth));
     if (ent.pending_delete || ent.health <= 0) return;
+    if (ent.dandy_ticks > 0) return;
     ent.health = fclamp(ent.health + amt, 0, ent.max_health);
 }
 
@@ -58,8 +74,8 @@ void entity_on_death(Simulation *sim, Entity &ent) {
     }
 }
 
-EntityId find_nearest_enemy(Simulation *simulation, Entity &entity, float radius) {
-    EntityId ret;
+EntityID find_nearest_enemy(Simulation *simulation, Entity &entity, float radius) {
+    EntityID ret;
     float min_dist = radius;
     simulation->spatial_hash.query(entity.x, entity.y, radius, radius, [&](Simulation *sim, Entity &ent){
         if (ent.team == entity.team) return;
@@ -68,7 +84,7 @@ EntityId find_nearest_enemy(Simulation *simulation, Entity &entity, float radius
         if (simulation->ent_alive(entity.parent)) {
             Entity &parent = simulation->get_ent(entity.parent);
             float dist = Vector(ent.x-parent.x,ent.y-parent.y).magnitude();
-            if (dist > radius) return;
+            if (dist > SUMMON_RETREAT_RADIUS) return;
         }
         float dist = Vector(ent.x-entity.x,ent.y-entity.y).magnitude();
         if (dist < min_dist) { min_dist = dist; ret = ent.id; }

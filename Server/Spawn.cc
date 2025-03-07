@@ -4,10 +4,12 @@
 #include <Shared/Helpers.hh>
 #include <Shared/StaticData.hh>
 
+#include <cmath>
+
 Entity &alloc_drop(uint8_t drop_id) {
     Entity &drop = game_server->simulation.alloc_ent();
     drop.add_component(kPhysics);
-    drop.set_radius(3);
+    drop.set_radius(1);
     drop.set_angle(0);
     drop.friction = 0.25;
     drop.add_component(kRelations);
@@ -19,10 +21,12 @@ Entity &alloc_drop(uint8_t drop_id) {
     return drop;
 }
 
-Entity &alloc_mob(uint8_t mob_id) {
+static Entity &__alloc_mob(uint8_t mob_id) {
+    struct MobData const &data = MOB_DATA[mob_id];
+    float seed = frand();
     Entity &mob = game_server->simulation.alloc_ent();
     mob.add_component(kPhysics);
-    mob.set_radius(MOB_DATA[mob_id].radius);
+    mob.set_radius(data.radius.get_single(seed));
     mob.set_angle(frand() * 2 * M_PI);
     mob.set_x(frand() * ARENA_WIDTH);
     mob.set_y(frand() * ARENA_HEIGHT);
@@ -34,11 +38,31 @@ Entity &alloc_mob(uint8_t mob_id) {
     mob.set_parent(NULL_ENTITY);
     mob.add_component(kMob);
     mob.set_mob_id(mob_id);
-    mob.health = MOB_DATA[mob_id].health;
-    mob.max_health = MOB_DATA[mob_id].health;
-    mob.damage = MOB_DATA[mob_id].damage;
+    mob.health = mob.max_health = data.health.get_single(seed);
+    mob.damage = data.damage;
     mob.set_health_ratio(1);
+    if (data.attributes.segments > 0) mob.add_component(kSegmented);
     return mob;
+}
+
+Entity &alloc_mob(uint8_t mob_id) {
+    struct MobData const &data = MOB_DATA[mob_id];
+    if (data.attributes.segments == 0) return __alloc_mob(mob_id);
+    else {
+        Entity &head = __alloc_mob(mob_id);
+        head.set_is_tail(0);
+        Entity *curr = &head;
+        for (uint32_t i = 1; i < data.attributes.segments; ++i) {
+            Entity &seg = __alloc_mob(mob_id);
+            seg.set_is_tail(1);
+            seg.seg_head = curr->id;
+            seg.set_angle(curr->angle + frand() * 0.1 - 0.05);
+            seg.set_x(curr->x - (curr->radius + seg.radius) * cosf(seg.angle));
+            seg.set_y(curr->y - (curr->radius + seg.radius) * sinf(seg.angle));
+            curr = &seg;
+        }
+        return head;
+    }
 }
 
 Entity &alloc_player(Entity &camera) {
@@ -66,20 +90,25 @@ Entity &alloc_player(Entity &camera) {
 }
 
 Entity &alloc_petal(uint8_t petal_id, Entity &parent) {
+    struct PetalData const &petal_data = PETAL_DATA[petal_id];
     Entity &petal = game_server->simulation.alloc_ent();
     petal.add_component(kPhysics);
-    petal.set_radius(10);
-    petal.friction = DEFAULT_FRICTION;
+    petal.set_x(parent.x);
+    petal.set_y(parent.y);
+    petal.set_radius(petal_data.radius);
     petal.mass = 0.05;
+    if (petal_id == PetalID::kShield) petal.mass = 10;
     petal.friction = 0.5;
     petal.add_component(kRelations);
+    petal.set_parent(parent.id);
+    petal.set_team(parent.team);
     petal.add_component(kPetal);
     petal.set_petal_id(petal_id);
     petal.add_component(kHealth);
-    petal.health = PETAL_DATA[petal_id].health;
-    petal.max_health = PETAL_DATA[petal_id].health;
-    petal.damage = PETAL_DATA[petal_id].damage;
+    petal.health = petal.max_health = petal_data.health;
+    petal.damage = petal_data.damage;
     petal.set_health_ratio(1);
+    petal.poison_damage = petal_data.attributes.poison_damage;
     //petal.effect_delay = 0;
     //petal.poison.define(REAL_TIME(PETAL_DATA[petal_id].extras.poison_damage / PETAL_DATA[petal_id].extras.poison_time), SERVER_TIME(PETAL_DATA[petal_id].extras.poison_time));
     //petal.no_friendly_collision = 1;
@@ -96,6 +125,10 @@ void player_spawn(Simulation *sim, Entity &camera, Entity &player) {
     camera.set_loadout_count(5);
     for (uint32_t i = 0; i < camera.loadout_count; ++i) {
         camera.loadout[i].reset();
-        if (i < 4) camera.loadout[i].id = PetalID::kBeetleEgg;
+        if (i < 4) camera.loadout[i].id = PetalID::kDandelion;
+        else camera.loadout[i].id = PetalID::kRose;
+    }
+    for (uint32_t i = camera.loadout_count; i < MAX_SLOT_COUNT + camera.loadout_count; ++i) {
+        camera.set_loadout_ids(i, PetalID::kNone);
     }
 }

@@ -29,6 +29,7 @@ void render_flower(Renderer &ctx, Entity &ent) {
     ctx.add_color_filter(0xffac0000, ent.damage_flash * 0.8);
     uint32_t base_color = 0xffffe763;
     if (BIT_AT(ent.face_flags, 2)) base_color = 0xffce76db;
+    else if (BIT_AT(ent.face_flags, 3))  base_color = Renderer::MIX(base_color, 0xffcfcfcf, 0.5);
     ctx.set_stroke(Renderer::HSV(base_color, 0.8));
     ctx.set_fill(base_color);
     ctx.set_line_width(3);
@@ -61,7 +62,7 @@ void render_flower(Renderer &ctx, Entity &ent) {
     ctx.move_to(-6, 10);
     ctx.qcurve_to(0, ent.mouth, 6, 10);
     ctx.stroke();
-    if (ent.mouth <= 8)
+    if (ent.mouth <= 8 && BIT_AT(ent.face_flags, 0))
     {
         RenderContext context(&ctx);
         ctx.translate(0, -ent.mouth - 8);

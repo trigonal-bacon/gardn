@@ -18,17 +18,17 @@ public:
     uint8_t entity_tracker[ENTITY_CAP] = {0};
     uint32_t hash_tracker[ENTITY_CAP] = {0};
     Entity entities[ENTITY_CAP];
-    StaticArray<EntityId, ENTITY_CAP> active_entities;
-    StaticArray<EntityId, ENTITY_CAP> pending_delete;
+    StaticArray<EntityID, ENTITY_CAP> active_entities;
+    StaticArray<EntityID, ENTITY_CAP> pending_delete;
     Simulation();
     void reset();
     Entity &alloc_ent();
-    Entity &get_ent(EntityId const &);
-    void force_alloc_ent(EntityId const &);
-    uint8_t ent_exists(EntityId const &) const;
-    uint8_t ent_alive(EntityId const &) const;
-    void request_delete(EntityId const &);
-    void delete_ent(EntityId const &); //DANGEROUS
+    Entity &get_ent(EntityID const &);
+    void force_alloc_ent(EntityID const &);
+    uint8_t ent_exists(EntityID const &) const;
+    uint8_t ent_alive(EntityID const &) const;
+    void request_delete(EntityID const &);
+    void delete_ent(EntityID const &); //DANGEROUS
     void pre_tick();
     void tick();
     void post_tick();

@@ -4,33 +4,33 @@
 
 #include <iostream>
 
-EntityId NULL_ENTITY;
+EntityID NULL_ENTITY;
 
-EntityId::EntityId() {
+EntityID::EntityID() {
     id = hash = 0;
 }
 
-EntityId::EntityId(uint16_t id, uint16_t hash) : id(id), hash(hash) {
+EntityID::EntityID(uint16_t id, uint16_t hash) : id(id), hash(hash) {
 }
 
-bool EntityId::null() const {
+bool EntityID::null() const {
     return id == 0;
 }
 
-void EntityId::operator=(const EntityId &o) {
+void EntityID::operator=(const EntityID &o) {
     id = o.id;
     hash = o.hash;
 }
 
-bool operator<(const EntityId &a, const EntityId &b) {
+bool operator<(const EntityID &a, const EntityID &b) {
     return (a.id * 65536 + a.hash) < (b.id * 65536 + b.hash);
 }
 
-bool operator==(const EntityId &a, const EntityId &b) {
+bool operator==(const EntityID &a, const EntityID &b) {
     return a.id == b.id && a.hash == b.hash;
 }
 
-void EntityId::print() {
+void EntityID::print() {
     std::cout << '<' << hash << ',' << id << '>';
 }
 

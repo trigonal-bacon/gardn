@@ -79,3 +79,12 @@ public:
     SeedGenerator(uint32_t);
     float next();
 };
+
+class RangeValue {
+public:
+    float lower;
+    float upper;
+    RangeValue(double, double);
+    RangeValue(double);
+    float get_single(float) const;
+};
