@@ -10,7 +10,8 @@ int main() {
     std::cout << "  Simulation Size: " << sizeof(Simulation) << '\n';
     std::cout << "  Entity Size: " << sizeof(Entity) << '\n';
     std::cout << "}\n";
-    Server server;
+    static Server server;
+    server.run();
     
     return 0;
 }

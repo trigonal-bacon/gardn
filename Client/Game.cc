@@ -89,6 +89,15 @@ void Game::render_game() {
     }
     for (uint32_t i = 0; i < simulation.active_entities.length; ++i) {
         Entity &ent = simulation.get_ent(simulation.active_entities[i]);
+        if (ent.has_component(kWeb)) {
+            RenderContext context(&renderer);
+            renderer.translate(ent.x, ent.y);
+            renderer.rotate(ent.angle);
+            render_web(renderer, ent);
+        }
+    }
+    for (uint32_t i = 0; i < simulation.active_entities.length; ++i) {
+        Entity &ent = simulation.get_ent(simulation.active_entities[i]);
         if (ent.has_component(kDrop)) {
             RenderContext context(&renderer);
             renderer.translate(ent.x, ent.y);

@@ -12,7 +12,7 @@
 uint8_t OUTGOING_PACKET[max_buffer_size] = {0};
 Server *game_server;
 
-Server::Server() : simulation() { run(); }
+Server::Server() : simulation() {}
 
 void Server::run() {
     game_server = this;
@@ -111,7 +111,8 @@ void Server::run() {
 
         double mss = ts.tv_sec * 1000 + ts.tv_nsec / 1000000.0;
         double mse = te.tv_sec * 1000 + te.tv_nsec / 1000000.0;
+        if (mse - mss > 10) std::cout << "tick took " << (mse - mss) << "ms\n";
 
-    }, 40, 40);
+    }, 1000 / TPS, 1000 / TPS);
     app.run();
 }

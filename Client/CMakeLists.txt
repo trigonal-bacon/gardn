@@ -8,11 +8,13 @@ include_directories(..)
 set(SRCS
     Assets/Mob.cc
     Assets/Petal.cc
+    Assets/Web.cc
     Render/RenderDrop.cc
     Render/RenderFlower.cc
     Render/RenderHealth.cc
     Render/RenderMob.cc
     Render/RenderPetal.cc
+    Render/RenderWeb.cc
     Render/Renderer.cc
     Game.cc
     Input.cc

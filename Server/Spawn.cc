@@ -115,6 +115,26 @@ Entity &alloc_petal(uint8_t petal_id, Entity &parent) {
     return petal;
 }
 
+Entity &alloc_web(float radius, Entity &parent) {
+    Entity &web = game_server->simulation.alloc_ent();
+    web.add_component(kPhysics);
+    web.set_x(parent.x);
+    web.set_y(parent.y);
+    web.set_angle(frand() * 2 * M_PI);
+    web.set_radius(1);
+    web.mass = radius;
+    web.friction = 1.0;
+    web.add_component(kRelations);
+    web.set_team(parent.team);
+    web.set_parent(parent.parent);
+    //petal.set_parent(parent.id);
+    //petal.set_team(parent.team);
+    //petal.add_component(kPetal);
+    //petal.set_petal_id(petal_id);
+    //petal.add_component(kHealth);
+    web.add_component(kWeb);
+    return web;
+}
 void player_spawn(Simulation *sim, Entity &camera, Entity &player) {
     float spawn_x = frand() * ARENA_WIDTH;
     float spawn_y = frand() * ARENA_HEIGHT;
@@ -125,8 +145,7 @@ void player_spawn(Simulation *sim, Entity &camera, Entity &player) {
     camera.set_loadout_count(8);
     for (uint32_t i = 0; i < camera.loadout_count; ++i) {
         camera.loadout[i].reset();
-        if (i < 7) camera.loadout[i].id = PetalID::kAntEgg;
-        else camera.loadout[i].id = PetalID::kThirdEye;
+        camera.loadout[i].id = frand() * (float) PetalID::kNumPetals;
     }
     for (uint32_t i = camera.loadout_count; i < MAX_SLOT_COUNT + camera.loadout_count; ++i) {
         camera.set_loadout_ids(i, PetalID::kNone);

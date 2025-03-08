@@ -5,7 +5,9 @@
 #include <Shared/Entity.hh>
 #include <Shared/Simulation.hh>
 #include <Shared/StaticData.hh>
- 
+
+#include <cmath>
+
 struct _PlayerBuffs {
     float extra_rot;
     float extra_range;
@@ -76,12 +78,20 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
                     if (camera.rotation_count > 0) {
                         wanting.unit_normal(2 * M_PI * rot_pos / camera.rotation_count + player.petal_rotation);
                     }
+                    float range = 60;
                     if (BIT_AT(player.input, 0)) { 
-                        if (petal_data.attributes.defend_only == 0) wanting *= 120 + buffs.extra_range; 
-                        else wanting *= 60;
+                        if (petal_data.attributes.defend_only == 0) {
+                            range = 120 + buffs.extra_range; 
+                        }
+                        if (petal.petal_id == PetalID::kWing) {
+                            float wave = sinf((float) petal.lifetime / (0.4 * TPS));
+                            wave = wave * wave;
+                            range += wave * 120;
+                            //this is cursed
+                        }
                     }
-                    else if (BIT_AT(player.input, 1)) wanting *= 40;
-                    else wanting *= 60;
+                    else if (BIT_AT(player.input, 1)) range = 40;
+                    wanting *= range;
                     if (petal_data.attributes.clump_radius > 0) {
                         Vector secondary;
                         secondary.unit_normal(2 * M_PI * j / petal_data.count + player.petal_rotation * 0.2)
@@ -120,8 +130,9 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
     Entity &player = sim->get_ent(petal.parent);
     struct PetalData const &petal_data = PETAL_DATA[petal.petal_id];
     if (petal_data.attributes.rotation_style == PetalAttributes::kPassiveRot) {
-        if (petal.id.id % 2) petal.set_angle(petal.angle + 1.0 / TPS);
-        else petal.set_angle(petal.angle - 1.0 / TPS);
+        float rot_amt = petal.petal_id == PetalID::kWing ? 10.0 : 1.0;
+        if (petal.id.id % 2) petal.set_angle(petal.angle + rot_amt / TPS);
+        else petal.set_angle(petal.angle - rot_amt / TPS);
     } else if (petal_data.attributes.rotation_style == PetalAttributes::kFollowRot && petal.despawn_tick == 0) {
         Vector delta(petal.x - player.x, petal.y - player.y);
         petal.set_angle(delta.angle());
@@ -164,6 +175,14 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
                 petal.acceleration.unit_normal(petal.angle).set_magnitude(4.5 * PLAYER_ACCELERATION);
                 break;
             }
+            case PetalID::kWeb: {
+                if (petal.despawn_tick > 0.65 * TPS) {
+                    sim->request_delete(petal.id);
+                    return;
+                }
+                //petal.acceleration.unit_normal(petal.angle).set_magnitude(2.25 * PLAYER_ACCELERATION);
+                break;
+            }
             default: {
                 sim->request_delete(petal.id);
                 break;
@@ -180,6 +199,18 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
                 case PetalID::kMissile:
                     if (BIT_AT(player.input, 0)) {
                         petal.acceleration.unit_normal(petal.angle).set_magnitude(10 * PLAYER_ACCELERATION);
+                        petal.despawn_tick++;
+                        if (petal.owner_slot != nullptr) petal.owner_slot->ent_id = NULL_ENTITY;
+                    }
+                    break;
+                case PetalID::kWeb:
+                    if (BIT_AT(player.input, 0)) {
+                        Vector delta(petal.x - player.x, petal.y - player.y);
+                        petal.friction = DEFAULT_FRICTION;
+                        petal.acceleration.unit_normal(delta.angle()).set_magnitude(30 * PLAYER_ACCELERATION);
+                        petal.despawn_tick++;
+                        if (petal.owner_slot != nullptr) petal.owner_slot->ent_id = NULL_ENTITY;
+                    } else if (BIT_AT(player.input, 1)) {
                         petal.despawn_tick++;
                         if (petal.owner_slot != nullptr) petal.owner_slot->ent_id = NULL_ENTITY;
                     }

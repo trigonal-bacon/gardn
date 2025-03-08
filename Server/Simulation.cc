@@ -54,12 +54,14 @@ void Simulation::tick() {
     if (frand() < 0.002) alloc_mob(frand() * (float) MobID::kNumMobs);
     for (uint32_t i = 0; i < active_entities.length; ++i) {
         Entity &ent = get_ent(active_entities[i]);
+        ++ent.lifetime;
         if (ent.has_component(kPhysics)) {
             if (ent.deletion_tick > 0) request_delete(ent.id);
             spatial_hash.insert(ent);
         }
     }
 
+    for_each<kWeb>(tick_web_behavior);
     for_each<kSegmented>(tick_segment_behavior);
     for_each<kMob>(tick_ai_behavior);
     for_each<kPetal>(tick_petal_behavior);

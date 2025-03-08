@@ -8,6 +8,7 @@ void tick_drop_behavior(Simulation *sim, Entity &ent) {
         sim->request_delete(ent.id);
     }
     else {
-        if (ent.despawn_tick++ == 1) ent.set_radius(15);
+        if (ent.despawn_tick == 1) ent.set_radius(15);
+        ++ent.despawn_tick;
     }
 }

@@ -11,6 +11,7 @@ set(SOURCES
     Process/Motion.cc
     Process/PlayerEntity.cc
     Process/Segment.cc
+    Process/Web.cc
     Client.cc
     EntityFunctions.cc
     Main.cc

@@ -29,11 +29,18 @@ struct PetalData PETAL_DATA[PetalID::kNumPetals] = {
         .icon_angle = 1,
         .rotation_style = PetalAttributes::kFollowRot 
     }},
-    {"Bubble", 1.0, 0.0, 24.0, 0.1, 1, RarityID::kRare, {
-        .secondary_reload = 0.1,
+    {"Bubble", 1.0, 0.0, 24.0, 2.5, 1, RarityID::kRare, {
+        .secondary_reload = 1.0,
         .defend_only = 1,
     }},
     {"Faster", 5.0, 7.0, 14.0, 0.5, 1, RarityID::kRare, {}},
+    {"Web", 10.0, 5.0, 20.0, 3.0, 1, RarityID::kRare, {
+        .secondary_reload = 0.5,
+        .defend_only = 1,
+    }},
+    {"Wing", 15.0, 20.0, 20.0, 2.5, 1, RarityID::kRare, {
+        .icon_angle = 1,
+    }},
     {"Triplet", 5.0, 7.0, 14.0, 1.0, 3, RarityID::kEpic, {}},
     {"Egg", 15.0, 1.0, 25.0, 1.0, 2, RarityID::kEpic, { 
         .secondary_reload = 4.5,

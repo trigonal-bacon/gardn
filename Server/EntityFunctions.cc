@@ -68,9 +68,10 @@ void entity_on_death(Simulation *sim, Entity &ent) {
             drop.set_x(ent.x);
             drop.set_y(ent.y);
         }
-        //Entity &drop = alloc_drop(PetalID::kTriplet);
-        //drop.set_x(ent.x);
-        //drop.set_y(ent.y);
+    } else if (ent.has_component(kPetal)) {
+        if (ent.petal_id == PetalID::kWeb) {
+            alloc_web(100, ent);
+        }
     }
 }
 

@@ -3,6 +3,7 @@
 #include <Shared/Helpers.hh>
 #include <Shared/StaticData.hh>
 
+#include <iostream>
 #include <cmath>
 
 void draw_static_petal_single(uint8_t id, Renderer &ctx) {
@@ -24,6 +25,15 @@ void draw_static_petal_single(uint8_t id, Renderer &ctx) {
         case PetalID::kTriplet:
             ctx.set_fill(0xffffffff);
             ctx.set_stroke(0xffcfcfcf);
+            ctx.set_line_width(3);
+            ctx.begin_path();
+            ctx.arc(0,0,r);
+            ctx.fill();
+            ctx.stroke();
+            break;
+        case PetalID::kHeavy:
+            ctx.set_fill(0xffaaaaaa);
+            ctx.set_stroke(0xff888888);
             ctx.set_line_width(3);
             ctx.begin_path();
             ctx.arc(0,0,r);
@@ -171,8 +181,22 @@ void draw_static_petal_single(uint8_t id, Renderer &ctx) {
             ctx.arc(0, 0, 6);
             ctx.fill();
             break;
-
-        /*
+        case PetalID::kWeb:
+            ctx.set_fill(0xffffffff);
+            ctx.set_stroke(0xffcfcfcf);
+            ctx.round_line_cap();
+            ctx.round_line_join();
+            ctx.set_line_width(3);
+            ctx.begin_path();
+            ctx.move_to(11.00, 0.00);
+            ctx.qcurve_to(4.32, 3.14, 3.40, 10.46);
+            ctx.qcurve_to(-1.65, 5.08, -8.90, 6.47);
+            ctx.qcurve_to(-5.34, -0.00, -8.90, -6.47);
+            ctx.qcurve_to(-1.65, -5.08, 3.40, -10.46);
+            ctx.qcurve_to(4.32, -3.14, 11.00, 0.00);
+            ctx.fill();
+            ctx.stroke();
+            break;
         case PetalID::kWing:
             ctx.begin_path();
             ctx.partial_arc(0,0,15,-1.5707963267948966,1.5707963267948966,0);
@@ -185,6 +209,7 @@ void draw_static_petal_single(uint8_t id, Renderer &ctx) {
             ctx.round_line_join();
             ctx.stroke();
             break;
+        /*
         case PetalID::kBeetleEgg:
             ctx.begin_path();
             ctx.ellipse(0,0,PETAL_DATA[id].radius * 0.85,PETAL_DATA[id].radius * 1.15);
@@ -339,6 +364,8 @@ void draw_static_petal_single(uint8_t id, Renderer &ctx) {
             break;
         */
         default:
+            std::cout << (int) id << '\n';
+            assert(id < PetalID::kNumPetals);
             assert(!"didn't cover petal render");
             break;
     }

@@ -5,7 +5,7 @@
 
 void tick_entity_motion(Simulation *sim, Entity &ent) {
     if (ent.pending_delete) return;
-    ent.velocity *= 1 - ent.friction;
+    ent.velocity *= (1 - ent.friction) * ent.speed_ratio;
     ent.velocity += ent.acceleration;
     {
         /*
@@ -24,7 +24,7 @@ void tick_entity_motion(Simulation *sim, Entity &ent) {
     ent.velocity += ent.collision_velocity;
     ent.set_x(ent.x + ent.velocity.x);
     ent.set_y(ent.y + ent.velocity.y);
-    if (!ent.has_component(kPetal)) {
+    if (!ent.has_component(kPetal) && !ent.has_component(kWeb)) {
         ent.set_x(fclamp(ent.x, ent.radius, ARENA_WIDTH - ent.radius));
         ent.set_y(fclamp(ent.y, ent.radius, ARENA_HEIGHT - ent.radius));
     }
@@ -34,4 +34,5 @@ void tick_entity_motion(Simulation *sim, Entity &ent) {
     }
     ent.acceleration.set(0,0);
     ent.collision_velocity.set(0,0);
+    ent.speed_ratio = 1;
 }

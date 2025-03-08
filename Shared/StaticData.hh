@@ -6,7 +6,6 @@
 #include <vector>
 
 //MSPT * TPS = 1000
-#define MSPT (40)
 #define TPS (25)
 
 #define ARENA_WIDTH (5000)
@@ -35,6 +34,8 @@ public:
         kDandelion,
         kBubble,
         kFaster,
+        kWeb,
+        kWing,
         kTriplet,
         kAntEgg,
         kBeetleEgg,

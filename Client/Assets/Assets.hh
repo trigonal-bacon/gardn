@@ -19,3 +19,5 @@ void draw_static_petal_single(uint8_t, Renderer &);
 void draw_static_petal(uint8_t, Renderer &);
 
 void draw_static_mob(uint8_t, Renderer &, MobRenderAttributes);
+
+void draw_web(Renderer &);
