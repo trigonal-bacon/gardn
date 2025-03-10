@@ -25,8 +25,7 @@ FIELDS_Petal \
 FIELDS_Health \
 FIELDS_Mob \
 FIELDS_Drop \
-FIELDS_Segmented \
-FIELDS_Web
+FIELDS_Segmented
 
 #define FIELDS_Physics \
 SINGLE(x, Float) \
@@ -40,7 +39,7 @@ SINGLE(camera_x, Float) \
 SINGLE(camera_y, Float) \
 SINGLE(fov, Float) \
 SINGLE(player, entid) \
-SINGLE(loadout_count, uint8) \
+SINGLE(loadout_count, uint32) \
 MULTIPLE(loadout_ids, uint8, 2 * MAX_SLOT_COUNT) \
 MULTIPLE(loadout_reloads, uint8, MAX_SLOT_COUNT)
 
@@ -68,8 +67,7 @@ SINGLE(drop_id, uint8)
 #define FIELDS_Segmented \
 SINGLE(is_tail, uint8)
 
-#define FIELDS_Web \
-SINGLE(__useless, uint8)
+#define FIELDS_Web ;
 
 #ifdef SERVERSIDE
 #define PER_EXTRA_FIELD \
@@ -86,22 +84,22 @@ SINGLE(__useless, uint8)
     SINGLE(input, uint8_t, =0) \
     SINGLE(rotation_count, uint8_t, =1) \
     \
+    SINGLE(immunity_ticks, uint16_t, =0) \
+    SINGLE(dandy_ticks, uint16_t, =0) \
     SINGLE(health, float, =0) \
     SINGLE(max_health, float, =0) \
     SINGLE(damage, float, =0) \
     SINGLE(armor, float, =0) \
-    SINGLE(immunity_ticks, uint32_t, =0) \
-    SINGLE(dandy_ticks, uint32_t, =0) \
     SINGLE(poison_damage, Poison, ={}) \
     SINGLE(poison, Poison, ={}) \
     \
-    SINGLE(ai_tick, uint32_t, =0) \
+    SINGLE(ai_tick, uint16_t, =0) \
     SINGLE(ai_state, uint8_t, =0) \
     SINGLE(target, EntityID, =NULL_ENTITY) \
     SINGLE(seg_head, EntityID, =NULL_ENTITY) \
     \
-    SINGLE(despawn_tick, uint32_t, =0) \
-    SINGLE(secondary_reload, uint32_t, =0) \
+    SINGLE(despawn_tick, uint16_t, =0) \
+    SINGLE(secondary_reload, uint16_t, =0) \
     SINGLE(owner_slot, LoadoutPetal *, =nullptr)
 
 #else

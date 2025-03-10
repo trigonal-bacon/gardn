@@ -29,11 +29,12 @@ struct PetalData PETAL_DATA[PetalID::kNumPetals] = {
         .icon_angle = 1,
         .rotation_style = PetalAttributes::kFollowRot 
     }},
-    {"Bubble", 1.0, 0.0, 24.0, 2.5, 1, RarityID::kRare, {
+    {"Bubble", 1.0, 0.0, 24.0, 1.5, 1, RarityID::kRare, {
         .secondary_reload = 1.0,
         .defend_only = 1,
     }},
     {"Faster", 5.0, 7.0, 14.0, 0.5, 1, RarityID::kRare, {}},
+    {"Rock", 100.0, 10.0, 20.0, 4.0, 1, RarityID::kRare, {}},
     {"Web", 10.0, 5.0, 20.0, 3.0, 1, RarityID::kRare, {
         .secondary_reload = 0.5,
         .defend_only = 1,
@@ -47,7 +48,7 @@ struct PetalData PETAL_DATA[PetalID::kNumPetals] = {
         .defend_only = 1,
         .rotation_style = PetalAttributes::kNoRot 
     }},
-    {"Egg", 15.0, 1.0, 25.0, 1.0, 1, RarityID::kLegendary, { 
+    {"Egg", 15.0, 1.0, 30.0, 1.0, 1, RarityID::kLegendary, { 
         .secondary_reload = 3.5,
         .defend_only = 1,
         .rotation_style = PetalAttributes::kNoRot 
@@ -77,7 +78,7 @@ struct MobData MOB_DATA[MobID::kNumMobs] = {
     {"Ladybug", RarityID::kCommon, {30.0}, 10.0, {30.0}, 1.5, {
         {PetalID::kLight, 0.36},{PetalID::kTwin, 0.12}, {PetalID::kLeaf, 0.09}
     }, {}},
-    {"Beetle", RarityID::kRare, {40.0}, 20.0, {35.0}, 1.5, {
+    {"Beetle", RarityID::kRare, {50.0}, 20.0, {35.0}, 1.5, {
         {PetalID::kBeetleEgg, 0.36},{PetalID::kTwin, 0.12}, {PetalID::kLeaf, 0.09}
     }, {}},
     {"Massive Ladybug", RarityID::kCommon, {1000.0}, 10.0, {90.0}, 1.5, {

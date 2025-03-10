@@ -78,6 +78,7 @@ class SeedGenerator {
 public:
     SeedGenerator(uint32_t);
     float next();
+    float binext();
 };
 
 class RangeValue {

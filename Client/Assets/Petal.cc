@@ -32,6 +32,7 @@ void draw_static_petal_single(uint8_t id, Renderer &ctx) {
             ctx.stroke();
             break;
         case PetalID::kHeavy:
+        case PetalID::kShield:
             ctx.set_fill(0xffaaaaaa);
             ctx.set_stroke(0xff888888);
             ctx.set_line_width(3);
@@ -117,22 +118,6 @@ void draw_static_petal_single(uint8_t id, Renderer &ctx) {
             ctx.fill();
             ctx.stroke();
             break;
-        case PetalID::kShield:
-            ctx.scale(r / 10);
-            ctx.set_fill(0xffaaaaaa);
-            ctx.set_stroke(0xff888888);
-            ctx.set_line_width(3);
-            ctx.round_line_cap();
-            ctx.round_line_join();
-            ctx.begin_path();
-            ctx.move_to(0,-10);
-            ctx.qcurve_to(6,-8,12,-10);
-            ctx.qcurve_to(12,4,0,10);
-            ctx.qcurve_to(-12,4,-12,-10);
-            ctx.qcurve_to(-6,-8,0,-10);
-            ctx.fill();
-            ctx.stroke();
-            break;
         case PetalID::kIris:
             ctx.set_fill(0xffce76db);
             ctx.set_stroke(0xffa760b1);
@@ -209,6 +194,24 @@ void draw_static_petal_single(uint8_t id, Renderer &ctx) {
             ctx.round_line_join();
             ctx.stroke();
             break;
+        case PetalID::kRock: {
+            SeedGenerator gen(r * 743 + 294);
+            ctx.set_fill(0xff777777);
+            ctx.set_stroke(Renderer::HSV(0xff777777, 0.8));
+            ctx.set_line_width(3);
+            ctx.round_line_cap();
+            ctx.round_line_join();
+            ctx.begin_path();
+            ctx.move_to(r + gen.binext() * 2,gen.binext() * 2);
+            for (uint32_t i = 1; i < 5; ++i) {
+                float angle = 2 * M_PI * i / 5.0f;
+                ctx.line_to(cosf(angle) * r + gen.binext() * 2, sinf(angle) * r + gen.binext() * 2);
+            }
+            ctx.close_path();
+            ctx.fill();
+            ctx.stroke();
+            break;
+        }
         /*
         case PetalID::kBeetleEgg:
             ctx.begin_path();
@@ -275,10 +278,10 @@ void draw_static_petal_single(uint8_t id, Renderer &ctx) {
             ctx.round_line_cap();
             ctx.round_line_join();
             ctx.begin_path();
-            ctx.move_to(PETAL_DATA[id].radius + (gen.next() - 0.5) * 2,(gen.next() - 0.5) * 2);
+            ctx.move_to(PETAL_DATA[id].radius + gen.binext() * 2,gen.binext() * 2);
             for (uint32_t i = 1; i < 5; ++i) {
                 float angle = 2 * M_PI * i / 5.0f;
-                ctx.line_to(cosf(angle) * PETAL_DATA[id].radius + (gen.next() - 0.5) * 2, sinf(angle) * PETAL_DATA[id].radius + (gen.next() - 0.5) * 2);
+                ctx.line_to(cosf(angle) * PETAL_DATA[id].radius + gen.binext() * 2, sinf(angle) * PETAL_DATA[id].radius + gen.binext() * 2);
             }
             ctx.close_path();
             ctx.fill();

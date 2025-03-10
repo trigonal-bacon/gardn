@@ -45,13 +45,10 @@
     <div id="font-loader" style="font-family: Ubuntu;">hello!</div>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            setTimeout(() => {
-                //fix:
-                const script = document.createElement('script');
-                script.src = 'gardn-client';
-                document.body.appendChild(script);
-                document.getElementById('loading-bar').style.display = 'none';
-            }, 500);
+            const script = document.createElement('script');
+            script.src = 'gardn-client';
+            document.body.appendChild(script);
+            //document.getElementById('loading-bar').style.display = 'none';
         });
     </script>
     </body>

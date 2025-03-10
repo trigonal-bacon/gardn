@@ -178,7 +178,7 @@ void draw_static_mob(uint8_t mob_id, Renderer &ctx, MobRenderAttributes attr) {
                 uint32_t ct = 1 + gen.next() * 7;
                 for (uint32_t i = 0; i < ct; ++i) {
                     ctx.begin_path();
-                    ctx.arc((2*gen.next()-1)*30,(2*gen.next()-1)*30,4+gen.next()*5);
+                    ctx.arc(gen.binext()*30,gen.binext()*30,4+gen.next()*5);
                     ctx.fill();
                 }
             }
@@ -371,11 +371,11 @@ void draw_static_mob(uint8_t mob_id, Renderer &ctx, MobRenderAttributes attr) {
             ctx.round_line_join();
             ctx.begin_path();
             float deflection = radius * 0.1;
-            ctx.move_to(radius + (2 * gen.next() - 1) * deflection,(2 * gen.next() - 1) * deflection);
+            ctx.move_to(radius + gen.binext() * deflection,gen.binext() * deflection);
             uint32_t sides = 4 + radius / 10;
             for (uint32_t i = 1; i < sides; ++i) {
                 float angle = 2 * M_PI * i / sides;
-                ctx.line_to(cosf(angle) * radius + (2 * gen.next() - 1) * deflection, sinf(angle) * radius + (2 * gen.next() - 1) * deflection);
+                ctx.line_to(cosf(angle) * radius + gen.binext() * deflection, sinf(angle) * radius + gen.binext() * deflection);
             }
             ctx.close_path();
             ctx.fill();

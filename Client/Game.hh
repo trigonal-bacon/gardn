@@ -23,6 +23,7 @@ public:
     uint8_t in_game();
     void tick(double);
     void render_game();
+    void render_title_screen();
     //void render_ui();
     void send_inputs();
     void on_message(uint8_t *, uint32_t);

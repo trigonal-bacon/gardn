@@ -76,6 +76,10 @@ float SeedGenerator::next() {
     return (seed % 65536) / 65536.0f;
 }
 
+float SeedGenerator::binext() {
+    return next() * 2 - 1;
+}
+
 RangeValue::RangeValue(double l, double u) {
     upper = u;
     lower = l;

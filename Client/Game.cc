@@ -30,8 +30,10 @@ void Game::tick(double time) {
     simulation.tick_lerp(time - g_last_time);
     g_last_time = time;
     renderer.context.reset();
+    renderer.reset_transform();
 
     if (in_game()) render_game();
+    else render_title_screen();
 
     //render_ui();
     
@@ -141,6 +143,12 @@ void Game::render_game() {
     }
 }
 
+void Game::render_title_screen() {
+    RenderContext context(&renderer);
+    renderer.reset_transform();
+    renderer.set_fill(0xff1ea761);
+    renderer.fill_rect(0,0,renderer.width,renderer.height);
+}
 void Game::on_message(uint8_t *ptr, uint32_t len) {
     Reader reader(ptr);
     switch(reader.read_uint8()) {

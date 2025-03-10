@@ -8,8 +8,8 @@
 //MSPT * TPS = 1000
 #define TPS (25)
 
-#define ARENA_WIDTH (5000)
-#define ARENA_HEIGHT (500)
+#define ARENA_WIDTH (1024)
+#define ARENA_HEIGHT (1024)
 
 #define PLAYER_ACCELERATION (2.5)
 #define DEFAULT_FRICTION (0.25)
@@ -34,6 +34,7 @@ public:
         kDandelion,
         kBubble,
         kFaster,
+        kRock,
         kWeb,
         kWing,
         kTriplet,
