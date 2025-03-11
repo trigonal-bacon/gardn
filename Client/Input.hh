@@ -16,3 +16,4 @@ public:
     std::unordered_set<char> keys_pressed_this_tick;
     Input();
 };
+

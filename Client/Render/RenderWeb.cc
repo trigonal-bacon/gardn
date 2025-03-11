@@ -15,7 +15,7 @@ void render_web(Renderer &ctx, Entity &ent) {
     ctx.set_global_alpha(1 - ent.deletion_tick * 0.2);
     ctx.scale(1 + 0.1 * ent.deletion_tick);
     ctx.scale(ent.radius / 10);
-    if (ent.team == gardn->camera_id) {
+    if (ent.team == game->camera_id) {
         ctx.add_color_filter(0x60ffe763, 1);
     }
     draw_web(ctx);

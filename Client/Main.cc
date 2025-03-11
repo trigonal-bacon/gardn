@@ -6,31 +6,31 @@
 
 extern "C" {
     void mouse_event(float x, float y, uint8_t type, uint8_t button) {
-        gardn->input.mouse_x = x;
-        gardn->input.mouse_y = y;
+        game->input.mouse_x = x;
+        game->input.mouse_y = y;
         if (type == 0) {
-            gardn->input.mouse_buttons_pressed |= 1 << button;
-            gardn->input.mouse_buttons_state |= 1 << button;
+            game->input.mouse_buttons_pressed |= 1 << button;
+            game->input.mouse_buttons_state |= 1 << button;
         }
         else if (type == 2) {
-            gardn->input.mouse_buttons_released |= 1 << button;
-            gardn->input.mouse_buttons_state &= ~(1 << button);
+            game->input.mouse_buttons_released |= 1 << button;
+            game->input.mouse_buttons_state &= ~(1 << button);
         }
     }
     void key_event(char button, uint8_t type) {
         if (type == 0) {
-            gardn->input.keys_pressed.insert(button);
-            gardn->input.keys_pressed_this_tick.insert(button);
+            game->input.keys_pressed.insert(button);
+            game->input.keys_pressed_this_tick.insert(button);
         }
-        else if (type == 1) gardn->input.keys_pressed.erase(button);
+        else if (type == 1) game->input.keys_pressed.erase(button);
     }
     void loop(double d, float width, float height) {
-        gardn->renderer.width = width;
-        gardn->renderer.height = height;
+        game->renderer.width = width;
+        game->renderer.height = height;
         float a = width / 1920;
         float b = height / 1080;
-        gardn->scale = a > b ? a : b;
-        gardn->tick(d);
+        game->scale = a > b ? a : b;
+        game->tick(d);
     }
 }
 

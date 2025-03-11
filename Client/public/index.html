@@ -43,10 +43,12 @@
         <span id="loading">Loading</span>
     </div>
     <div id="font-loader" style="font-family: Ubuntu;">hello!</div>
+    <canvas id="canvas"></canvas>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const script = document.createElement('script');
             script.src = 'gardn-client';
+            script.async = true;
             document.body.appendChild(script);
             //document.getElementById('loading-bar').style.display = 'none';
         });

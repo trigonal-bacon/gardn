@@ -5,22 +5,22 @@
 
 #include <iostream>
 
-Game *gardn = nullptr;
+Game *game = nullptr;
 static double g_last_time = 0;
 
 Game::Game() {
-    gardn = this;
+    game = this;
     socket.connect("ws://localhost:9001");
 }
 
 uint8_t Game::alive() {
-    return simulation_ready 
-    && simulation.ent_exists(camera_id) 
+    return simulation_ready
+    && simulation.ent_exists(camera_id)
     && simulation.ent_alive(simulation.get_ent(camera_id).player);
 }
 
 uint8_t Game::in_game() {
-    return simulation_ready
+    return simulation_ready && on_game_screen
     && simulation.ent_exists(camera_id);
 }
 
@@ -32,6 +32,7 @@ void Game::tick(double time) {
     renderer.context.reset();
     renderer.reset_transform();
 
+    if (alive()) on_game_screen = 1;
     if (in_game()) render_game();
     else render_title_screen();
 
@@ -198,8 +199,11 @@ void Game::send_inputs() {
         socket.send(writer.packet, writer.at - writer.packet);
     } else {
         if (input.keys_pressed_this_tick.contains('\x20')) {
-            writer.write_uint8(kServerbound::kClientSpawn);
-            socket.send(writer.packet, writer.at - writer.packet);
+            if (on_game_screen == 0) {
+                writer.write_uint8(kServerbound::kClientSpawn);
+                socket.send(writer.packet, writer.at - writer.packet);
+            }
+            on_game_screen = 0;
         }
     }
 }

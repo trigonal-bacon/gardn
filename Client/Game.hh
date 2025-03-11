@@ -14,9 +14,9 @@ public:
     Socket socket;
     EntityID camera_id;
 
-    float scale;
-    uint8_t simulation_ready;
-    uint8_t on_game_screen;
+    float scale = 1;
+    uint8_t simulation_ready = 0;
+    uint8_t on_game_screen = 0;
     
     Game();
     uint8_t alive();
@@ -29,4 +29,4 @@ public:
     void on_message(uint8_t *, uint32_t);
 };
 
-extern Game *gardn;
+extern Game *game;
