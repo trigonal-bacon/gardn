@@ -17,3 +17,5 @@ public:
     Input();
 };
 
+extern Input input;
+

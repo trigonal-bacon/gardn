@@ -85,4 +85,23 @@ void render_flower(Renderer &ctx, Entity &ent) {
         //ctx.scale(1.6);
         //rr_renderer_translate(renderer, 0, 15);
     }
+    if (BIT_AT(ent.face_flags, 6))
+    {
+        RenderContext g(&ctx);
+        ctx.translate(0, -35);
+        //ctx.scale(0.5);
+        //rr_renderer_scale(renderer, 0.625);
+        draw_static_petal(PetalID::kObserver, ctx);
+        //ctx.scale(1.6);
+        //rr_renderer_translate(renderer, 0, 15);
+    } else if (BIT_AT(ent.face_flags, 5))
+    {
+        RenderContext g(&ctx);
+        ctx.translate(0, -35);
+        //ctx.scale(0.5);
+        //rr_renderer_scale(renderer, 0.625);
+        draw_static_petal(PetalID::kAntennae, ctx);
+        //ctx.scale(1.6);
+        //rr_renderer_translate(renderer, 0, 15);
+    }
 }

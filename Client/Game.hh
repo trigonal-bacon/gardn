@@ -3,6 +3,7 @@
 #include <Client/Render/Renderer.hh>
 #include <Client/Input.hh>
 #include <Client/Socket.hh>
+#include <Client/Ui/Ui.hh>
 
 #include <Shared/Simulation.hh>
 
@@ -10,7 +11,6 @@ class Game {
 public:
     Simulation simulation;
     Renderer renderer;
-    Input input;
     Socket socket;
     EntityID camera_id;
 
@@ -19,6 +19,7 @@ public:
     uint8_t on_game_screen = 0;
     
     Game();
+    void init();
     uint8_t alive();
     uint8_t in_game();
     void tick(double);

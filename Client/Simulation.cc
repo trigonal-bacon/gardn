@@ -8,7 +8,7 @@ void Simulation::tick() {
 }
 
 void Simulation::tick_lerp(double dt) {
-    double amt = 1 - (pow(1 - 0.2, dt * 60 / 1000));
+    double amt = 1 - (pow(1 - 0.25, dt * 60 / 1000));
     for (uint32_t i = 0; i < active_entities.length; ++i) {
         Entity &ent = get_ent(active_entities[i]);
         if (ent.has_component(kPhysics)) {

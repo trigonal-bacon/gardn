@@ -6,6 +6,7 @@
 #include <cmath>
 
 #define SET_BASE_COLOR(color) { if (!BIT_AT(flags, 0)) base_color = color; }
+
 void draw_static_mob(uint8_t mob_id, Renderer &ctx, MobRenderAttributes attr) {
     float radius = attr.radius;
     uint32_t flags = attr.flags;
@@ -14,7 +15,7 @@ void draw_static_mob(uint8_t mob_id, Renderer &ctx, MobRenderAttributes attr) {
     uint32_t base_color = 0xffffe763;
     switch(mob_id) {
         case MobID::kBabyAnt:
-            SET_BASE_COLOR(0xff555555);
+            SET_BASE_COLOR(0xff555555)
             ctx.set_stroke(0xff292929);
             ctx.set_line_width(7);
             ctx.round_line_cap();
@@ -32,7 +33,7 @@ void draw_static_mob(uint8_t mob_id, Renderer &ctx, MobRenderAttributes attr) {
             ctx.stroke();
             break;
         case MobID::kWorkerAnt:
-            SET_BASE_COLOR(0xff555555);
+            SET_BASE_COLOR(0xff555555)
             ctx.set_fill(base_color);
             ctx.set_stroke(Renderer::HSV(base_color, 0.8));
             ctx.set_line_width(7);
@@ -56,7 +57,7 @@ void draw_static_mob(uint8_t mob_id, Renderer &ctx, MobRenderAttributes attr) {
             ctx.stroke();
             break;
         case MobID::kSoldierAnt:
-            SET_BASE_COLOR(0xff555555);
+            SET_BASE_COLOR(0xff555555)
             ctx.set_fill(base_color);
             ctx.set_stroke(Renderer::HSV(base_color, 0.8));
             ctx.set_line_width(7);
@@ -99,7 +100,7 @@ void draw_static_mob(uint8_t mob_id, Renderer &ctx, MobRenderAttributes attr) {
             ctx.stroke();
             break;
         case MobID::kBee:
-            SET_BASE_COLOR(0xffffe763);
+            SET_BASE_COLOR(0xffffe763)
             ctx.set_fill(0xff333333);
             ctx.set_stroke(0xff292929);
             ctx.set_line_width(5);
@@ -152,7 +153,7 @@ void draw_static_mob(uint8_t mob_id, Renderer &ctx, MobRenderAttributes attr) {
         case MobID::kLadybug:
         case MobID::kMassiveLadybug:
             ctx.scale(radius / 30);
-            SET_BASE_COLOR(0xffeb4034);
+            SET_BASE_COLOR(0xffeb4034)
             ctx.set_fill(0xff111111);
             ctx.begin_path();
             ctx.arc(15,0,18.5);
@@ -216,7 +217,7 @@ void draw_static_mob(uint8_t mob_id, Renderer &ctx, MobRenderAttributes attr) {
         case MobID::kBeetle:
         case MobID::kMassiveBeetle:
             ctx.scale(radius / 35);
-            SET_BASE_COLOR(0xff905db0);
+            SET_BASE_COLOR(0xff905db0)
             ctx.begin_path();
             ctx.set_fill(0xff333333);
             ctx.set_stroke(0xff333333);
@@ -289,7 +290,7 @@ void draw_static_mob(uint8_t mob_id, Renderer &ctx, MobRenderAttributes attr) {
             ctx.fill();
             break;
         case MobID::kHornet:
-            SET_BASE_COLOR(0xffffe763);
+            SET_BASE_COLOR(0xffffe763)
             ctx.set_fill(0xff333333);
             ctx.set_stroke(0xff292929);
             ctx.set_line_width(5);
@@ -331,7 +332,7 @@ void draw_static_mob(uint8_t mob_id, Renderer &ctx, MobRenderAttributes attr) {
             ctx.stroke();
             break;
         case MobID::kCactus: {
-            SET_BASE_COLOR(0xff32a852);
+            SET_BASE_COLOR(0xff32a852)
             uint32_t vertices = radius / 10 + 5;
             {
                 RenderContext context(&ctx);
@@ -362,7 +363,7 @@ void draw_static_mob(uint8_t mob_id, Renderer &ctx, MobRenderAttributes attr) {
             break;
         }
         case MobID::kRock: {
-            SET_BASE_COLOR(0xff777777);
+            SET_BASE_COLOR(0xff777777)
             SeedGenerator gen(radius * 284 + 476);
             ctx.set_fill(base_color);
             ctx.set_stroke(Renderer::HSV(base_color, 0.8));
@@ -383,7 +384,11 @@ void draw_static_mob(uint8_t mob_id, Renderer &ctx, MobRenderAttributes attr) {
             break;
         }
         case MobID::kCentipede:
-            SET_BASE_COLOR(0xff8ac255);
+        case MobID::kEvilCentipede:
+        case MobID::kDesertCentipede:
+            if (mob_id == MobID::kCentipede) SET_BASE_COLOR(0xff8ac255)
+            else if (mob_id == MobID::kEvilCentipede) SET_BASE_COLOR(0xff905db0)
+            else SET_BASE_COLOR(0xffd4c66e)
             ctx.set_fill(0xff333333);
             ctx.begin_path();
             ctx.arc(0,-30,15);
@@ -419,6 +424,8 @@ void draw_static_mob(uint8_t mob_id, Renderer &ctx, MobRenderAttributes attr) {
             }
             break;
         case MobID::kSpider:
+            SET_BASE_COLOR(0xff4f412e);
+            ctx.set_fill(base_color);
             ctx.set_stroke(0xff333333);
             ctx.set_line_width(5);
             ctx.round_line_cap();
@@ -441,9 +448,8 @@ void draw_static_mob(uint8_t mob_id, Renderer &ctx, MobRenderAttributes attr) {
             ctx.stroke();
             ctx.begin_path();
             ctx.arc(0,0,radius);
-            ctx.set_fill(0xff4f412e);
             ctx.fill();
-            ctx.set_stroke(0xff403525);
+            ctx.set_stroke(Renderer::HSV(base_color, 0.8));
             ctx.set_line_width(5);
             ctx.stroke();
             break;

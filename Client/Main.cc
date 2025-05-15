@@ -6,23 +6,23 @@
 
 extern "C" {
     void mouse_event(float x, float y, uint8_t type, uint8_t button) {
-        game->input.mouse_x = x;
-        game->input.mouse_y = y;
+        input.mouse_x = x;
+        input.mouse_y = y;
         if (type == 0) {
-            game->input.mouse_buttons_pressed |= 1 << button;
-            game->input.mouse_buttons_state |= 1 << button;
+            input.mouse_buttons_pressed |= 1 << button;
+            input.mouse_buttons_state |= 1 << button;
         }
         else if (type == 2) {
-            game->input.mouse_buttons_released |= 1 << button;
-            game->input.mouse_buttons_state &= ~(1 << button);
+            input.mouse_buttons_released |= 1 << button;
+            input.mouse_buttons_state &= ~(1 << button);
         }
     }
     void key_event(char button, uint8_t type) {
         if (type == 0) {
-            game->input.keys_pressed.insert(button);
-            game->input.keys_pressed_this_tick.insert(button);
+            input.keys_pressed.insert(button);
+            input.keys_pressed_this_tick.insert(button);
         }
-        else if (type == 1) game->input.keys_pressed.erase(button);
+        else if (type == 1) input.keys_pressed.erase(button);
     }
     void loop(double d, float width, float height) {
         game->renderer.width = width;
