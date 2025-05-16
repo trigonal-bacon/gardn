@@ -445,6 +445,7 @@ void draw_static_mob(uint8_t mob_id, Renderer &ctx, MobRenderAttributes attr) {
             draw_leg(-0.3 + cosf(attr.animation) * 0.2)
             draw_leg(0.3 - sinf(attr.animation) * 0.2)
             draw_leg(0.9 - cosf(attr.animation) * 0.2)
+            #undef draw_leg
             ctx.stroke();
             ctx.begin_path();
             ctx.arc(0,0,radius);
@@ -453,7 +454,139 @@ void draw_static_mob(uint8_t mob_id, Renderer &ctx, MobRenderAttributes attr) {
             ctx.set_line_width(5);
             ctx.stroke();
             break;
-            default:
+        case MobID::kSandstorm:
+            SET_BASE_COLOR(0xffd5c7a6)
+            ctx.set_line_width(radius / 5);
+            ctx.round_line_cap();
+            ctx.round_line_join();
+            ctx.set_fill(base_color);
+            ctx.set_stroke(base_color);
+            ctx.rotate(attr.animation / 2);
+            ctx.begin_path();
+            ctx.move_to(radius, 0);
+            for (uint32_t i = 1; i <= 6; ++i) {
+                float angle = 2 * M_PI * i / 6;
+                ctx.line_to(cosf(angle) * radius, sinf(angle) * radius);
+            }
+            ctx.fill();
+            ctx.stroke();
+            ctx.set_fill(Renderer::HSV(base_color, 0.9));
+            ctx.set_stroke(Renderer::HSV(base_color, 0.9));
+            ctx.rotate(attr.animation / 2);
+            ctx.begin_path();
+            ctx.move_to(radius*2/3, 0);
+            for (uint32_t i = 1; i <= 6; ++i) {
+                float angle = 2 * M_PI * i / 6;
+                ctx.line_to(cosf(angle) * radius*2/3, sinf(angle) * radius*2/3);
+            }
+            ctx.fill();
+            ctx.stroke();
+            ctx.set_fill(Renderer::HSV(base_color, 0.8));
+            ctx.set_stroke(Renderer::HSV(base_color, 0.8));
+            ctx.rotate(attr.animation / 2);
+            ctx.begin_path();
+            ctx.move_to(radius/3, 0);
+            for (uint32_t i = 1; i <= 6; ++i) {
+                float angle = 2 * M_PI * i / 6;
+                ctx.line_to(cosf(angle) * radius/3, sinf(angle) * radius/3);
+            }
+            ctx.fill();
+            ctx.stroke();
+            break;
+        case MobID::kScorpion:
+            ctx.set_fill(0xff333333);
+            ctx.set_stroke(0xff333333);
+            ctx.set_line_width(7);
+            ctx.round_line_cap();
+            ctx.round_line_join();
+            {
+                RenderContext context(&ctx);
+                ctx.rotate(-0.05 * animation_value);
+                ctx.begin_path();
+                ctx.move_to(5,10.5);
+                ctx.qcurve_to(30,21.5,50,10.5);
+                ctx.qcurve_to(30,14,5,3.5);
+                ctx.close_path();
+            }
+            {
+                RenderContext context(&ctx);
+                ctx.rotate(0.05 * animation_value);
+                ctx.move_to(5,-10.5);
+                ctx.qcurve_to(30,-21.5,50,-10.5);
+                ctx.qcurve_to(30,-14,5,-3.5);
+                ctx.close_path();
+            }
+            ctx.fill();
+            ctx.stroke();
+            ctx.set_stroke(0xff333333);
+            ctx.set_line_width(5);
+            ctx.round_line_cap();
+            ctx.begin_path();
+            #define draw_leg(angle) \
+            { \
+                float cos = cosf(angle) * 37; \
+                float sin = sinf(angle) * 37; \
+                ctx.move_to(0,0); \
+                ctx.qcurve_to(sin * 0.7, cos * 0.5, sin, cos); \
+            }
+            draw_leg(-M_PI + 0.7 + sinf(attr.animation) * 0.15)
+            draw_leg(-M_PI + 0.233 + cosf(attr.animation) * 0.15)
+            draw_leg(-M_PI - 0.233 + sinf(attr.animation) * 0.15)
+            draw_leg(-M_PI - 0.7 - cosf(attr.animation) * 0.15)
+            draw_leg(-0.7 - sinf(attr.animation) * 0.15)
+            draw_leg(-0.233 + cosf(attr.animation) * 0.15)
+            draw_leg(0.233 - sinf(attr.animation) * 0.15)
+            draw_leg(0.7 - cosf(attr.animation) * 0.15)
+            ctx.stroke();
+            SET_BASE_COLOR(0xffc69a2d);
+            ctx.set_fill(base_color);
+            ctx.set_stroke(Renderer::HSV(base_color, 0.8));
+            ctx.begin_path();
+            ctx.move_to(0,-30);
+            ctx.qcurve_to(40,-20,40,0);
+            ctx.qcurve_to(40,20,0,30);
+            ctx.qcurve_to(-40,35,-40,0);
+            ctx.qcurve_to(-40,-35,0,-30);
+            ctx.fill();
+            ctx.stroke();
+            ctx.set_line_width(7);
+            ctx.begin_path();
+            ctx.move_to(22,-12);
+            ctx.qcurve_to(26,0,22,12);
+            ctx.move_to(7,-18);
+            ctx.qcurve_to(10.5,0,7,18);
+            ctx.move_to(-7,-18);
+            ctx.qcurve_to(-10.5,0,-7,18);
+            ctx.move_to(-22,-15);
+            ctx.qcurve_to(-27,0,-22,15);
+            ctx.stroke();
+            ctx.set_line_width(5);
+            ctx.begin_path();
+            ctx.move_to(-45, 0);
+            ctx.bcurve_to(-44.9098, 9.5, -41.6136, 14.25, -32.4196, 14.2);
+            ctx.bcurve_to(-23.2258, 14.15, -12.0197, 9, -8.2491, 0);
+            ctx.bcurve_to(-12.0197, -9, -23.2258, -14.15, -32.4196, -14.2);
+            ctx.bcurve_to(-41.6136, -14.25, -44.9098, -9.5, -45, 0);
+            ctx.close_path();
+            ctx.fill();
+            ctx.stroke();
+            ctx.begin_path();
+            ctx.move_to(-37,-5);
+            ctx.qcurve_to(-36,0,-37,5);
+            ctx.move_to(-27,5);
+            ctx.qcurve_to(-25,0,-27,-5);
+            ctx.stroke();
+            ctx.set_fill(0xff333333);
+            ctx.set_stroke(0xff222222);
+            ctx.begin_path();
+            ctx.move_to(-5.7491, 0);
+            ctx.line_to(-12.7491, -7);
+            ctx.line_to(-12.7491, 7);
+            ctx.line_to(-5.7491, 0);
+            ctx.fill();
+            ctx.stroke();
+            break;
+        default:
             assert(!"Didn't cover mob render");
             break;
     }

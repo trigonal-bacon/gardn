@@ -299,8 +299,7 @@ void draw_static_petal_single(uint8_t id, Renderer &ctx) {
             ctx.arc(0,0,8);
             ctx.fill();
             break;
-        /*
-        case PetalID::kGrapes:
+        case PetalID::kPoisonPeas:
             ctx.set_fill(0xffce76db);
             ctx.set_stroke(0xffa760b1);
             ctx.set_line_width(3);
@@ -318,6 +317,39 @@ void draw_static_petal_single(uint8_t id, Renderer &ctx) {
             ctx.fill();
             ctx.stroke();
             break;
+        case PetalID::kSand:
+            ctx.set_fill(0xffe0c85c);
+            ctx.set_stroke(0xffb5a24b);
+            ctx.set_line_width(3);
+            ctx.round_line_cap();
+            ctx.round_line_join();
+            ctx.begin_path();
+            ctx.move_to(7,0);
+            ctx.line_to(3.499999761581421,6.062178134918213);
+            ctx.line_to(-3.500000476837158,6.062177658081055);
+            ctx.line_to(-7,-6.119594218034763e-7);
+            ctx.line_to(-3.4999992847442627,-6.062178134918213);
+            ctx.line_to(3.4999992847442627,-6.062178134918213);
+            ctx.fill();
+            ctx.stroke();
+            break;
+        case PetalID::kStick:
+            ctx.round_line_cap();
+            ctx.round_line_join();
+            ctx.set_line_width(7);
+            ctx.set_stroke(0xff654a19);
+            ctx.begin_path();
+            ctx.move_to(0,10);
+            ctx.line_to(0,0);
+            ctx.line_to(4,-7);
+            ctx.move_to(0,0);
+            ctx.line_to(-6,-10);
+            ctx.stroke();
+            ctx.set_line_width(3);
+            ctx.set_stroke(0xff7d5b1f);
+            ctx.stroke();
+            break;
+        /*
         case PetalID::kRock: {
             SeedGenerator gen(PETAL_DATA[id].radius * 743 + 294);
             ctx.set_fill(0xff777777);

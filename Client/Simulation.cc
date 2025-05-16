@@ -17,7 +17,7 @@ void Simulation::tick_lerp(double dt) {
             ent.x.step(amt);
             ent.y.step(amt);
             Vector vel(ent.x - prevx, ent.y - prevy);
-            ent.animation += (1 + 0.5 * vel.magnitude()) * 0.08;
+            ent.animation += (0.9 + 0.75 * vel.magnitude()) * 0.08;
             ent.radius.step(amt);
             ent.angle.step_angle(amt);
             ent.deletion_tick.step(amt * 1.25);

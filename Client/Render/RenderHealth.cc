@@ -6,6 +6,7 @@
 
 void render_health(Renderer &ctx, Entity &ent) {
     if (ent.has_component(kPetal)) return;
+    if (ent.has_component(kMob)) return;
     //if (ent.healthbar_opacity < 0.01) return;
     ctx.set_global_alpha(1 - ent.deletion_tick * 0.2);
     ctx.scale(1 + 0.1 * ent.deletion_tick);
