@@ -55,6 +55,10 @@ void Game::render_game() {
     renderer.translate(renderer.width / 2, renderer.height / 2);
     renderer.scale(scale * camera.fov);
     renderer.translate(-camera.camera_x, -camera.camera_y);
+    if (simulation.ent_alive(camera.player)) {
+        if (simulation.get_ent(camera.player).damaged)
+            renderer.translate(frand() * 4 - 2, frand() * 4 - 2);
+    }
     uint32_t alpha = (uint32_t)(camera.fov * 255 * 0.2) << 24;
     {
         RenderContext context(&renderer);
@@ -150,6 +154,7 @@ void Game::render_title_screen() {
     renderer.set_fill(0xff1ea761);
     renderer.fill_rect(0,0,renderer.width,renderer.height);
 }
+
 void Game::on_message(uint8_t *ptr, uint32_t len) {
     Reader reader(ptr);
     switch(reader.read_uint8()) {

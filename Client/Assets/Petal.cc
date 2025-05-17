@@ -76,6 +76,7 @@ void draw_static_petal_single(uint8_t id, Renderer &ctx) {
             ctx.stroke();
             break;
         case PetalID::kRose:
+        case PetalID::kDahlia:
             ctx.set_fill(0xffff94c9);
             ctx.set_stroke(0xffcf78a3);
             ctx.set_line_width(3);
@@ -260,24 +261,14 @@ void draw_static_petal_single(uint8_t id, Renderer &ctx) {
             ctx.fill();
             break;
         }
-        case PetalID::kMorningGlory:
-            ctx.set_fill(0xffce76db);
-            ctx.set_stroke(0xffa760b1);
+        case PetalID::kBlueIris:
+            ctx.set_fill(0xff39e9f1);
+            ctx.set_stroke(0xff2dbac0);
             ctx.set_line_width(3);
             ctx.begin_path();
-            ctx.round_line_cap();
-            ctx.round_line_join();
-            ctx.move_to(r,0);
-            for (uint32_t i = 1; i <= 5; ++i) {
-                float angle = 2 * M_PI * i / 5.0f;
-                ctx.line_to(cosf(angle) * r, sinf(angle) * r);
-            }
+            ctx.arc(0,0,r);
             ctx.fill();
             ctx.stroke();
-            ctx.set_fill(0xffdab1e5);
-            ctx.begin_path();
-            ctx.arc(0,0,r/3);
-            ctx.fill();
             break;
         case PetalID::kCactus:
         case PetalID::kTricac:
@@ -349,34 +340,38 @@ void draw_static_petal_single(uint8_t id, Renderer &ctx) {
             ctx.set_stroke(0xff7d5b1f);
             ctx.stroke();
             break;
-        /*
-        case PetalID::kRock: {
-            SeedGenerator gen(PETAL_DATA[id].radius * 743 + 294);
-            ctx.set_fill(0xff777777);
-            ctx.set_stroke(Renderer::HSV(0xff777777, 0.8));
+        case PetalID::kPincer:
+            ctx.set_fill(0xff333333);
+            ctx.set_stroke(0xff292929);
             ctx.set_line_width(3);
             ctx.round_line_cap();
             ctx.round_line_join();
             ctx.begin_path();
-            ctx.move_to(PETAL_DATA[id].radius + gen.binext() * 2,gen.binext() * 2);
-            for (uint32_t i = 1; i < 5; ++i) {
-                float angle = 2 * M_PI * i / 5.0f;
-                ctx.line_to(cosf(angle) * PETAL_DATA[id].radius + gen.binext() * 2, sinf(angle) * PETAL_DATA[id].radius + gen.binext() * 2);
+            ctx.move_to(10,5);
+            ctx.qcurve_to(4,-14,-10,5);
+            ctx.qcurve_to(4,0,10,5);
+            ctx.fill();
+            ctx.stroke();
+            break;
+        case PetalID::kAzalea: {
+            ctx.set_fill(0xffff94c9);
+            ctx.set_stroke(0xffcf78a3);
+            ctx.set_line_width(3);
+            ctx.begin_path();
+            float l = 0.75 * r;
+            float h = 1.5 * r;
+            uint32_t s = 5;
+            ctx.move_to(l, 0);
+            for (uint32_t i = 1; i <= s; ++i) {
+                float angle = i * 2 * M_PI / s;
+                float angle2 = angle - M_PI / s;
+                ctx.qcurve_to(h * cosf(angle2), h * sinf(angle2), l * cosf(angle),l * sinf(angle));
             }
-            ctx.close_path();
             ctx.fill();
             ctx.stroke();
             break;
         }
-        case PetalID::kHeavy:
-            ctx.set_fill(0xffaaaaaa);
-            ctx.set_stroke(0xff888888);
-            ctx.set_line_width(3);
-            ctx.begin_path();
-            ctx.arc(0,0,PETAL_DATA[id].radius);
-            ctx.fill();
-            ctx.stroke();
-            break;
+        /*
         case PetalID::kHeaviest:
             ctx.begin_path();
             ctx.arc(0,0,16);

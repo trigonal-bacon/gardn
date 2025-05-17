@@ -4,6 +4,7 @@ class Simulation;
 class Entity;
 
 void tick_ai_behavior(Simulation *, Entity &);
+void tick_camera_behavior(Simulation *, Entity &);
 void tick_drop_behavior(Simulation *, Entity &);
 void tick_entity_motion(Simulation *, Entity &);
 void tick_health_behavior(Simulation *, Entity &);

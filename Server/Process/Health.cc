@@ -9,7 +9,7 @@
 void tick_health_behavior(Simulation *sim, Entity &ent) {
     ent.set_damaged(0);
 
-    if (ent.poison.time > 0) {
+    if (ent.poison.time > 0 && !ent.has_component(kPetal)) {
         ent.poison.time--;
         inflict_damage(sim, ent.target, ent, ent.poison.damage);
         if ((int) ent.poison.time % 10) ent.set_damaged(0);

@@ -5,11 +5,13 @@ include_directories(..)
 
 set(SOURCES
     Process/Ai.cc
+    Process/Camera.cc
     Process/Collision.cc
     Process/Drop.cc
+    Process/Flower.cc
     Process/Health.cc
     Process/Motion.cc
-    Process/PlayerEntity.cc
+    Process/Petal.cc
     Process/Segment.cc
     Process/Web.cc
     Client.cc

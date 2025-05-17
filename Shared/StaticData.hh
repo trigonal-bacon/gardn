@@ -8,19 +8,22 @@
 //MSPT * TPS = 1000
 #define TPS (25)
 
-#define ARENA_WIDTH (1024)
-#define ARENA_HEIGHT (1024)
+#define ARENA_WIDTH (2000)
+#define ARENA_HEIGHT (2000)
 
 #define PLAYER_ACCELERATION (2.5)
 #define DEFAULT_FRICTION (0.25)
 
 #define SUMMON_RETREAT_RADIUS (600)
 
+#define BASE_FOV (1.0f)
+#define BASE_HEALTH (100.0f)
+
 #define MAX_SLOT_COUNT (8)
 
-class PetalID {
-public:
-    enum {
+namespace PetalID {
+    typedef uint8_t T;
+    enum : T {
         kNone,
         kBasic,
         kLight,
@@ -35,21 +38,35 @@ public:
         kBubble,
         kFaster,
         kRock,
+        kCactus,
         kWeb,
         kWing,
+        kPeas,
+        kSand,
+        kPincer,
+        kDahlia,
         kTriplet,
         kAntEgg,
+        kBlueIris,
+        kPollen,
+        kPoisonPeas,
         kBeetleEgg,
+        kAzalea,
+        kStick,
         kTringer,
+        kTriweb,
+        kAntennae,
+        kTricac,
         kShield,
         kThirdEye,
+        kObserver,
         kNumPetals
     };
 };
 
-class MobID {
-public:
-    enum : uint8_t {
+namespace MobID {
+    typedef uint8_t T;
+    enum : T {
         kBabyAnt,
         kWorkerAnt,
         kSoldierAnt,
@@ -58,11 +75,18 @@ public:
         kBeetle,
         kMassiveLadybug,
         kMassiveBeetle,
+        kDarkLadybug,
         kHornet,
         kCactus,
         kRock,
         kCentipede,
+        kEvilCentipede,
+        kDesertCentipede,
+        kSandstorm,
+        kScorpion,
         kSpider,
+        kAntHole,
+        kQueenAnt,
         kNumMobs
     };
 };
@@ -109,6 +133,8 @@ struct PetalAttributes {
     float icon_angle;
     uint8_t rotation_style;
     struct Poison poison_damage;
+    uint8_t spawns = MobID::kNumMobs;
+    uint8_t spawn_count;
 };
 
 struct PetalData {
@@ -123,12 +149,14 @@ struct PetalData {
 };
 
 struct MobAttributes {
-    float aggro_radius = 600;
-    uint8_t segments = 0;
+    float aggro_radius = 500;
+    uint8_t segments;
+    uint8_t stationary;
+    struct Poison poison_damage;
 };
 
 struct MobDrop {
-    uint8_t id;
+    PetalID::T id;
     float chance;
 };
 
@@ -147,3 +175,9 @@ extern struct PetalData PETAL_DATA[PetalID::kNumPetals];
 extern struct MobData MOB_DATA[MobID::kNumMobs];
 
 extern uint32_t RARITY_COLORS[RarityID::kNumRarities];
+
+extern uint32_t scoreToLevel(float);
+extern float levelToScore(uint32_t);
+extern uint32_t loadOutSlotsAtLevel(uint32_t);
+
+extern float hpAtLevel(uint32_t);

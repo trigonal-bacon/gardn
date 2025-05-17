@@ -7,7 +7,6 @@
 #include <chrono>
 #include <cmath>
 #include <thread>
-#include <stdio.h>
 
 uint8_t OUTGOING_PACKET[max_buffer_size] = {0};
 Server *game_server;
@@ -79,7 +78,7 @@ void Server::run() {
             /* A message was dropped due to set maxBackpressure and closeOnBackpressureLimit limit */
         },
         .drain = [](auto */*ws*/) {
-            assert(!1);
+            //assert(!1);
             /* Check ws->getBufferedAmount() here */
         },
         .close = [](auto *ws, int /*code*/, std::string_view /*message*/) {
@@ -96,12 +95,11 @@ void Server::run() {
         }
     });
     server = &app;
+
     struct us_loop_t *loop = (struct us_loop_t *) uWS::Loop::get();
     struct us_timer_t *delayTimer = us_create_timer(loop, 0, 0);
 
-
     us_timer_set(delayTimer, [](struct us_timer_t *t) {
-
         struct timespec ts;
         struct timespec te;
         timespec_get(&ts, TIME_UTC);
@@ -112,7 +110,28 @@ void Server::run() {
         double mss = ts.tv_sec * 1000 + ts.tv_nsec / 1000000.0;
         double mse = te.tv_sec * 1000 + te.tv_nsec / 1000000.0;
         if (mse - mss > 10) std::cout << "tick took " << (mse - mss) << "ms\n";
+        //std::cout << (ts.tv_nsec / 1000000.0) << '\n';
+        //std::cout << (1000 / TPS) << '\n';
+    }, 1, 960 / TPS);
+    //4% boost since the timer is slow
+    /*
+    std::thread([]() {
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        while (1) {
+            struct timespec ts;
+            struct timespec te;
+            timespec_get(&ts, TIME_UTC);
+            game_server->simulation.tick();
+            //update all clients
+            timespec_get(&te, TIME_UTC);
 
-    }, 1000 / TPS, 1000 / TPS);
+            double mss = ts.tv_sec * 1000 + ts.tv_nsec / 1000000.0;
+            double mse = te.tv_sec * 1000 + te.tv_nsec / 1000000.0;
+            if (mse - mss > 10) std::cout << "tick took " << (mse - mss) << "ms\n";
+            if ((1000 / TPS) > (mse - mss))
+                std::this_thread::sleep_for(std::chrono::microseconds((int) ((1000 / TPS) - (mse - mss)) * 1000));
+        }
+    });
+    */
     app.run();
 }

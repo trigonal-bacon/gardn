@@ -28,6 +28,7 @@
 #endif
 
 #define BIT_AT(val, bit) (((val) >> (bit)) & 1)
+#define BIT_SET(val, bit) (val |= (1 << (bit)));
 #define BIT_SHIFT(bit, shift) ((bit) << (shift))
 
 constexpr uint32_t bit_count(uint32_t v) {return 32 - __builtin_clz(v - 1); };
@@ -55,6 +56,17 @@ public:
         for (uint32_t i = 0; i < length; ++i) if (values[i] == val) return i;
         return -1;
     };
+};
+
+template<typename T, uint32_t capacity>
+class CircularArray {
+public:
+    T values[capacity];
+    uint32_t at;
+    CircularArray() : at(0) {};
+    T &operator[](uint32_t at) { return values[at]; };
+    void push(T val) { values[at] = val; at = (at + 1) % capacity; };
+    void clear() { for (size_t i = 0; i < capacity; ++i) values[i] = {}; };
 };
 
 class LerpFloat {

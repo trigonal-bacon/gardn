@@ -152,8 +152,10 @@ void draw_static_mob(uint8_t mob_id, Renderer &ctx, MobRenderAttributes attr) {
             break;
         case MobID::kLadybug:
         case MobID::kMassiveLadybug:
+        case MobID::kDarkLadybug:
             ctx.scale(radius / 30);
-            SET_BASE_COLOR(0xffeb4034)
+            if (mob_id == MobID::kDarkLadybug) SET_BASE_COLOR(0xff962921)
+            else SET_BASE_COLOR(0xffeb4034)
             ctx.set_fill(0xff111111);
             ctx.begin_path();
             ctx.arc(15,0,18.5);
@@ -174,7 +176,8 @@ void draw_static_mob(uint8_t mob_id, Renderer &ctx, MobRenderAttributes attr) {
             {
                 RenderContext context(&ctx);
                 ctx.clip();
-                ctx.set_fill(0xff111111);
+                if (mob_id == MobID::kDarkLadybug) ctx.set_fill(Renderer::HSV(base_color, 1.2));
+                else ctx.set_fill(0xff111111);
                 SeedGenerator gen(seed * 374572 + 46237);
                 uint32_t ct = 1 + gen.next() * 7;
                 for (uint32_t i = 0; i < ct; ++i) {
@@ -494,6 +497,7 @@ void draw_static_mob(uint8_t mob_id, Renderer &ctx, MobRenderAttributes attr) {
             ctx.stroke();
             break;
         case MobID::kScorpion:
+            ctx.scale(radius / 35);
             ctx.set_fill(0xff333333);
             ctx.set_stroke(0xff333333);
             ctx.set_line_width(7);
@@ -585,6 +589,70 @@ void draw_static_mob(uint8_t mob_id, Renderer &ctx, MobRenderAttributes attr) {
             ctx.line_to(-5.7491, 0);
             ctx.fill();
             ctx.stroke();
+            break;
+        case MobID::kAntHole:
+            SET_BASE_COLOR(0xffb58500);
+            ctx.begin_path();
+            ctx.arc(0,0,radius);
+            ctx.set_fill(base_color);
+            ctx.fill();
+            ctx.begin_path();
+            ctx.arc(0,0,radius*2/3);
+            ctx.set_fill(Renderer::HSV(base_color, 0.8));
+            ctx.fill();
+            ctx.begin_path();
+            ctx.arc(0,0,radius/3);
+            ctx.set_fill(Renderer::HSV(base_color, 0.6));
+            ctx.fill();
+            break;
+        case MobID::kQueenAnt:
+            ctx.begin_path();
+            ctx.arc(-25,0,33.5);
+            ctx.set_fill(0xff454545);
+            ctx.fill();
+            ctx.begin_path();
+            ctx.arc(-25,0,26.5);
+            ctx.set_fill(0xff555555);
+            ctx.fill();
+            ctx.begin_path();
+            ctx.arc(0,0,28.5);
+            ctx.fill();
+            ctx.begin_path();
+            ctx.arc(0,0,21.5);
+            ctx.fill();
+            {
+                RenderContext context(&ctx);
+                ctx.rotate(animation_value * 0.1);
+                ctx.begin_path();
+                ctx.ellipse(-14,-16,30,14,M_PI/10);
+                ctx.set_fill(0x7feeeeee);
+                ctx.fill();
+            }
+            {          
+                RenderContext context(&ctx);
+                ctx.rotate(-animation_value * 0.1);
+                ctx.begin_path();
+                ctx.ellipse(-14,16,30,14,-M_PI/10);
+                ctx.set_fill(0x7feeeeee);
+                ctx.fill();
+            }
+            ctx.set_stroke(0xff292929);
+            ctx.set_line_width(7);
+            ctx.round_line_cap();
+            ctx.begin_path();
+            ctx.move_to(25,-10.5);
+            ctx.qcurve_to(41.5,-15+2*animation_value,58,-7.5+2*animation_value);
+            ctx.move_to(25,10.5);
+            ctx.qcurve_to(41.5,15-2*animation_value,58,7.5-2*animation_value);
+            ctx.stroke();
+            ctx.begin_path();
+            ctx.arc(25,0,24.5);
+            ctx.set_fill(0xff454545);
+            ctx.fill();
+            ctx.begin_path();
+            ctx.arc(25,0,17.5);
+            ctx.set_fill(0xff555555);
+            ctx.fill();
             break;
         default:
             assert(!"Didn't cover mob render");

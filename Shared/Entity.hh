@@ -12,6 +12,7 @@ typedef uint8_t uint8;
 typedef uint32_t uint32;
 typedef int32_t int32;
 typedef std::string string;
+#define CIRCARR CircularArray<PetalID::T, 16>
 
 enum Components {
     #define COMPONENT(name) k##name,
@@ -21,8 +22,8 @@ enum Components {
 };
 
 enum Fields {
-    #define SINGLE(name, type) k##name,
-    #define MULTIPLE(name, type, amt) k##name,
+    #define SINGLE(component, name, type) k##name,
+    #define MULTIPLE(component, name, type, amt) k##name,
     PERFIELD
     #undef SINGLE
     #undef MULTIPLE
@@ -37,13 +38,13 @@ class Entity {
         uint32_t components;
         EntityID id;
         uint8_t pending_delete;
-    #define SINGLE(name, type) type name;
-    #define MULTIPLE(name, type, amt) type name[amt];
+    #define SINGLE(component, name, type) type name;
+    #define MULTIPLE(component, name, type, amt) type name[amt];
     PERFIELD
     #undef SINGLE
     #undef MULTIPLE
-    #define SINGLE(name, type) uint8_t state_##name;
-    #define MULTIPLE(name, type, amt) uint8_t state_##name; uint8_t state_per_##name[amt];
+    #define SINGLE(component, name, type) uint8_t state_##name;
+    #define MULTIPLE(component, name, type, amt) uint8_t state_##name; uint8_t state_per_##name[amt];
     PERFIELD
     #undef SINGLE
     #undef MULTIPLE
@@ -55,13 +56,14 @@ class Entity {
     #undef SINGLE
     #undef MULTIPLE
     #ifdef SERVERSIDE
+        void set_despawn_tick(uint16_t);
         void write(Writer *, uint8_t);
-        #define SINGLE(name, type) void set_##name(type const);
-        #define MULTIPLE(name, type, amt) void set_##name(uint32_t, type const);
+        #define SINGLE(component, name, type) void set_##name(type const);
+        #define MULTIPLE(component, name, type, amt) void set_##name(uint32_t, type const);
         PERFIELD
         #undef SINGLE
         #undef MULTIPLE
     #else
         void read(Reader *);
     #endif
-    };
+};

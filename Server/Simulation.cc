@@ -14,12 +14,8 @@ static void update_client(Simulation *sim, Client *client) {
     std::set<EntityID> in_view;
     in_view.insert(client->camera);
     Entity &camera = sim->get_ent(client->camera);
-    if (sim->ent_exists(camera.player)) {
-        Entity &player = sim->get_ent(camera.player);
-        camera.set_camera_x(player.x);
-        camera.set_camera_y(player.y);
-        in_view.insert(player.id);
-    }
+    if (sim->ent_exists(camera.player)) 
+        in_view.insert(camera.player);
     Writer writer(OUTGOING_PACKET);
     writer.write_uint8(kClientbound::kClientUpdate);
     writer.write_entid(client->camera);
@@ -51,25 +47,27 @@ static void update_client(Simulation *sim, Client *client) {
 
 void Simulation::tick() {
     pre_tick();
-    if (frand() < 0.002) alloc_mob(frand() * (float) MobID::kNumMobs);
+    if (frand() < 0.02) alloc_mob(MobID::kDarkLadybug, frand() * ARENA_WIDTH, frand() * ARENA_HEIGHT, NULL_ENTITY);
     for (uint32_t i = 0; i < active_entities.length; ++i) {
         Entity &ent = get_ent(active_entities[i]);
         ++ent.lifetime;
         if (ent.has_component(kPhysics)) {
-            if (ent.deletion_tick > 0) request_delete(ent.id);
+            if (ent.deletion_tick > 0)
+                request_delete(ent.id);
             spatial_hash.insert(ent);
         }
     }
 
     for_each<kWeb>(tick_web_behavior);
-    for_each<kSegmented>(tick_segment_behavior);
     for_each<kMob>(tick_ai_behavior);
     for_each<kPetal>(tick_petal_behavior);
     for_each<kFlower>(tick_player_behavior);
     for_each<kHealth>(tick_health_behavior);
     spatial_hash.collide(on_collide);
     for_each<kPhysics>(tick_entity_motion);
+    for_each<kSegmented>(tick_segment_behavior);
     for_each<kDrop>(tick_drop_behavior);
+    for_each<kCamera>(tick_camera_behavior);
     post_tick();
 }
 
@@ -81,17 +79,25 @@ void Simulation::post_tick() {
         assert(ent_exists(active_entities[i])); //no deletions mid tick
         Entity &ent = get_ent(active_entities[i]);
         ent.reset_protocol();
+        if (ent.flags & EntityFlags::IsDespawning) {
+            if (ent.despawn_tick == 0)
+                request_delete(ent.id);
+            else
+                --ent.despawn_tick;
+        }
     }
     for (uint32_t i = 0; i < pending_delete.length; ++i) {
         //guarantee entity exists
         assert(ent_exists(pending_delete[i]));
         Entity &ent = get_ent(pending_delete[i]);
-        if (!ent.has_component(kPhysics)) delete_ent(pending_delete[i]);
+        if (!ent.has_component(kPhysics)) 
+            delete_ent(pending_delete[i]);
         else {
-            if (ent.deletion_tick >= 4) {
+            if (ent.deletion_tick >= 4)
                 delete_ent(pending_delete[i]);
-            } else {
-                if (ent.deletion_tick == 0) entity_on_death(this, ent);
+            else {
+                if (ent.deletion_tick == 0)
+                    entity_on_death(this, ent);
                 ent.set_deletion_tick(ent.deletion_tick + 1);
             }
             ent.pending_delete = 0;

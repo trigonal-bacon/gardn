@@ -14,7 +14,8 @@
     COMPONENT(Mob) \
     COMPONENT(Drop) \
     COMPONENT(Segmented) \
-    COMPONENT(Web)
+    COMPONENT(Web) \
+    COMPONENT(Score)
 
 #define PERFIELD \
 FIELDS_Physics \
@@ -25,49 +26,55 @@ FIELDS_Petal \
 FIELDS_Health \
 FIELDS_Mob \
 FIELDS_Drop \
-FIELDS_Segmented
+FIELDS_Segmented \
+FIELDS_Score
 
 #define FIELDS_Physics \
-SINGLE(x, Float) \
-SINGLE(y, Float) \
-SINGLE(radius, Float) \
-SINGLE(angle, Float) \
-SINGLE(deletion_tick, Float)
+SINGLE(Physics, x, Float) \
+SINGLE(Physics, y, Float) \
+SINGLE(Physics, radius, Float) \
+SINGLE(Physics, angle, Float) \
+SINGLE(Physics, deletion_tick, Float)
 
 #define FIELDS_Camera \
-SINGLE(camera_x, Float) \
-SINGLE(camera_y, Float) \
-SINGLE(fov, Float) \
-SINGLE(player, entid) \
-SINGLE(loadout_count, uint32) \
-MULTIPLE(loadout_ids, uint8, 2 * MAX_SLOT_COUNT) \
-MULTIPLE(loadout_reloads, uint8, MAX_SLOT_COUNT)
+SINGLE(Camera, camera_x, Float) \
+SINGLE(Camera, camera_y, Float) \
+SINGLE(Camera, fov, Float) \
+SINGLE(Camera, player, entid) \
+SINGLE(Camera, respawn_level, uint8) \
+MULTIPLE(Camera, inventory, uint8, 2 * MAX_SLOT_COUNT)
 
 #define FIELDS_Relations \
-SINGLE(team, entid) \
-SINGLE(parent, entid)
+SINGLE(Relations, team, entid) \
+SINGLE(Relations, parent, entid)
 
 #define FIELDS_Flower \
-SINGLE(eye_angle, float) \
-SINGLE(face_flags, uint8)
+SINGLE(Flower, eye_angle, float) \
+SINGLE(Flower, loadout_count, uint32) \
+SINGLE(Flower, face_flags, uint8) \
+MULTIPLE(Flower, loadout_ids, uint8, 2 * MAX_SLOT_COUNT) \
+MULTIPLE(Flower, loadout_reloads, uint8, MAX_SLOT_COUNT)
 
 #define FIELDS_Petal \
-SINGLE(petal_id, uint8)
+SINGLE(Petal, petal_id, uint8)
 
 #define FIELDS_Health \
-SINGLE(damaged, uint8) \
-SINGLE(health_ratio, Float)
+SINGLE(Health, health_ratio, Float) \
+SINGLE(Health, damaged, uint8)
 
 #define FIELDS_Mob \
-SINGLE(mob_id, uint8)
+SINGLE(Mob, mob_id, uint8)
 
 #define FIELDS_Drop \
-SINGLE(drop_id, uint8)
+SINGLE(Drop, drop_id, uint8)
 
 #define FIELDS_Segmented \
-SINGLE(is_tail, uint8)
+SINGLE(Segmented, is_tail, uint8)
 
 #define FIELDS_Web ;
+
+#define FIELDS_Score \
+SINGLE(Score, score, float)
 
 #ifdef SERVERSIDE
 #define PER_EXTRA_FIELD \
@@ -80,27 +87,33 @@ SINGLE(is_tail, uint8)
     SINGLE(lifetime, uint32_t, =0) \
     \
     MULTIPLE(loadout, LoadoutSlot, MAX_SLOT_COUNT, .reset()) \
-    SINGLE(petal_rotation, float, =0) \
+    SINGLE(heading_angle, float, =0) \
     SINGLE(input, uint8_t, =0) \
     SINGLE(rotation_count, uint8_t, =1) \
     \
+    SINGLE(slow_ticks, uint8_t, =0) \
+    SINGLE(slow_inflict, uint8_t, =0) \
     SINGLE(immunity_ticks, uint16_t, =0) \
     SINGLE(dandy_ticks, uint16_t, =0) \
+    SINGLE(poison_damage, Poison, ={}) \
+    SINGLE(poison, Poison, ={}) \
     SINGLE(health, float, =0) \
     SINGLE(max_health, float, =0) \
     SINGLE(damage, float, =0) \
     SINGLE(armor, float, =0) \
-    SINGLE(poison_damage, Poison, ={}) \
-    SINGLE(poison, Poison, ={}) \
+    SINGLE(last_damaged_by, EntityID, =NULL_ENTITY) \
     \
-    SINGLE(ai_tick, uint16_t, =0) \
-    SINGLE(ai_state, uint8_t, =0) \
+    SINGLE(owner, EntityID, =NULL_ENTITY) \
     SINGLE(target, EntityID, =NULL_ENTITY) \
     SINGLE(seg_head, EntityID, =NULL_ENTITY) \
+    SINGLE(detection_radius, float, =0) \
+    SINGLE(ai_tick, uint16_t, =0) \
+    SINGLE(ai_state, uint8_t, =0) \
     \
+    SINGLE(flags, uint8_t, =0) \
     SINGLE(despawn_tick, uint16_t, =0) \
     SINGLE(secondary_reload, uint16_t, =0) \
-    SINGLE(owner_slot, LoadoutPetal *, =nullptr)
+    SINGLE(deleted_petals, CIRCARR, ={})
 
 #else
 #define PER_EXTRA_FIELD \
@@ -110,6 +123,14 @@ SINGLE(is_tail, uint8)
     SINGLE(animation, float, =0) \
     SINGLE(damage_flash, float, =0)
 #endif
+
+namespace EntityFlags {
+    enum {
+        IsDespawning = 1 << 0,
+        NoFriendlyCollision = 1 << 1,
+        DieOnParentDeath = 1 << 2
+    };
+};
 
 class EntityID {
 public:
@@ -137,7 +158,7 @@ class LoadoutSlot {
 public:
     uint8_t id;
     uint8_t already_spawned;
-    LoadoutPetal petals[3];
+    LoadoutPetal petals[5];
     LoadoutSlot();
     void reset();
 };

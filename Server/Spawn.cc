@@ -1,12 +1,13 @@
 #include <Server/Spawn.hh>
 
+#include <Server/EntityFunctions.hh>
 #include <Server/Server.hh>
 #include <Shared/Helpers.hh>
 #include <Shared/StaticData.hh>
 
 #include <cmath>
 
-Entity &alloc_drop(uint8_t drop_id) {
+Entity &alloc_drop(PetalID::T drop_id) {
     Entity &drop = game_server->simulation.alloc_ent();
     drop.add_component(kPhysics);
     drop.set_radius(1);
@@ -14,46 +15,81 @@ Entity &alloc_drop(uint8_t drop_id) {
     drop.friction = 0.25;
     drop.add_component(kRelations);
     drop.set_team(NULL_ENTITY);
-    drop.set_parent(NULL_ENTITY);
+    entity_set_owner(drop, NULL_ENTITY);
     drop.add_component(kDrop);
     drop.set_drop_id(drop_id);
-    drop.despawn_tick = 0;
+    drop.set_despawn_tick(10 * (2 + PETAL_DATA[drop_id].rarity) * TPS);
+    drop.immunity_ticks = 0;
     return drop;
 }
 
-static Entity &__alloc_mob(uint8_t mob_id) {
+static Entity &__alloc_mob(MobID::T mob_id, float x, float y, EntityID team = NULL_ENTITY) {
     struct MobData const &data = MOB_DATA[mob_id];
     float seed = frand();
     Entity &mob = game_server->simulation.alloc_ent();
     mob.add_component(kPhysics);
     mob.set_radius(data.radius.get_single(seed));
     mob.set_angle(frand() * 2 * M_PI);
-    mob.set_x(frand() * ARENA_WIDTH);
-    mob.set_y(frand() * ARENA_HEIGHT);
+    mob.set_x(x);
+    mob.set_y(y);
     mob.friction = DEFAULT_FRICTION;
     mob.mass = 1 + (mob.radius * mob.radius / 100);
+    if (data.attributes.stationary) mob.mass *= 10000;
+    if (mob_id == MobID::kAntHole)
+        mob.flags |= EntityFlags::NoFriendlyCollision;
     mob.add_component(kHealth);
     mob.add_component(kRelations);
-    mob.set_team(NULL_ENTITY);
-    mob.set_parent(NULL_ENTITY);
+    mob.set_team(team);
+    entity_set_owner(mob, NULL_ENTITY);
     mob.add_component(kMob);
     mob.set_mob_id(mob_id);
     mob.health = mob.max_health = data.health.get_single(seed);
     mob.damage = data.damage;
+    mob.poison_damage = data.attributes.poison_damage;
     mob.set_health_ratio(1);
-    if (data.attributes.segments > 0) mob.add_component(kSegmented);
+    if (data.attributes.segments > 0) 
+        mob.add_component(kSegmented);
+    mob.add_component(kScore);
+    mob.set_score(data.xp);
+    mob.detection_radius = data.attributes.aggro_radius;
     return mob;
 }
 
-Entity &alloc_mob(uint8_t mob_id) {
+Entity &alloc_mob(MobID::T mob_id, float x, float y, EntityID team) {
     struct MobData const &data = MOB_DATA[mob_id];
-    if (data.attributes.segments == 0) return __alloc_mob(mob_id);
+    if (data.attributes.segments == 0) {
+        Entity &ent = __alloc_mob(mob_id, x, y, team);
+        if (mob_id == MobID::kAntHole) {
+            for (uint32_t i = 0; i < 3; ++i) {
+                Vector rand;
+                rand.unit_normal(frand() * 2 * M_PI);
+                rand *= ent.radius * 2;
+                Entity &ant = __alloc_mob(MobID::kBabyAnt, x + rand.x, y + rand.y, team);
+                entity_set_owner(ant, ent.id);
+            }
+            for (uint32_t i = 0; i < 2; ++i) {
+                Vector rand;
+                rand.unit_normal(frand() * 2 * M_PI);
+                rand *= ent.radius * 2;
+                Entity &ant = __alloc_mob(MobID::kWorkerAnt, x + rand.x, y + rand.y, team);
+                entity_set_owner(ant, ent.id);
+            }
+            for (uint32_t i = 0; i < 1; ++i) {
+                Vector rand;
+                rand.unit_normal(frand() * 2 * M_PI);
+                rand *= sqrtf(frand() * ent.radius * 3);
+                Entity &ant = __alloc_mob(MobID::kSoldierAnt, x + rand.x, y + rand.y, team);
+                entity_set_owner(ant, ent.id);
+            }
+        }
+        return ent;
+    }
     else {
-        Entity &head = __alloc_mob(mob_id);
+        Entity &head = __alloc_mob(mob_id, x, y, team);
         head.set_is_tail(0);
         Entity *curr = &head;
         for (uint32_t i = 1; i < data.attributes.segments; ++i) {
-            Entity &seg = __alloc_mob(mob_id);
+            Entity &seg = __alloc_mob(mob_id, x, y, team);
             seg.set_is_tail(1);
             seg.seg_head = curr->id;
             seg.set_angle(curr->angle + frand() * 0.1 - 0.05);
@@ -75,7 +111,8 @@ Entity &alloc_player(Entity &camera) {
     player.add_component(kFlower);
     camera.set_player(player.id);
     player.add_component(kRelations);
-    player.set_parent(camera.id);
+    entity_set_owner(player, camera.id);
+    player.owner = player.id;
     player.set_team(camera.id);
     player.add_component(kHealth);
     player.health = 100;
@@ -83,24 +120,22 @@ Entity &alloc_player(Entity &camera) {
     player.set_health_ratio(1);
     player.damage = 25;
     player.immunity_ticks = 1 * TPS;
-    //player.add_component(kScore);
-    //player.set_score(camera.experience / 2);
-    //player.no_friendly_collision = 1;
+    player.add_component(kScore);
     return player;
 }
 
-Entity &alloc_petal(uint8_t petal_id, Entity &parent) {
+Entity &alloc_petal(PetalID::T petal_id, Entity &parent) {
     struct PetalData const &petal_data = PETAL_DATA[petal_id];
     Entity &petal = game_server->simulation.alloc_ent();
     petal.add_component(kPhysics);
     petal.set_x(parent.x);
     petal.set_y(parent.y);
-    petal.set_radius(petal_data.radius);
+    petal.set_radius(petal_data.radius * 2);
     petal.mass = 0.05;
     if (petal_id == PetalID::kShield) petal.mass = 10;
     petal.friction = 0.5;
     petal.add_component(kRelations);
-    petal.set_parent(parent.id);
+    entity_set_owner(petal, parent.id);
     petal.set_team(parent.team);
     petal.add_component(kPetal);
     petal.set_petal_id(petal_id);
@@ -109,9 +144,7 @@ Entity &alloc_petal(uint8_t petal_id, Entity &parent) {
     petal.damage = petal_data.damage;
     petal.set_health_ratio(1);
     petal.poison_damage = petal_data.attributes.poison_damage;
-    //petal.effect_delay = 0;
-    //petal.poison.define(REAL_TIME(PETAL_DATA[petal_id].extras.poison_damage / PETAL_DATA[petal_id].extras.poison_time), SERVER_TIME(PETAL_DATA[petal_id].extras.poison_time));
-    //petal.no_friendly_collision = 1;
+    if (petal_id == PetalID::kPincer) petal.slow_inflict = TPS * 0.8;
     return petal;
 }
 
@@ -126,12 +159,7 @@ Entity &alloc_web(float radius, Entity &parent) {
     web.friction = 1.0;
     web.add_component(kRelations);
     web.set_team(parent.team);
-    web.set_parent(parent.parent);
-    //petal.set_parent(parent.id);
-    //petal.set_team(parent.team);
-    //petal.add_component(kPetal);
-    //petal.set_petal_id(petal_id);
-    //petal.add_component(kHealth);
+    entity_set_owner(web, parent.parent);
     web.add_component(kWeb);
     return web;
 }
@@ -142,12 +170,15 @@ void player_spawn(Simulation *sim, Entity &camera, Entity &player) {
     camera.set_camera_y(spawn_y);
     player.set_x(spawn_x);
     player.set_y(spawn_y);
-    camera.set_loadout_count(8);
-    for (uint32_t i = 0; i < camera.loadout_count; ++i) {
-        camera.loadout[i].reset();
-        camera.loadout[i].id = frand() * (float) PetalID::kNumPetals;
+    player.set_score(levelToScore(camera.respawn_level));
+    player.set_loadout_count(loadOutSlotsAtLevel(camera.respawn_level));
+    player.health = player.max_health = hpAtLevel(camera.respawn_level);
+    for (uint32_t i = 0; i < player.loadout_count; ++i) {
+        player.loadout[i].reset();
+        player.loadout[i].id = camera.inventory[i];
+        player.set_loadout_ids(i, camera.inventory[i]);
     }
-    for (uint32_t i = camera.loadout_count; i < MAX_SLOT_COUNT + camera.loadout_count; ++i) {
-        camera.set_loadout_ids(i, PetalID::kNone);
-    }
+    for (uint32_t i = player.loadout_count; i < MAX_SLOT_COUNT * 2; ++i)
+        player.set_loadout_ids(i, camera.inventory[i]);
+
 }
