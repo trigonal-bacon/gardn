@@ -1,4 +1,4 @@
-#include <Server/Process/Process.hh>
+#include <Server/Process.hh>
 
 #include <Shared/Simulation.hh>
 #include <Shared/Entity.hh>

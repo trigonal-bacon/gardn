@@ -8,7 +8,7 @@
 #include <cmath>
 
 Entity &alloc_drop(PetalID::T drop_id) {
-    Entity &drop = game_server->simulation.alloc_ent();
+    Entity &drop = Server::simulation.alloc_ent();
     drop.add_component(kPhysics);
     drop.set_radius(1);
     drop.set_angle(0);
@@ -26,7 +26,7 @@ Entity &alloc_drop(PetalID::T drop_id) {
 static Entity &__alloc_mob(MobID::T mob_id, float x, float y, EntityID team = NULL_ENTITY) {
     struct MobData const &data = MOB_DATA[mob_id];
     float seed = frand();
-    Entity &mob = game_server->simulation.alloc_ent();
+    Entity &mob = Server::simulation.alloc_ent();
     mob.add_component(kPhysics);
     mob.set_radius(data.radius.get_single(seed));
     mob.set_angle(frand() * 2 * M_PI);
@@ -102,7 +102,7 @@ Entity &alloc_mob(MobID::T mob_id, float x, float y, EntityID team) {
 }
 
 Entity &alloc_player(Entity &camera) {
-    Entity &player = game_server->simulation.alloc_ent();
+    Entity &player = Server::simulation.alloc_ent();
     player.add_component(kPhysics);
     player.set_x(camera.camera_x);
     player.set_y(camera.camera_y);
@@ -126,7 +126,7 @@ Entity &alloc_player(Entity &camera) {
 
 Entity &alloc_petal(PetalID::T petal_id, Entity &parent) {
     struct PetalData const &petal_data = PETAL_DATA[petal_id];
-    Entity &petal = game_server->simulation.alloc_ent();
+    Entity &petal = Server::simulation.alloc_ent();
     petal.add_component(kPhysics);
     petal.set_x(parent.x);
     petal.set_y(parent.y);
@@ -149,7 +149,7 @@ Entity &alloc_petal(PetalID::T petal_id, Entity &parent) {
 }
 
 Entity &alloc_web(float radius, Entity &parent) {
-    Entity &web = game_server->simulation.alloc_ent();
+    Entity &web = Server::simulation.alloc_ent();
     web.add_component(kPhysics);
     web.set_x(parent.x);
     web.set_y(parent.y);

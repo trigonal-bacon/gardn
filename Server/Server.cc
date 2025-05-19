@@ -8,13 +8,16 @@
 #include <cmath>
 #include <thread>
 
-uint8_t OUTGOING_PACKET[max_buffer_size] = {0};
-Server *game_server;
-
-Server::Server() : simulation() {}
+namespace Server {
+    uint8_t OUTGOING_PACKET[max_buffer_size] = {0};
+    Simulation simulation;
+    uWS::App *socket = nullptr;
+    std::set<Client *> clients;
+}
+//Server *game_server;
+using namespace Server;
 
 void Server::run() {
-    game_server = this;
     /* Keep in mind that uWS::SSLApp({options}) is the same as uWS::App() when compiled without SSL support.
      * You may swap to using uWS:App() if you don't need SSL */
     uWS::App app = uWS::App({
@@ -33,12 +36,12 @@ void Server::run() {
         .sendPingsAutomatically = true,
         /* Handlers */
         .upgrade = nullptr,
-        .open = [this](auto *ws) {
+        .open = [](auto *ws) {
 			std::cout << "client connection\n";
             Client *client = ws->getUserData();
-            client->init(this);
+            client->init();
             client->ws = ws;
-            game_server->clients.insert(client);
+            Server::clients.insert(client);
         },
         .message = [](auto *ws, std::string_view message, uWS::OpCode opCode) {
             uint8_t const *data = reinterpret_cast<uint8_t const *>(message.data());
@@ -47,8 +50,8 @@ void Server::run() {
             switch (reader.read_uint8()) {
                 case kServerbound::kClientInput: {
                     if (!client->alive()) break;
-                    Entity &camera = game_server->simulation.get_ent(client->camera);
-                    Entity &player = game_server->simulation.get_ent(camera.player);
+                    Entity &camera = Server::simulation.get_ent(client->camera);
+                    Entity &player = Server::simulation.get_ent(camera.player);
                     float x = reader.read_float();
                     float y = reader.read_float();
                     if (x == 0 && y == 0) player.acceleration.set(0,0);
@@ -65,9 +68,9 @@ void Server::run() {
                 }
                 case kServerbound::kClientSpawn: {
                     if (client->alive()) break;
-                    Entity &camera = game_server->simulation.get_ent(client->camera);
+                    Entity &camera = Server::simulation.get_ent(client->camera);
                     Entity &player = alloc_player(camera);
-                    player_spawn(&game_server->simulation, camera, player);
+                    player_spawn(&Server::simulation, camera, player);
                     break;
                 }
             }
@@ -86,7 +89,7 @@ void Server::run() {
             std::cout << "client disconnection\n";
             Client *client = ws->getUserData();
             client->remove();
-            game_server->clients.erase(client);
+            Server::clients.erase(client);
             //delete player in systems
         }
     }).listen(9001, [](auto *listen_socket) {
@@ -94,7 +97,8 @@ void Server::run() {
             std::cout << "Listening on port " << 9001 << std::endl;
         }
     });
-    server = &app;
+    
+    Server::socket = &app;
 
     struct us_loop_t *loop = (struct us_loop_t *) uWS::Loop::get();
     struct us_timer_t *delayTimer = us_create_timer(loop, 0, 0);
@@ -103,7 +107,7 @@ void Server::run() {
         struct timespec ts;
         struct timespec te;
         timespec_get(&ts, TIME_UTC);
-        game_server->simulation.tick();
+        Server::simulation.tick();
         //update all clients
         timespec_get(&te, TIME_UTC);
 
@@ -121,7 +125,7 @@ void Server::run() {
             struct timespec ts;
             struct timespec te;
             timespec_get(&ts, TIME_UTC);
-            game_server->simulation.tick();
+            Server::simulation.tick();
             //update all clients
             timespec_get(&te, TIME_UTC);
 

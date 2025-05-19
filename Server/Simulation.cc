@@ -1,6 +1,6 @@
 #include <Shared/Simulation.hh>
 
-#include <Server/Process/Process.hh>
+#include <Server/Process.hh>
 #include <Server/Client.hh>
 #include <Server/EntityFunctions.hh>
 #include <Server/Server.hh>
@@ -16,7 +16,7 @@ static void update_client(Simulation *sim, Client *client) {
     Entity &camera = sim->get_ent(client->camera);
     if (sim->ent_exists(camera.player)) 
         in_view.insert(camera.player);
-    Writer writer(OUTGOING_PACKET);
+    Writer writer(Server::OUTGOING_PACKET);
     writer.write_uint8(kClientbound::kClientUpdate);
     writer.write_entid(client->camera);
     sim->spatial_hash.query(camera.camera_x, camera.camera_y, 960 / camera.fov, 540 / camera.fov, [&](Simulation *, Entity &ent){
@@ -71,7 +71,7 @@ void Simulation::tick() {
 }
 
 void Simulation::post_tick() {
-    for (Client *client: game_server->clients) update_client(this, client);
+    for (Client *client: Server::clients) update_client(this, client);
     //send_state & reset all remaining active entities
     //reset state of all entities FIRST
     for (uint32_t i = 0; i < active_entities.length; ++i) {

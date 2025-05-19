@@ -6,15 +6,13 @@
 #include <stdint.h>
 #include <App.h>
 
-class Server; 
-
 class Client {
 public:
     EntityID camera;
     std::set<EntityID> last_in_view;
     uWS::WebSocket<false, true, Client> *ws;
     Client();
-    void init(Server *);
+    void init();
     void remove();
     uint8_t alive();
     //void on_message();

@@ -4,6 +4,10 @@ project(gardn-server)
 include_directories(..)
 
 set(SOURCES
+    EntityFunctions/Damage.cc
+    EntityFunctions/Death.cc
+    EntityFunctions/Detection.cc
+    EntityFunctions/Misc.cc
     Process/Ai.cc
     Process/Camera.cc
     Process/Collision.cc
@@ -15,7 +19,6 @@ set(SOURCES
     Process/Segment.cc
     Process/Web.cc
     Client.cc
-    EntityFunctions.cc
     Main.cc
     Server.cc
     Simulation.cc

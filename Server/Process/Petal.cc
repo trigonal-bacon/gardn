@@ -1,4 +1,4 @@
-#include <Server/Process/Process.hh>
+#include <Server/Process.hh>
 
 #include <Server/EntityFunctions.hh>
 #include <Server/Spawn.hh>
