@@ -6,7 +6,7 @@
 #include <Shared/Helpers.hh>
 
 void tick_drop_behavior(Simulation *sim, Entity &ent) {
-    if (ent.immunity_ticks > 0)
+    if (ent.lifetime > 0)
         ent.set_radius(20);
     if (ent.immunity_ticks < 0.5 * TPS)
         ++ent.immunity_ticks;

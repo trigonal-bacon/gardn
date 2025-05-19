@@ -161,6 +161,7 @@ Entity &alloc_web(float radius, Entity &parent) {
     web.set_team(parent.team);
     entity_set_owner(web, parent.parent);
     web.add_component(kWeb);
+    web.set_despawn_tick(10 * TPS);
     return web;
 }
 void player_spawn(Simulation *sim, Entity &camera, Entity &player) {

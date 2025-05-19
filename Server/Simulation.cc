@@ -47,10 +47,9 @@ static void update_client(Simulation *sim, Client *client) {
 
 void Simulation::tick() {
     pre_tick();
-    if (frand() < 0.02) alloc_mob(MobID::kDarkLadybug, frand() * ARENA_WIDTH, frand() * ARENA_HEIGHT, NULL_ENTITY);
+    if (frand() < 0.01) alloc_mob((float) MobID::kAntHole + 0 * frand() * (float) MobID::kNumMobs, frand() * ARENA_WIDTH, frand() * ARENA_HEIGHT, NULL_ENTITY);
     for (uint32_t i = 0; i < active_entities.length; ++i) {
         Entity &ent = get_ent(active_entities[i]);
-        ++ent.lifetime;
         if (ent.has_component(kPhysics)) {
             if (ent.deletion_tick > 0)
                 request_delete(ent.id);
@@ -79,6 +78,7 @@ void Simulation::post_tick() {
         assert(ent_exists(active_entities[i])); //no deletions mid tick
         Entity &ent = get_ent(active_entities[i]);
         ent.reset_protocol();
+        ++ent.lifetime;
         if (ent.flags & EntityFlags::IsDespawning) {
             if (ent.despawn_tick == 0)
                 request_delete(ent.id);

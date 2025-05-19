@@ -15,7 +15,7 @@ void Client::init(Server *server) {
     //ent.set_camera_y(frand() * ARENA_HEIGHT);
     ent.set_respawn_level(0); //respawn at level 0, NOT 1
     for (uint32_t i = 0; i < loadOutSlotsAtLevel(ent.respawn_level); ++i)
-        ent.set_inventory(i, (float) PetalID::kStick + 0 * frand() * (float) PetalID::kNumPetals);
+        ent.set_inventory(i, frand() * (float) PetalID::kNumPetals);
     camera = ent.id;
 }
 

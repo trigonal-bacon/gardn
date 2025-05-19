@@ -8,16 +8,45 @@
 #include <Shared/StaticData.hh>
 
 #include <algorithm>
+#include <cmath>
 #include <vector>
 #include <iostream>
+
+static std::vector<std::vector<MobID::T>> anthole_spawns = {
+    {MobID::kBabyAnt},
+    {MobID::kWorkerAnt,MobID::kBabyAnt},
+    {MobID::kWorkerAnt,MobID::kWorkerAnt},
+    {MobID::kSoldierAnt},
+    {MobID::kBabyAnt,MobID::kSoldierAnt},
+    {MobID::kSoldierAnt,MobID::kWorkerAnt,MobID::kWorkerAnt},
+    {MobID::kSoldierAnt},
+    {MobID::kQueenAnt},
+    {MobID::kSoldierAnt,MobID::kWorkerAnt},
+    {MobID::kSoldierAnt,MobID::kSoldierAnt,MobID::kSoldierAnt}
+};
+
+static uint32_t num_spawn_waves = anthole_spawns.size() - 1;
 
 void inflict_damage(Simulation *sim, EntityID const &atk_id, Entity &defender, float amt) {
     assert(!defender.pending_delete);
     assert(defender.has_component(kHealth));
     if (defender.immunity_ticks > 0) return;
     if (amt <= defender.armor) return;
+    float old_health = defender.health;
     defender.set_damaged(1);
-    defender.health = fclamp(defender.health - amt, 0, defender.health);
+    defender.health = fclamp(defender.health - amt, 0, defender.health);   
+    //ant hole spawns
+    //floor start, ceil end
+    if (defender.has_component(kMob) && defender.mob_id == MobID::kAntHole) {
+        uint32_t start = (old_health / defender.max_health) * num_spawn_waves;
+        uint32_t end = ceilf((defender.health / defender.max_health) * num_spawn_waves);
+        for (uint32_t i = start; i + 1 > end; --i) {
+            for (MobID::T mob_id : anthole_spawns[num_spawn_waves - i]) {
+                Entity &child = alloc_mob(mob_id, defender.x, defender.y, defender.team);
+                child.target = defender.target;
+            }
+        }
+    }
     if (!sim->ent_alive(atk_id)) return;
     Entity &attacker = sim->get_ent(atk_id);
     if (defender.poison.time < attacker.poison_damage.time * TPS) {
@@ -68,10 +97,11 @@ static void __alloc_drops(std::vector<PetalID::T> const &success_drops, float x,
         drop.set_y(y);
     }
 }
+
 void entity_on_death(Simulation *sim, Entity &ent) {
     //don't do on_death for any despawned entity
-    if ((ent.flags & EntityFlags::IsDespawning) && ent.despawn_tick == 0) return;
-    if (ent.has_component(kScore) && sim->ent_exists(ent.last_damaged_by)) {
+    uint8_t natural_despawn = (ent.flags & EntityFlags::IsDespawning) && ent.despawn_tick == 0;
+    if (ent.has_component(kScore) && sim->ent_exists(ent.last_damaged_by) && !natural_despawn) {
         Entity *killer = &sim->get_ent(ent.last_damaged_by);
         //defer to parent
         if (sim->ent_alive(killer->owner) && sim->get_ent(killer->owner).has_component(kScore)) {
@@ -84,14 +114,13 @@ void entity_on_death(Simulation *sim, Entity &ent) {
                 killer->set_score(killer->score + ent.score / 2);
         }
     }
-    if (ent.has_component(kMob)) {
-        if (ent.team != NULL_ENTITY) return;
+    if (ent.has_component(kMob) && !natural_despawn) {
+        if (!(ent.team == NULL_ENTITY)) return;
         struct MobData const &mob_data = MOB_DATA[ent.mob_id];
         std::vector<struct MobDrop> const &drops = mob_data.drops;
         std::vector<PetalID::T> success_drops = {};
-        for (MobDrop const &d : drops) {
+        for (MobDrop const &d : drops) 
             if (frand() < d.chance) success_drops.push_back(d.id);
-        }
         __alloc_drops(success_drops, ent.x, ent.y);
     } else if (ent.has_component(kPetal)) {
         if (ent.petal_id == PetalID::kWeb || ent.petal_id == PetalID::kTriweb) {
