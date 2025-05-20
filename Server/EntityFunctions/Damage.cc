@@ -38,6 +38,7 @@ void inflict_damage(Simulation *sim, EntityID const &atk_id, Entity &defender, f
         for (uint32_t i = start; i + 1 > end; --i) {
             for (MobID::T mob_id : anthole_spawns[num_spawn_waves - i]) {
                 Entity &child = alloc_mob(mob_id, defender.x, defender.y, defender.team);
+                entity_set_owner(child, defender.id);
                 child.target = defender.target;
             }
         }

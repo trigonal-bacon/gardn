@@ -7,7 +7,6 @@
 #include <Server/Spawn.hh>
 #include <Server/SpatialHash.hh>
 
-#include <iostream>
 
 static void update_client(Simulation *sim, Client *client) {
     if (!sim->ent_exists(client->camera)) return;
@@ -47,7 +46,7 @@ static void update_client(Simulation *sim, Client *client) {
 
 void Simulation::tick() {
     pre_tick();
-    if (frand() < 0.01) alloc_mob((float) MobID::kAntHole + 0 * frand() * (float) MobID::kNumMobs, frand() * ARENA_WIDTH, frand() * ARENA_HEIGHT, NULL_ENTITY);
+    if (frand() < 0.004) alloc_mob(frand() * (float) MobID::kNumMobs, frand() * ARENA_WIDTH, frand() * ARENA_HEIGHT, NULL_ENTITY);
     for (uint32_t i = 0; i < active_entities.length; ++i) {
         Entity &ent = get_ent(active_entities[i]);
         if (ent.has_component(kPhysics)) {
@@ -58,9 +57,9 @@ void Simulation::tick() {
     }
 
     for_each<kWeb>(tick_web_behavior);
+    for_each<kFlower>(tick_player_behavior);
     for_each<kMob>(tick_ai_behavior);
     for_each<kPetal>(tick_petal_behavior);
-    for_each<kFlower>(tick_player_behavior);
     for_each<kHealth>(tick_health_behavior);
     spatial_hash.collide(on_collide);
     for_each<kPhysics>(tick_entity_motion);
