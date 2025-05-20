@@ -7,7 +7,7 @@
 
 #define SET_BASE_COLOR(color) { if (!BIT_AT(flags, 0)) base_color = color; }
 
-void draw_static_mob(uint8_t mob_id, Renderer &ctx, MobRenderAttributes attr) {
+void draw_static_mob(MobID::T mob_id, Renderer &ctx, MobRenderAttributes attr) {
     float radius = attr.radius;
     uint32_t flags = attr.flags;
     float animation_value = sinf(attr.animation);

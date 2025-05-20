@@ -1,92 +1,39 @@
 #include <Client/Game.hh>
-
-#include <stdint.h>
-#include <emscripten.h>
-#include <iostream>
+#include <Client/Input.hh>
+#include <Client/Setup.hh>
 
 extern "C" {
     void mouse_event(float x, float y, uint8_t type, uint8_t button) {
-        input.mouse_x = x;
-        input.mouse_y = y;
+        Input::mouse_x = x;
+        Input::mouse_y = y;
         if (type == 0) {
-            input.mouse_buttons_pressed |= 1 << button;
-            input.mouse_buttons_state |= 1 << button;
+            Input::mouse_buttons_pressed |= 1 << button;
+            Input::mouse_buttons_state |= 1 << button;
         }
         else if (type == 2) {
-            input.mouse_buttons_released |= 1 << button;
-            input.mouse_buttons_state &= ~(1 << button);
+            Input::mouse_buttons_released |= 1 << button;
+            Input::mouse_buttons_state &= ~(1 << button);
         }
     }
     void key_event(char button, uint8_t type) {
         if (type == 0) {
-            input.keys_pressed.insert(button);
-            input.keys_pressed_this_tick.insert(button);
+            Input::keys_pressed.insert(button);
+            Input::keys_pressed_this_tick.insert(button);
         }
-        else if (type == 1) input.keys_pressed.erase(button);
+        else if (type == 1) Input::keys_pressed.erase(button);
     }
     void loop(double d, float width, float height) {
-        game->renderer.width = width;
-        game->renderer.height = height;
-        float a = width / 1920;
-        float b = height / 1080;
-        game->scale = a > b ? a : b;
-        game->tick(d);
+        Game::renderer.width = width;
+        Game::renderer.height = height;
+        Game::tick(d);
     }
-}
-
-void setup_canvas() {
-EM_ASM({
-    Module.canvas = document.createElement("canvas");
-    Module.canvas.id = "canvas";
-    Module.canvas.width = innerWidth * devicePixelRatio;
-    Module.canvas.height = innerHeight * devicePixelRatio;
-    Module.canvas.oncontextmenu = function() { return false; };
-    window.onbeforeunload = function(e) { return "Are you sure?"; };
-    document.body.appendChild(Module.canvas);
-    Module.ctxs = [Module.canvas.getContext('2d')];
-    Module.availableCtxs =
-        new Array(256).fill(0).map(function(_, i) { return i; });
-    Module.TextDecoder = new TextDecoder('utf8');
-});
-}
-
-void setup_inputs() {
-EM_ASM({
-    window.addEventListener("keydown", (e) => {
-        _key_event(e.which, 0);
-    });
-    window.addEventListener("keyup", (e) => {
-        _key_event(e.which, 1);
-    });
-    window.addEventListener("mousedown", (e) => {
-        _mouse_event(e.clientX * devicePixelRatio, e.clientY * devicePixelRatio, 0, +!!e.button);
-    });
-    window.addEventListener("mousemove", (e) => {
-        _mouse_event(e.clientX * devicePixelRatio, e.clientY * devicePixelRatio, 1, +!!e.button);
-    });
-    window.addEventListener("mouseup", (e) => {
-        _mouse_event(e.clientX * devicePixelRatio, e.clientY * devicePixelRatio, 2, +!!e.button);
-    });
-});
-}
-
-void main_loop() {
-EM_ASM({
-    function loop(time)
-    {
-        Module.canvas.width = innerWidth * devicePixelRatio;
-        Module.canvas.height = innerHeight * devicePixelRatio;
-        _loop(time, Module.canvas.width, Module.canvas.height);
-        requestAnimationFrame(loop);
-    };
-    requestAnimationFrame(loop);
-});
 }
 
 int main() {
-    setup_canvas();
-    setup_inputs();
-    static Game game;
+    //setup_canvas();
+    //setup_inputs();
+    //static Game game;
+    Game::init();
     main_loop();
     return 0;
 }

@@ -16,7 +16,7 @@ void render_mob(Renderer &ctx, Entity &ent) {
     ctx.scale(1 + 0.1 * ent.deletion_tick);
     ctx.add_color_filter(0xffac0000, ent.damage_flash * 0.8);
     uint32_t flags = 0;
-    flags |= (ent.team == game->camera_id);
+    flags |= (ent.team == Game::camera_id);
     flags |= (ent.is_tail << 1);
     draw_static_mob(ent.mob_id, ctx, {ent.animation, ent.radius, ent.id.id, flags});
 }

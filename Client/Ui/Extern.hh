@@ -1,5 +1,11 @@
 #pragma once
 
 namespace Ui {
-    
-}
+    class Element;
+    extern double dt;
+    extern double window_width;
+    extern double window_height;
+    extern double scale;
+    extern Element *focused;
+    extern Element *pressed;
+};

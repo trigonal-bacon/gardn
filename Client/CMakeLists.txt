@@ -19,8 +19,17 @@ set(SRCS
     Game.cc
     Input.cc
     Main.cc
+    Network.cc
+    Rendering.cc
+    Setup.cc
     Simulation.cc
     Socket.cc
+    Ui/Button.cc
+    Ui/Container.cc
+    Ui/Element.cc
+    Ui/Extern.cc
+    Ui/StaticText.cc
+    Ui/Window.cc
     ../Shared/Binary.cc
     ../Shared/Entity.cc
     ../Shared/EntityDef.cc

@@ -2,6 +2,7 @@
 
 #include <Client/Render/Renderer.hh>
 
+#include <Shared/StaticData.hh>
 #include <stdint.h>
 
 class MobRenderAttributes {
@@ -14,10 +15,10 @@ public:
 
 void draw_loadout_background(Renderer &, uint32_t);
 
-void draw_static_petal_single(uint8_t, Renderer &);
+void draw_static_petal_single(MobID::T, Renderer &);
 
-void draw_static_petal(uint8_t, Renderer &);
+void draw_static_petal(PetalID::T, Renderer &);
 
-void draw_static_mob(uint8_t, Renderer &, MobRenderAttributes);
+void draw_static_mob(MobID::T, Renderer &, MobRenderAttributes);
 
 void draw_web(Renderer &);

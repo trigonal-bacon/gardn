@@ -26,6 +26,7 @@ public:
 
     static uint32_t HSV(uint32_t, float);
     static uint32_t MIX(uint32_t, uint32_t, float);
+    static float get_ascii_text_size(char const *);
 
     void add_color_filter(uint32_t, float);
     void set_fill(uint32_t);

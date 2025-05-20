@@ -6,7 +6,7 @@
 #include <iostream>
 #include <cmath>
 
-void draw_static_petal_single(uint8_t id, Renderer &ctx) {
+void draw_static_petal_single(PetalID::T id, Renderer &ctx) {
     float r = PETAL_DATA[id].radius;
     switch(id) {
         case PetalID::kNone:
@@ -449,14 +449,15 @@ void draw_static_petal_single(uint8_t id, Renderer &ctx) {
     }
 }
 
-void draw_static_petal(uint8_t id, Renderer &ctx) {
+void draw_static_petal(PetalID::T id, Renderer &ctx) {
     struct PetalData const &data = PETAL_DATA[id];
     uint32_t count = data.count;
     if (count == 0) count = 1;
     for (uint32_t i = 0; i < count; ++i) {
         RenderContext context(&ctx);
         float rad = 10;
-        if (data.attributes.clump_radius) rad = data.attributes.clump_radius;
+        if (data.attributes.clump_radius != 0)
+            rad = data.attributes.clump_radius;
         ctx.rotate(i * 2 * M_PI / data.count);
         if (data.count > 1) ctx.translate(rad, 0);
         ctx.rotate(data.attributes.icon_angle);

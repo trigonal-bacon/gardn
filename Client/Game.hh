@@ -2,32 +2,30 @@
 
 #include <Client/Render/Renderer.hh>
 #include <Client/Input.hh>
+#include <Client/Setup.hh>
 #include <Client/Socket.hh>
 #include <Client/Ui/Ui.hh>
 
 #include <Shared/Simulation.hh>
 
-class Game {
-public:
-    Simulation simulation;
-    Renderer renderer;
-    Socket socket;
-    EntityID camera_id;
+namespace Game {
+    extern Simulation simulation;
+    extern Renderer renderer;
+    extern Socket socket;
+    extern Ui::Window window;
+    extern EntityID camera_id;
 
-    float scale = 1;
-    uint8_t simulation_ready = 0;
-    uint8_t on_game_screen = 0;
+    extern uint8_t simulation_ready;
+    extern uint8_t on_game_screen;
     
-    Game();
     void init();
     uint8_t alive();
     uint8_t in_game();
     void tick(double);
     void render_game();
     void render_title_screen();
-    //void render_ui();
+    void process_ui();
     void send_inputs();
+    void spawn_in();
     void on_message(uint8_t *, uint32_t);
 };
-
-extern Game *game;
