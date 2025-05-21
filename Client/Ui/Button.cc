@@ -1,5 +1,8 @@
 #include <Client/Ui/Button.hh>
 
+#include <Client/Ui/Extern.hh>
+#include <Client/Input.hh>
+
 using namespace Ui;
 
 Button::Button(float w, float h, Element *l, void x(uint8_t), Style s) :

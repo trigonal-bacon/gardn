@@ -4,6 +4,10 @@
 #include <stdint.h>
 
 namespace Input {
+    enum MouseButton {
+        LeftMouse = 0,
+        RightMouse = 1
+    };
     extern float mouse_x;
     extern float mouse_y;
     extern float prev_mouse_x;

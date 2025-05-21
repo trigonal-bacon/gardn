@@ -17,6 +17,7 @@ namespace Ui {
         void add_child(Element *);
 
         virtual void on_render(Renderer &) override;
+        virtual void on_render_skip(Renderer &) override;
         virtual void refactor() override;
         virtual void poll_events() override;
     };

@@ -468,11 +468,11 @@ void draw_static_petal(PetalID::T id, Renderer &ctx) {
 void draw_loadout_background(Renderer &ctx, uint32_t color) {
     ctx.set_fill(Renderer::HSV(color, 1.0));
     ctx.set_stroke(Renderer::HSV(color, 0.8));
-    ctx.set_line_width(10);
+    ctx.set_line_width(5);
     ctx.round_line_join();
     ctx.round_line_cap();
     ctx.begin_path();
-    ctx.rect(-30, -30, 60, 60);
-    ctx.stroke();
+    ctx.round_rect(-30, -30, 60, 60, 3);
     ctx.fill();
+    ctx.stroke();
 }

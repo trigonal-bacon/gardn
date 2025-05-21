@@ -14,6 +14,7 @@ namespace Game {
     Ui::Window window;
     EntityID camera_id;
 
+    uint8_t loadout_count = 5;
     uint8_t simulation_ready = 0;
     uint8_t on_game_screen = 0;
 }
@@ -21,23 +22,16 @@ namespace Game {
 using namespace Game;
 
 void Game::init() {
-    Ui::Element *title = new Ui::VContainer({
-        new Ui::StaticText(40, "This is a game name", { .fill = 0xffffffff }),
-        new Ui::Button(90, 40, new Ui::StaticText(30, "Enter"), [](uint8_t e){ if (e == Ui::kClick) spawn_in(); }, { .fill = 0xffcccccc })
-    }, 10, 10, {});
-    title->should_render = [](){
-        return !alive() && on_game_screen == 0;
-    };
-    Ui::Element *continue_button = new Ui::Button(140, 40, new Ui::StaticText(30, "Continue"), [](uint8_t e){ if (e == Ui::kClick) on_game_screen = 0; }, { .fill = 0xffcccccc });
-    continue_button->should_render = [](){
-        return !alive() && on_game_screen;
-    };
     window.add_child(
-        title
+        Ui::make_title_main_screen()
     );
     window.add_child(
-        continue_button
+        Ui::make_death_main_screen()
     );
+    window.add_child(
+        Ui::make_loadout_backgrounds()
+    );
+    for (uint8_t i = 0; i < MAX_SLOT_COUNT * 2; ++i) window.add_child(new Ui::UiLoadoutPetal(i));
     socket.connect("ws://localhost:9001");
 }
 
@@ -56,6 +50,7 @@ void Game::tick(double time) {
     renderer.reset_transform();
     simulation.tick();
     simulation.tick_lerp(time - g_last_time);
+    Ui::timestamp = time;
     Ui::dt = time - g_last_time;
     g_last_time = time;
     renderer.context.reset();

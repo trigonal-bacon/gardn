@@ -14,7 +14,9 @@ void Game::render_game() {
     renderer.scale(Ui::scale * camera.fov);
     renderer.translate(-camera.camera_x, -camera.camera_y);
     if (simulation.ent_alive(camera.player)) {
-        if (simulation.get_ent(camera.player).damaged)
+        Entity &player = simulation.get_ent(camera.player);
+        Game::loadout_count = player.loadout_count;
+        if (player.damaged)
             renderer.translate(frand() * 4 - 2, frand() * 4 - 2);
     }
     uint32_t alpha = (uint32_t)(camera.fov * 255 * 0.2) << 24;

@@ -20,9 +20,9 @@ void RenderContext::reset() {
 
 RenderContext::~RenderContext() {
     renderer->context = *this;
-EM_ASM({
-    Module.ctxs[$0].restore();
-}, renderer->id);
+    EM_ASM({
+        Module.ctxs[$0].restore();
+    }, renderer->id);
 }
 
 Renderer::Renderer() : context(this) {

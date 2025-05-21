@@ -15,6 +15,7 @@ namespace Game {
     extern Ui::Window window;
     extern EntityID camera_id;
 
+    extern uint8_t loadout_count;
     extern uint8_t simulation_ready;
     extern uint8_t on_game_screen;
     
@@ -27,5 +28,7 @@ namespace Game {
     void process_ui();
     void send_inputs();
     void spawn_in();
+    void delete_petal(uint8_t);
+    void swap_petals(uint8_t, uint8_t);
     void on_message(uint8_t *, uint32_t);
 };

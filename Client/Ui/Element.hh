@@ -9,7 +9,7 @@ namespace Ui {
     struct Style {
         uint32_t fill = 0x00000000;
         float stroke_hsv = 0.8;
-        float line_width = 6;
+        float line_width = 3;
         float round_radius = 0;
     };
 
@@ -34,6 +34,7 @@ namespace Ui {
         };
 
         Ui::Style style;
+        Ui::Element *parent = nullptr;
         float width = 0;
         float height = 0;
         float x = 0;
@@ -46,13 +47,14 @@ namespace Ui {
         uint8_t visible = 1;
         uint8_t showed = 0;
         uint8_t focus_state = 0;
+        uint8_t layer = 0;
 
         Element(float = 0, float = 0, Style = {});
         void render(Renderer &);
-        virtual void animate(Renderer &);
         virtual void on_render(Renderer &);
         virtual void on_render_skip(Renderer &);
         virtual void on_event(uint8_t);
+        std::function<void(Renderer &)> animate;
         std::function<bool(void)> should_render = [](){ return true; };
         virtual void refactor();
         virtual void poll_events();

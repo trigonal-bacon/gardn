@@ -1,38 +1,56 @@
 #include <Client/Setup.hh>
+
+#include <Client/Game.hh>
+#include <Client/Input.hh>
 #include <emscripten.h>
 
-int setup_canvas() {
-    EM_ASM({
-        Module.canvas = document.createElement("canvas");
-        Module.canvas.id = "canvas";
-        Module.canvas.width = innerWidth * devicePixelRatio;
-        Module.canvas.height = innerHeight * devicePixelRatio;
-        Module.canvas.oncontextmenu = function() { return false; };
-        window.onbeforeunload = function(e) { return "Are you sure?"; };
-        document.body.appendChild(Module.canvas);
-        Module.ctxs = [Module.canvas.getContext('2d')];
-        Module.availableCtxs =
-            new Array(256).fill(0).map(function(_, i) { return i; });
-        Module.TextDecoder = new TextDecoder('utf8');
-    });
-    return 0;
+extern "C" {
+    void mouse_event(float x, float y, uint8_t type, uint8_t button) {
+        Input::mouse_x = x;
+        Input::mouse_y = y;
+        if (type == 0) {
+            Input::mouse_buttons_pressed |= 1 << button;
+            Input::mouse_buttons_state |= 1 << button;
+        }
+        else if (type == 2) {
+            Input::mouse_buttons_released |= 1 << button;
+            Input::mouse_buttons_state &= ~(1 << button);
+        }
+    }
+    void key_event(char button, uint8_t type) {
+        if (type == 0) {
+            Input::keys_pressed.insert(button);
+            Input::keys_pressed_this_tick.insert(button);
+        }
+        else if (type == 1) Input::keys_pressed.erase(button);
+    }
+    void loop(double d, float width, float height) {
+        Game::renderer.width = width;
+        Game::renderer.height = height;
+        Game::tick(d);
+    }
 }
 
 int setup_inputs() {
     EM_ASM({
         window.addEventListener("keydown", (e) => {
+            //e.preventDefault();
             _key_event(e.which, 0);
         });
         window.addEventListener("keyup", (e) => {
+            e.preventDefault();
             _key_event(e.which, 1);
         });
         window.addEventListener("mousedown", (e) => {
+            e.preventDefault();
             _mouse_event(e.clientX * devicePixelRatio, e.clientY * devicePixelRatio, 0, +!!e.button);
         });
         window.addEventListener("mousemove", (e) => {
+            e.preventDefault();
             _mouse_event(e.clientX * devicePixelRatio, e.clientY * devicePixelRatio, 1, +!!e.button);
         });
         window.addEventListener("mouseup", (e) => {
+            e.preventDefault();
             _mouse_event(e.clientX * devicePixelRatio, e.clientY * devicePixelRatio, 2, +!!e.button);
         });
     });
@@ -50,4 +68,21 @@ void main_loop() {
         };
         requestAnimationFrame(loop);
     });
+}
+
+int setup_canvas() {
+    EM_ASM({
+        Module.canvas = document.createElement("canvas");
+        Module.canvas.id = "canvas";
+        Module.canvas.width = innerWidth * devicePixelRatio;
+        Module.canvas.height = innerHeight * devicePixelRatio;
+        Module.canvas.oncontextmenu = function() { return false; };
+        window.onbeforeunload = function(e) { return "Are you sure?"; };
+        document.body.appendChild(Module.canvas);
+        Module.ctxs = [Module.canvas.getContext('2d')];
+        Module.availableCtxs =
+            new Array(256).fill(0).map(function(_, i) { return i; });
+        Module.TextDecoder = new TextDecoder('utf8');
+    });
+    return 0;
 }

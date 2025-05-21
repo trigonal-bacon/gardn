@@ -24,6 +24,10 @@ set(SRCS
     Setup.cc
     Simulation.cc
     Socket.cc
+    Ui/InGame/LoadoutPetal.cc
+    Ui/InGame/LoadoutSlot.cc
+    Ui/TitleScreen/DeathScreen.cc
+    Ui/TitleScreen/MainScreen.cc
     Ui/Button.cc
     Ui/Container.cc
     Ui/Element.cc

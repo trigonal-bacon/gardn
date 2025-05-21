@@ -6,31 +6,37 @@ using namespace Ui;
 
 Container::Container(std::initializer_list<Element *> elts, float opad, float ipad, Style s) :
     Element(0, 0, s), outer_pad(opad), inner_pad(ipad), children(elts)
-{}
+{
+    for (Element *elt : children) elt->parent = this;
+}
 
 void Container::add_child(Element *elt) {
     children.push_back(elt);
+    elt->parent = this;
     //parent/child?
 }
 
 void Container::on_render(Renderer &ctx) {
-    if (style.fill != 0x00000000) {
-        ctx.set_fill(style.fill);
-        ctx.set_stroke(Renderer::HSV(style.fill, style.stroke_hsv));
-        ctx.set_line_width(style.line_width);
-        ctx.round_line_cap();
-        ctx.round_line_join();
-        ctx.begin_path();
-        ctx.round_rect(-width / 2, -height / 2, width, height, style.round_radius);
-        ctx.fill();
-        if (style.fill >= 0xff000000) ctx.stroke();
-    }
+    Element::on_render(ctx);
     for (Element *elt : children) {
+        if (elt->layer != 0) continue;
         RenderContext context(&ctx);
         ctx.translate(elt->x, elt->y);
         ctx.translate(elt->h_justify * (width - elt->width) / 2, elt->v_justify * (height - elt->height) / 2);
         elt->render(ctx);
     }
+    for (Element *elt : children) {
+        if (elt->layer != 1) continue;
+        RenderContext context(&ctx);
+        ctx.translate(elt->x, elt->y);
+        ctx.translate(elt->h_justify * (width - elt->width) / 2, elt->v_justify * (height - elt->height) / 2);
+        elt->render(ctx);
+    }
+}
+
+void Container::on_render_skip(Renderer &ctx) {
+    for (Element *elt : children)
+        elt->on_render_skip(ctx);
 }
 
 void Container::refactor() {
@@ -41,7 +47,7 @@ void Container::refactor() {
 void Container::poll_events() {
     Element::poll_events();
     for (Element *elt : children)
-        elt->poll_events();
+        if (elt->visible) elt->poll_events();
 }
 
 HContainer::HContainer(std::initializer_list<Element *> elts, float opad, float ipad, Style s) :
