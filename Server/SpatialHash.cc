@@ -45,7 +45,7 @@ void SpatialHash::collide(std::function<void(Simulation *, Entity &, Entity &)> 
     }
 }
 
-
+//possibly fix this lmao
 void SpatialHash::query(float x, float y, float w, float h, std::function<void(Simulation *, Entity &)> cb) {
     uint32_t sx = fclamp(x - w - GRID_SIZE, 0, ARENA_WIDTH - 1) / GRID_SIZE;
     uint32_t sy = fclamp(y - h - GRID_SIZE, 0, ARENA_HEIGHT - 1) / GRID_SIZE;

@@ -13,9 +13,11 @@ Entity &alloc_drop(PetalID::T drop_id) {
     drop.set_radius(1);
     drop.set_angle(0);
     drop.friction = 0.25;
+
     drop.add_component(kRelations);
     drop.set_team(NULL_ENTITY);
     entity_set_owner(drop, NULL_ENTITY);
+
     drop.add_component(kDrop);
     drop.set_drop_id(drop_id);
     drop.set_despawn_tick(10 * (2 + PETAL_DATA[drop_id].rarity) * TPS);
@@ -27,31 +29,37 @@ static Entity &__alloc_mob(MobID::T mob_id, float x, float y, EntityID team = NU
     struct MobData const &data = MOB_DATA[mob_id];
     float seed = frand();
     Entity &mob = Server::simulation.alloc_ent();
+
     mob.add_component(kPhysics);
     mob.set_radius(data.radius.get_single(seed));
     mob.set_angle(frand() * 2 * M_PI);
     mob.set_x(x);
     mob.set_y(y);
     mob.friction = DEFAULT_FRICTION;
-    mob.mass = 1 + (mob.radius * mob.radius / 100);
+    mob.mass = 1 + mob.radius * mob.radius / 100;
     if (data.attributes.stationary) mob.mass *= 10000;
     if (mob_id == MobID::kAntHole)
         mob.flags |= EntityFlags::NoFriendlyCollision;
-    mob.add_component(kHealth);
+    
     mob.add_component(kRelations);
     mob.set_team(team);
     entity_set_owner(mob, NULL_ENTITY);
+
     mob.add_component(kMob);
     mob.set_mob_id(mob_id);
+
+    mob.add_component(kHealth);
     mob.health = mob.max_health = data.health.get_single(seed);
     mob.damage = data.damage;
     mob.poison_damage = data.attributes.poison_damage;
     mob.set_health_ratio(1);
-    if (data.attributes.segments > 0) 
-        mob.add_component(kSegmented);
+
     mob.add_component(kScore);
     mob.set_score(data.xp);
     mob.detection_radius = data.attributes.aggro_radius;
+
+    mob.add_component(kName);
+    mob.set_name(data.name);
     return mob;
 }
 
@@ -86,10 +94,12 @@ Entity &alloc_mob(MobID::T mob_id, float x, float y, EntityID team) {
     }
     else {
         Entity &head = __alloc_mob(mob_id, x, y, team);
+        head.add_component(kSegmented);
         head.set_is_tail(0);
         Entity *curr = &head;
         for (uint32_t i = 1; i < data.attributes.segments; ++i) {
             Entity &seg = __alloc_mob(mob_id, x, y, team);
+            seg.add_component(kSegmented);
             seg.set_is_tail(1);
             seg.seg_head = curr->id;
             seg.set_angle(curr->angle + frand() * 0.1 - 0.05);
@@ -103,24 +113,33 @@ Entity &alloc_mob(MobID::T mob_id, float x, float y, EntityID team) {
 
 Entity &alloc_player(Entity &camera) {
     Entity &player = Server::simulation.alloc_ent();
+
     player.add_component(kPhysics);
     player.set_x(camera.camera_x);
     player.set_y(camera.camera_y);
     player.set_radius(25);
     player.friction = DEFAULT_FRICTION;
+
     player.add_component(kFlower);
     camera.set_player(player.id);
+
     player.add_component(kRelations);
     entity_set_owner(player, camera.id);
     player.owner = player.id;
     player.set_team(camera.id);
+
     player.add_component(kHealth);
     player.health = 100;
     player.max_health = 100;
     player.set_health_ratio(1);
     player.damage = 25;
     player.immunity_ticks = 1 * TPS;
+
     player.add_component(kScore);
+
+    player.add_component(kName);
+    player.set_name("TestName.com");
+    player.set_nametag_visible(1);
     return player;
 }
 
@@ -164,6 +183,7 @@ Entity &alloc_web(float radius, Entity &parent) {
     web.set_despawn_tick(10 * TPS);
     return web;
 }
+
 void player_spawn(Simulation *sim, Entity &camera, Entity &player) {
     float spawn_x = frand() * ARENA_WIDTH;
     float spawn_y = frand() * ARENA_HEIGHT;
@@ -175,11 +195,10 @@ void player_spawn(Simulation *sim, Entity &camera, Entity &player) {
     player.set_loadout_count(loadOutSlotsAtLevel(camera.respawn_level));
     player.health = player.max_health = hpAtLevel(camera.respawn_level);
     for (uint32_t i = 0; i < player.loadout_count; ++i) {
-        player.loadout[i].reset();
-        player.loadout[i].id = camera.inventory[i];
+        //player.loadout[i].reset();
+        //player.loadout[i].id = camera.inventory[i];
         player.set_loadout_ids(i, camera.inventory[i]);
     }
     for (uint32_t i = player.loadout_count; i < MAX_SLOT_COUNT * 2; ++i)
         player.set_loadout_ids(i, camera.inventory[i]);
-
 }

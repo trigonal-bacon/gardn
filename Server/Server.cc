@@ -73,6 +73,30 @@ void Server::run() {
                     player_spawn(&Server::simulation, camera, player);
                     break;
                 }
+                case kServerbound::kPetalDelete: {
+                    if (!client->alive()) break;
+                    Entity &camera = Server::simulation.get_ent(client->camera);
+                    Entity &player = Server::simulation.get_ent(camera.player);
+                    uint8_t pos = reader.read_uint8();
+                    if (pos >= MAX_SLOT_COUNT + player.loadout_count) break;
+                    player.set_loadout_ids(pos, PetalID::kNone);
+                    //std::cout << "Deleted pos " << (int) pos << '\n';
+                    break;
+                }
+                case kServerbound::kPetalSwap: {
+                    if (!client->alive()) break;
+                    Entity &camera = Server::simulation.get_ent(client->camera);
+                    Entity &player = Server::simulation.get_ent(camera.player);
+                    uint8_t pos1 = reader.read_uint8();
+                    if (pos1 >= MAX_SLOT_COUNT + player.loadout_count) break;
+                    uint8_t pos2 = reader.read_uint8();
+                    if (pos2 >= MAX_SLOT_COUNT + player.loadout_count) break;
+                    PetalID::T tmp = player.loadout_ids[pos1];
+                    player.set_loadout_ids(pos1, player.loadout_ids[pos2]);
+                    player.set_loadout_ids(pos2, tmp);
+                    //std::cout << "Deleted pos " << (int) pos << '\n';
+                    break;
+                }
             }
         },
         .dropped = [](auto *ws, std::string_view /*message*/, uWS::OpCode /*opCode*/) {

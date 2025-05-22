@@ -25,6 +25,14 @@ static struct _PlayerBuffs petal_passive_buffs(Simulation *sim, Entity &player) 
     for (uint8_t i = 0; i < player.loadout_count; ++i) {
         LoadoutSlot const &slot = player.loadout[i];
         struct PetalData const &petal_data = PETAL_DATA[slot.id];
+
+        if (slot.id == PetalID::kAntennae) {
+            buffs.has_antennae = 1;
+            buffs.extra_vision = fclamp(0.25,buffs.extra_vision,1);
+        } else if (slot.id == PetalID::kObserver) {
+            buffs.has_observer = 1;
+            buffs.extra_vision = 0.75;
+        }
         if (!player.loadout[i].already_spawned) continue;
         if (petal_data.attributes.constant_heal > 0) {
             buffs.heal += petal_data.attributes.constant_heal / TPS;
@@ -34,12 +42,6 @@ static struct _PlayerBuffs petal_passive_buffs(Simulation *sim, Entity &player) 
             buffs.extra_rot += 1.0;
         } else if (slot.id == PetalID::kThirdEye) {
             buffs.extra_range = 75;
-        } else if (slot.id == PetalID::kAntennae) {
-            buffs.has_antennae = 1;
-            buffs.extra_vision = fclamp(0.25,buffs.extra_vision,1);
-        } else if (slot.id == PetalID::kObserver) {
-            buffs.has_observer = 1;
-            buffs.extra_vision = 0.75;
         } else if (slot.id == PetalID::kCactus) {
             buffs.extra_health += 20;
         } else if (slot.id == PetalID::kTricac) {
@@ -51,7 +53,7 @@ static struct _PlayerBuffs petal_passive_buffs(Simulation *sim, Entity &player) 
 
 void tick_player_behavior(Simulation *sim, Entity &player) {
     if (player.pending_delete) return;
-    
+
     struct _PlayerBuffs buffs = petal_passive_buffs(sim, player);
 
     if (buffs.heal > 0)
@@ -67,27 +69,42 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
         camera.set_fov(BASE_FOV * (1 - buffs.extra_vision));
     }
 
-    assert(player.loadout_count <= MAX_SLOT_COUNT);
+    DEBUG_ONLY(assert(player.loadout_count <= MAX_SLOT_COUNT);)
     for (uint8_t i = 0; i < player.loadout_count; ++i) {
         LoadoutSlot &slot = player.loadout[i];
         struct PetalData const &petal_data = PETAL_DATA[slot.id];
-        player.set_loadout_ids(i, slot.id);
+        //player.set_loadout_ids(i, slot.id);
+        //other way around. loadout_ids should dictate loadout
+        if (slot.id != player.loadout_ids[i]) {
+            //delete all old petals
+            for (uint32_t j = 0; j < petal_data.count; ++j) {
+                LoadoutPetal &petal_slot = slot.petals[j];
+                if (sim->ent_alive(petal_slot.ent_id))
+                    sim->request_delete(petal_slot.ent_id);
+            }
+            slot.reset();
+            slot.id = player.loadout_ids[i];
+        }
+
         if (slot.id == PetalID::kNone) continue;
         if (petal_data.count == 0) {
-            slot.already_spawned = 1;
+            player.set_loadout_reloads(i, 255);
             continue;
         }
+        float min_reload = 1;
         for (uint32_t j = 0; j < petal_data.count; ++j) {
             LoadoutPetal &petal_slot = slot.petals[j];
             if (!sim->ent_alive(petal_slot.ent_id)) {
                 petal_slot.ent_id = NULL_ENTITY;
+                float this_reload = (float) petal_slot.reload / (petal_data.reload * TPS);
+                if (this_reload < min_reload) min_reload = this_reload;
                 if (petal_slot.reload >= petal_data.reload * TPS) {
                     Entity &petal = alloc_petal(slot.id, player);
                     petal_slot.ent_id = petal.id;
                     petal_slot.reload = 0;
                     slot.already_spawned = 1;
                 } 
-                else 
+                else
                     ++petal_slot.reload;
             } else {
                 Entity &petal = sim->get_ent(petal_slot.ent_id);
@@ -143,6 +160,7 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
             if (petal_data.attributes.clump_radius == 0) ++rot_pos;
         }
         if (petal_data.attributes.clump_radius > 0) ++rot_pos;
+        player.set_loadout_reloads(i, min_reload * 255);
     };
     player.heading_angle += (2.5 + buffs.extra_rot) / TPS;
     if (BIT_AT(player.input, 0)) player.set_face_flags(player.face_flags | 1);

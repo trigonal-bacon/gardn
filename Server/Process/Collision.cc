@@ -25,11 +25,11 @@ static void pickup_drop(Simulation *sim, Entity &player, Entity &drop) {
     if (!sim->ent_alive(player.parent)) return;
     if (drop.immunity_ticks < 0.5 * TPS) return;
     //Entity &camera = sim->get_ent(player.parent);
-
     for (uint32_t i = 0; i < MAX_SLOT_COUNT; ++i) {
-        if (player.loadout[i].id != PetalID::kNone) continue;
-        player.loadout[i].reset();
-        player.loadout[i].id = drop.drop_id;
+        if (player.loadout_ids[i] != PetalID::kNone) continue;
+        //no need since we reset in player behavior
+        //player.loadout[i].reset();
+        //player.loadout[i].id = drop.drop_id;
         player.set_loadout_ids(i, drop.drop_id);
         drop.set_x(player.x);
         drop.set_y(player.y);

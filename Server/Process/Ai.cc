@@ -119,12 +119,12 @@ static void tick_hornet_aggro(Simulation *sim, Entity &ent) {
             //spawn missile;
             Entity &missile = alloc_petal(PetalID::kMissile, ent);
             missile.damage = 10;
-            missile.health = missile.max_health = 25;
+            missile.health = missile.max_health = 20;
             //missile.despawn_tick = 1;
             missile.set_despawn_tick(3 * TPS);
             missile.set_radius(20);
             missile.set_angle(ent.angle);
-            missile.acceleration.unit_normal(ent.angle).set_magnitude(25 * PLAYER_ACCELERATION);
+            missile.acceleration.unit_normal(ent.angle).set_magnitude(40 * PLAYER_ACCELERATION);
             Vector kb;
             kb.unit_normal(ent.angle - M_PI).set_magnitude(2.5 * PLAYER_ACCELERATION);
             ent.acceleration += kb;            
@@ -272,8 +272,8 @@ static void tick_sandstorm(Simulation *sim, Entity &ent) {
     }
     if (sim->ent_alive(ent.owner)) {
         Entity &parent = sim->get_ent(ent.owner);
-        ent.acceleration.x = (ent.acceleration.x + parent.acceleration.x);
-        ent.acceleration.y = (ent.acceleration.y + parent.acceleration.y);
+        ent.acceleration.x = (ent.acceleration.x * 0.75 + parent.acceleration.x * 1.5);
+        ent.acceleration.y = (ent.acceleration.y * 0.75 + parent.acceleration.y * 1.5);
     }
 }
 

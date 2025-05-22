@@ -47,7 +47,7 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
                 break;
             }
             case PetalID::kMissile: {
-                petal.acceleration.unit_normal(petal.angle).set_magnitude(4.5 * PLAYER_ACCELERATION);
+                petal.acceleration.unit_normal(petal.angle).set_magnitude(7 * PLAYER_ACCELERATION);
                 break;
             }
             default:
