@@ -47,7 +47,27 @@ void Server::run() {
             uint8_t const *data = reinterpret_cast<uint8_t const *>(message.data());
             Reader reader(data);
             Client *client = ws->getUserData();
+            if (client == nullptr) {
+                ws->end();
+                return;
+            }
+            if (!client->verified) {
+                if (reader.read_uint8() != kServerbound::kVerify) {
+                    //disconnect
+                    client->disconnect();
+                    return;
+                }
+                if (reader.read_uint64() != VERSION_HASH) {
+                    client->disconnect();
+                    return;
+                }
+                client->verified = 1;
+                return;
+            }
             switch (reader.read_uint8()) {
+                case kServerbound::kVerify:
+                    client->disconnect();
+                    return;
                 case kServerbound::kClientInput: {
                     if (!client->alive()) break;
                     Entity &camera = Server::simulation.get_ent(client->camera);
@@ -79,6 +99,12 @@ void Server::run() {
                     Entity &player = Server::simulation.get_ent(camera.player);
                     uint8_t pos = reader.read_uint8();
                     if (pos >= MAX_SLOT_COUNT + player.loadout_count) break;
+                    PetalID::T old_id = player.loadout_ids[pos];
+                    if (old_id != PetalID::kNone && old_id != PetalID::kBasic) {
+                        uint8_t rarity = PETAL_DATA[old_id].rarity;
+                        float rarity_to_xp[RarityID::kNumRarities] = { 1, 4, 15, 100, 500, 5000 };
+                        player.set_score(player.score + rarity_to_xp[rarity]);
+                    }
                     player.set_loadout_ids(pos, PetalID::kNone);
                     //std::cout << "Deleted pos " << (int) pos << '\n';
                     break;
@@ -101,7 +127,13 @@ void Server::run() {
         },
         .dropped = [](auto *ws, std::string_view /*message*/, uWS::OpCode /*opCode*/) {
             std::cout << "dropped packet, uh oh\n";
-            ws->end();
+            Client *client = ws->getUserData();
+            if (client == nullptr) {
+                ws->end();
+                return;
+            }
+            client->disconnect();
+            //ws->end();
             /* A message was dropped due to set maxBackpressure and closeOnBackpressureLimit limit */
         },
         .drain = [](auto */*ws*/) {

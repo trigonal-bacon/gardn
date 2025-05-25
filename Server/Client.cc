@@ -1,8 +1,8 @@
 #include <Server/Client.hh>
 
-#include <Shared/Simulation.hh>
-
 #include <Server/Server.hh>
+#include <Shared/Simulation.hh>
+#include <Shared/Binary.hh>
 
 
 Client::Client() {}
@@ -26,7 +26,18 @@ void Client::remove() {
         if (Server::simulation.ent_exists(c.player))
             Server::simulation.request_delete(c.player);
         Server::simulation.request_delete(camera);
+        std::cout << "deleting camera from " << this << "\n";
     }
+}
+
+void Client::disconnect() {
+    if (ws == nullptr) return;
+    remove();
+    Writer writer(Server::OUTGOING_PACKET);
+    writer.write_uint8(kClientbound::kDisconnect);
+    std::string_view message(reinterpret_cast<char const *>(writer.packet), writer.at - writer.packet);
+    ws->send(message, uWS::OpCode::BINARY, 0);
+    ws->end();
     std::cout << "deleting client " << this << "\n";
 }
 

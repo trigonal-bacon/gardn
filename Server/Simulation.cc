@@ -7,7 +7,6 @@
 #include <Server/Spawn.hh>
 #include <Server/SpatialHash.hh>
 
-
 static void update_client(Simulation *sim, Client *client) {
     if (!sim->ent_exists(client->camera)) return;
     std::set<EntityID> in_view;

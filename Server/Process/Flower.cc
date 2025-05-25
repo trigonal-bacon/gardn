@@ -87,10 +87,8 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
         }
 
         if (slot.id == PetalID::kNone) continue;
-        if (petal_data.count == 0) {
-            player.set_loadout_reloads(i, 255);
+        if (petal_data.count == 0) 
             continue;
-        }
         float min_reload = 1;
         for (uint32_t j = 0; j < petal_data.count; ++j) {
             LoadoutPetal &petal_slot = slot.petals[j];
