@@ -26,7 +26,7 @@ UiDeleteSlot::UiDeleteSlot() : UiLoadoutSlot(2 * MAX_SLOT_COUNT) {
 Element *Ui::make_loadout_backgrounds() {
     Element *base = new Ui::VContainer(
         {
-            new Ui::HContainer(
+            (new Ui::HContainer(
                 {
                     new Ui::UiLoadoutSlot(0),
                     new Ui::UiLoadoutSlot(1),
@@ -36,9 +36,9 @@ Element *Ui::make_loadout_backgrounds() {
                     new Ui::UiLoadoutSlot(5),
                     new Ui::UiLoadoutSlot(6),
                     new Ui::UiLoadoutSlot(7),
-                }, 0, 25
-            ),
-            new Ui::HContainer(
+                }, 10, 25
+            ))->set_z_to_one(),
+            (new Ui::HContainer(
                 {
                     new Ui::UiLoadoutSlot(8),
                     new Ui::UiLoadoutSlot(9),
@@ -49,13 +49,15 @@ Element *Ui::make_loadout_backgrounds() {
                     new Ui::UiLoadoutSlot(14),
                     new Ui::UiLoadoutSlot(15),
                     new Ui::UiDeleteSlot()
-                }, 0, 15
-            )
-        }, 10, 20
+                }, 10, 15
+            ))->set_z_to_one(),
+            new Ui::InputFreeze()
+        }, 0, 0
     );
     base->should_render = [](){
         return Game::in_game();
     };
     base->v_justify = Element::Bottom;
+    base->style.animate = [](Element *elt, Renderer &ctx){};
     return base;
 }

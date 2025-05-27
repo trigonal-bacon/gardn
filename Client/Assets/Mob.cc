@@ -464,7 +464,7 @@ void draw_static_mob(MobID::T mob_id, Renderer &ctx, MobRenderAttributes attr) {
             ctx.round_line_join();
             ctx.set_fill(base_color);
             ctx.set_stroke(base_color);
-            ctx.rotate(attr.animation / 2);
+            ctx.rotate(attr.animation / 3);
             ctx.begin_path();
             ctx.move_to(radius, 0);
             for (uint32_t i = 1; i <= 6; ++i) {
@@ -475,7 +475,7 @@ void draw_static_mob(MobID::T mob_id, Renderer &ctx, MobRenderAttributes attr) {
             ctx.stroke();
             ctx.set_fill(Renderer::HSV(base_color, 0.9));
             ctx.set_stroke(Renderer::HSV(base_color, 0.9));
-            ctx.rotate(attr.animation / 2);
+            ctx.rotate(attr.animation / 3);
             ctx.begin_path();
             ctx.move_to(radius*2/3, 0);
             for (uint32_t i = 1; i <= 6; ++i) {
@@ -486,7 +486,7 @@ void draw_static_mob(MobID::T mob_id, Renderer &ctx, MobRenderAttributes attr) {
             ctx.stroke();
             ctx.set_fill(Renderer::HSV(base_color, 0.8));
             ctx.set_stroke(Renderer::HSV(base_color, 0.8));
-            ctx.rotate(attr.animation / 2);
+            ctx.rotate(attr.animation / 3);
             ctx.begin_path();
             ctx.move_to(radius/3, 0);
             for (uint32_t i = 1; i <= 6; ++i) {

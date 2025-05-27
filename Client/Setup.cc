@@ -38,7 +38,7 @@ int setup_inputs() {
             _key_event(e.which, 0);
         });
         window.addEventListener("keyup", (e) => {
-            e.preventDefault();
+            //e.preventDefault();
             _key_event(e.which, 1);
         });
         window.addEventListener("mousedown", (e) => {

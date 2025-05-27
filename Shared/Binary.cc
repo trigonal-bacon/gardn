@@ -16,6 +16,15 @@ void Writer::write_uint32(uint32_t v) {
     write_uint8(v);
 }
 
+void Writer::write_uint64(uint64_t v) {
+    while (v > 127ll)
+    {
+        write_uint8((v & 127ll) | 128ll);
+        v >>= 7ll;
+    }
+    write_uint8(v);
+}
+
 void Writer::write_int32(int32_t v) {
     uint32_t sign = v < 0;
     if (sign) v *= -1;
@@ -59,6 +68,16 @@ uint32_t Reader::read_uint32() {
         uint8_t o = read_uint8();
         ret |= ((o & 127) << (i * 7));
         if (o <= 127) break;
+    }
+    return ret;
+}
+
+uint64_t Reader::read_uint64() {
+    uint64_t ret = 0ll;
+    for (uint32_t i = 0; i < 10; ++i) {
+        uint8_t o = read_uint8();
+        ret |= ((o & 127ll) << (i * 7ll));
+        if (o <= 127ll) break;
     }
     return ret;
 }

@@ -3,6 +3,7 @@
 #include <Client/Ui/Ui.hh>
 #include <Client/Render/RenderEntity.hh>
 #include <Shared/StaticData.hh>
+#include <Shared/Vector.hh>
 
 #include <iostream>
 
@@ -13,11 +14,13 @@ void Game::render_game() {
     renderer.translate(renderer.width / 2, renderer.height / 2);
     renderer.scale(Ui::scale * camera.fov);
     renderer.translate(-camera.camera_x, -camera.camera_y);
-    if (simulation.ent_alive(camera.player)) {
-        Entity &player = simulation.get_ent(camera.player);
+    if (alive()) {
+        Entity &player = simulation.get_ent(player_id);
         Game::loadout_count = player.loadout_count;
-        if (player.damaged)
-            renderer.translate(frand() * 4 - 2, frand() * 4 - 2);
+        if (player.damaged) {
+            Vector rand = Vector::rand(6);
+            renderer.translate(rand.x, rand.y);
+        }
     }
     uint32_t alpha = (uint32_t)(camera.fov * 255 * 0.2) << 24;
     {
@@ -88,6 +91,11 @@ void Game::render_game() {
         renderer.translate(ent.x, ent.y);
         renderer.rotate(ent.angle);
         render_flower(renderer, ent);
+    });
+    simulation.for_each<kName>([](Simulation *sim, Entity &ent){
+        RenderContext context(&renderer);
+        renderer.translate(ent.x, ent.y);
+        render_name(renderer, ent);
     });
 }
 

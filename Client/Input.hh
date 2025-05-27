@@ -15,6 +15,7 @@ namespace Input {
     extern uint8_t mouse_buttons_state;
     extern uint8_t mouse_buttons_pressed;
     extern uint8_t mouse_buttons_released;
+    extern uint8_t freeze_input;
     extern std::unordered_set<char> keys_pressed;
     extern std::unordered_set<char> keys_pressed_this_tick;
 };

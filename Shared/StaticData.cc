@@ -1,5 +1,7 @@
 #include <Shared/StaticData.hh>
 
+#include <cmath>
+
 struct PetalData PETAL_DATA[PetalID::kNumPetals] = {
     {"None", 0.0, 0.0, 0.0, 1.0, 0, RarityID::kCommon, {}},
     {"Basic", 10.0, 10.0, 10.0, 2.5, 1, RarityID::kCommon, {}},
@@ -19,7 +21,7 @@ struct PetalData PETAL_DATA[PetalID::kNumPetals] = {
     {"Iris", 5.0, 5.0, 7.0, 5.0, 1, RarityID::kUnusual, { 
         .poison_damage = { 10.0, 6.0 }
     }},
-    {"Missile", 5.0, 25.0, 10.0, 1.5, 1, RarityID::kRare, {
+    {"Missile", 5.0, 25.0, 10.0, 1.0, 1, RarityID::kRare, {
         .secondary_reload = 0.5, 
         .defend_only = 1,
         .icon_angle = 1,
@@ -82,7 +84,7 @@ struct PetalData PETAL_DATA[PetalID::kNumPetals] = {
         .poison_damage = { 20.0, 0.5 }
     }},
     {"Egg", 15.0, 1.0, 15.0, 1.0, 1, RarityID::kEpic, { 
-        .secondary_reload = 2.0,
+        .secondary_reload = 3.5,
         .defend_only = 1,
         .rotation_style = PetalAttributes::kNoRot,
         .spawns = MobID::kBeetle
@@ -93,7 +95,7 @@ struct PetalData PETAL_DATA[PetalID::kNumPetals] = {
         .defend_only = 1
     }},
     {"Stick", 10.0, 1.0, 15.0, 3.0, 1, RarityID::kLegendary, { 
-        .secondary_reload = 4.5,
+        .secondary_reload = 4.0,
         .defend_only = 1,
         .icon_angle = 1,
         .spawns = MobID::kSandstorm,
@@ -119,66 +121,114 @@ struct PetalData PETAL_DATA[PetalID::kNumPetals] = {
 };
 
 struct MobData MOB_DATA[MobID::kNumMobs] = {
-    {"Baby Ant", RarityID::kCommon, {15.0}, 10.0, {14.0}, 1.0, {
-        {PetalID::kLight, 0.36},{PetalID::kTwin, 0.12},{PetalID::kLeaf, 0.09},{PetalID::kTriplet, 0.005}
+    {"Baby Ant", RarityID::kCommon, {10.0}, 10.0, {14.0}, 1.0, {
+        {PetalID::kLight, 0.36},
+        {PetalID::kTwin, 0.12},
+        {PetalID::kLeaf, 0.09},
+        {PetalID::kTriplet, 0.005}
     }, {}},
-    {"Worker Ant", RarityID::kCommon, {20.0}, 10.0, {14.0}, 1.5, {
-        {PetalID::kLight, 0.36},{PetalID::kTwin, 0.12},{PetalID::kLeaf, 0.09}
+    {"Worker Ant", RarityID::kCommon, {20.0}, 10.0, {14.0}, 3.0, {
+        {PetalID::kLight, 0.36},
+        {PetalID::kTwin, 0.12},
+        {PetalID::kLeaf, 0.09}
     }, {}},
-    {"Soldier Ant", RarityID::kCommon, {40.0}, 10.0, {14.0}, 3.0, {
-        {PetalID::kLight, 0.36},{PetalID::kTwin, 0.12},{PetalID::kWing, 0.03}
+    {"Soldier Ant", RarityID::kCommon, {40.0}, 10.0, {14.0}, 5.0, {
+        {PetalID::kLight, 0.36},
+        {PetalID::kTwin, 0.12},
+        {PetalID::kWing, 0.03}
     }, {}},
-    {"Bee", RarityID::kCommon, {20.0}, 35.0, {20.0}, 2.0, {
-        {PetalID::kLight, 0.36}, {PetalID::kStinger, 0.12},{PetalID::kWing, 0.03},{PetalID::kBubble, 0.01}
+    {"Bee", RarityID::kCommon, {20.0}, 35.0, {20.0}, 4.0, {
+        {PetalID::kLight, 0.36},
+        {PetalID::kStinger, 0.12},
+        {PetalID::kWing, 0.03},
+        {PetalID::kBubble, 0.01}
     }, {}},
-    {"Ladybug", RarityID::kCommon, {30.0}, 10.0, {30.0}, 1.5, {
-        {PetalID::kLight, 0.36},{PetalID::kTwin, 0.12}, {PetalID::kWing, 0.03},{PetalID::kBubble, 0.01}
+    {"Ladybug", RarityID::kCommon, {25.0}, 10.0, {30.0}, 3.0, {
+        {PetalID::kLight, 0.36},
+        {PetalID::kTwin, 0.12},
+        {PetalID::kWing, 0.03},
+        {PetalID::kBubble, 0.01}
     }, {}},
-    {"Beetle", RarityID::kRare, {50.0}, 20.0, {35.0}, 4.5, {
-        {PetalID::kTwin, 0.12}, {PetalID::kIris, 0.09}, {PetalID::kWing, 0.03}
+    {"Beetle", RarityID::kRare, {50.0}, 20.0, {35.0}, 10.0, {
+        {PetalID::kTwin, 0.12},
+        {PetalID::kIris, 0.09},
+        {PetalID::kWing, 0.03}
     }, {}},
-    {"Massive Ladybug", RarityID::kCommon, {750.0}, 10.0, {90.0}, 100.0, {
-        {PetalID::kRose, 1},{PetalID::kBubble, 1},{PetalID::kDahlia, 1},{PetalID::kBubble, 1},{PetalID::kAzalea, 1},{PetalID::kObserver, 0.0006}
+    {"Massive Ladybug", RarityID::kCommon, {1000.0}, 15.0, {90.0}, 400.0, {
+        {PetalID::kRose, 1},
+        {PetalID::kDahlia, 1},
+        {PetalID::kBubble, 1},
+        {PetalID::kAzalea, 1},
+        {PetalID::kObserver, 0.0006}
     }, {}},
-    {"Massive Beetle", RarityID::kRare, {500.0}, 40.0, {75.0}, 15.0, {
-        {PetalID::kIris, 1},{PetalID::kTriplet, 0.06},{PetalID::kBeetleEgg, 0.06},{PetalID::kThirdEye, 0.0006}
+    {"Massive Beetle", RarityID::kRare, {600.0}, 40.0, {75.0}, 50.0, {
+        {PetalID::kIris, 1},
+        {PetalID::kTriplet, 0.06},
+        {PetalID::kBeetleEgg, 0.06},
+        {PetalID::kThirdEye, 0.0006}
     }, { .aggro_radius = 1000 }},
-    {"Dark Ladybug", RarityID::kCommon, {35.0}, 10.0, {30.0}, 1.5, {
-        {PetalID::kWing, 0.12},{PetalID::kDahlia, 0.36},{PetalID::kAzalea, 0.02}
+    {"Dark Ladybug", RarityID::kCommon, {35.0}, 10.0, {30.0}, 5.0, {
+        {PetalID::kWing, 0.12},
+        {PetalID::kDahlia, 0.36},
+        {PetalID::kAzalea, 0.02}
     }, {}},
-    {"Hornet", RarityID::kRare, {40.0}, 40.0, {35.0}, 6.0, {
-        {PetalID::kMissile, 0.18},{PetalID::kWing, 0.09},{PetalID::kDandelion, 0.12},{PetalID::kAntennae, 0.003}
+    {"Hornet", RarityID::kRare, {50.0}, 40.0, {35.0}, 12.0, {
+        {PetalID::kMissile, 0.18},
+        {PetalID::kWing, 0.09},
+        {PetalID::kDandelion, 0.12},
+        {PetalID::kAntennae, 0.003}
     }, { .aggro_radius = 750 }},
-    {"Cactus", RarityID::kRare, {25.0, 50.0}, 30.0, {30.0, 60.0}, 1.5, {
-        {PetalID::kStinger, 0.12},{PetalID::kCactus, 0.06}
+    {"Cactus", RarityID::kRare, {25.0, 50.0}, 30.0, {30.0, 60.0}, 2.0, {
+        {PetalID::kStinger, 0.12},
+        {PetalID::kCactus, 0.06}
     }, { .stationary = 1 }},
     {"Rock", RarityID::kRare, {10.0, 30.0}, 10.0, {10.0, 25.0}, 1.0, {
-        {PetalID::kHeavy, 0.24},{PetalID::kRock, 0.01}
+        {PetalID::kHeavy, 0.24},
+        {PetalID::kRock, 0.01}
     }, { .stationary = 1 }},
-    {"Centipede", RarityID::kRare, {25.0}, 10.0, {35.0}, 0.5, {
-        {PetalID::kLight, 0.12},{PetalID::kTwin, 0.03},{PetalID::kLeaf, 0.03}
+    {"Centipede", RarityID::kRare, {25.0}, 10.0, {35.0}, 2.0, {
+        {PetalID::kLight, 0.12},
+        {PetalID::kTwin, 0.03},
+        {PetalID::kLeaf, 0.03}
     }, { .segments = 10 }},
-    {"Evil Centipede", RarityID::kRare, {35.0}, 10.0, {35.0}, 1.0, {
-        {PetalID::kIris, 0.06},{PetalID::kTwin, 0.03},{PetalID::kBlueIris, 0.006}
+    {"Evil Centipede", RarityID::kRare, {35.0}, 10.0, {35.0}, 3.0, {
+        {PetalID::kIris, 0.06},
+        {PetalID::kTwin, 0.03},
+        {PetalID::kBlueIris, 0.006}
     }, { .segments = 10, .poison_damage = { 5.0, 2.0 } }},
-    {"Desert Centipede", RarityID::kRare, {35.0}, 10.0, {35.0}, 1.5, {
-        {PetalID::kTwin, 0.03},{PetalID::kLeaf, 0.03},{PetalID::kFaster, 0.01}
+    {"Desert Centipede", RarityID::kRare, {35.0}, 10.0, {35.0}, 4.0, {
+        {PetalID::kTwin, 0.03},
+        {PetalID::kLeaf, 0.03},
+        {PetalID::kFaster, 0.01}
     }, { .segments = 6 }},
-    {"Sandstorm", RarityID::kRare, {30.0,45.0}, 40.0, {32.0,48.0}, 1.5, {
-        {PetalID::kTwin, 0.03},{PetalID::kSand, 0.03},{PetalID::kFaster, 0.01},{PetalID::kStick, 0.001}
+    {"Sandstorm", RarityID::kRare, {30.0,45.0}, 40.0, {32.0,48.0}, 5.0, {
+        {PetalID::kTwin, 0.03},
+        {PetalID::kSand, 0.03},
+        {PetalID::kFaster, 0.01},
+        {PetalID::kStick, 0.001}
     }, { .stationary = 1 }},
-    {"Scorpion", RarityID::kRare, {35.0}, 15.0, {35.0}, 6.0, {
-        {PetalID::kIris, 0.24},{PetalID::kStinger, 0.12},{PetalID::kPincer, 0.03},{PetalID::kTringer, 0.006}
-    }, { .poison_damage = { 5.0, 1.0 } }},
-    {"Spider", RarityID::kRare, {25.0}, 10.0, {15.0}, 4.5, {
-        {PetalID::kWeb, 0.12},{PetalID::kStinger, 0.09},{PetalID::kTriweb, 0.006}
+    {"Scorpion", RarityID::kRare, {35.0}, 15.0, {35.0}, 10.0, {
+        {PetalID::kIris, 0.24},
+        {PetalID::kStinger, 0.12},
+        {PetalID::kPincer, 0.03},
+        {PetalID::kTringer, 0.006}
+    }, { .aggro_radius = 750, .poison_damage = { 5.0, 1.0 } }},
+    {"Spider", RarityID::kRare, {35.0}, 10.0, {15.0}, 8.0, {
+        {PetalID::kWeb, 0.12},
+        {PetalID::kStinger, 0.09},
+        {PetalID::kTriweb, 0.006}
     }, { .poison_damage = { 5.0, 3.0 } }},
-    {"Ant Hole", RarityID::kRare, {500.0}, 10.0, {45.0}, 10.0, {
-        {PetalID::kTwin, 1},{PetalID::kWing, 0.24},{PetalID::kAntEgg, 0.06}
+    {"Ant Hole", RarityID::kRare, {500.0}, 10.0, {45.0}, 25.0, {
+        {PetalID::kTwin, 1},
+        {PetalID::kWing, 0.24},
+        {PetalID::kAntEgg, 0.06}
     }, { .stationary = 1 }},
-    {"Queen Ant", RarityID::kEpic, {200.0}, 10.0, {25.0}, 8.0, {
-        {PetalID::kTwin, 1},{PetalID::kWing, 0.24},{PetalID::kAntEgg, 0.06},{PetalID::kShield, 0.0006}
-    }, {}}
+    {"Queen Ant", RarityID::kEpic, {350.0}, 10.0, {25.0}, 15.0, {
+        {PetalID::kTwin, 1},
+        {PetalID::kWing, 0.24},
+        {PetalID::kAntEgg, 0.06},
+        {PetalID::kShield, 0.0006}
+    }, { . aggro_radius = 750 }}
 };
 
 uint32_t RARITY_COLORS[RarityID::kNumRarities] = { 
@@ -187,8 +237,8 @@ uint32_t RARITY_COLORS[RarityID::kNumRarities] = {
 };//, 0xffff2b75, 0xfff70fb6};
 
 
-static inline float scoreToPassLevel(uint32_t level) {
-    return 1;
+float scoreToPassLevel(uint32_t level) {
+    return pow(1.05, level) * (level + 1) * 2;
 }
 
 uint32_t scoreToLevel(float score) {

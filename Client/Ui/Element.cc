@@ -3,14 +3,23 @@
 #include <Client/Ui/Extern.hh>
 #include <Client/Input.hh>
 
-#include <cmath>
-
 using namespace Ui;
+
+static void default_animate(Element *elt, Renderer &ctx) {
+    ctx.scale((float) elt->animation);
+}
 
 Element::Element(float w, float h, Style s) : width(w), height(h), style(s) {
     //so the animation doesnt set
     animation.set(1);
-    animate = [&](Renderer &ctx){ ctx.scale((float) animation); };
+    //animate = [&](Renderer &ctx){ ctx.scale((float) animation); };
+    if (style.animate == nullptr) 
+        style.animate = default_animate;
+}
+
+Element *Element::set_z_to_one() {
+    layer = 1;
+    return this;
 }
 
 void Element::render(Renderer &ctx) {
@@ -18,10 +27,10 @@ void Element::render(Renderer &ctx) {
     screen_x = ctx.context.transform_matrix[2];
     screen_y = ctx.context.transform_matrix[5];
     animation.set(should_render());
-    if (showed) animation.step(1 - pow(1 - 0.3, dt * 60 / 1000));
+    if (showed) animation.step(Ui::lerp_amount);
     else animation.step(1);
     float curr_animation = (float) animation;
-    visible = curr_animation > 0.001;
+    visible = curr_animation > 0.05;
     if (visible) {
         RenderContext context(&ctx);
         ctx.set_stroke(0x80000000);
@@ -31,7 +40,7 @@ void Element::render(Renderer &ctx) {
         ctx.stroke();
     }
     if (visible) {
-        animate(ctx);
+        style.animate(this, ctx);
         on_render(ctx);
         showed = 1;
         //possibly poll events?

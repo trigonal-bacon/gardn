@@ -3,19 +3,21 @@
 
 #include <iostream>
 
+extern const uint64_t VERSION_HASH = 198456321345ll;
+
 Simulation::Simulation() SERVER_ONLY(: spatial_hash(this)) {}
 
 void Simulation::reset() {
     active_entities.clear();
     pending_delete.clear();
-    for (uint32_t i = 0; i < ENTITY_CAP; ++i) { 
+    for (EntityID::id_type i = 0; i < ENTITY_CAP; ++i) { 
         hash_tracker[i] = entity_tracker[i] = 0;
         entities[i].init();
     }
 }
 
 Entity &Simulation::alloc_ent() {
-    for (uint32_t i = 1; i < ENTITY_CAP; ++i) {
+    for (EntityID::id_type i = 1; i < ENTITY_CAP; ++i) {
         if (entity_tracker[i]) continue;
         entity_tracker[i] = 1;
         entities[i].init();
@@ -67,7 +69,7 @@ void Simulation::delete_ent(EntityID const &id) {
 
 void Simulation::pre_tick() {
     active_entities.clear();
-    for (uint32_t i = 0; i < ENTITY_CAP; ++i) {
+    for (EntityID::id_type i = 0; i < ENTITY_CAP; ++i) {
         if (!entity_tracker[i]) continue;
         active_entities.push(entities[i].id);
     }
@@ -76,7 +78,7 @@ void Simulation::pre_tick() {
 #define COMPONENT(name) \
 template<> \
 void Simulation::for_each<k##name>(std::function<void(Simulation *, Entity &)> cb) { \
-    for (uint32_t i = 0; i < active_entities.length; ++i) { \
+    for (EntityID::id_type i = 0; i < active_entities.length; ++i) { \
         Entity &ent = get_ent(active_entities[i]); \
         if (ent.pending_delete) continue; \
         if (ent.has_component(k##name)) cb(this, ent); \

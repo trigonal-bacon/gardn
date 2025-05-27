@@ -8,10 +8,10 @@
 //MSPT * TPS = 1000
 #define TPS (25)
 
-#define ARENA_WIDTH (2000)
+#define ARENA_WIDTH (4000)
 #define ARENA_HEIGHT (2000)
 
-#define PLAYER_ACCELERATION (2.5)
+#define PLAYER_ACCELERATION (3.0)
 #define DEFAULT_FRICTION (0.25)
 
 #define SUMMON_RETREAT_RADIUS (600)
@@ -176,6 +176,7 @@ extern struct MobData MOB_DATA[MobID::kNumMobs];
 
 extern uint32_t RARITY_COLORS[RarityID::kNumRarities];
 
+extern float scoreToPassLevel(uint32_t);
 extern uint32_t scoreToLevel(float);
 extern float levelToScore(uint32_t);
 extern uint32_t loadOutSlotsAtLevel(uint32_t);

@@ -45,7 +45,7 @@ static void update_client(Simulation *sim, Client *client) {
 
 void Simulation::tick() {
     pre_tick();
-    if (frand() < 0.004) alloc_mob(MobID::kCentipede, frand() * ARENA_WIDTH, frand() * ARENA_HEIGHT, NULL_ENTITY);
+    if (frand() < 0.01) alloc_mob(frand() * (float) MobID::kNumMobs, frand() * ARENA_WIDTH, frand() * ARENA_HEIGHT, NULL_ENTITY);
     for (uint32_t i = 0; i < active_entities.length; ++i) {
         Entity &ent = get_ent(active_entities[i]);
         if (ent.has_component(kPhysics)) {

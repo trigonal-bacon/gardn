@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Client/Ui/Choose.hh>
 #include <Client/Ui/Element.hh>
 
 #include <Shared/StaticData.hh>
@@ -16,8 +17,20 @@ namespace Ui {
         UiDeleteSlot();
     };
 
+    class InputFreeze final : public Choose {
+    public:
+        float render_width;
+        float render_height;
+        InputFreeze();
+        virtual void on_render(Renderer &) override;
+        virtual void on_render_skip(Renderer &) override;
+        virtual void on_event(uint8_t) override;
+        virtual void poll_events() override;
+    };
+
     class UiLoadoutPetal final : public Element {
     public:
+        LerpFloat reload;
         uint8_t static_pos;
         uint8_t curr_pos;
         uint8_t no_change_ticks;
@@ -34,6 +47,7 @@ namespace Ui {
         extern UiLoadoutPetal *petal_selected;
         extern UiLoadoutPetal *petal_slots[2 * MAX_SLOT_COUNT];
         extern UiLoadoutSlot *petal_backgrounds[2 * MAX_SLOT_COUNT + 1];
+        extern uint8_t selected_with_keys;
     };
 
     Element *make_loadout_backgrounds();

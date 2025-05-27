@@ -13,6 +13,7 @@ set(SRCS
     Render/RenderFlower.cc
     Render/RenderHealth.cc
     Render/RenderMob.cc
+    Render/RenderName.cc
     Render/RenderPetal.cc
     Render/RenderWeb.cc
     Render/Renderer.cc
@@ -24,11 +25,14 @@ set(SRCS
     Setup.cc
     Simulation.cc
     Socket.cc
+    Ui/InGame/InputFreeze.cc
+    Ui/InGame/LevelBar.cc
     Ui/InGame/LoadoutPetal.cc
     Ui/InGame/LoadoutSlot.cc
     Ui/TitleScreen/DeathScreen.cc
     Ui/TitleScreen/MainScreen.cc
     Ui/Button.cc
+    Ui/Choose.cc
     Ui/Container.cc
     Ui/Element.cc
     Ui/Extern.cc

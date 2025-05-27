@@ -1,7 +1,6 @@
 #include <Shared/Entity.hh>
 
 #include <Shared/StaticData.hh>
-#include <iostream>
 
 Entity::Entity() {
     init();
@@ -32,7 +31,7 @@ void Entity::reset_protocol() {
 }
 
 void Entity::add_component(uint32_t comp) {
-    assert(!has_component(comp));
+    DEBUG_ONLY(assert(!has_component(comp));)
     components |= 1 << comp;
 }
 uint8_t Entity::has_component(uint32_t comp) const {
@@ -47,20 +46,14 @@ void Entity::set_despawn_tick(uint16_t t) {
 
 #define SINGLE(component, name, type) \
 void Entity::set_##name(type const v) { \
-    if (!has_component(k##component)) { \
-        std::cout << #name << '\n'; \
-        assert(has_component(k##component)); \
-    } \
+    DEBUG_ONLY(assert(has_component(k##component));) \
     if (name == v) return; \
     name = v; \
     state_##name = 1; \
 }
 #define MULTIPLE(component, name, type, amt) \
 void Entity::set_##name(uint32_t i, type const v) { \
-    if (!has_component(k##component)) { \
-        std::cout << #name << '\n'; \
-        assert(has_component(k##component)); \
-    } \
+    DEBUG_ONLY(assert(has_component(k##component));) \
     if (name[i] == v) return; \
     name[i] = v; \
     state_##name = 1; \

@@ -2,13 +2,14 @@
 
 #include <Client/Ui/Extern.hh>
 
-#include <iostream>
+#include <cmath>
 
 using namespace Ui;
 
 Window::Window() : Container({}) {}
 
 void Window::render(Renderer &ctx) {
+    Ui::lerp_amount = 1 - pow(1 - 0.3, Ui::dt * 60 / 1000);
     width = Ui::window_width; height = Ui::window_height;
     ctx.translate(width / 2, height / 2);
     on_render(ctx);

@@ -15,7 +15,8 @@
     COMPONENT(Drop) \
     COMPONENT(Segmented) \
     COMPONENT(Web) \
-    COMPONENT(Score)
+    COMPONENT(Score) \
+    COMPONENT(Name)
 
 #define PERFIELD \
 FIELDS_Physics \
@@ -27,7 +28,8 @@ FIELDS_Health \
 FIELDS_Mob \
 FIELDS_Drop \
 FIELDS_Segmented \
-FIELDS_Score
+FIELDS_Score \
+FIELDS_Name
 
 #define FIELDS_Physics \
 SINGLE(Physics, x, Float) \
@@ -75,6 +77,10 @@ SINGLE(Segmented, is_tail, uint8)
 
 #define FIELDS_Score \
 SINGLE(Score, score, float)
+
+#define FIELDS_Name \
+SINGLE(Name, name, string) \
+SINGLE(Name, nametag_visible, uint8)
 
 #ifdef SERVERSIDE
 #define PER_EXTRA_FIELD \
@@ -134,10 +140,12 @@ namespace EntityFlags {
 
 class EntityID {
 public:
-    uint16_t hash;
-    uint16_t id;
+    typedef uint16_t hash_type;
+    typedef uint16_t id_type;
+    hash_type hash;
+    id_type id;
     EntityID();
-    EntityID(uint16_t, uint16_t);
+    EntityID(id_type, hash_type);
     bool null() const;
     void operator=(EntityID const &);
     void print();
@@ -148,6 +156,7 @@ bool operator==(const EntityID &, const EntityID &);
 
 extern EntityID NULL_ENTITY;
 
+#ifdef SERVER_ONLY
 class LoadoutPetal {
 public:
     uint32_t reload;
@@ -162,3 +171,4 @@ public:
     LoadoutSlot();
     void reset();
 };
+#endif

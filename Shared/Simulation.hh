@@ -10,13 +10,14 @@
 #include <functional>
 #include <string>
 
-static const uint32_t ENTITY_CAP = 4096;
+extern const uint64_t VERSION_HASH;
+static const EntityID::id_type ENTITY_CAP = 4096;
 
 class Simulation {
 public:
     SERVER_ONLY(SpatialHash spatial_hash;)
     uint8_t entity_tracker[ENTITY_CAP] = {0};
-    uint32_t hash_tracker[ENTITY_CAP] = {0};
+    EntityID::hash_type hash_tracker[ENTITY_CAP] = {0};
     Entity entities[ENTITY_CAP];
     StaticArray<EntityID, ENTITY_CAP> active_entities;
     StaticArray<EntityID, ENTITY_CAP> pending_delete;

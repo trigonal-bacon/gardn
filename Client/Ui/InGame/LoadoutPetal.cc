@@ -9,34 +9,75 @@ using namespace Ui;
 
 UiLoadoutPetal *Ui::UiLoadout::petal_selected = nullptr;
 UiLoadoutPetal *Ui::UiLoadout::petal_slots[2 * MAX_SLOT_COUNT] = {nullptr};
+uint8_t Ui::UiLoadout::selected_with_keys = 0;
+
+static uint8_t static_to_dynamic(uint8_t static_pos) {
+    if (static_pos >= Game::loadout_count) 
+        return MAX_SLOT_COUNT + static_pos - Game::loadout_count;
+    else
+        return static_pos;
+}
+
+static void ui_delete_petal(uint8_t static_pos) {
+    Game::delete_petal(static_pos);
+    Ui::UiLoadout::petal_slots[static_pos]->curr_pos = 2 * MAX_SLOT_COUNT;
+}
+
+static void ui_swap_petals(uint8_t static_pos1, uint8_t static_pos2) {
+    //found static pos, now swap
+    UiLoadoutPetal *a1 = Ui::UiLoadout::petal_slots[static_pos1];
+    UiLoadoutPetal *a2 = Ui::UiLoadout::petal_slots[static_pos2];
+    if (a1->petal_id == a2->petal_id) return;
+    a1->static_pos = static_pos2;
+    a2->static_pos = static_pos1;
+    Ui::UiLoadout::petal_slots[static_pos1] = a2;
+    Ui::UiLoadout::petal_slots[static_pos2] = a1;
+    a1->no_change_ticks = a2->no_change_ticks = 10;
+    Game::swap_petals(static_pos1, static_pos2);
+}
+
+static uint8_t dynamic_to_static(uint8_t dynamic_pos) {
+    if (dynamic_pos >= MAX_SLOT_COUNT)
+        dynamic_pos -= (MAX_SLOT_COUNT - Game::loadout_count);
+    return dynamic_pos; 
+}
 
 UiLoadoutPetal::UiLoadoutPetal(uint8_t pos) : Element(60, 60), 
-    static_pos(pos), no_change_ticks(0), petal_id(PetalID::kNone), last_id(PetalID::kNone) {
+    static_pos(pos), no_change_ticks(0), petal_id(PetalID::kNone), last_id(PetalID::kNone) 
+{
+    reload = 1;
     should_render = [&](){
         if (!Game::in_game()) return false;
         //coincidentally also works for trashing
         if (static_pos >= MAX_SLOT_COUNT + Game::loadout_count) return false;
         if (curr_pos == 2 * MAX_SLOT_COUNT) return false;
         if (Game::alive()) {
-            Entity &player = Game::simulation.get_ent(Game::simulation.get_ent(Game::camera_id).player);
-            if (no_change_ticks == 0) {
+            Entity &player = Game::simulation.get_ent(Game::player_id);
+            if (no_change_ticks == 0 || player.state_per_loadout_ids[static_pos]) {
+                no_change_ticks = 0;
                 petal_id = player.loadout_ids[static_pos];
                 if (petal_id != PetalID::kNone)
                     last_id = petal_id;
             } else --no_change_ticks;
+            if (static_pos < Game::loadout_count) {
+                if (player.state_per_loadout_reloads[static_pos]) {
+                    float old = player.loadout_reloads[static_pos] / 255.0f;
+                    if (old > reload) reload.set(old);
+                    else reload = old;
+                }
+            }
+            else
+                reload = 0;
         }
         if (petal_id == PetalID::kNone) return false;
         return true;
     };
-    animate = [&](Renderer &ctx){
+    style.animate = [&](Element *elt, Renderer &ctx){
         ctx.scale((float) animation);
-        if (curr_pos != 2 * MAX_SLOT_COUNT) {
-            if (static_pos >= Game::loadout_count) 
-                curr_pos = MAX_SLOT_COUNT + static_pos - Game::loadout_count;
-            else
-                curr_pos = static_pos;
-            if (curr_pos > 2 * MAX_SLOT_COUNT) curr_pos = 2 * MAX_SLOT_COUNT;
-        }
+        float lerp_amt = Ui::lerp_amount;
+        reload.step(lerp_amt);
+        if (curr_pos != 2 * MAX_SLOT_COUNT) 
+            curr_pos = static_to_dynamic(static_pos);
         UiLoadoutSlot *parent_slot = Ui::UiLoadout::petal_backgrounds[curr_pos];
         layer = 0;
         if (Ui::UiLoadout::petal_selected == this && Game::alive()) {
@@ -55,24 +96,12 @@ UiLoadoutPetal::UiLoadoutPetal(uint8_t pos) : Element(60, 60),
                 }
                 if (swapping_with != static_pos) {
                     //do the swap
-                    if (swapping_with == 2 * MAX_SLOT_COUNT) {
-                        Game::delete_petal(curr_pos);
-                        curr_pos = swapping_with;
-                        //delete petal packet
-                    }
+                    if (swapping_with == 2 * MAX_SLOT_COUNT)
+                        ui_delete_petal(static_pos);
                     else {
                         //find static pos of both
-                        if (swapping_with >= MAX_SLOT_COUNT)
-                            swapping_with -= (MAX_SLOT_COUNT - Game::loadout_count);
-                        //found static pos, now swap
-                        UiLoadoutPetal *other = Ui::UiLoadout::petal_slots[swapping_with];
-                        uint8_t tmp = static_pos;
-                        static_pos = other->static_pos;
-                        other->static_pos = tmp;
-                        Ui::UiLoadout::petal_slots[other->static_pos] = other;
-                        Ui::UiLoadout::petal_slots[static_pos] = this;
-                        other->no_change_ticks = no_change_ticks = 10;
-                        Game::swap_petals(static_pos, other->static_pos);
+                        swapping_with = dynamic_to_static(swapping_with);
+                        ui_swap_petals(swapping_with, static_pos);
                     }
                     //else error
                 }
@@ -80,7 +109,6 @@ UiLoadoutPetal::UiLoadoutPetal(uint8_t pos) : Element(60, 60),
                 Ui::UiLoadout::petal_selected = nullptr;
             }
             else {
-                float amt = 0.2;
                 float wanting_x = Input::mouse_x;
                 float wanting_y = Input::mouse_y;
                 float wanting_r = 70;
@@ -96,22 +124,21 @@ UiLoadoutPetal::UiLoadoutPetal(uint8_t pos) : Element(60, 60),
                         break;
                     }
                 }
-                LERP(x, (wanting_x - Ui::window_width / 2) / Ui::scale, amt);
-                LERP(y, (wanting_y - Ui::window_height / 2) / Ui::scale, amt);
-                LERP(width, wanting_r, amt);
-                LERP(height, wanting_r, amt);
+                LERP(x, (wanting_x - Ui::window_width / 2) / Ui::scale, lerp_amt);
+                LERP(y, (wanting_y - Ui::window_height / 2) / Ui::scale, lerp_amt);
+                LERP(width, wanting_r, lerp_amt);
+                LERP(height, wanting_r, lerp_amt);
                 if (wanting_r == 70)
                     ctx.rotate(sin(timestamp / 150) * 0.1);
                 layer = 1;
             }
         }
         else if (parent_slot != nullptr) {
-            float amt = 0.2;
-            if (!showed) amt = 1;
-            LERP(x, (parent_slot->screen_x - Ui::window_width / 2) / Ui::scale, amt);
-            LERP(y, (parent_slot->screen_y - Ui::window_height / 2) / Ui::scale, amt);
-            LERP(width, parent_slot->width, amt);
-            LERP(height, parent_slot->height, amt);
+            if (!showed) lerp_amt = 1;
+            LERP(x, (parent_slot->screen_x - Ui::window_width / 2) / Ui::scale, lerp_amt);
+            LERP(y, (parent_slot->screen_y - Ui::window_height / 2) / Ui::scale, lerp_amt);
+            LERP(width, parent_slot->width, lerp_amt);
+            LERP(height, parent_slot->height, lerp_amt);
         }
     };
     Ui::UiLoadout::petal_slots[static_pos] = this;
@@ -122,6 +149,19 @@ void UiLoadoutPetal::on_render(Renderer &ctx) {
         RenderContext context(&ctx);
         ctx.scale(width / 60);
         draw_loadout_background(ctx, RARITY_COLORS[PETAL_DATA[last_id].rarity]);
+        if (static_pos < Game::loadout_count && PETAL_DATA[last_id].count != 0) {
+            float rld =  1 - (float) reload;
+            {
+                rld = rld * rld * rld * (rld * (6.0f * rld - 15.0f) + 10.0f);
+                RenderContext context(&ctx);
+                ctx.set_fill(0x40000000);
+                ctx.clip();
+                ctx.begin_path();
+                ctx.move_to(0,0);
+                ctx.partial_arc(0, 0, 90, -M_PI / 2 - rld * M_PI * 10, -M_PI / 2 - rld * M_PI * 8, 0);
+                ctx.fill();
+            }
+        }
         ctx.translate(0, -5);
         {
             RenderContext r(&ctx);
@@ -151,5 +191,8 @@ void UiLoadoutPetal::on_render_skip(Renderer &ctx) {
 }
 
 void UiLoadoutPetal::on_event(uint8_t event) {
-    if (event == kMouseDown) Ui::UiLoadout::petal_selected = this;
+    if (event == kMouseDown && Ui::UiLoadout::petal_selected == nullptr) {
+        Ui::UiLoadout::petal_selected = this;
+        Ui::UiLoadout::selected_with_keys = 0;
+    }
 }

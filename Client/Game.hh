@@ -14,6 +14,7 @@ namespace Game {
     extern Socket socket;
     extern Ui::Window window;
     extern EntityID camera_id;
+    extern EntityID player_id;
 
     extern uint8_t loadout_count;
     extern uint8_t simulation_ready;

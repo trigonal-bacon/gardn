@@ -6,11 +6,14 @@
 #include <functional>
 
 namespace Ui {
+    class Element;
+
     struct Style {
         uint32_t fill = 0x00000000;
         float stroke_hsv = 0.8;
         float line_width = 3;
         float round_radius = 0;
+        std::function<void(Element *, Renderer &)> animate = nullptr;
     };
 
     enum UiEvent {
@@ -50,11 +53,12 @@ namespace Ui {
         uint8_t layer = 0;
 
         Element(float = 0, float = 0, Style = {});
+        Element *set_z_to_one();
         void render(Renderer &);
         virtual void on_render(Renderer &);
         virtual void on_render_skip(Renderer &);
         virtual void on_event(uint8_t);
-        std::function<void(Renderer &)> animate;
+        //std::function<void(Renderer &)> animate;
         std::function<bool(void)> should_render = [](){ return true; };
         virtual void refactor();
         virtual void poll_events();

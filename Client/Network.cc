@@ -19,12 +19,12 @@ void Game::on_message(uint8_t *ptr, uint32_t len) {
                 curr_id = reader.read_entid();
             }
             curr_id = reader.read_entid();
-            assert(!curr_id.null());
+            DEBUG_ONLY(assert(!curr_id.null());)
             while(1) {
                 if (curr_id.null()) break;
                 uint8_t create = reader.read_uint8();
                 if (create) simulation.force_alloc_ent(curr_id);
-                assert(simulation.ent_exists(curr_id));
+                DEBUG_ONLY(assert(simulation.ent_exists(curr_id));)
                 Entity &ent = simulation.get_ent(curr_id);
                 ent.read(&reader);
                 curr_id = reader.read_entid();
@@ -42,6 +42,12 @@ void Game::send_inputs() {
     writer.write_uint8(kServerbound::kClientInput);
     //float x = Input::keys_pressed.contains('D') - Input::keys_pressed.contains('A');
     //float y = Input::keys_pressed.contains('S') - Input::keys_pressed.contains('W');
+    if (Input::freeze_input) {
+        writer.write_float(0);
+        writer.write_float(0);
+        writer.write_uint8(0);
+        return;
+    }
     float x = (Input::mouse_x - renderer.width / 2) / Ui::scale;
     float y = (Input::mouse_y - renderer.height / 2) / Ui::scale;
     writer.write_float(x);

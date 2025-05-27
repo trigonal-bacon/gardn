@@ -1,6 +1,8 @@
 #include <Client/Socket.hh>
 #include <Client/Game.hh>
 
+#include <Shared/Binary.hh>
+
 #include <emscripten.h>
 
 uint8_t INCOMING_PACKET[1024 * 1024] = {0};
@@ -8,8 +10,13 @@ uint8_t INCOMING_PACKET[1024 * 1024] = {0};
 extern "C" {
     void on_message(uint8_t type, uint32_t len) {
         if (type == 0) {
+            Writer w(INCOMING_PACKET);
+            w.write_uint8(kServerbound::kVerify);
+            w.write_uint64(VERSION_HASH);
             Game::socket.ready = 1;
             Game::on_game_screen = 0;
+            Game::socket.send(&INCOMING_PACKET[0], w.at - w.packet);
+            Game::socket.ready = 0;
         } 
         else if (type == 2) { 
             Game::on_game_screen = 0;
@@ -17,7 +24,10 @@ extern "C" {
             Game::camera_id = NULL_ENTITY;
             Game::simulation.reset();
         }
-        else if (type == 1) Game::on_message(static_cast<uint8_t *>(INCOMING_PACKET), len);
+        else if (type == 1) {
+            Game::socket.ready = 1;
+            Game::on_message(static_cast<uint8_t *>(INCOMING_PACKET), len);
+        }
     }
 }
 

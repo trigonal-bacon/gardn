@@ -10,8 +10,8 @@
 Entity &alloc_drop(PetalID::T drop_id) {
     Entity &drop = Server::simulation.alloc_ent();
     drop.add_component(kPhysics);
-    drop.set_radius(1);
-    drop.set_angle(0);
+    drop.set_radius(0);
+    drop.set_angle(frand() * 0.2 - 0.1);
     drop.friction = 0.25;
 
     drop.add_component(kRelations);
@@ -69,23 +69,18 @@ Entity &alloc_mob(MobID::T mob_id, float x, float y, EntityID team) {
         Entity &ent = __alloc_mob(mob_id, x, y, team);
         if (mob_id == MobID::kAntHole) {
             for (uint32_t i = 0; i < 3; ++i) {
-                Vector rand;
-                rand.unit_normal(frand() * 2 * M_PI);
+                Vector rand = Vector::rand(ent.radius * 2);
                 rand *= ent.radius * 2;
                 Entity &ant = __alloc_mob(MobID::kBabyAnt, x + rand.x, y + rand.y, team);
                 entity_set_owner(ant, ent.id);
             }
             for (uint32_t i = 0; i < 2; ++i) {
-                Vector rand;
-                rand.unit_normal(frand() * 2 * M_PI);
-                rand *= ent.radius * 2;
+                Vector rand = Vector::rand(ent.radius * 2);
                 Entity &ant = __alloc_mob(MobID::kWorkerAnt, x + rand.x, y + rand.y, team);
                 entity_set_owner(ant, ent.id);
             }
             for (uint32_t i = 0; i < 1; ++i) {
-                Vector rand;
-                rand.unit_normal(frand() * 2 * M_PI);
-                rand *= sqrtf(frand() * ent.radius * 3);
+                Vector rand = Vector::rand(ent.radius * 2);
                 Entity &ant = __alloc_mob(MobID::kSoldierAnt, x + rand.x, y + rand.y, team);
                 entity_set_owner(ant, ent.id);
             }
@@ -173,7 +168,7 @@ Entity &alloc_web(float radius, Entity &parent) {
     web.set_x(parent.x);
     web.set_y(parent.y);
     web.set_angle(frand() * 2 * M_PI);
-    web.set_radius(1);
+    web.set_radius(0);
     web.mass = radius;
     web.friction = 1.0;
     web.add_component(kRelations);

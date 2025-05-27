@@ -13,6 +13,7 @@ namespace Game {
     Socket socket;
     Ui::Window window;
     EntityID camera_id;
+    EntityID player_id;
 
     uint8_t loadout_count = 5;
     uint8_t simulation_ready = 0;
@@ -30,6 +31,9 @@ void Game::init() {
     );
     window.add_child(
         Ui::make_loadout_backgrounds()
+    );
+    window.add_child(
+        new Ui::LevelBar()
     );
     for (uint8_t i = 0; i < MAX_SLOT_COUNT * 2; ++i) window.add_child(new Ui::UiLoadoutPetal(i));
     socket.connect("ws://localhost:9001");
@@ -60,7 +64,12 @@ void Game::tick(double time) {
     double a = Ui::window_width / 1920;
     double b = Ui::window_height / 1080;
     Ui::scale = a > b ? a : b;
-    if (alive()) on_game_screen = 1;
+    if (alive()) {
+        on_game_screen = 1;
+        player_id = simulation.get_ent(camera_id).player;
+    } else {
+        player_id = NULL_ENTITY;
+    }
     if (in_game()) render_game();
     else render_title_screen();
 

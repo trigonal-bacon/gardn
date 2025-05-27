@@ -7,6 +7,7 @@ public:
     Vector();
     Vector(Vector &);
     Vector(float, float);
+    static Vector rand(float);
     Vector &operator=(Vector &);
     Vector &operator+=(Vector &);
     Vector &operator*=(float);

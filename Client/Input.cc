@@ -8,6 +8,7 @@ namespace Input {
     uint8_t mouse_buttons_state = 0;
     uint8_t mouse_buttons_pressed = 0;
     uint8_t mouse_buttons_released = 0;
+    uint8_t freeze_input = 0;
     std::unordered_set<char> keys_pressed;
     std::unordered_set<char> keys_pressed_this_tick;
 };

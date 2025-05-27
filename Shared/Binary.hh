@@ -8,10 +8,13 @@
 #include <string>
 
 enum kClientbound {
-    kClientUpdate
+    kDisconnect,
+    kClientUpdate,
+    kArenaUpdate
 };
 
 enum kServerbound {
+    kVerify,
     kClientInput,
     kClientSpawn,
     kPetalSwap,
@@ -25,6 +28,7 @@ public:
     Writer(uint8_t *);
     void write_uint8(uint8_t);
     void write_uint32(uint32_t);
+    void write_uint64(uint64_t);
     void write_int32(int32_t);
     void write_float(float);
     void write_Float(Float);
@@ -39,6 +43,7 @@ public:
     Reader(uint8_t const *);
     uint8_t read_uint8();
     uint32_t read_uint32();
+    uint64_t read_uint64();
     int32_t read_int32();
     float read_float();
     EntityID read_entid();

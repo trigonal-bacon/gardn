@@ -1,5 +1,6 @@
 #include <Shared/Vector.hh>
 
+#include <Shared/Helpers.hh>
 #include <cmath>
 
 Vector::Vector() {}
@@ -7,6 +8,11 @@ Vector::Vector() {}
 Vector::Vector(Vector &o) : x(o.x) , y(o.y) {}
 
 Vector::Vector(float _x, float _y) : x(_x), y(_y) {}
+
+Vector Vector::rand(float magnitude) {
+    float angle = frand() * 2 * M_PI;
+    return { cosf(angle) * magnitude, sinf(angle) * magnitude };
+}
 
 void Vector::set(float _x, float _y) {
     x = _x;

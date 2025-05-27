@@ -7,6 +7,7 @@ namespace Ui {
     extern double window_width;
     extern double window_height;
     extern double scale;
+    extern double lerp_amount;
     extern Element *focused;
     extern Element *pressed;
 };

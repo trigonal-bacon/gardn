@@ -239,9 +239,7 @@ static void tick_sandstorm(Simulation *sim, Entity &ent) {
                 ent.heading_angle = frand() * 2 * M_PI;
                 ent.ai_state = AIState::kIdleMoving;
             }
-            Vector rand;
-            rand.unit_normal(frand() * 2 * M_PI);
-            rand *= (PLAYER_ACCELERATION);
+            Vector rand = Vector::rand(PLAYER_ACCELERATION);
             ent.acceleration.set(rand.x, rand.y);
             break;
         }
