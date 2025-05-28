@@ -42,6 +42,12 @@ void Simulation::tick_lerp(double dt) {
             else LERP(ent.mouth, 15, amt)
         }
     }
+    for (uint32_t i = 0; i < arena_info.player_count; ++i) {
+        arena_info.scores[i].step(amt);
+    }
+    for (uint32_t i = arena_info.player_count; i < LEADERBOARD_SIZE; ++i) {
+        arena_info.scores[i] = 0;
+    }
 }
 
 void Simulation::post_tick() {

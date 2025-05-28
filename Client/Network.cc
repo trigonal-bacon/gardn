@@ -29,6 +29,7 @@ void Game::on_message(uint8_t *ptr, uint32_t len) {
                 ent.read(&reader);
                 curr_id = reader.read_entid();
             }
+            simulation.arena_info.read(&reader);
             break;
         }
         default:
@@ -59,11 +60,15 @@ void Game::send_inputs() {
 }
 
 void Game::spawn_in() {
-    uint8_t packet[8];
+    uint8_t packet[100];
     Writer writer(static_cast<uint8_t *>(packet));
     if (Game::alive()) return;
     if (Game::on_game_screen == 0) {
         writer.write_uint8(kServerbound::kClientSpawn);
+        frand();
+        frand();
+        std::string name{MOB_DATA[(int) (frand() * (float) MobID::kNumMobs)].name};
+        writer.write_string(name);
         socket.send(writer.packet, writer.at - writer.packet);
     }
 }

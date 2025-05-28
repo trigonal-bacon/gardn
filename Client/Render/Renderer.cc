@@ -54,7 +54,7 @@ Renderer::~Renderer() {
 }
 
 uint32_t Renderer::HSV(uint32_t c, float v) {
-    return MIX(0xff000000, c, v);
+    return MIX(c >> 24 << 24, c, v);
 }
 
 uint32_t Renderer::MIX(uint32_t base, uint32_t mix, float v) {

@@ -33,7 +33,7 @@ void Element::render(Renderer &ctx) {
     visible = curr_animation > 0.05;
     if (visible) {
         RenderContext context(&ctx);
-        ctx.set_stroke(0x80000000);
+        ctx.set_stroke(0x40000000);
         ctx.set_line_width(1);
         ctx.begin_path();
         ctx.round_rect(-width / 2, -height / 2, width, height, 6);

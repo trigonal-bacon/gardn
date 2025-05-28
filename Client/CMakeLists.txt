@@ -26,6 +26,7 @@ set(SRCS
     Simulation.cc
     Socket.cc
     Ui/InGame/InputFreeze.cc
+    Ui/InGame/Leaderboard.cc
     Ui/InGame/LevelBar.cc
     Ui/InGame/LoadoutPetal.cc
     Ui/InGame/LoadoutSlot.cc
@@ -38,6 +39,7 @@ set(SRCS
     Ui/Extern.cc
     Ui/StaticText.cc
     Ui/Window.cc
+    ../Shared/Arena.cc
     ../Shared/Binary.cc
     ../Shared/Entity.cc
     ../Shared/EntityDef.cc

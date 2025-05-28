@@ -36,6 +36,9 @@ void Game::init() {
         new Ui::LevelBar()
     );
     for (uint8_t i = 0; i < MAX_SLOT_COUNT * 2; ++i) window.add_child(new Ui::UiLoadoutPetal(i));
+    window.add_child(
+        Ui::make_leaderboard()
+    );
     socket.connect("ws://localhost:9001");
 }
 
@@ -83,4 +86,9 @@ void Game::tick(double time) {
     Input::mouse_buttons_pressed = Input::mouse_buttons_released = 0;
     Input::prev_mouse_x = Input::mouse_x;
     Input::prev_mouse_y = Input::mouse_y;
+
+    //temp print arena
+    for (uint32_t i = 0; i < simulation.arena_info.player_count; ++i) {
+        std::printf("[%d]: %s-%.1f\n", i, simulation.arena_info.names[i].c_str(), (float) simulation.arena_info.scores[i]);
+    }
 }

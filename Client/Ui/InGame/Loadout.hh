@@ -15,6 +15,8 @@ namespace Ui {
     class UiDeleteSlot final : public UiLoadoutSlot {
     public:
         UiDeleteSlot();
+        LerpFloat delete_text_opacity;
+        virtual void on_render(Renderer &) override;
     };
 
     class InputFreeze final : public Choose {

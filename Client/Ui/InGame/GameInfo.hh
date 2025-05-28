@@ -10,4 +10,15 @@ namespace Ui {
         LevelBar();
         virtual void on_render(Renderer &) override;
     };
+
+    class LeaderboardSlot final : public Element {
+    public:
+        uint8_t pos;
+        LerpFloat ratio;
+        LeaderboardSlot(uint8_t);
+
+        virtual void on_render(Renderer &) override;
+    };
+
+    Element *make_leaderboard();
 }

@@ -1,0 +1,89 @@
+#include <Client/Ui/InGame/GameInfo.hh>
+
+#include <Client/Ui/Container.hh>
+
+#include <Client/Game.hh>
+
+#include <string>
+
+using namespace Ui;
+
+static float const LEADERBOARD_WIDTH = 180;
+
+LeaderboardSlot::LeaderboardSlot(uint8_t p) : Element(LEADERBOARD_WIDTH, 18) , pos(p) {
+    ratio.set(1);
+    style.animate = [&](Element *, Renderer &){
+        if (pos >= Game::simulation.arena_info.player_count) return;
+        float r = 1;
+        if (((float) Game::simulation.arena_info.scores[0]) != 0) 
+            r = (float) Game::simulation.arena_info.scores[pos] / (float) Game::simulation.arena_info.scores[0];
+        ratio.set(r);
+        ratio.step(Ui::lerp_amount);
+    };
+}
+
+void LeaderboardSlot::on_render(Renderer &ctx) {
+    //we do not hide it though
+    if (pos >= Game::simulation.arena_info.player_count) return;
+    ctx.set_stroke(0xff222222);
+    ctx.set_line_width(height);
+    ctx.round_line_cap();
+    ctx.begin_path();
+    ctx.move_to(-(width-height)/2,0);
+    ctx.line_to((width-height)/2,0);
+    ctx.stroke();
+    ctx.set_stroke(0xfff9e496);
+    ctx.set_line_width(height * 0.8);
+    ctx.begin_path();
+    ctx.move_to(-(width-height)/2,0);
+    ctx.line_to(-(width-height)/2+(width-height)*((float) ratio),0);
+    ctx.stroke();
+    std::string format_string = std::format("{} - {:.0f}", Game::simulation.arena_info.names[pos], (float) Game::simulation.arena_info.scores[pos]);
+    ctx.set_fill(0xffffffff);
+    ctx.set_stroke(0xff222222);
+    ctx.center_text_align();
+    ctx.center_text_baseline();
+    ctx.set_text_size(height * 0.75);
+    ctx.set_line_width(height * 0.75 * 0.12);
+    ctx.stroke_text(format_string.c_str());
+    ctx.fill_text(format_string.c_str());
+}
+
+Element *Ui::make_leaderboard() {
+    Element *leaderboard = new Ui::VContainer({
+        new Ui::Element(LEADERBOARD_WIDTH + 20, 40, {.fill = 0x00000000, .line_width = 7, .animate = [](Element *elt, Renderer &ctx) {
+            elt->style.fill = 0xffa7ea59;
+            elt->on_render(ctx);
+            elt->style.fill = 0x00000000;
+            std::string format_string{"1 Flower"};
+            if (Game::simulation.arena_info.player_count != 1) 
+                format_string = std::format("{} Flowers", Game::simulation.arena_info.player_count);
+            ctx.set_fill(0xffffffff);
+            ctx.set_stroke(0xff222222);
+            ctx.center_text_align();
+            ctx.center_text_baseline();
+            ctx.set_text_size(elt->height * 0.5);
+            ctx.set_line_width(elt->height * 0.5 * 0.12);
+            ctx.stroke_text(format_string.c_str());
+            ctx.fill_text(format_string.c_str());
+        } }),
+        new Ui::VContainer({
+            new LeaderboardSlot(0),
+            new LeaderboardSlot(1),
+            new LeaderboardSlot(2),
+            new LeaderboardSlot(3),
+            new LeaderboardSlot(4),
+            new LeaderboardSlot(5),
+            new LeaderboardSlot(6),
+            new LeaderboardSlot(7),
+            new LeaderboardSlot(8),
+            new LeaderboardSlot(9),
+        }, 10, 5, {})
+    }, 0, 0, { .fill = 0xff777777, .line_width = 7, });
+    leaderboard->h_justify = Element::Right;
+    leaderboard->v_justify = Element::Top;
+    leaderboard->should_render = [](){ return Game::in_game(); };
+    leaderboard->x = -15;
+    leaderboard->y = 15;
+    return leaderboard;
+}
