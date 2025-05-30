@@ -7,6 +7,9 @@
 #include <Server/Spawn.hh>
 #include <Server/SpatialHash.hh>
 
+#include <algorithm>
+#include <vector>
+
 static void update_client(Simulation *sim, Client *client) {
     if (!sim->ent_exists(client->camera)) return;
     std::set<EntityID> in_view;
@@ -35,6 +38,8 @@ static void update_client(Simulation *sim, Client *client) {
         ent.write(&writer, create);
     }
     writer.write_entid(NULL_ENTITY);
+    //write arena stuff
+    sim->arena_info.write(&writer, 0);
     //set client->last_in_view
     client->last_in_view.clear();
     for (EntityID i: in_view) client->last_in_view.insert(i);
@@ -43,9 +48,23 @@ static void update_client(Simulation *sim, Client *client) {
     client->ws->send(message, uWS::OpCode::BINARY, 0);
 }
 
+
+static void calculate_leaderboard(Simulation *sim) {
+    std::vector<Entity *> players;
+    sim->for_each<kFlower>([&](Simulation *s, Entity &ent) { players.push_back(&ent); });
+    std::stable_sort(players.begin(), players.end(), [](Entity *a, Entity *b){ return a->score > b->score; });
+    uint32_t num = players.size();
+    sim->arena_info.player_count = num;
+    if (num > 10) num = 10;
+    for (uint32_t i = 0; i < num; ++i) {
+        sim->arena_info.names[i] = players[i]->name;
+        sim->arena_info.scores[i] = players[i]->score;
+    }
+}
+
 void Simulation::tick() {
     pre_tick();
-    if (frand() < 0.01) alloc_mob(frand() * (float) MobID::kNumMobs, frand() * ARENA_WIDTH, frand() * ARENA_HEIGHT, NULL_ENTITY);
+    if (frand() < 0.005) alloc_mob((float) MobID::kMassiveBeetle + 0 * frand() * (float) MobID::kNumMobs, frand() * ARENA_WIDTH, frand() * ARENA_HEIGHT, NULL_ENTITY);
     for (uint32_t i = 0; i < active_entities.length; ++i) {
         Entity &ent = get_ent(active_entities[i]);
         if (ent.has_component(kPhysics)) {
@@ -65,6 +84,7 @@ void Simulation::tick() {
     for_each<kSegmented>(tick_segment_behavior);
     for_each<kDrop>(tick_drop_behavior);
     for_each<kCamera>(tick_camera_behavior);
+    calculate_leaderboard(this);
     post_tick();
 }
 
@@ -91,8 +111,10 @@ void Simulation::post_tick() {
         if (!ent.has_component(kPhysics)) 
             delete_ent(pending_delete[i]);
         else {
-            if (ent.deletion_tick >= 4)
+            if (ent.deletion_tick >= 4) {
+                spatial_hash.remove(ent);
                 delete_ent(pending_delete[i]);
+            }
             else {
                 if (ent.deletion_tick == 0)
                     entity_on_death(this, ent);

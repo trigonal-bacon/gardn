@@ -91,6 +91,10 @@ void Server::run() {
                     Entity &camera = Server::simulation.get_ent(client->camera);
                     Entity &player = alloc_player(camera);
                     player_spawn(&Server::simulation, camera, player);
+                    std::string name;
+                    //check string length;
+                    reader.read_string(name);
+                    player.set_name(name);
                     break;
                 }
                 case kServerbound::kPetalDelete: {

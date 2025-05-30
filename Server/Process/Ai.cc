@@ -239,7 +239,7 @@ static void tick_sandstorm(Simulation *sim, Entity &ent) {
                 ent.heading_angle = frand() * 2 * M_PI;
                 ent.ai_state = AIState::kIdleMoving;
             }
-            Vector rand = Vector::rand(PLAYER_ACCELERATION);
+            Vector rand = Vector::rand(PLAYER_ACCELERATION * 0.5);
             ent.acceleration.set(rand.x, rand.y);
             break;
         }
@@ -252,10 +252,10 @@ static void tick_sandstorm(Simulation *sim, Entity &ent) {
                 ent.heading_angle += frand() * M_PI - M_PI / 2;
             Vector head;
             head.unit_normal(ent.heading_angle);
-            head.set_magnitude(PLAYER_ACCELERATION);
+            head.set_magnitude(PLAYER_ACCELERATION * 0.5);
             Vector rand;
             rand.unit_normal(ent.heading_angle + frand() * M_PI - M_PI / 2);
-            rand.set_magnitude(PLAYER_ACCELERATION * 0.5);
+            rand.set_magnitude(PLAYER_ACCELERATION * 0.25);
             head += rand;
             ent.acceleration.set(head.x, head.y);
             break;

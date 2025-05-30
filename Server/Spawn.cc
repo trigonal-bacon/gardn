@@ -128,12 +128,13 @@ Entity &alloc_player(Entity &camera) {
     player.max_health = 100;
     player.set_health_ratio(1);
     player.damage = 25;
-    player.immunity_ticks = 1 * TPS;
+    player.immunity_ticks = 3.5 * TPS;
+    player.mass = 1;
 
     player.add_component(kScore);
 
     player.add_component(kName);
-    player.set_name("TestName.com");
+    //player.set_name("TestName.com");
     player.set_nametag_visible(1);
     return player;
 }
@@ -186,7 +187,7 @@ void player_spawn(Simulation *sim, Entity &camera, Entity &player) {
     camera.set_camera_y(spawn_y);
     player.set_x(spawn_x);
     player.set_y(spawn_y);
-    player.set_score(levelToScore(camera.respawn_level));
+    player.set_score(level_to_score(camera.respawn_level));
     player.set_loadout_count(loadOutSlotsAtLevel(camera.respawn_level));
     player.health = player.max_health = hpAtLevel(camera.respawn_level);
     for (uint32_t i = 0; i < player.loadout_count; ++i) {

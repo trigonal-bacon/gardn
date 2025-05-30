@@ -21,6 +21,7 @@ public:
     SpatialHash(Simulation *);
     void clear();
     void insert(Entity &);
+    void remove(Entity &);
     void collide(std::function<void(Simulation *, Entity &, Entity &)>);
     void query(float, float, float, float, std::function<void(Simulation *, Entity &)>);
 };

@@ -24,6 +24,7 @@ set(SOURCES
     Simulation.cc
     SpatialHash.cc
     Spawn.cc
+    ../Shared/Arena.cc
     ../Shared/Binary.cc
     ../Shared/Entity.cc
     ../Shared/EntityDef.cc

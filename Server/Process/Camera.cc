@@ -10,7 +10,7 @@ void tick_camera_behavior(Simulation *sim, Entity &ent) {
         Entity &player = sim->get_ent(ent.player);
         ent.set_camera_x(player.x);
         ent.set_camera_y(player.y);
-        player.set_loadout_count(loadOutSlotsAtLevel(scoreToLevel(player.score)));
+        player.set_loadout_count(loadOutSlotsAtLevel(score_to_level(player.score)));
         ent.last_damaged_by = player.last_damaged_by;
     } else {
         ent.set_fov(BASE_FOV * 0.9);

@@ -59,7 +59,7 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
     if (buffs.heal > 0)
         inflict_heal(sim, player, buffs.heal);
     float health_ratio = player.health / player.max_health;
-    player.max_health = hpAtLevel(scoreToLevel(player.score)) + buffs.extra_health;
+    player.max_health = hpAtLevel(score_to_level(player.score)) + buffs.extra_health;
     player.health = health_ratio * player.max_health;
     float rot_pos = 0;
     player.set_face_flags(0);

@@ -61,10 +61,6 @@ void entity_on_death(Simulation *sim, Entity &ent) {
         [](PetalID::T a, PetalID::T b) {
             return PETAL_DATA[a].rarity < PETAL_DATA[b].rarity;
         });
-        //std::cout << "Player Drops\n";
-        //for (auto x : potential)
-            //std::cout << '{' << (int) x << ',' << (int) PETAL_DATA[x].rarity << '}';
-        //std::cout << '\n';
         std::vector<PetalID::T> success_drops = {};
         uint32_t numDrops = potential.size();
         if (numDrops > 3)
@@ -89,6 +85,6 @@ void entity_on_death(Simulation *sim, Entity &ent) {
         for (uint32_t i = numLeft; i < ent.loadout_count; ++i)
             camera.set_inventory(i, PetalID::kBasic);
         //set respawn level
-        camera.set_respawn_level(scoreToLevel(ent.score) / 2);
+        camera.set_respawn_level(3 * score_to_level(ent.score) / 4);
     }
 }

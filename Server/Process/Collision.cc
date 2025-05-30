@@ -59,12 +59,18 @@ void on_collide(Simulation *sim, Entity &ent1, Entity &ent2) {
         if (separation.x == 0 && separation.y == 0) separation.unit_normal(frand() * 2 * 3.14159);
         separation.normalize();
         float ratio = ent2.mass / (ent1.mass + ent2.mass);
-        float bounce_factor = 0.0;
         Vector sep = separation;
-        sep *= ratio * dist * (1 + bounce_factor);
+        if (!(ent1.team == ent2.team)) {
+            float scale = PLAYER_ACCELERATION * 5;
+            Vector norm_sep = separation * scale * ratio;
+            ent1.velocity += norm_sep;
+            norm_sep = separation * scale * (ratio - 1);
+            ent2.velocity += norm_sep;
+        }
+        sep *= ratio * dist;
         ent1.collision_velocity += sep;
         sep = separation;
-        sep *= (ratio - 1) * dist * (1 + bounce_factor);
+        sep *= (ratio - 1) * dist;
         ent2.collision_velocity += sep;
     }
 
