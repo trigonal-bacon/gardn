@@ -59,16 +59,17 @@ UiLoadoutPetal::UiLoadoutPetal(uint8_t pos) : Element(60, 60),
                 if (petal_id != PetalID::kNone)
                     last_id = petal_id;
             } else --no_change_ticks;
-            if (static_pos < Game::loadout_count) {
-                if (player.state_per_loadout_reloads[static_pos]) {
-                    float old = player.loadout_reloads[static_pos] / 255.0f;
-                    if (old > reload) reload.set(old);
-                    else reload = old;
-                }
-            }
-            else
-                reload = 0;
         }
+        if (static_pos < Game::loadout_count && Game::alive()) {
+            Entity &player = Game::simulation.get_ent(Game::player_id);
+            if (player.state_per_loadout_reloads[static_pos]) {
+                float old = player.loadout_reloads[static_pos] / 255.0f;
+                if (old > reload) reload.set(old);
+                else reload = old;
+            }
+        }
+        else
+            reload = 0;
         if (petal_id == PetalID::kNone) return false;
         return true;
     };
@@ -140,6 +141,8 @@ UiLoadoutPetal::UiLoadoutPetal(uint8_t pos) : Element(60, 60),
             LERP(width, parent_slot->width, lerp_amt);
             LERP(height, parent_slot->height, lerp_amt);
         }
+        if (!Game::alive())
+            Ui::UiLoadout::petal_selected = nullptr;
     };
     Ui::UiLoadout::petal_slots[static_pos] = this;
 }
@@ -168,15 +171,11 @@ void UiLoadoutPetal::on_render(Renderer &ctx) {
             if (PETAL_DATA[last_id].radius > 30) ctx.scale(30 / PETAL_DATA[last_id].radius);
             draw_static_petal(last_id, ctx);
         }
-        ctx.set_text_size(14);
-        ctx.set_line_width(14 * 0.12);
-        ctx.set_fill(0xffffffff);
-        ctx.set_stroke(0xff222222);
+        float text_width = 14 * Renderer::get_ascii_text_size(PETAL_DATA[last_id].name);
+        if (text_width < 50) text_width = 14;
+        else text_width = 14 * 50 / text_width;
         ctx.translate(0, 20);
-        ctx.center_text_align();
-        ctx.center_text_baseline();
-        ctx.stroke_text(PETAL_DATA[last_id].name);
-        ctx.fill_text(PETAL_DATA[last_id].name);
+        ctx.draw_text(PETAL_DATA[last_id].name, { .size = text_width });
     }
 }
 

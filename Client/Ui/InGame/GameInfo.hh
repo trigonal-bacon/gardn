@@ -21,4 +21,5 @@ namespace Ui {
     };
 
     Element *make_leaderboard();
+    Element *make_level_bar();
 }

@@ -27,13 +27,11 @@ void render_drop(Renderer &ctx, Entity &ent) {
         if (PETAL_DATA[ent.drop_id].radius > 30) ctx.scale(30 / PETAL_DATA[ent.drop_id].radius);
         draw_static_petal(ent.drop_id, ctx);
     }
-    ctx.set_text_size(14);
-    ctx.set_line_width(14 * 0.12);
-    ctx.set_fill(0xffffffff);
-    ctx.set_stroke(0xff222222);
+    //ctx.center_text_align();
+    //ctx.center_text_baseline();
+    float text_width = 14 * Renderer::get_ascii_text_size(PETAL_DATA[ent.drop_id].name);
+    if (text_width < 50) text_width = 14; 
+    else text_width = 14 * 50 / text_width;
     ctx.translate(0, 20);
-    ctx.center_text_align();
-    ctx.center_text_baseline();
-    ctx.stroke_text(PETAL_DATA[ent.drop_id].name);
-    ctx.fill_text(PETAL_DATA[ent.drop_id].name);
+    ctx.draw_text(PETAL_DATA[ent.drop_id].name, { .size = text_width });
 }

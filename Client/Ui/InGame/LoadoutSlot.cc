@@ -7,7 +7,7 @@ using namespace Ui;
 
 UiLoadoutSlot *Ui::UiLoadout::petal_backgrounds[2 * MAX_SLOT_COUNT + 1] = {nullptr};
 
-UiLoadoutSlot::UiLoadoutSlot(uint8_t pos) : Element(60, 60, { .fill = 0xfffcfcfc }) {
+UiLoadoutSlot::UiLoadoutSlot(uint8_t pos) : Element(60, 60, { .fill = 0xfffcfcfc, .round_radius = 0 }) {
     if (pos >= MAX_SLOT_COUNT) width = height = 45;
     style.line_width = width / 12;
     style.round_radius = width / 20;

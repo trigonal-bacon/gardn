@@ -304,6 +304,15 @@ void Renderer::stroke_text(char const *text) {
     }, id, text, strlen(text));
 }
 
+void Renderer::draw_text(char const *text, struct TextArgs const args) {
+    set_fill(args.fill);
+    set_stroke(args.stroke);
+    set_text_size(args.size);
+    set_line_width(args.size * args.stroke_scale);
+    stroke_text(text);
+    fill_text(text);
+}
+
 float Renderer::get_text_size(char const *text) {
     return EM_ASM_DOUBLE({
         return Module.ctxs[$0].measureText(Module.TextDecoder.decode(HEAPU8.subarray($1, $1+$2)),0,0).width;

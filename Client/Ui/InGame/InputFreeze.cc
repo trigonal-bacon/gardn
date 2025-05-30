@@ -3,6 +3,7 @@
 #include <Client/Ui/Container.hh>
 #include <Client/Ui/Extern.hh>
 #include <Client/Ui/StaticText.hh>
+#include <Client/Game.hh>
 #include <Client/Input.hh>
 
 #include <cmath>
@@ -20,6 +21,7 @@ InputFreeze::InputFreeze() : Choose(
     render_width = first->width;
     render_height = first->height;
     style.animate = [&](Element *elt, Renderer &ctx){
+        if (!Game::alive()) Input::freeze_input = 0;
         if (Input::freeze_input) {
             LERP(render_width, parent->width, Ui::lerp_amount);
             LERP(render_height, parent->height, Ui::lerp_amount);

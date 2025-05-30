@@ -35,6 +35,7 @@ set(SRCS
     Ui/Button.cc
     Ui/Choose.cc
     Ui/Container.cc
+    Ui/DynamicText.cc
     Ui/Element.cc
     Ui/Extern.cc
     Ui/StaticText.cc

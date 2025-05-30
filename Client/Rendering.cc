@@ -81,6 +81,14 @@ void Game::render_game() {
         render_petal(renderer, ent);
     });
     simulation.for_each<kMob>([](Simulation *sim, Entity &ent){
+        if (ent.mob_id != MobID::kAntHole) return;
+        RenderContext context(&renderer);
+        renderer.translate(ent.x, ent.y);
+        renderer.rotate(ent.angle);
+        render_mob(renderer, ent);
+    });
+    simulation.for_each<kMob>([](Simulation *sim, Entity &ent){
+        if (ent.mob_id == MobID::kAntHole) return;
         RenderContext context(&renderer);
         renderer.translate(ent.x, ent.y);
         renderer.rotate(ent.angle);

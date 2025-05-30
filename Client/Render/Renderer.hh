@@ -17,6 +17,13 @@ public:
 
 class Renderer {
 public:
+    struct TextArgs {
+        uint32_t fill = 0xffffffff;
+        uint32_t stroke = 0xff222222;
+        float size = 0;
+        float stroke_scale = 0.12;
+    };
+
     RenderContext context;
     uint32_t id = 0;
     float width = 0;
@@ -69,6 +76,7 @@ public:
 
     void fill_text(char const *);
     void stroke_text(char const *);
+    void draw_text(char const *, struct TextArgs const);
     float get_text_size(char const *);
     //text ops
 };

@@ -33,7 +33,7 @@ void Game::init() {
         Ui::make_loadout_backgrounds()
     );
     window.add_child(
-        new Ui::LevelBar()
+        Ui::make_level_bar()
     );
     for (uint8_t i = 0; i < MAX_SLOT_COUNT * 2; ++i) window.add_child(new Ui::UiLoadoutPetal(i));
     window.add_child(
@@ -62,6 +62,10 @@ void Game::tick(double time) {
     g_last_time = time;
     renderer.context.reset();
     renderer.reset_transform();
+    renderer.round_line_cap();
+    renderer.round_line_join();
+    renderer.center_text_align();
+    renderer.center_text_baseline();
     Ui::window_width = renderer.width;
     Ui::window_height = renderer.height;
     double a = Ui::window_width / 1920;
@@ -88,7 +92,9 @@ void Game::tick(double time) {
     Input::prev_mouse_y = Input::mouse_y;
 
     //temp print arena
+    /*
     for (uint32_t i = 0; i < simulation.arena_info.player_count; ++i) {
         std::printf("[%d]: %s-%.1f\n", i, simulation.arena_info.names[i].c_str(), (float) simulation.arena_info.scores[i]);
     }
+        */
 }

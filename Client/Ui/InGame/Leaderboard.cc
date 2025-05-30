@@ -50,23 +50,18 @@ void LeaderboardSlot::on_render(Renderer &ctx) {
 }
 
 Element *Ui::make_leaderboard() {
-    Element *leaderboard = new Ui::VContainer({
-        new Ui::Element(LEADERBOARD_WIDTH + 20, 40, {.fill = 0x00000000, .line_width = 7, .animate = [](Element *elt, Renderer &ctx) {
-            elt->style.fill = 0xffa7ea59;
-            elt->on_render(ctx);
-            elt->style.fill = 0x00000000;
+    Container *lb_header = new Ui::Container({
+        new Ui::DynamicText(20, [](){
             std::string format_string{"1 Flower"};
             if (Game::simulation.arena_info.player_count != 1) 
                 format_string = std::format("{} Flowers", Game::simulation.arena_info.player_count);
-            ctx.set_fill(0xffffffff);
-            ctx.set_stroke(0xff222222);
-            ctx.center_text_align();
-            ctx.center_text_baseline();
-            ctx.set_text_size(elt->height * 0.5);
-            ctx.set_line_width(elt->height * 0.5 * 0.12);
-            ctx.stroke_text(format_string.c_str());
-            ctx.fill_text(format_string.c_str());
-        } }),
+            return format_string;
+        })
+    }, 0, 0, { .fill = 0xffa7ea59, .line_width = 7 });
+    lb_header->width = LEADERBOARD_WIDTH + 20;
+    lb_header->height = 40;
+    Element *leaderboard = new Ui::VContainer({
+        lb_header,
         new Ui::VContainer({
             new LeaderboardSlot(0),
             new LeaderboardSlot(1),

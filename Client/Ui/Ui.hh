@@ -6,6 +6,7 @@
 #include <Client/Ui/Button.hh>
 #include <Client/Ui/Choose.hh>
 #include <Client/Ui/Container.hh>
+#include <Client/Ui/DynamicText.hh>
 #include <Client/Ui/Element.hh>
 #include <Client/Ui/StaticText.hh>
 #include <Client/Ui/Window.hh>

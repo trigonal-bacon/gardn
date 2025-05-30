@@ -5,21 +5,19 @@
 #include <Shared/StaticData.hh>
 
 #include <cstdio>
+#include <string>
 
 using namespace Ui;
 
 LevelBar::LevelBar() : Element(300,40) {
     progress = 0;
-    should_render = [](){
-        return Game::alive();
-    };
     style.animate = [&](Element *elt, Renderer &ctx) {
         if (Game::alive()) {
             Entity &player = Game::simulation.get_ent(Game::player_id);
             float xp = player.score;
-            level = scoreToLevel(xp);
-            xp -= levelToScore(level);
-            xp /= scoreToPassLevel(level);
+            level = score_to_level(xp);
+            xp -= level_to_score(level);
+            xp /= score_to_pass_level(level);
             progress.set(xp);
         }
         progress.step(Ui::lerp_amount);
@@ -52,4 +50,30 @@ void LevelBar::on_render(Renderer &ctx) {
     std::snprintf(text, 15, "Level %d", level);
     ctx.stroke_text(text);
     ctx.fill_text(text);
+}
+
+Element *Ui::make_level_bar() {
+    Element *level_bar = new Ui::VContainer({
+        new Ui::LevelBar(),
+        new Ui::DynamicText(12, [](){
+            std::string format_string{};
+            if (Game::alive()) {
+                Entity &player = Game::simulation.get_ent(Game::player_id);
+                uint32_t level = score_to_level(player.score);
+                if (level < 45)
+                    format_string = std::format("Extra petal slot at level {}", div_round_up(level + 1, 15) * 15);
+            }
+            return format_string;
+        }),
+        new Ui::Element(1,60)
+    }, 0, 5, {});
+    level_bar->should_render = [](){
+        return Game::alive();
+    };
+    level_bar->h_justify = Ui::Element::Left;
+    level_bar->v_justify = Ui::Element::Bottom;
+    level_bar->style.animate = [](Element *elt, Renderer &ctx) {
+        ctx.translate(-(1 - (float) elt->animation) * 1.5 * elt->width, 0);
+    };
+    return level_bar;
 }

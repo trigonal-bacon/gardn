@@ -472,9 +472,9 @@ void draw_loadout_background(Renderer &ctx, uint32_t color) {
     ctx.round_line_join();
     ctx.round_line_cap();
     ctx.begin_path();
-    ctx.round_rect(-30, -30, 60, 60, 3);
+    ctx.round_rect(-30, -30, 60, 60, 0);
     ctx.fill();
     ctx.begin_path();
-    ctx.round_rect(-30, -30, 60, 60, 3);
+    ctx.round_rect(-30, -30, 60, 60, 0);
     ctx.stroke();
 }
