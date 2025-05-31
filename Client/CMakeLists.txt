@@ -30,6 +30,7 @@ set(SRCS
     Ui/InGame/LevelBar.cc
     Ui/InGame/LoadoutPetal.cc
     Ui/InGame/LoadoutSlot.cc
+    Ui/InGame/Tooltip.cc
     Ui/TitleScreen/DeathScreen.cc
     Ui/TitleScreen/MainScreen.cc
     Ui/Button.cc

@@ -18,6 +18,7 @@ namespace Ui {
 
         virtual void on_render(Renderer &) override;
         virtual void on_render_skip(Renderer &) override;
+        virtual void on_render_tooltip(Renderer &) override;
         virtual void refactor() override;
         virtual void poll_events() override;
     };

@@ -7,6 +7,7 @@
 #include <Client/Ui/Ui.hh>
 
 #include <Shared/Simulation.hh>
+#include <Shared/Vector.hh>
 
 namespace Game {
     extern Simulation simulation;
@@ -15,6 +16,9 @@ namespace Game {
     extern Ui::Window window;
     extern EntityID camera_id;
     extern EntityID player_id;
+    extern Vector screen_shake;
+    
+    extern float transition_circle;
 
     extern uint8_t loadout_count;
     extern uint8_t simulation_ready;
@@ -23,6 +27,8 @@ namespace Game {
     void init();
     uint8_t alive();
     uint8_t in_game();
+    uint8_t should_render_title_ui();
+    uint8_t should_render_game_ui();
     void tick(double);
     void render_game();
     void render_title_screen();

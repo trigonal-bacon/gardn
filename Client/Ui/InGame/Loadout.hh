@@ -49,8 +49,10 @@ namespace Ui {
         extern UiLoadoutPetal *petal_selected;
         extern UiLoadoutPetal *petal_slots[2 * MAX_SLOT_COUNT];
         extern UiLoadoutSlot *petal_backgrounds[2 * MAX_SLOT_COUNT + 1];
+        extern Element *petal_tooltips[PetalID::kNumPetals];
         extern uint8_t selected_with_keys;
     };
 
     Element *make_loadout_backgrounds();
+    void make_petal_tooltips();
 }

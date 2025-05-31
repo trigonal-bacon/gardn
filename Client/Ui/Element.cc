@@ -30,7 +30,7 @@ void Element::render(Renderer &ctx) {
     if (showed) animation.step(Ui::lerp_amount);
     else animation.step(1);
     float curr_animation = (float) animation;
-    visible = curr_animation > 0.05;
+    visible = curr_animation > 0.01;
     if (visible) {
         RenderContext context(&ctx);
         ctx.set_stroke(0x40000000);
@@ -81,6 +81,20 @@ void Element::on_render(Renderer &ctx) {
     }
 }
 
+void Element::on_render_tooltip(Renderer &ctx) {
+    tooltip_animation.set(rendering_tooltip);
+    tooltip_animation.step(Ui::lerp_amount);
+    if (tooltip_animation < 0.01 && !rendering_tooltip)
+        tooltip = nullptr;
+    if (tooltip == nullptr) return;
+    ctx.reset_transform();
+    ctx.translate(screen_x, screen_y);
+    ctx.scale(Ui::scale);
+    ctx.translate(0, -(height + tooltip->height) / 2 - 10);
+    ctx.set_global_alpha((float) tooltip_animation);
+    tooltip->on_render(ctx);
+}
+
 void Element::on_render_skip(Renderer &ctx) {}
 
 void Element::on_event(uint8_t event) {}
@@ -88,8 +102,8 @@ void Element::on_event(uint8_t event) {}
 void Element::refactor() {}
 
 void Element::poll_events() {
-    if (fabsf(Input::mouse_x - screen_x) < width * Ui::scale / 2
-    && fabsf(Input::mouse_y - screen_y) < height * Ui::scale / 2) {
+    if (std::abs(Input::mouse_x - screen_x) < width * Ui::scale / 2
+    && std::abs(Input::mouse_y - screen_y) < height * Ui::scale / 2) {
         Ui::focused = this;
     }
     else if (Ui::focused == this) {

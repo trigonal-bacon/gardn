@@ -3,6 +3,7 @@
 #include <iostream>
 
 static double g_last_time = 0;
+static const float max_transition_circle = 2500;
 
 static int _c = setup_canvas();
 static int _i = setup_inputs();
@@ -14,6 +15,9 @@ namespace Game {
     Ui::Window window;
     EntityID camera_id;
     EntityID player_id;
+    Vector screen_shake;
+
+    float transition_circle = 0;
 
     uint8_t loadout_count = 5;
     uint8_t simulation_ready = 0;
@@ -26,6 +30,7 @@ void Game::init() {
     window.add_child(
         Ui::make_title_main_screen()
     );
+    window.title_divider = window.children.size();
     window.add_child(
         Ui::make_death_main_screen()
     );
@@ -39,6 +44,7 @@ void Game::init() {
     window.add_child(
         Ui::make_leaderboard()
     );
+    Ui::make_petal_tooltips();
     socket.connect("ws://localhost:9001");
 }
 
@@ -51,6 +57,14 @@ uint8_t Game::alive() {
 uint8_t Game::in_game() {
     return simulation_ready && on_game_screen
     && simulation.ent_exists(camera_id);
+}
+
+uint8_t Game::should_render_title_ui() {
+    return transition_circle < max_transition_circle;
+}
+
+uint8_t Game::should_render_game_ui() {
+    return transition_circle > 0 && simulation_ready && simulation.ent_exists(camera_id);
 }
 
 void Game::tick(double time) {
@@ -77,11 +91,42 @@ void Game::tick(double time) {
     } else {
         player_id = NULL_ENTITY;
     }
-    if (in_game()) render_game();
-    else render_title_screen();
 
-    process_ui();
-    
+    if (in_game()) {
+        transition_circle = fclamp(transition_circle * 1.05 + 5, 0, max_transition_circle);
+        //transition_circle = fclamp(transition_circle + 100, 0, 2500);
+    } else {
+        transition_circle = fclamp(transition_circle / 1.05 - 5, 0, max_transition_circle);
+        //transition_circle = fclamp(transition_circle - 100, 0, 2500);
+    }
+
+    window.refactor();
+    window.poll_events();
+
+    if (should_render_title_ui()) {
+        render_title_screen();
+        window.render_title_screen(renderer);
+    }
+
+    if (should_render_game_ui() && should_render_title_ui()) {
+        renderer.set_stroke(0xff222222);
+        renderer.set_line_width(Ui::scale * 10);
+        renderer.begin_path();
+        renderer.arc(renderer.width / 2, renderer.height / 2, transition_circle);
+        renderer.stroke();
+        renderer.clip();
+    }
+
+    if (should_render_game_ui()) {
+        render_game();
+        window.render_game_screen(renderer);
+    }
+
+    window.on_render_tooltip(renderer);
+    window.tick_render_skip(renderer);
+
+    //no rendering past this point
+
     if (socket.ready && alive()) send_inputs();
 
     //clearing operations
@@ -90,11 +135,4 @@ void Game::tick(double time) {
     Input::mouse_buttons_pressed = Input::mouse_buttons_released = 0;
     Input::prev_mouse_x = Input::mouse_x;
     Input::prev_mouse_y = Input::mouse_y;
-
-    //temp print arena
-    /*
-    for (uint32_t i = 0; i < simulation.arena_info.player_count; ++i) {
-        std::printf("[%d]: %s-%.1f\n", i, simulation.arena_info.names[i].c_str(), (float) simulation.arena_info.scores[i]);
-    }
-        */
 }

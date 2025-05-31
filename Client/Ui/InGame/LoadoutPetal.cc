@@ -47,7 +47,7 @@ UiLoadoutPetal::UiLoadoutPetal(uint8_t pos) : Element(60, 60),
 {
     reload = 1;
     should_render = [&](){
-        if (!Game::in_game()) return false;
+        if (!Game::should_render_game_ui()) return false;
         //coincidentally also works for trashing
         if (static_pos >= MAX_SLOT_COUNT + Game::loadout_count) return false;
         if (curr_pos == 2 * MAX_SLOT_COUNT) return false;
@@ -193,5 +193,11 @@ void UiLoadoutPetal::on_event(uint8_t event) {
     if (event == kMouseDown && Ui::UiLoadout::petal_selected == nullptr) {
         Ui::UiLoadout::petal_selected = this;
         Ui::UiLoadout::selected_with_keys = 0;
+    }
+    if (event == kMouseHover && last_id != PetalID::kNone && Ui::UiLoadout::petal_selected != this) {
+        rendering_tooltip = 1;
+        tooltip = Ui::UiLoadout::petal_tooltips[last_id];
+    } else {
+        rendering_tooltip = 0;
     }
 }

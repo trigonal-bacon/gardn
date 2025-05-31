@@ -11,11 +11,16 @@ Element *Ui::make_death_main_screen() {
         140,
         40,
         new Ui::StaticText(30, "Continue"),
-        [](uint8_t e){ if (e == Ui::kClick) Game::on_game_screen = 0; },
-        { .fill = 0xffcccccc }
+        [](uint8_t e){ if (e == Ui::kClick && Game::on_game_screen) Game::on_game_screen = 0; },
+        { .fill = 0xff94e873 }
     );
-    continue_button->should_render = [](){
-        return !Game::alive() && Game::on_game_screen;
+    Ui::Element *container = new Ui::VContainer({
+        new Ui::StaticText(35, "You died"),
+        new Ui::Element(0,100),
+        continue_button
+    }, 0, 10);
+    container->should_render = [](){
+        return !Game::alive() && Game::should_render_game_ui(); //Game::on_game_screen;
     };
-    return continue_button;
+    return container;
 }

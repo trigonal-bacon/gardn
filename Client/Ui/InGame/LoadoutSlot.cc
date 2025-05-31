@@ -12,7 +12,7 @@ UiLoadoutSlot::UiLoadoutSlot(uint8_t pos) : Element(60, 60, { .fill = 0xfffcfcfc
     style.line_width = width / 12;
     style.round_radius = width / 20;
     should_render = [=](){
-        if (!Game::in_game()) return false;
+        //if (!Game::should_render_game_ui()) return false;
         if (pos >= MAX_SLOT_COUNT || pos < Game::loadout_count) return true;
         return false;
     };
@@ -75,9 +75,9 @@ Element *Ui::make_loadout_backgrounds() {
         }, 0, 0
     );
     base->should_render = [](){
-        return Game::in_game();
+        return Game::should_render_game_ui(); //Game::in_game();
     };
-    base->v_justify = Element::Bottom;
+    base->style.v_justify = Style::Bottom;
     base->style.animate = [](Element *elt, Renderer &ctx){};
     return base;
 }

@@ -8,30 +8,51 @@ using namespace Ui;
 
 Window::Window() : Container({}) {}
 
-void Window::render(Renderer &ctx) {
+void Window::render_title_screen(Renderer &ctx) {
+    RenderContext context(&ctx);
+    ctx.reset_transform();
     Ui::lerp_amount = 1 - pow(1 - 0.3, Ui::dt * 60 / 1000);
     width = Ui::window_width; height = Ui::window_height;
     ctx.translate(width / 2, height / 2);
-    on_render(ctx);
+    for (uint32_t layer = 0; layer < 2; ++layer) {
+        for (uint32_t i = 0; i < title_divider; ++i) {
+            Element *elt = children[i];
+            if (elt->layer != layer) continue;
+            RenderContext context(&ctx);
+            ctx.translate(elt->style.h_justify * width / 2, elt->style.v_justify * height / 2);
+            ctx.scale(Ui::scale);
+            ctx.translate(-elt->style.h_justify * elt->width / 2, -elt->style.v_justify * elt->height / 2);
+            ctx.translate(elt->x, elt->y);
+            elt->render(ctx);
+        }
+    }
 }
 
-void Window::on_render(Renderer &ctx) {
-    for (Element *elt : children) {
-        if (elt->layer != 0) continue;
-        RenderContext context(&ctx);
-        ctx.translate(elt->h_justify * width / 2, elt->v_justify * height / 2);
-        ctx.scale(Ui::scale);
-        ctx.translate(-elt->h_justify * elt->width / 2, -elt->v_justify * elt->height / 2);
-        ctx.translate(elt->x, elt->y);
-        elt->render(ctx);
+void Window::render_game_screen(Renderer &ctx) {
+    RenderContext context(&ctx);
+    ctx.reset_transform();
+    Ui::lerp_amount = 1 - pow(1 - 0.3, Ui::dt * 60 / 1000);
+    width = Ui::window_width; height = Ui::window_height;
+    ctx.translate(width / 2, height / 2);
+    for (uint32_t layer = 0; layer < 2; ++layer) {
+        for (uint32_t i = title_divider; i < children.size(); ++i) {
+            Element *elt = children[i];
+            if (elt->layer != layer) continue;
+            RenderContext context(&ctx);
+            ctx.translate(elt->style.h_justify * width / 2, elt->style.v_justify * height / 2);
+            ctx.scale(Ui::scale);
+            ctx.translate(-elt->style.h_justify * elt->width / 2, -elt->style.v_justify * elt->height / 2);
+            ctx.translate(elt->x, elt->y);
+            elt->render(ctx);
+        }
     }
-    for (Element *elt : children) {
-        if (elt->layer != 1) continue;
-        RenderContext context(&ctx);
-        ctx.translate(elt->h_justify * width / 2, elt->v_justify * height / 2);
-        ctx.scale(Ui::scale);
-        ctx.translate(-elt->h_justify * elt->width / 2, -elt->v_justify * elt->height / 2);
-        ctx.translate(elt->x, elt->y);
-        elt->render(ctx);
-    }
+}
+
+void Window::tick_render_skip(Renderer &ctx) {
+    for (Element *elt : children)
+        if (!elt->should_render()) {
+            //elt->animation.set(0);
+            //elt->animation.step(1);
+            elt->on_render_skip(ctx);
+        }
 }

@@ -22,8 +22,8 @@ LevelBar::LevelBar() : Element(300,40) {
         }
         progress.step(Ui::lerp_amount);
     };
-    h_justify = Ui::Element::Left;
-    v_justify = Ui::Element::Bottom;
+    style.h_justify = Style::Left;
+    style.v_justify = Style::Bottom;
 }
 
 void LevelBar::on_render(Renderer &ctx) {
@@ -70,8 +70,8 @@ Element *Ui::make_level_bar() {
     level_bar->should_render = [](){
         return Game::alive();
     };
-    level_bar->h_justify = Ui::Element::Left;
-    level_bar->v_justify = Ui::Element::Bottom;
+    level_bar->style.h_justify = Style::Left;
+    level_bar->style.v_justify = Style::Bottom;
     level_bar->style.animate = [](Element *elt, Renderer &ctx) {
         ctx.translate(-(1 - (float) elt->animation) * 1.5 * elt->width, 0);
     };
