@@ -325,7 +325,11 @@ float Renderer::get_ascii_text_size(char const *text) {
     float w = 0;
     while (*text) {
         char c = *text;
-        if (c > 127) w += 1;
+        if (c > 127) {
+            do {
+                text++;
+            } while (*text > 127);
+        }
         else w += CHAR_WIDTHS[c];
         ++text;
     }

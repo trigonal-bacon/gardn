@@ -1,12 +1,10 @@
 #pragma once
 
-#include <Client/Ui/Element.hh>
+#include <Client/Ui/Container.hh>
 
 namespace Ui {
-    class Choose : public Element {
+    class Choose : public Container {
     public:
-        Element *first;
-        Element *second;
         std::function<uint8_t(void)> chooser;
         uint8_t choose_showing;
         Choose(Element *, Element *, std::function<uint8_t(void)>, Style = {});

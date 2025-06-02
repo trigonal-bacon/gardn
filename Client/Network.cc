@@ -1,6 +1,9 @@
 #include <Client/Game.hh>
 
+#include <Client/DOM.hh>
 #include <Client/Ui/Ui.hh>
+
+#include <iostream>
 
 using namespace Game;
 
@@ -65,9 +68,8 @@ void Game::spawn_in() {
     if (Game::alive()) return;
     if (Game::on_game_screen == 0) {
         writer.write_uint8(kServerbound::kClientSpawn);
-        frand();
-        frand();
-        std::string name{MOB_DATA[(int) (frand() * (float) MobID::kNumMobs)].name};
+        std::string name = DOM::retrieve_text("t0", 16);
+        std::cout << name << '\n';
         writer.write_string(name);
         socket.send(writer.packet, writer.at - writer.packet);
     }

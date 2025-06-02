@@ -8,6 +8,10 @@ using namespace Ui;
 
 Window::Window() : Container({}) {}
 
+void Window::set_divider() {
+    title_divider = children.size();
+}
+
 void Window::render_title_screen(Renderer &ctx) {
     RenderContext context(&ctx);
     ctx.reset_transform();
@@ -50,7 +54,7 @@ void Window::render_game_screen(Renderer &ctx) {
 
 void Window::tick_render_skip(Renderer &ctx) {
     for (Element *elt : children)
-        if (!elt->should_render()) {
+        if (!elt->style.should_render()) {
             //elt->animation.set(0);
             //elt->animation.step(1);
             elt->on_render_skip(ctx);

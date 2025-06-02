@@ -25,6 +25,12 @@ void Container::on_render(Renderer &ctx) {
     }
 }
 
+void Container::poll_events() {
+    Element::poll_events();
+    for (Element *elt : children)
+        if (elt->visible) elt->poll_events();
+}
+
 HContainer::HContainer(std::initializer_list<Element *> elts, float opad, float ipad, Style s) :
     Container(elts, 0, 0, s), outer_pad(opad), inner_pad(ipad)
 {

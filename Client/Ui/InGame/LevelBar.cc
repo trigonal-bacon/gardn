@@ -66,10 +66,7 @@ Element *Ui::make_level_bar() {
             return format_string;
         }),
         new Ui::Element(1,60)
-    }, 0, 5, {});
-    level_bar->should_render = [](){
-        return Game::alive();
-    };
+    }, 0, 5, { .should_render = []() { return Game::alive(); } });
     level_bar->style.h_justify = Style::Left;
     level_bar->style.v_justify = Style::Bottom;
     level_bar->style.animate = [](Element *elt, Renderer &ctx) {

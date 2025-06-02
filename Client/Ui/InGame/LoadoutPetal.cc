@@ -46,7 +46,7 @@ UiLoadoutPetal::UiLoadoutPetal(uint8_t pos) : Element(60, 60),
     static_pos(pos), no_change_ticks(0), petal_id(PetalID::kNone), last_id(PetalID::kNone) 
 {
     reload = 1;
-    should_render = [&](){
+    style.should_render = [&](){
         if (!Game::should_render_game_ui()) return false;
         //coincidentally also works for trashing
         if (static_pos >= MAX_SLOT_COUNT + Game::loadout_count) return false;

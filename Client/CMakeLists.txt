@@ -17,6 +17,7 @@ set(SRCS
     Render/RenderPetal.cc
     Render/RenderWeb.cc
     Render/Renderer.cc
+    DOM.cc
     Game.cc
     Input.cc
     Main.cc
@@ -40,6 +41,7 @@ set(SRCS
     Ui/Element.cc
     Ui/Extern.cc
     Ui/StaticText.cc
+    Ui/TextInput.cc
     Ui/Window.cc
     ../Shared/Arena.cc
     ../Shared/Binary.cc

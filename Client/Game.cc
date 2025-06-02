@@ -30,7 +30,7 @@ void Game::init() {
     window.add_child(
         Ui::make_title_main_screen()
     );
-    window.title_divider = window.children.size();
+    window.set_divider();
     window.add_child(
         Ui::make_death_main_screen()
     );

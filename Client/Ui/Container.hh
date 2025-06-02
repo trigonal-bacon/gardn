@@ -10,6 +10,8 @@ namespace Ui {
         Container(std::initializer_list<Element *>, float = 0, float = 0, Style = {});
 
         virtual void on_render(Renderer &) override;
+
+        virtual void poll_events() override;
     };
 
     class HContainer : public Container {

@@ -18,9 +18,6 @@ Element *Ui::make_death_main_screen() {
         new Ui::StaticText(35, "You died"),
         new Ui::Element(0,100),
         continue_button
-    }, 0, 10);
-    container->should_render = [](){
-        return !Game::alive() && Game::should_render_game_ui(); //Game::on_game_screen;
-    };
+    }, 0, 10, { .should_render = [](){ return !Game::alive() && Game::should_render_game_ui(); } });
     return container;
 }

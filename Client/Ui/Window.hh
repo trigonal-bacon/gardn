@@ -4,9 +4,11 @@
 
 namespace Ui {
     class Window final : public Container {
-    public:
         uint32_t title_divider = 0;
+    public:
         Window();
+
+        void set_divider();
 
         //void render(Renderer &);
 

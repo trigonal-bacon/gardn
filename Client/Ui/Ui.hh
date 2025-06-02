@@ -9,6 +9,7 @@
 #include <Client/Ui/DynamicText.hh>
 #include <Client/Ui/Element.hh>
 #include <Client/Ui/StaticText.hh>
+#include <Client/Ui/TextInput.hh>
 #include <Client/Ui/Window.hh>
 
 #include <Client/Ui/Extern.hh>

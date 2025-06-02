@@ -15,6 +15,8 @@ Element::Element(float w, float h, Style s) : width(w), height(h), style(s) {
     //animate = [&](Renderer &ctx){ ctx.scale((float) animation); };
     if (style.animate == nullptr) 
         style.animate = default_animate;
+    if (style.should_render == nullptr)
+        style.should_render = [](){ return 1; };
 }
 
 void Element::add_child(Element *elt) {
@@ -29,10 +31,7 @@ Element *Element::set_z_to_one() {
 }
 
 void Element::render(Renderer &ctx) {
-    //get abs x, y;
-    screen_x = ctx.context.transform_matrix[2];
-    screen_y = ctx.context.transform_matrix[5];
-    animation.set(should_render());
+    animation.set(style.should_render());
     if (showed) animation.step(Ui::lerp_amount);
     else animation.step(1);
     float curr_animation = (float) animation;
@@ -49,6 +48,9 @@ void Element::render(Renderer &ctx) {
     #endif
     if (visible) {
         style.animate(this, ctx);
+        //get abs x, y;
+        screen_x = ctx.context.transform_matrix[2];
+        screen_y = ctx.context.transform_matrix[5];
         on_render(ctx);
         showed = 1;
         //possibly poll events?
@@ -118,7 +120,7 @@ void Element::on_event(uint8_t event) {}
 
 void Element::refactor() {
     for (Element *elt : children)
-        elt->refactor();
+        if (elt->visible) elt->refactor();
 }
 
 void Element::poll_events() {
@@ -128,6 +130,4 @@ void Element::poll_events() {
     else if (Ui::focused == this) {
         Ui::focused = nullptr;
     }
-    for (Element *elt : children)
-        if (elt->visible) elt->poll_events();
 }

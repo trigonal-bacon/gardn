@@ -42,7 +42,7 @@ int setup_inputs() {
             _key_event(e.which, 1);
         });
         window.addEventListener("mousedown", (e) => {
-            e.preventDefault();
+            //e.preventDefault();
             _mouse_event(e.clientX * devicePixelRatio, e.clientY * devicePixelRatio, 0, +!!e.button);
         });
         window.addEventListener("mousemove", (e) => {

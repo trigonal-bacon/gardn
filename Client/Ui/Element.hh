@@ -23,6 +23,7 @@ namespace Ui {
         float line_width = 3;
         float round_radius = 0;
         std::function<void(Element *, Renderer &)> animate = nullptr;
+        std::function<bool(void)> should_render = nullptr;
         int8_t h_justify = Center;
         int8_t v_justify = Middle;
         uint8_t h_flex = 0;
@@ -68,7 +69,6 @@ namespace Ui {
         virtual void on_render_skip(Renderer &);
         virtual void on_event(uint8_t);
         //std::function<void(Renderer &)> animate;
-        std::function<bool(void)> should_render = [](){ return true; };
         virtual void refactor();
         virtual void poll_events();
     };

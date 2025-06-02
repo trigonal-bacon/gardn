@@ -73,10 +73,9 @@ Element *Ui::make_leaderboard() {
             new LeaderboardSlot(8),
             new LeaderboardSlot(9),
         }, 10, 5, {})
-    }, 0, 0, { .fill = 0xff777777, .line_width = 7, });
+    }, 0, 0, { .fill = 0xff777777, .line_width = 7, .should_render = [](){ return Game::should_render_game_ui(); } });
     leaderboard->style.h_justify = Style::Right;
     leaderboard->style.v_justify = Style::Top;
-    leaderboard->should_render = [](){ return Game::should_render_game_ui(); };
     leaderboard->x = -15;
     leaderboard->y = 15;
     return leaderboard;
