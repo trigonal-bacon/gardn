@@ -190,7 +190,7 @@ void UiLoadoutPetal::on_render_skip(Renderer &ctx) {
 }
 
 void UiLoadoutPetal::on_event(uint8_t event) {
-    if (event == kMouseDown && Ui::UiLoadout::petal_selected == nullptr) {
+    if (Game::alive() && event == kMouseDown && Ui::UiLoadout::petal_selected == nullptr) {
         Ui::UiLoadout::petal_selected = this;
         Ui::UiLoadout::selected_with_keys = 0;
     }

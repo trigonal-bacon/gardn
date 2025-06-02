@@ -57,9 +57,8 @@ Element *Ui::make_leaderboard() {
                 format_string = std::format("{} Flowers", Game::simulation.arena_info.player_count);
             return format_string;
         })
-    }, 0, 0, { .fill = 0xffa7ea59, .line_width = 7 });
-    lb_header->width = LEADERBOARD_WIDTH + 20;
-    lb_header->height = 40;
+    }, LEADERBOARD_WIDTH + 20, 40, { .fill = 0xffa7ea59, .line_width = 7 });
+
     Element *leaderboard = new Ui::VContainer({
         lb_header,
         new Ui::VContainer({

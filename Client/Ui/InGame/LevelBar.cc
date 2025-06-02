@@ -27,7 +27,7 @@ LevelBar::LevelBar() : Element(300,40) {
 }
 
 void LevelBar::on_render(Renderer &ctx) {
-    ctx.set_stroke(0xff222222);
+    ctx.set_stroke(0xc0222222);
     ctx.round_line_cap();
     ctx.set_line_width(height);
     ctx.begin_path();

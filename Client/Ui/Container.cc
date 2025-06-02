@@ -5,16 +5,11 @@
 
 using namespace Ui;
 
-Container::Container(std::initializer_list<Element *> elts, float opad, float ipad, Style s) :
-    Element(0, 0, s), outer_pad(opad), inner_pad(ipad), children(elts)
+Container::Container(std::initializer_list<Element *> elts, float w, float h, Style s) :
+    Element(w, h, s)
 {
+    children = elts;
     for (Element *elt : children) elt->parent = this;
-}
-
-void Container::add_child(Element *elt) {
-    children.push_back(elt);
-    elt->parent = this;
-    //parent/child?
 }
 
 void Container::on_render(Renderer &ctx) {
@@ -30,33 +25,8 @@ void Container::on_render(Renderer &ctx) {
     }
 }
 
-void Container::on_render_tooltip(Renderer &ctx) {
-    Element::on_render_tooltip(ctx);
-    for (Element *elt : children) {
-        RenderContext context(&ctx);
-        if (!elt->visible) continue;
-        elt->on_render_tooltip(ctx);
-    }
-}
-
-void Container::on_render_skip(Renderer &ctx) {
-    for (Element *elt : children)
-        elt->on_render_skip(ctx);
-}
-
-void Container::refactor() {
-    for (Element *elt : children)
-        elt->refactor();
-}
-
-void Container::poll_events() {
-    Element::poll_events();
-    for (Element *elt : children)
-        if (elt->visible) elt->poll_events();
-}
-
 HContainer::HContainer(std::initializer_list<Element *> elts, float opad, float ipad, Style s) :
-    Container(elts, opad, ipad, s) 
+    Container(elts, 0, 0, s), outer_pad(opad), inner_pad(ipad)
 {
     for (Element *elt : children)
         elt->style.h_justify = Style::Left;
@@ -82,7 +52,7 @@ void HContainer::refactor() {
 }
 
 VContainer::VContainer(std::initializer_list<Element *> elts, float opad, float ipad, Style s) :
-    Container(elts, opad, ipad, s) 
+    Container(elts, 0, 0, s), outer_pad(opad), inner_pad(ipad)
 {
     for (Element *elt : children)
         elt->style.v_justify = Style::Top;
@@ -106,4 +76,20 @@ void VContainer::refactor() {
     y += outer_pad - inner_pad;
     width = x;
     height = y;
+    for (Element *elt : children)
+        if (elt->visible && elt->style.h_flex) elt->width = fmax(width - 2 * outer_pad, elt->width);
+}
+
+HFlexContainer::HFlexContainer(Element *l, Element *r, float pad, Style s) : 
+    Container({l,r},0,0,s), inner_pad(pad) 
+{
+    style.h_flex = 1;
+    l->style.h_justify = Style::Left;
+    r->style.h_justify = Style::Right;
+    refactor();
+}
+
+void HFlexContainer::refactor() {
+    width = children[0]->width + inner_pad + children[1]->width;
+    height = fmax(children[0]->height, children[1]->height);
 }

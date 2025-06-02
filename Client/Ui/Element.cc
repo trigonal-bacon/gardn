@@ -17,6 +17,12 @@ Element::Element(float w, float h, Style s) : width(w), height(h), style(s) {
         style.animate = default_animate;
 }
 
+void Element::add_child(Element *elt) {
+    children.push_back(elt);
+    elt->parent = this;
+    //parent/child?
+}
+
 Element *Element::set_z_to_one() {
     layer = 1;
     return this;
@@ -31,6 +37,7 @@ void Element::render(Renderer &ctx) {
     else animation.step(1);
     float curr_animation = (float) animation;
     visible = curr_animation > 0.01;
+    #ifdef DEBUG
     if (visible) {
         RenderContext context(&ctx);
         ctx.set_stroke(0x40000000);
@@ -39,6 +46,7 @@ void Element::render(Renderer &ctx) {
         ctx.round_rect(-width / 2, -height / 2, width, height, 6);
         ctx.stroke();
     }
+    #endif
     if (visible) {
         style.animate(this, ctx);
         on_render(ctx);
@@ -86,27 +94,40 @@ void Element::on_render_tooltip(Renderer &ctx) {
     tooltip_animation.step(Ui::lerp_amount);
     if (tooltip_animation < 0.01 && !rendering_tooltip)
         tooltip = nullptr;
-    if (tooltip == nullptr) return;
-    ctx.reset_transform();
-    ctx.translate(screen_x, screen_y);
-    ctx.scale(Ui::scale);
-    ctx.translate(0, -(height + tooltip->height) / 2 - 10);
-    ctx.set_global_alpha((float) tooltip_animation);
-    tooltip->on_render(ctx);
+    if (tooltip != nullptr) {
+        ctx.reset_transform();
+        ctx.translate(screen_x, screen_y);
+        ctx.scale(Ui::scale);
+        ctx.translate(0, -(height + tooltip->height) / 2 - 10);
+        ctx.set_global_alpha((float) tooltip_animation);
+        tooltip->on_render(ctx);
+    }
+    for (Element *elt : children) {
+        RenderContext context(&ctx);
+        if (!elt->visible) continue;
+        elt->on_render_tooltip(ctx);
+    }
 }
 
-void Element::on_render_skip(Renderer &ctx) {}
+void Element::on_render_skip(Renderer &ctx) {
+    for (Element *elt : children)
+        elt->on_render_skip(ctx);
+}
 
 void Element::on_event(uint8_t event) {}
 
-void Element::refactor() {}
+void Element::refactor() {
+    for (Element *elt : children)
+        elt->refactor();
+}
 
 void Element::poll_events() {
     if (std::abs(Input::mouse_x - screen_x) < width * Ui::scale / 2
-    && std::abs(Input::mouse_y - screen_y) < height * Ui::scale / 2) {
+    && std::abs(Input::mouse_y - screen_y) < height * Ui::scale / 2)
         Ui::focused = this;
-    }
     else if (Ui::focused == this) {
         Ui::focused = nullptr;
     }
+    for (Element *elt : children)
+        if (elt->visible) elt->poll_events();
 }

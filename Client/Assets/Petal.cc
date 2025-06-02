@@ -162,18 +162,25 @@ void draw_static_petal_single(PetalID::T id, Renderer &ctx) {
             break;
         case PetalID::kThirdEye:
             ctx.scale(0.5);
-            ctx.set_fill(0xff222222);
+            ctx.set_fill(0xff111111);
             ctx.begin_path();
-            ctx.move_to(1, 15);
-            ctx.qcurve_to(16, 0, 1, -15);
-            ctx.qcurve_to(0, -12, -1, -15);
-            ctx.qcurve_to(-16, 0, -1, 15);
-            ctx.qcurve_to(0, 12, 1, 15);
+            ctx.move_to(0,-10);
+            ctx.qcurve_to(8,0,0,10);
+            ctx.qcurve_to(-8,0,0,-10);
             ctx.fill();
-            ctx.set_fill(0xffffffff);
+            ctx.set_fill(0xffeeeeee);
             ctx.begin_path();
-            ctx.arc(0, 0, 6);
+            ctx.arc(0, 0, 5);
             ctx.fill();
+            ctx.set_stroke(0xff111111);
+            ctx.set_line_width(1.5);
+            ctx.round_line_cap();
+            ctx.round_line_join();
+            ctx.begin_path();
+            ctx.move_to(0,-10);
+            ctx.qcurve_to(8,0,0,10);
+            ctx.qcurve_to(-8,0,0,-10);
+            ctx.stroke();
             break;
         case PetalID::kWeb:
         case PetalID::kTriweb:
@@ -321,6 +328,7 @@ void draw_static_petal_single(PetalID::T id, Renderer &ctx) {
             ctx.line_to(-7,-6.119594218034763e-7);
             ctx.line_to(-3.4999992847442627,-6.062178134918213);
             ctx.line_to(3.4999992847442627,-6.062178134918213);
+            ctx.close_path();
             ctx.fill();
             ctx.stroke();
             break;
@@ -472,9 +480,9 @@ void draw_loadout_background(Renderer &ctx, uint32_t color) {
     ctx.round_line_join();
     ctx.round_line_cap();
     ctx.begin_path();
-    ctx.round_rect(-30, -30, 60, 60, 0);
-    ctx.fill();
-    ctx.begin_path();
-    ctx.round_rect(-30, -30, 60, 60, 0);
+    ctx.rect(-30, -30, 60, 60);
     ctx.stroke();
+    ctx.begin_path();
+    ctx.rect(-28, -28, 56, 56);
+    ctx.fill();
 }

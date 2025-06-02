@@ -3,13 +3,22 @@
 #include <Client/Ui/Container.hh>
 #include <Client/Ui/StaticText.hh>
 
+#include <string>
+
 using namespace Ui;
 
 Element *Ui::UiLoadout::petal_tooltips[PetalID::kNumPetals] = {nullptr};
 
 static void make_petal_tooltip(PetalID::T id) {
+    std::string rld_str = PETAL_DATA[id].reload == 0 ? "" :
+        PETAL_DATA[id].attributes.secondary_reload == 0 ? std::format("{:.1f}s", PETAL_DATA[id].reload) : 
+        std::format("{:.1f} + {:.1f}s", PETAL_DATA[id].reload, PETAL_DATA[id].attributes.secondary_reload);
     Element *tooltip = new Ui::VContainer({
-        new Ui::StaticText(20, PETAL_DATA[id].name, { .fill = 0xffffffff, .h_justify = Style::Left }),
+        new Ui::HFlexContainer(
+            new Ui::StaticText(20, PETAL_DATA[id].name, { .fill = 0xffffffff, .h_justify = Style::Left }),
+            new Ui::StaticText(16, rld_str, { .fill = 0xffffffff, .v_justify = Style::Top }),
+            10, {}
+        ),
         new Ui::StaticText(12, RARITY_NAMES[PETAL_DATA[id].rarity], { .fill = RARITY_COLORS[PETAL_DATA[id].rarity], .h_justify = Style::Left }),
         new Ui::Element(0,10),
         new Ui::StaticText(12, PETAL_DATA[id].description, { .fill = 0xffffffff, .h_justify = Style::Left })

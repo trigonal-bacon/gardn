@@ -3,28 +3,19 @@
 #include <Client/Ui/Element.hh>
 
 #include <initializer_list>
-#include <vector>
 
 namespace Ui {
     class Container : public Element {
     public:
-        float outer_pad = 0;
-        float inner_pad = 0;
-        std::vector<Element *> children;
-
         Container(std::initializer_list<Element *>, float = 0, float = 0, Style = {});
 
-        void add_child(Element *);
-
         virtual void on_render(Renderer &) override;
-        virtual void on_render_skip(Renderer &) override;
-        virtual void on_render_tooltip(Renderer &) override;
-        virtual void refactor() override;
-        virtual void poll_events() override;
     };
 
     class HContainer : public Container {
     public:
+        float outer_pad = 0;
+        float inner_pad = 0;
         HContainer(std::initializer_list<Element *>, float = 0, float = 0, Style = {});
 
         virtual void refactor() override;
@@ -32,7 +23,17 @@ namespace Ui {
 
     class VContainer : public Container {
     public:
+        float outer_pad = 0;
+        float inner_pad = 0;
         VContainer(std::initializer_list<Element *>, float = 0, float = 0, Style = {});
+
+        virtual void refactor() override;
+    };
+
+    class HFlexContainer : public Container {
+    public:
+        float inner_pad;
+        HFlexContainer(Element *, Element *, float, Style = {});
 
         virtual void refactor() override;
     };

@@ -4,6 +4,7 @@
 #include <Shared/Helpers.hh>
 
 #include <functional>
+#include <vector>
 
 namespace Ui {
     class Element;
@@ -24,6 +25,8 @@ namespace Ui {
         std::function<void(Element *, Renderer &)> animate = nullptr;
         int8_t h_justify = Center;
         int8_t v_justify = Middle;
+        uint8_t h_flex = 0;
+        uint8_t v_flex = 0;
     };
 
     enum UiEvent {
@@ -37,8 +40,7 @@ namespace Ui {
 
     class Element {
     public:
-
-        Ui::Style style;
+        std::vector<Element *> children;
         Ui::Element *parent = nullptr;
         Ui::Element *tooltip = nullptr;
         float width = 0;
@@ -49,13 +51,16 @@ namespace Ui {
         float screen_y = 0;
         LerpFloat animation;
         LerpFloat tooltip_animation;
-        uint8_t visible = 1;
-        uint8_t showed = 0;
+        Ui::Style style;
+        
         uint8_t focus_state = 0;
         uint8_t layer = 0;
-        uint8_t rendering_tooltip = 0;
+        uint8_t visible : 1 = 1;
+        uint8_t showed : 1 = 0;
+        uint8_t rendering_tooltip : 1 = 0;
 
         Element(float = 0, float = 0, Style = {});
+        void add_child(Element *);
         Element *set_z_to_one();
         void render(Renderer &);
         virtual void on_render(Renderer &);
