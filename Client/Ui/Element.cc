@@ -37,7 +37,7 @@ void Element::render(Renderer &ctx) {
     float curr_animation = (float) animation;
     visible = curr_animation > 0.01;
     #ifdef DEBUG
-    if (visible) {
+    if (0 && visible) {
         RenderContext context(&ctx);
         ctx.set_stroke(0x40000000);
         ctx.set_line_width(1);

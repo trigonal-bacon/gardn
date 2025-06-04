@@ -365,7 +365,8 @@ void draw_static_mob(MobID::T mob_id, Renderer &ctx, MobRenderAttributes attr) {
             ctx.stroke();
             break;
         }
-        case MobID::kRock: {
+        case MobID::kRock:
+        case MobID::kBoulder: {
             SET_BASE_COLOR(0xff777777)
             SeedGenerator gen(radius * 284 + 476);
             ctx.set_fill(base_color);

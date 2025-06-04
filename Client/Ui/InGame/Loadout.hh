@@ -10,6 +10,8 @@ namespace Ui {
     public:
         uint8_t position;
         UiLoadoutSlot(uint8_t);
+
+        virtual void on_render(Renderer &ctx) override;
     };
 
     class UiDeleteSlot final : public UiLoadoutSlot {
@@ -19,7 +21,7 @@ namespace Ui {
         virtual void on_render(Renderer &) override;
     };
 
-    class InputFreeze final : public Choose {
+    class InputFreeze final : public Container {
     public:
         float render_width;
         float render_height;
@@ -51,8 +53,13 @@ namespace Ui {
         extern UiLoadoutSlot *petal_backgrounds[2 * MAX_SLOT_COUNT + 1];
         extern Element *petal_tooltips[PetalID::kNumPetals];
         extern uint8_t selected_with_keys;
+        extern double last_key_select;
     };
 
     Element *make_loadout_backgrounds();
     void make_petal_tooltips();
+
+    void advance_key_select();
+    void ui_delete_petal(uint8_t);
+    void ui_swap_petals(uint8_t, uint8_t);
 }

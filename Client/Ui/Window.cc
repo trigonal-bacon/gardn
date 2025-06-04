@@ -15,7 +15,6 @@ void Window::set_divider() {
 void Window::render_title_screen(Renderer &ctx) {
     RenderContext context(&ctx);
     ctx.reset_transform();
-    Ui::lerp_amount = 1 - pow(1 - 0.3, Ui::dt * 60 / 1000);
     width = Ui::window_width; height = Ui::window_height;
     ctx.translate(width / 2, height / 2);
     for (uint32_t layer = 0; layer < 2; ++layer) {
@@ -35,7 +34,6 @@ void Window::render_title_screen(Renderer &ctx) {
 void Window::render_game_screen(Renderer &ctx) {
     RenderContext context(&ctx);
     ctx.reset_transform();
-    Ui::lerp_amount = 1 - pow(1 - 0.3, Ui::dt * 60 / 1000);
     width = Ui::window_width; height = Ui::window_height;
     ctx.translate(width / 2, height / 2);
     for (uint32_t layer = 0; layer < 2; ++layer) {
@@ -54,7 +52,7 @@ void Window::render_game_screen(Renderer &ctx) {
 
 void Window::tick_render_skip(Renderer &ctx) {
     for (Element *elt : children)
-        if (!elt->style.should_render()) {
+        if (!elt->visible) {
             //elt->animation.set(0);
             //elt->animation.step(1);
             elt->on_render_skip(ctx);

@@ -14,17 +14,23 @@ static void opacity_animate(Element *elt, Renderer &ctx) {
     ctx.set_global_alpha((float) elt->animation);
 }
 
-InputFreeze::InputFreeze() : Choose(
-    new Ui::VContainer({new Ui::StaticText(14, "Move mouse here to disable movement")}, 10, 0, { .animate = opacity_animate }),
-    new Ui::VContainer({new Ui::StaticText(14, "You cannot use the keys")}, 10, 0, { .animate = opacity_animate }),
-    [](){ return Input::freeze_input; }) {
-    render_width = children[0]->width;
-    render_height = children[0]->height;
+InputFreeze::InputFreeze() : Container({
+        new Ui::VContainer({new Ui::StaticText(14, "Move mouse here to disable movement")}, 10, 0, { 
+            .animate = opacity_animate,
+            .should_render = [](){ return !Input::freeze_input; }
+        }),
+        new Ui::VContainer({new Ui::StaticText(14, "You can also use [E] to cycle secondaries")}, 10, 0, { 
+            .animate = opacity_animate,
+            .should_render = [](){ return Input::freeze_input; }
+        }),
+    }, 0, 0, {}) {
+    width = render_width = children[0]->width;
+    height = render_height = children[0]->height;
     style.animate = [&](Element *elt, Renderer &ctx){
         if (!Game::alive()) Input::freeze_input = 0;
         if (Input::freeze_input) {
-            LERP(render_width, parent->width, Ui::lerp_amount);
-            LERP(render_height, parent->height, Ui::lerp_amount);
+            LERP(render_width, parent->width + 20, Ui::lerp_amount);
+            LERP(render_height, parent->height + 10, Ui::lerp_amount);
         } else {
             LERP(render_width, children[0]->width, Ui::lerp_amount);
             LERP(render_height, children[0]->height, Ui::lerp_amount);
@@ -42,14 +48,14 @@ void InputFreeze::on_render(Renderer &ctx) {
     {
         ctx.set_fill(0x80000000);
         ctx.begin_path();
-        ctx.round_rect(-render_width / 2, -render_height + height / 2, render_width, render_height, style.round_radius);
+        ctx.round_rect(-render_width / 2, -render_height + height / 2, render_width, render_height + style.round_radius, style.round_radius);
         ctx.fill();
     }
-    Choose::on_render(ctx);
+    Container::on_render(ctx);
 }
 
 void InputFreeze::on_render_skip(Renderer &ctx) {
-    Choose::on_render_skip(ctx);
+    Container::on_render_skip(ctx);
 }
 
 void InputFreeze::on_event(uint8_t event) {

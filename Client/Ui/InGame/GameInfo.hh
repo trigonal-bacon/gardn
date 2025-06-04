@@ -20,6 +20,13 @@ namespace Ui {
         virtual void on_render(Renderer &) override;
     };
 
+    class Minimap final : public Element {
+    public:
+        Minimap(float);
+        virtual void on_render(Renderer &) override;
+    };
+
     Element *make_leaderboard();
     Element *make_level_bar();
+    Element *make_minimap();
 }

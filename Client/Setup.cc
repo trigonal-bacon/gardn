@@ -46,11 +46,11 @@ int setup_inputs() {
             _mouse_event(e.clientX * devicePixelRatio, e.clientY * devicePixelRatio, 0, +!!e.button);
         });
         window.addEventListener("mousemove", (e) => {
-            e.preventDefault();
+            //e.preventDefault();
             _mouse_event(e.clientX * devicePixelRatio, e.clientY * devicePixelRatio, 1, +!!e.button);
         });
         window.addEventListener("mouseup", (e) => {
-            e.preventDefault();
+            //e.preventDefault();
             _mouse_event(e.clientX * devicePixelRatio, e.clientY * devicePixelRatio, 2, +!!e.button);
         });
     });

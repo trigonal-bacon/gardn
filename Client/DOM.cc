@@ -2,8 +2,6 @@
 
 #include <emscripten.h>
 
-#include <iostream>
-
 void DOM::create_text_input(char const *name, uint32_t max_len) {
     EM_ASM(
     {
@@ -19,7 +17,7 @@ void DOM::create_text_input(char const *name, uint32_t max_len) {
         elem.style.border = "none";
         elem.style.outline = "none";
         elem.style["padding-left"] = "2px";
-        elem.maxlength = $1;
+        elem.maxLength = ($1).toString();
         document.body.appendChild(elem);
     },
     name, max_len);
@@ -71,7 +69,7 @@ std::string DOM::retrieve_text(char const *name, uint32_t max_length) {
         const len = $1 > arr.length ? arr.length : $1;
         // remember off by one errors
         arr = arr.slice(0, len);
-        const ptr = Module._malloc(len + 1);
+        const ptr = Module["_malloc"](len + 1);
         HEAPU8.set(arr, ptr);
         HEAPU8[ptr + len] = 0;
         return ptr;
@@ -79,6 +77,5 @@ std::string DOM::retrieve_text(char const *name, uint32_t max_length) {
     name, max_length);
     std::string out{ptr};
     free(ptr);
-    std::cout << 'n' <<  out << '\n';
     return out;
 }

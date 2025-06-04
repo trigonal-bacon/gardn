@@ -3,8 +3,6 @@
 #include <Client/DOM.hh>
 #include <Client/Ui/Ui.hh>
 
-#include <iostream>
-
 using namespace Game;
 
 void Game::on_message(uint8_t *ptr, uint32_t len) {
@@ -69,7 +67,6 @@ void Game::spawn_in() {
     if (Game::on_game_screen == 0) {
         writer.write_uint8(kServerbound::kClientSpawn);
         std::string name = DOM::retrieve_text("t0", 16);
-        std::cout << name << '\n';
         writer.write_string(name);
         socket.send(writer.packet, writer.at - writer.packet);
     }

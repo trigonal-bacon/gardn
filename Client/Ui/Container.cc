@@ -36,6 +36,7 @@ HContainer::HContainer(std::initializer_list<Element *> elts, float opad, float 
 {
     for (Element *elt : children)
         elt->style.h_justify = Style::Left;
+    refactor();
 }
 
 void HContainer::refactor() {
@@ -62,6 +63,7 @@ VContainer::VContainer(std::initializer_list<Element *> elts, float opad, float 
 {
     for (Element *elt : children)
         elt->style.v_justify = Style::Top;
+    refactor();
 }
 
 void VContainer::refactor() {

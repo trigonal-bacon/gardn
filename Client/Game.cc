@@ -17,7 +17,12 @@ namespace Game {
     EntityID player_id;
     Vector screen_shake;
 
+    double timestamp = 0;
+
+    float slot_indicator_opacity = 0;
     float transition_circle = 0;
+
+    uint8_t cached_loadout[2 * MAX_SLOT_COUNT] = {PetalID::kNone};
 
     uint8_t loadout_count = 5;
     uint8_t simulation_ready = 0;
@@ -35,10 +40,13 @@ void Game::init() {
         Ui::make_death_main_screen()
     );
     window.add_child(
-        Ui::make_loadout_backgrounds()
+        Ui::make_level_bar()
     );
     window.add_child(
-        Ui::make_level_bar()
+        Ui::make_minimap()
+    );
+    window.add_child(
+        Ui::make_loadout_backgrounds()
     );
     for (uint8_t i = 0; i < MAX_SLOT_COUNT * 2; ++i) window.add_child(new Ui::UiLoadoutPetal(i));
     window.add_child(
@@ -71,8 +79,9 @@ void Game::tick(double time) {
     renderer.reset_transform();
     simulation.tick();
     simulation.tick_lerp(time - g_last_time);
-    Ui::timestamp = time;
+    Game::timestamp = time;
     Ui::dt = time - g_last_time;
+    Ui::lerp_amount = 1 - pow(1 - 0.2, Ui::dt * 60 / 1000);
     g_last_time = time;
     renderer.context.reset();
     renderer.reset_transform();
@@ -88,6 +97,9 @@ void Game::tick(double time) {
     if (alive()) {
         on_game_screen = 1;
         player_id = simulation.get_ent(camera_id).player;
+        Entity &player = simulation.get_ent(player_id);
+        for (uint32_t i = 0; i < 2 * MAX_SLOT_COUNT; ++i) 
+            cached_loadout[i] = player.loadout_ids[i];
     } else {
         player_id = NULL_ENTITY;
     }
@@ -120,7 +132,29 @@ void Game::tick(double time) {
     if (should_render_game_ui()) {
         render_game();
         window.render_game_screen(renderer);
+        if (Input::keys_pressed_this_tick.contains('E')) {
+            Ui::advance_key_select();
+        }
+        if (Ui::UiLoadout::selected_with_keys < MAX_SLOT_COUNT) {
+            if (Input::keys_pressed_this_tick.contains('T')) {
+                Ui::ui_delete_petal(Ui::UiLoadout::selected_with_keys + Game::loadout_count);
+                Ui::advance_key_select();
+            } else {
+                for (uint8_t i = 0; i < Game::loadout_count; ++i) {
+                    if (Input::keys_pressed_this_tick.contains('1' + i)) {
+                        Ui::ui_swap_petals(i, Ui::UiLoadout::selected_with_keys + Game::loadout_count);
+                        Ui::advance_key_select();
+                        break;
+                    }
+                }
+            }
+        }
+    } else {
+        Ui::UiLoadout::selected_with_keys = MAX_SLOT_COUNT;
     }
+    if (Game::timestamp - Ui::UiLoadout::last_key_select > 5000)
+        Ui::UiLoadout::selected_with_keys = MAX_SLOT_COUNT;
+    LERP(slot_indicator_opacity, Ui::UiLoadout::selected_with_keys != MAX_SLOT_COUNT, Ui::lerp_amount);
 
     window.on_render_tooltip(renderer);
     window.tick_render_skip(renderer);

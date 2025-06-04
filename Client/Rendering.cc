@@ -2,6 +2,7 @@
 
 #include <Client/Ui/Ui.hh>
 #include <Client/Render/RenderEntity.hh>
+#include <Shared/Map.hh>
 #include <Shared/StaticData.hh>
 #include <Shared/Vector.hh>
 
@@ -33,10 +34,16 @@ void Game::render_game() {
     }
     {
         RenderContext context(&renderer);
+        /*
         renderer.set_fill(0xff1ea761);
         renderer.fill_rect(0,0,ARENA_WIDTH,ARENA_HEIGHT);
+        */
+        for (Map::ZoneDefinition &def : Map::MAP) {
+            renderer.set_fill(def.color);
+            renderer.fill_rect(def.x - def.w/2,def.y-def.h/2,def.w,def.h);
+        }
         renderer.set_stroke(alpha);
-        renderer.set_line_width(1);
+        renderer.set_line_width(0.5);
         float scale = 1 / (2 * camera.fov * Ui::scale);
         float leftX = camera.camera_x - renderer.width * scale;
         float rightX = camera.camera_x + renderer.width * scale;

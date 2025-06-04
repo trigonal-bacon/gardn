@@ -7,6 +7,7 @@
 #include <Client/Ui/Ui.hh>
 
 #include <Shared/Simulation.hh>
+#include <Shared/StaticData.hh>
 #include <Shared/Vector.hh>
 
 namespace Game {
@@ -17,8 +18,13 @@ namespace Game {
     extern EntityID camera_id;
     extern EntityID player_id;
     extern Vector screen_shake;
+
+    extern double timestamp;
     
+    extern float slot_indicator_opacity;
     extern float transition_circle;
+
+    extern PetalID::T cached_loadout[2 * MAX_SLOT_COUNT];
 
     extern uint8_t loadout_count;
     extern uint8_t simulation_ready;

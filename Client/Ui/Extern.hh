@@ -2,7 +2,6 @@
 
 namespace Ui {
     class Element;
-    extern double timestamp;
     extern double dt;
     extern double window_width;
     extern double window_height;

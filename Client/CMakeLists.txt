@@ -31,6 +31,7 @@ set(SRCS
     Ui/InGame/LevelBar.cc
     Ui/InGame/LoadoutPetal.cc
     Ui/InGame/LoadoutSlot.cc
+    Ui/InGame/Map.cc
     Ui/InGame/Tooltip.cc
     Ui/TitleScreen/DeathScreen.cc
     Ui/TitleScreen/MainScreen.cc
@@ -48,6 +49,7 @@ set(SRCS
     ../Shared/Entity.cc
     ../Shared/EntityDef.cc
     ../Shared/Helpers.cc
+    ../Shared/Map.cc
     ../Shared/Simulation.cc
     ../Shared/StaticData.cc
     ../Shared/Vector.cc

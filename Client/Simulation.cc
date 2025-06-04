@@ -20,7 +20,7 @@ void Simulation::tick_lerp(double dt) {
             ent.animation += (0.9 + 0.75 * vel.magnitude()) * 0.08;
             ent.radius.step(amt);
             ent.angle.step_angle(amt);
-            ent.deletion_tick.step(amt * 1.25);
+            ent.deletion_tick.step(amt * 2);
         }
         if (ent.has_component(kCamera)) {
             ent.camera_x.step(amt);

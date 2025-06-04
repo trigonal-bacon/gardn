@@ -12,24 +12,40 @@ UiLoadoutSlot::UiLoadoutSlot(uint8_t pos) : Element(60, 60, { .fill = 0xfffcfcfc
     style.line_width = width / 12;
     style.round_radius = width / 20;
     style.should_render = [=](){
-        //if (!Game::should_render_game_ui()) return false;
         if (pos >= MAX_SLOT_COUNT || pos < Game::loadout_count) return true;
         return false;
     };
+    position = pos;
     Ui::UiLoadout::petal_backgrounds[pos] = this;
+}
+
+void UiLoadoutSlot::on_render(Renderer &ctx) {
+    Element::on_render(ctx);
+    if (Game::slot_indicator_opacity < 0.01) return;
+    if (position < Game::loadout_count) {
+        ctx.set_global_alpha(Game::slot_indicator_opacity);
+        ctx.translate(0, -height / 2 - 15);
+        char str[4] = {'[', static_cast<char>('1' + position), ']', '\0'};
+        ctx.draw_text(&str[0], { .size = 16 });
+    } else if (position == 2 * MAX_SLOT_COUNT) {
+        ctx.set_global_alpha(Game::slot_indicator_opacity);
+        ctx.translate(0, -height / 2 - 15);
+        ctx.draw_text("[T]", { .size = 16 });
+        ctx.translate(0, height / 2 + 15);
+    }
 }
 
 UiDeleteSlot::UiDeleteSlot() : UiLoadoutSlot(2 * MAX_SLOT_COUNT) {
     style.fill = 0xffcf8888;
     delete_text_opacity.set(0);
     style.animate = [&](Element *, Renderer &) {
-        delete_text_opacity.set(Ui::UiLoadout::petal_selected != nullptr);
+        delete_text_opacity.set(Ui::UiLoadout::petal_selected != nullptr || Ui::UiLoadout::selected_with_keys != MAX_SLOT_COUNT);
         delete_text_opacity.step(Ui::lerp_amount);
     };
 }
 
 void UiDeleteSlot::on_render(Renderer &ctx) {
-    Element::on_render(ctx);
+    UiLoadoutSlot::on_render(ctx);
     if ((float) delete_text_opacity > 0.01) {
         ctx.set_global_alpha((float) delete_text_opacity);
         ctx.set_fill(0xffffffff);
