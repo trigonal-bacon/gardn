@@ -35,8 +35,10 @@ namespace Ui {
     class HFlexContainer : public Container {
     public:
         float inner_pad;
-        HFlexContainer(Element *, Element *, float, Style = {});
+        float outer_pad;
+        HFlexContainer(Element *, Element *, float, float, Style = {});
 
         virtual void refactor() override;
+        virtual void on_render(Renderer &) override;
     };
 }

@@ -11,7 +11,7 @@ static void default_animate(Element *elt, Renderer &ctx) {
 
 Element::Element(float w, float h, Style s) : width(w), height(h), style(s) {
     //so the animation doesnt set
-    animation.set(1);
+    //animation.set(1);
     //animate = [&](Renderer &ctx){ ctx.scale((float) animation); };
     if (style.animate == nullptr) 
         style.animate = default_animate;
@@ -32,8 +32,8 @@ Element *Element::set_z_to_one() {
 
 void Element::render(Renderer &ctx) {
     animation.set(style.should_render());
-    if (showed) animation.step(Ui::lerp_amount);
-    else animation.step(1);
+    animation.step(Ui::lerp_amount);
+    //else animation.step(1);
     float curr_animation = (float) animation;
     visible = curr_animation > 0.01;
     #ifdef DEBUG
@@ -66,7 +66,7 @@ void Element::render(Renderer &ctx) {
             focus_state = kClick;
             on_event(kClick);
         }
-        else {
+        else if (focus_state != kMouseDown) {
             focus_state = kMouseHover;
             on_event(kMouseHover);
         }
@@ -79,15 +79,16 @@ void Element::render(Renderer &ctx) {
 
 void Element::on_render(Renderer &ctx) {
     if (style.fill != 0x00000000) {
-        ctx.set_fill(style.fill);
-        ctx.set_stroke(Renderer::HSV(style.fill, style.stroke_hsv));
-        ctx.set_line_width(style.line_width);
-        ctx.round_line_cap();
-        ctx.round_line_join();
+        ctx.set_fill(Renderer::HSV(style.fill, style.stroke_hsv));
         ctx.begin_path();
         ctx.round_rect(-width / 2, -height / 2, width, height, style.round_radius);
         ctx.fill();
-        if (style.fill >= 0xff000000) ctx.stroke();
+        if (style.fill >= 0xff000000) {
+            ctx.set_fill(style.fill);
+            ctx.begin_path();
+            ctx.rect(-width / 2 + style.line_width, -height / 2 + style.line_width, width - 2 * style.line_width, height - 2 * style.line_width);
+            ctx.fill();
+        }
     }
 }
 
@@ -98,10 +99,16 @@ void Element::on_render_tooltip(Renderer &ctx) {
         tooltip = nullptr;
     if (tooltip != nullptr) {
         ctx.reset_transform();
-        ctx.translate(screen_x, screen_y);
+        if (screen_x < (tooltip->width / 2 + 10) * Ui::scale)
+            ctx.translate((tooltip->width / 2 + 10) * Ui::scale, screen_y);
+        else ctx.translate(screen_x, screen_y);
         ctx.scale(Ui::scale);
         ctx.translate(0, -(height + tooltip->height) / 2 - 10);
         ctx.set_global_alpha((float) tooltip_animation);
+        //tooltip->screen_x = ctx.context.transform_matrix[2];
+        //tooltip->screen_y = ctx.context.transform_matrix[5];
+        //tooltip->refactor();
+        //tooltip->poll_events();
         tooltip->on_render(ctx);
     }
     for (Element *elt : children) {

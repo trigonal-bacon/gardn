@@ -11,6 +11,15 @@
 #include <Shared/Vector.hh>
 
 namespace Game {
+    class Particle {
+    public:
+        Vector pos;
+        float x_velocity;
+        float angle;
+        float sin_offset;
+        PetalID::T id;
+    };
+
     extern Simulation simulation;
     extern Renderer renderer;
     extern Socket socket;
@@ -21,6 +30,7 @@ namespace Game {
 
     extern double timestamp;
     
+    extern float score;
     extern float slot_indicator_opacity;
     extern float transition_circle;
 

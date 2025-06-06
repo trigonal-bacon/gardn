@@ -6,23 +6,13 @@
 
 #include <Shared/Entity.hh>
 
-void render_health(Renderer &ctx, Entity &ent) {
+void render_health(Renderer &ctx, Entity const &ent) {
     if (ent.has_component(kPetal)) return;
     if (ent.has_component(kMob)) return;
-    if (ent.damaged)
-        ent.last_damaged_time = Game::timestamp;
-    if ((float) ent.health_ratio > 0.999)
-        LERP(ent.healthbar_opacity, 0, Ui::lerp_amount)
-    else
-        ent.healthbar_opacity = 1;
-    if (ent.healthbar_lag < ent.health_ratio)
-        ent.healthbar_lag = ent.health_ratio;
-    else if (Game::timestamp - ent.last_damaged_time > 250)
-        LERP(ent.healthbar_lag, ent.health_ratio, Ui::lerp_amount / 3)
     if (ent.healthbar_opacity < 0.01) return;
     float w = ent.radius * 1.25;
-    ctx.set_global_alpha(1 - ent.deletion_tick * 0.2);
-    ctx.scale(1 + 0.1 * ent.deletion_tick);
+    ctx.set_global_alpha((1 - ent.deletion_animation) * ent.healthbar_opacity);
+    ctx.scale(1 + 0.5 * ent.deletion_animation);
     ctx.translate(-w, ent.radius * 1.25 + 10);
     ctx.round_line_cap();
     ctx.set_stroke(0xff222222);

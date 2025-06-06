@@ -11,12 +11,12 @@
 void Game::render_game() {
     RenderContext context(&renderer);
     assert(simulation.ent_exists(camera_id));
-    Entity &camera = simulation.get_ent(camera_id);
+    Entity const &camera = simulation.get_ent(camera_id);
     renderer.translate(renderer.width / 2, renderer.height / 2);
     renderer.scale(Ui::scale * camera.fov);
     renderer.translate(-camera.camera_x, -camera.camera_y);
     if (alive()) {
-        Entity &player = simulation.get_ent(player_id);
+        Entity const &player = simulation.get_ent(player_id);
         Game::loadout_count = player.loadout_count;
         if (player.damaged) {
             Vector rand = Vector::rand(3);
@@ -27,18 +27,14 @@ void Game::render_game() {
     {
         RenderContext context(&renderer);
         renderer.reset_transform();
-        renderer.set_fill(0xff1ea761);
+        renderer.set_fill(0xff987d72);
         renderer.fill_rect(0,0,renderer.width,renderer.height);
         renderer.set_fill(alpha);
         renderer.fill_rect(0,0,renderer.width,renderer.height);
     }
     {
         RenderContext context(&renderer);
-        /*
-        renderer.set_fill(0xff1ea761);
-        renderer.fill_rect(0,0,ARENA_WIDTH,ARENA_HEIGHT);
-        */
-        for (Map::ZoneDefinition &def : Map::MAP) {
+        for (Map::ZoneDefinition const &def : Map::MAP) {
             renderer.set_fill(def.color);
             renderer.fill_rect(def.x - def.w/2,def.y-def.h/2,def.w,def.h);
         }
@@ -65,49 +61,50 @@ void Game::render_game() {
         renderer.stroke();
     }
 
-    simulation.for_each<kWeb>([](Simulation *sim, Entity &ent){
+    simulation.for_each<kWeb>([](Simulation *sim, Entity const &ent){
         RenderContext context(&renderer);
         renderer.translate(ent.x, ent.y);
         renderer.rotate(ent.angle);
         render_web(renderer, ent);
     });
-    simulation.for_each<kDrop>([](Simulation *sim, Entity &ent){
+    simulation.for_each<kDrop>([](Simulation *sim, Entity const &ent){
         RenderContext context(&renderer);
         renderer.translate(ent.x, ent.y);
+        renderer.rotate(ent.angle);
         render_drop(renderer, ent);
     });
-    simulation.for_each<kHealth>([](Simulation *sim, Entity &ent){
+    simulation.for_each<kHealth>([](Simulation *sim, Entity const &ent){
         RenderContext context(&renderer);
         renderer.translate(ent.x, ent.y);
         render_health(renderer, ent);
     });
-    simulation.for_each<kPetal>([](Simulation *sim, Entity &ent){
+    simulation.for_each<kPetal>([](Simulation *sim, Entity const &ent){
         RenderContext context(&renderer);
         renderer.translate(ent.x, ent.y);
         renderer.rotate(ent.angle);
         render_petal(renderer, ent);
     });
-    simulation.for_each<kMob>([](Simulation *sim, Entity &ent){
+    simulation.for_each<kMob>([](Simulation *sim, Entity const &ent){
         if (ent.mob_id != MobID::kAntHole) return;
         RenderContext context(&renderer);
         renderer.translate(ent.x, ent.y);
         renderer.rotate(ent.angle);
         render_mob(renderer, ent);
     });
-    simulation.for_each<kMob>([](Simulation *sim, Entity &ent){
+    simulation.for_each<kMob>([](Simulation *sim, Entity const &ent){
         if (ent.mob_id == MobID::kAntHole) return;
         RenderContext context(&renderer);
         renderer.translate(ent.x, ent.y);
         renderer.rotate(ent.angle);
         render_mob(renderer, ent);
     });
-    simulation.for_each<kFlower>([](Simulation *sim, Entity &ent){
+    simulation.for_each<kFlower>([](Simulation *sim, Entity const &ent){
         RenderContext context(&renderer);
         renderer.translate(ent.x, ent.y);
         renderer.rotate(ent.angle);
         render_flower(renderer, ent);
     });
-    simulation.for_each<kName>([](Simulation *sim, Entity &ent){
+    simulation.for_each<kName>([](Simulation *sim, Entity const &ent){
         RenderContext context(&renderer);
         renderer.translate(ent.x, ent.y);
         render_name(renderer, ent);

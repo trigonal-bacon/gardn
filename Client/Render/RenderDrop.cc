@@ -9,29 +9,15 @@
 
 #include <cmath>
 
-void render_drop(Renderer &ctx, Entity &ent) {
+void render_drop(Renderer &ctx, Entity const &ent) {
     float animation_value = sinf(ent.animation);
-    ctx.set_global_alpha(1 - ent.deletion_tick * 0.2);
-    ctx.scale(1 - 0.2 * ent.deletion_tick);
+    ctx.set_global_alpha(1 - ent.deletion_animation);
+    ctx.scale(1 - ent.deletion_animation);
     ctx.scale(1 + animation_value * 0.03);
     ctx.scale(ent.radius / 30);
-    uint8_t rarity = PETAL_DATA[ent.drop_id].rarity;
-    ctx.set_fill(0x80000000);
+    ctx.set_fill(0x40000000);
     ctx.begin_path();
-    ctx.rect(-40, -40, 80, 80);
+    ctx.round_rect(-36, -36, 72, 72, 5);
     ctx.fill();
-    draw_loadout_background(ctx, RARITY_COLORS[rarity]);
-    ctx.translate(0, -5);
-    {
-        RenderContext r(&ctx);
-        if (PETAL_DATA[ent.drop_id].radius > 30) ctx.scale(30 / PETAL_DATA[ent.drop_id].radius);
-        draw_static_petal(ent.drop_id, ctx);
-    }
-    //ctx.center_text_align();
-    //ctx.center_text_baseline();
-    float text_width = 14 * Renderer::get_ascii_text_size(PETAL_DATA[ent.drop_id].name);
-    if (text_width < 50) text_width = 14; 
-    else text_width = 14 * 50 / text_width;
-    ctx.translate(0, 20);
-    ctx.draw_text(PETAL_DATA[ent.drop_id].name, { .size = text_width });
+    draw_loadout_background(ctx, ent.drop_id);
 }

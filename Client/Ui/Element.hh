@@ -26,8 +26,6 @@ namespace Ui {
         std::function<bool(void)> should_render = nullptr;
         int8_t h_justify = Center;
         int8_t v_justify = Middle;
-        uint8_t h_flex = 0;
-        uint8_t v_flex = 0;
     };
 
     enum UiEvent {

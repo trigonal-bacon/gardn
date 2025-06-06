@@ -19,6 +19,7 @@ namespace Game {
 
     double timestamp = 0;
 
+    float score = 0;
     float slot_indicator_opacity = 0;
     float transition_circle = 0;
 
@@ -34,6 +35,12 @@ using namespace Game;
 void Game::init() {
     window.add_child(
         Ui::make_title_main_screen()
+    );
+    window.add_child(
+        Ui::make_panel_buttons()
+    );
+    window.add_child(
+        Ui::make_petal_gallery()
     );
     window.set_divider();
     window.add_child(
@@ -51,6 +58,9 @@ void Game::init() {
     for (uint8_t i = 0; i < MAX_SLOT_COUNT * 2; ++i) window.add_child(new Ui::UiLoadoutPetal(i));
     window.add_child(
         Ui::make_leaderboard()
+    );
+    window.add_child(
+        Ui::make_stat_screen()
     );
     Ui::make_petal_tooltips();
     socket.connect("ws://localhost:9001");
@@ -97,9 +107,10 @@ void Game::tick(double time) {
     if (alive()) {
         on_game_screen = 1;
         player_id = simulation.get_ent(camera_id).player;
-        Entity &player = simulation.get_ent(player_id);
+        Entity const &player = simulation.get_ent(player_id);
         for (uint32_t i = 0; i < 2 * MAX_SLOT_COUNT; ++i) 
             cached_loadout[i] = player.loadout_ids[i];
+        score = player.score;
     } else {
         player_id = NULL_ENTITY;
     }
@@ -131,6 +142,12 @@ void Game::tick(double time) {
 
     if (should_render_game_ui()) {
         render_game();
+        if (!Game::alive()) {
+            RenderContext c(&renderer);
+            renderer.reset_transform();
+            renderer.set_fill(0x20000000);
+            renderer.fill_rect(0,0,renderer.width,renderer.height);
+        }
         window.render_game_screen(renderer);
         if (Input::keys_pressed_this_tick.contains('E')) {
             Ui::advance_key_select();
@@ -143,7 +160,7 @@ void Game::tick(double time) {
                 for (uint8_t i = 0; i < Game::loadout_count; ++i) {
                     if (Input::keys_pressed_this_tick.contains('1' + i)) {
                         Ui::ui_swap_petals(i, Ui::UiLoadout::selected_with_keys + Game::loadout_count);
-                        Ui::advance_key_select();
+                        //Ui::advance_key_select();
                         break;
                     }
                 }
@@ -169,4 +186,5 @@ void Game::tick(double time) {
     Input::mouse_buttons_pressed = Input::mouse_buttons_released = 0;
     Input::prev_mouse_x = Input::mouse_x;
     Input::prev_mouse_y = Input::mouse_y;
+    Input::wheel_delta = 0;
 }

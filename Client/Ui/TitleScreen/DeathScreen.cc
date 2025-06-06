@@ -2,7 +2,9 @@
 
 #include <Client/Game.hh>
 #include <Client/Ui/Button.hh>
+#include <Client/Ui/DynamicText.hh>
 #include <Client/Ui/Container.hh>
+#include <Client/Ui/StaticText.hh>
 
 using namespace Ui;
 
@@ -11,13 +13,18 @@ Element *Ui::make_death_main_screen() {
         145,
         40,
         new Ui::StaticText(28, "Continue"),
-        [](uint8_t e){ if (e == Ui::kClick && Game::on_game_screen) Game::on_game_screen = 0; },
-        {.fill = 0xff94e873, .round_radius = 7 }
+        [](Element *elt, uint8_t e){ if (e == Ui::kClick && Game::on_game_screen) Game::on_game_screen = 0; },
+        {.fill = 0xff94e873, .round_radius = 3 }
     );
     Ui::Element *container = new Ui::VContainer({
-        new Ui::StaticText(35, "You died"),
+        new Ui::StaticText(25, "You were killed by"),
+        new Ui::DynamicText(30, [](){
+            if (!Game::simulation.ent_exists(Game::camera_id)) return std::string{""};
+            return Game::simulation.get_ent(Game::camera_id).killed_by;
+        }),
         new Ui::Element(0,100),
-        continue_button
+        continue_button,
+        new Ui::Element(0,15)
     }, 0, 10, { .should_render = [](){ return !Game::alive() && Game::should_render_game_ui(); } });
     return container;
 }

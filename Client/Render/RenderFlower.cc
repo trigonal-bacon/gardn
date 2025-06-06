@@ -7,9 +7,9 @@
 
 #include <iostream>
 
-void render_flower(Renderer &ctx, Entity &ent) {
-    ctx.set_global_alpha(1 - ent.deletion_tick * 0.2);
-    ctx.scale(1 + 0.1 * ent.deletion_tick);
+void render_flower(Renderer &ctx, Entity const &ent) {
+    ctx.set_global_alpha(1 - ent.deletion_animation);
+    ctx.scale(1 + 0.5 * ent.deletion_animation);
     /*
     {
         //nametag
@@ -27,10 +27,13 @@ void render_flower(Renderer &ctx, Entity &ent) {
         ctx.fill_text(ptr);
     }
     */
-    ctx.add_color_filter(0xffac0000, ent.damage_flash * 0.8);
+    if (ent.damage_flash > 0.75)
+        ctx.add_color_filter(0xffffffff, ent.damage_flash * 0.8);
+    else if (ent.damage_flash > 0.01)
+        ctx.add_color_filter(0xffac0000, ent.damage_flash * 1.5);
     uint32_t base_color = 0xffffe763;
     if (BIT_AT(ent.face_flags, 2)) base_color = 0xffce76db;
-    else if (BIT_AT(ent.face_flags, 3))  base_color = Renderer::MIX(base_color, 0xffcfcfcf, 0.5);
+    else if (BIT_AT(ent.face_flags, 3)) base_color = Renderer::MIX(base_color, 0xffcfcfcf, 0.5);
     ctx.set_stroke(Renderer::HSV(base_color, 0.8));
     ctx.set_fill(base_color);
     ctx.set_line_width(3);

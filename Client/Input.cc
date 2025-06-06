@@ -3,6 +3,7 @@
 namespace Input {
     float mouse_x = 0;
     float mouse_y = 0;
+    float wheel_delta = 0;
     float prev_mouse_x = 0;
     float prev_mouse_y = 0;
     uint8_t mouse_buttons_state = 0;

@@ -10,6 +10,7 @@ namespace Input {
     };
     extern float mouse_x;
     extern float mouse_y;
+    extern float wheel_delta;
     extern float prev_mouse_x;
     extern float prev_mouse_y;
     extern uint8_t mouse_buttons_state;

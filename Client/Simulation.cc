@@ -1,5 +1,7 @@
 #include <Shared/Simulation.hh>
 
+#include <Client/Game.hh>
+
 #include <cmath>
 #include <iostream>
 
@@ -17,10 +19,11 @@ void Simulation::tick_lerp(double dt) {
             ent.x.step(amt);
             ent.y.step(amt);
             Vector vel(ent.x - prevx, ent.y - prevy);
-            ent.animation += (0.9 + 0.75 * vel.magnitude()) * 0.08;
+            ent.animation += (1 + 0.75 * vel.magnitude()) * 0.075;
             ent.radius.step(amt);
             ent.angle.step_angle(amt);
-            ent.deletion_tick.step(amt * 2);
+            if (ent.deletion_tick > 0)
+                LERP(ent.deletion_animation, 1, amt * 1.5);
         }
         if (ent.has_component(kCamera)) {
             ent.camera_x.step(amt);
@@ -29,8 +32,19 @@ void Simulation::tick_lerp(double dt) {
         }
         if (ent.has_component(kHealth)) {
             ent.health_ratio.step(amt);
-            if (ent.damaged == 1 && ent.damage_flash < 0.25) ent.damage_flash = 1;
+            if (ent.damaged == 1 && ent.damage_flash < 0.05)
+                ent.damage_flash = 1;
             else LERP(ent.damage_flash, 0, amt);
+            if (ent.damaged)
+            ent.last_damaged_time = Game::timestamp;
+            if ((float) ent.health_ratio > 0.999)
+                LERP(ent.healthbar_opacity, 0, amt)
+            else
+                ent.healthbar_opacity = 1;
+            if (ent.healthbar_lag < ent.health_ratio)
+                ent.healthbar_lag = ent.health_ratio;
+            else if (Game::timestamp - ent.last_damaged_time > 250)
+                LERP(ent.healthbar_lag, ent.health_ratio, amt / 3)
         }
         if (ent.has_component(kFlower)) {
             LERP(ent.eye_x, cosf(ent.eye_angle) * 3, amt);
@@ -42,12 +56,11 @@ void Simulation::tick_lerp(double dt) {
             else LERP(ent.mouth, 15, amt)
         }
     }
-    for (uint32_t i = 0; i < arena_info.player_count; ++i) {
+    for (uint32_t i = 0; i < arena_info.player_count; ++i)
         arena_info.scores[i].step(amt);
-    }
-    for (uint32_t i = arena_info.player_count; i < LEADERBOARD_SIZE; ++i) {
+
+    for (uint32_t i = arena_info.player_count; i < LEADERBOARD_SIZE; ++i)
         arena_info.scores[i] = 0;
-    }
 }
 
 void Simulation::post_tick() {

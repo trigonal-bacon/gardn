@@ -80,7 +80,7 @@ UiLoadoutPetal::UiLoadoutPetal(uint8_t pos) : Element(60, 60),
 {
     reload = 1;
     style.should_render = [&](){
-        if (!Game::should_render_game_ui()) return false;
+        if (!Game::alive()) return false;
         //coincidentally also works for trashing
         if (static_pos >= MAX_SLOT_COUNT + Game::loadout_count) return false;
         if (curr_pos == 2 * MAX_SLOT_COUNT) return false;
@@ -164,35 +164,11 @@ UiLoadoutPetal::UiLoadoutPetal(uint8_t pos) : Element(60, 60),
 }
 
 void UiLoadoutPetal::on_render(Renderer &ctx) {
-    {
-        RenderContext context(&ctx);
-        ctx.scale(width / 60);
-        draw_loadout_background(ctx, RARITY_COLORS[PETAL_DATA[last_id].rarity]);
-        if (static_pos < Game::loadout_count && PETAL_DATA[last_id].count != 0) {
-            float rld =  1 - (float) reload;
-            {
-                rld = rld * rld * rld * (rld * (6.0f * rld - 15.0f) + 10.0f);
-                RenderContext context(&ctx);
-                ctx.set_fill(0x40000000);
-                ctx.clip();
-                ctx.begin_path();
-                ctx.move_to(0,0);
-                ctx.partial_arc(0, 0, 90, -M_PI / 2 - rld * M_PI * 10, -M_PI / 2 - rld * M_PI * 8, 0);
-                ctx.fill();
-            }
-        }
-        ctx.translate(0, -5);
-        {
-            RenderContext r(&ctx);
-            if (PETAL_DATA[last_id].radius > 30) ctx.scale(30 / PETAL_DATA[last_id].radius);
-            draw_static_petal(last_id, ctx);
-        }
-        float text_width = 14 * Renderer::get_ascii_text_size(PETAL_DATA[last_id].name);
-        if (text_width < 50) text_width = 14;
-        else text_width = 14 * 50 / text_width;
-        ctx.translate(0, 20);
-        ctx.draw_text(PETAL_DATA[last_id].name, { .size = text_width });
-    }
+    ctx.scale(width / 60);
+    if (static_pos < Game::loadout_count && PETAL_DATA[last_id].count != 0)
+        draw_loadout_background(ctx, last_id, (float) reload);
+    else
+        draw_loadout_background(ctx, last_id);
 }
 
 void UiLoadoutPetal::on_render_skip(Renderer &ctx) {

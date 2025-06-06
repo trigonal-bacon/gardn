@@ -35,12 +35,15 @@ set(SRCS
     Ui/InGame/Tooltip.cc
     Ui/TitleScreen/DeathScreen.cc
     Ui/TitleScreen/MainScreen.cc
+    Ui/TitleScreen/PetalGallery.cc
+    Ui/TitleScreen/StatScreen.cc
     Ui/Button.cc
     Ui/Choose.cc
     Ui/Container.cc
     Ui/DynamicText.cc
     Ui/Element.cc
     Ui/Extern.cc
+    Ui/ScrollContainer.cc
     Ui/StaticText.cc
     Ui/TextInput.cc
     Ui/Window.cc
@@ -63,7 +66,7 @@ else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -ffast-math --closure=1")
 endif()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s NO_EXIT_RUNTIME=1 -s EXPORTED_FUNCTIONS=_main,_malloc,_free,_key_event,_mouse_event,_loop,_on_message")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s NO_EXIT_RUNTIME=1 -s EXPORTED_FUNCTIONS=_main,_malloc,_free,_key_event,_mouse_event,_wheel_event,_loop,_on_message")
 
 add_executable(gardn-client ${SRCS})
 

@@ -13,7 +13,7 @@ public:
     uint32_t flags;
 };
 
-void draw_loadout_background(Renderer &, uint32_t);
+void draw_loadout_background(Renderer &, PetalID::T, float=1);
 
 void draw_static_petal_single(MobID::T, Renderer &);
 

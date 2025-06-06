@@ -24,6 +24,9 @@ extern "C" {
         }
         else if (type == 1) Input::keys_pressed.erase(button);
     }
+    void wheel_event(float wheel) {
+        Input::wheel_delta = wheel;
+    }
     void loop(double d, float width, float height) {
         Game::renderer.width = width;
         Game::renderer.height = height;
@@ -52,6 +55,10 @@ int setup_inputs() {
         window.addEventListener("mouseup", (e) => {
             //e.preventDefault();
             _mouse_event(e.clientX * devicePixelRatio, e.clientY * devicePixelRatio, 2, +!!e.button);
+        });
+        window.addEventListener("wheel", (e) => {
+            //e.preventDefault();
+            _wheel_event(e.deltaY);
         });
     });
     return 0;

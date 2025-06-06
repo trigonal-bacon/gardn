@@ -5,7 +5,7 @@
 
 using namespace Ui;
 
-Button::Button(float w, float h, Element *l, void x(uint8_t), Style s) :
+Button::Button(float w, float h, Element *l, void x(Element *, uint8_t), Style s) :
     Element(w, h, s), label(l), on_click(x)
 {}
 
@@ -13,6 +13,8 @@ void Button::on_render(Renderer &ctx) {
     if (style.fill != 0x00000000) {
         if (focus_state == kMouseHover)
             ctx.set_fill(Renderer::HSV(style.fill, 1.1));
+        else if (focus_state == kMouseDown)
+            ctx.set_fill(Renderer::HSV(style.fill, 0.9));
         else
             ctx.set_fill(style.fill);
         ctx.set_stroke(Renderer::HSV(style.fill, style.stroke_hsv));
@@ -32,5 +34,5 @@ void Button::refactor() {
 }
 
 void Button::on_event(uint8_t event) {
-    on_click(event);
+    on_click(this, event);
 }

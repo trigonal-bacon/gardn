@@ -84,14 +84,12 @@ void VContainer::refactor() {
     y += outer_pad - inner_pad;
     width = x;
     height = y;
-    for (Element *elt : children)
-        if (elt->visible && elt->style.h_flex) elt->width = fmax(width - 2 * outer_pad, elt->width);
 }
 
-HFlexContainer::HFlexContainer(Element *l, Element *r, float pad, Style s) : 
-    Container({l,r},0,0,s), inner_pad(pad) 
+HFlexContainer::HFlexContainer(Element *l, Element *r, float opad, float ipad, Style s) : 
+    Container({l,r},0,0,s), outer_pad(opad), inner_pad(ipad) 
 {
-    style.h_flex = 1;
+    //style.h_flex = 1;
     l->style.h_justify = Style::Left;
     r->style.h_justify = Style::Right;
     refactor();
@@ -100,4 +98,10 @@ HFlexContainer::HFlexContainer(Element *l, Element *r, float pad, Style s) :
 void HFlexContainer::refactor() {
     width = children[0]->width + inner_pad + children[1]->width;
     height = fmax(children[0]->height, children[1]->height);
+}
+
+void HFlexContainer::on_render(Renderer &ctx) {
+    if (parent != nullptr)
+        width = fmax(width, parent->width - 2 * outer_pad);
+    Container::on_render(ctx);
 }

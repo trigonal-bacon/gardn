@@ -473,18 +473,39 @@ void draw_static_petal(PetalID::T id, Renderer &ctx) {
     }
 }
 
-void draw_loadout_background(Renderer &ctx, uint32_t color) {
-    ctx.set_fill(Renderer::HSV(color, 0.8));
-    ctx.set_stroke(Renderer::HSV(color, 0.8));
-    ctx.set_line_width(5);
+void draw_loadout_background(Renderer &ctx, uint8_t id, float reload) {
+    ctx.set_fill(Renderer::HSV(RARITY_COLORS[PETAL_DATA[id].rarity], 0.8));
     ctx.round_line_join();
     ctx.round_line_cap();
     ctx.begin_path();
-    ctx.rect(-30, -30, 60, 60);
-    ctx.stroke();
+    ctx.round_rect(-30, -30, 60, 60, 3);
     ctx.fill();
-    ctx.set_fill(color);
+    ctx.set_fill(RARITY_COLORS[PETAL_DATA[id].rarity]);
     ctx.begin_path();
-    ctx.rect(-27.5, -27.5, 55, 55);
+    ctx.rect(-25, -25, 50, 50);
     ctx.fill();
+    if (reload < 1) {
+        float rld =  1 - (float) reload;
+        {
+            rld = rld * rld * rld * (rld * (6.0f * rld - 15.0f) + 10.0f);
+            RenderContext context(&ctx);
+            ctx.set_fill(0x40000000);
+            ctx.clip();
+            ctx.begin_path();
+            ctx.move_to(0,0);
+            ctx.partial_arc(0, 0, 90, -M_PI / 2 - rld * M_PI * 10, -M_PI / 2 - rld * M_PI * 8, 0);
+            ctx.fill();
+        }
+    }
+    ctx.translate(0, -5);
+    {
+        RenderContext r(&ctx);
+        if (PETAL_DATA[id].radius > 30) ctx.scale(30 / PETAL_DATA[id].radius);
+        draw_static_petal(id, ctx);
+    }
+    float text_width = 12 * Renderer::get_ascii_text_size(PETAL_DATA[id].name);
+    if (text_width < 50) text_width = 12;
+    else text_width = 12 * 50 / text_width;
+    ctx.translate(0, 20);
+    ctx.draw_text(PETAL_DATA[id].name, { .size = text_width });
 }

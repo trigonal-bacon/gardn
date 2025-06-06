@@ -7,8 +7,8 @@ using namespace Ui;
 
 UiLoadoutSlot *Ui::UiLoadout::petal_backgrounds[2 * MAX_SLOT_COUNT + 1] = {nullptr};
 
-UiLoadoutSlot::UiLoadoutSlot(uint8_t pos) : Element(60, 60, { .fill = 0xfffcfcfc, .round_radius = 0 }) {
-    if (pos >= MAX_SLOT_COUNT) width = height = 45;
+UiLoadoutSlot::UiLoadoutSlot(uint8_t pos) : Element(70, 70, { .fill = 0xfffcfcfc, .round_radius = 0 }) {
+    if (pos >= MAX_SLOT_COUNT) width = height = 50;
     style.line_width = width / 12;
     style.round_radius = width / 20;
     style.should_render = [=](){
@@ -72,7 +72,7 @@ Element *Ui::make_loadout_backgrounds() {
                     new Ui::UiLoadoutSlot(5),
                     new Ui::UiLoadoutSlot(6),
                     new Ui::UiLoadoutSlot(7),
-                }, 10, 25
+                }, 10, 20
             ))->set_z_to_one(),
             (new Ui::HContainer(
                 {
@@ -88,9 +88,11 @@ Element *Ui::make_loadout_backgrounds() {
                 }, 10, 15
             ))->set_z_to_one(),
             new Ui::InputFreeze()
-        }, 0, 0, { .should_render = [](){ return Game::should_render_game_ui(); } }
+        }, 0, 0, { .should_render = [](){ return Game::alive(); } }
     );
     base->style.v_justify = Style::Bottom;
-    base->style.animate = [](Element *elt, Renderer &ctx){};
+    base->style.animate = [](Element *elt, Renderer &ctx){
+        ctx.translate(0, (1 - elt->animation) * elt->height * 2);
+    };
     return base;
 }
