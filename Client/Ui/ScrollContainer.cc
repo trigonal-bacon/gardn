@@ -11,11 +11,8 @@ using namespace Ui;
 
 ScrollBar::ScrollBar() : Element(10, 100, { .fill = 0x40000000, .round_radius = 5 }) {
     style.animate = [&](Element *elt, Renderer &ctx){
-        if (elt->layer) {
-            y += Input::mouse_y - Input::prev_mouse_y;
-            if (BIT_AT(Input::mouse_buttons_released, Input::LeftMouse))
-                elt->layer = 0;
-        }
+        if (elt->layer && BIT_AT(Input::mouse_buttons_released, Input::LeftMouse))
+            elt->layer = 0;
     };
 }
 
@@ -26,37 +23,34 @@ void ScrollBar::on_event(uint8_t event) {
 
 ScrollContainer::ScrollContainer(Element *content, float max_height) : HContainer({content, new ScrollBar()}, 0, 20, {}) {
     height = max_height;
+    lerp_scroll = 0;
 }
 
 void ScrollContainer::on_render(Renderer &ctx) {
-    {
-        DEBUG_ONLY(assert(children.size() == 2));
-    }
+    DEBUG_ONLY(assert(children.size() == 2));
     Element *scroll = children[1];
     Element *content = children[0];
     if (height < content->height) {
         scroll->height = height * height / content->height;
         if (std::abs(Input::mouse_x - screen_x) < width * Ui::scale / 2
         && std::abs(Input::mouse_y - screen_y) < height * Ui::scale / 2)
-            scroll->y += Input::wheel_delta / 10;
-
-        scroll->y = fclamp(scroll->y, 0, height - scroll->height);
-        float ratio = height == scroll->height ? 0 : scroll->y / (height - scroll->height);
-        content->y = -ratio * (content->height - height);
-    } else {
+            lerp_scroll += Input::wheel_delta / 10;
+        if (scroll->layer) lerp_scroll += Input::mouse_y - Input::prev_mouse_y;
+        lerp_scroll = fclamp(lerp_scroll, 0, height - scroll->height);
+        LERP(scroll->y, lerp_scroll, Ui::lerp_amount)
+        float ratio = height == scroll->height ? 0 : lerp_scroll / (height - scroll->height);
+        LERP(content->y, (-ratio * (content->height - height)), Ui::lerp_amount);
+    } else 
         content->y = scroll->y = 0;
-    }
-    {
-        RenderContext c(&ctx);
-        ctx.begin_path();
-        ctx.rect(-width/2,-height/2,width,height);
-        ctx.clip();
-        for (Element *elt : children) {
-            RenderContext context(&ctx);
-            ctx.translate(elt->x, elt->y);
-            ctx.translate(elt->style.h_justify * (width - elt->width) / 2, elt->style.v_justify * (height - elt->height) / 2);
-            elt->render(ctx);
-        }
+    RenderContext c(&ctx);
+    ctx.begin_path();
+    ctx.rect(-width/2,-height/2,width,height);
+    ctx.clip();
+    for (Element *elt : children) {
+        RenderContext context(&ctx);
+        ctx.translate(elt->x, elt->y);
+        ctx.translate(elt->style.h_justify * (width - elt->width) / 2, elt->style.v_justify * (height - elt->height) / 2);
+        elt->render(ctx);
     }
 } 
 

@@ -64,7 +64,7 @@ Element *Ui::make_panel_buttons() {
                     Ui::panel_open = Panel::kPetals;
                     Element *pg = Ui::Panel::petal_gallery;
                     pg->x = elt->screen_x - Ui::scale * pg->width / 2;
-                    pg->y = elt->screen_y - Ui::scale * (elt->height / 2 + pg->height + 10);
+                    pg->y = -Ui::scale * (elt->height + 15);
                     if (pg->x < 10 * Ui::scale) 
                         pg->x = 10 * Ui::scale;
                 }
@@ -82,6 +82,6 @@ Element *Ui::make_panel_buttons() {
             [](Element *elt, uint8_t e){ if (e == Ui::kClick) e = Ui::kClick; },
             { .fill = 0xff5a9fdb, .line_width = 5, .round_radius = 3 }
         ),
-   }, 10, 10, { .h_justify = Style::Left, .v_justify = Style::Bottom });
+   }, 10, 10, { .should_render = [](){ return Game::should_render_title_ui(); }, .h_justify = Style::Left, .v_justify = Style::Bottom });
    return elt;
 }

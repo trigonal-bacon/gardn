@@ -14,6 +14,7 @@ namespace Ui {
 
     class ScrollContainer : public HContainer {
     public:
+        float lerp_scroll;
         ScrollContainer(Element *, float);
 
         virtual void on_render(Renderer &) override;

@@ -31,7 +31,7 @@ void GalleryPetal::on_event(uint8_t event) {
 }
 
 static Element *make_scroll() {
-    Element *elt = new Ui::VContainer({}, 0, 10, {});
+    Element *elt = new Ui::VContainer({}, 10, 10, {});
     for (PetalID::T i = PetalID::kBasic; i < PetalID::kNumPetals;) {
         Element *row = new Ui::HContainer({}, 0, 10, { .v_justify = Style::Top });
         for (uint8_t j = 0; j < 4 && i < PetalID::kNumPetals; ++j, ++i) {
@@ -55,10 +55,10 @@ Element *Ui::make_petal_gallery() {
             ctx.translate(0, (1 - elt->animation) * 2 * elt->height);
         },
         .should_render = [](){
-            return Ui::panel_open == Panel::kPetals;
+            return Ui::panel_open == Panel::kPetals && Game::should_render_title_ui();
         },
         .h_justify = Style::Left,
-        .v_justify = Style::Top
+        .v_justify = Style::Bottom
     });
     Ui::Panel::petal_gallery = elt;
     return elt;
