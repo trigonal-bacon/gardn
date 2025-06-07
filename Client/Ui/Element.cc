@@ -32,7 +32,8 @@ Element *Element::set_z_to_one() {
 
 void Element::render(Renderer &ctx) {
     animation.set(style.should_render());
-    animation.step(Ui::lerp_amount);
+    if (style.no_animation) animation.step(1);
+    else animation.step(Ui::lerp_amount);
     //else animation.step(1);
     float curr_animation = (float) animation;
     visible = curr_animation > 0.01;
@@ -94,7 +95,7 @@ void Element::on_render(Renderer &ctx) {
 
 void Element::on_render_tooltip(Renderer &ctx) {
     tooltip_animation.set(rendering_tooltip);
-    tooltip_animation.step(Ui::lerp_amount);
+    tooltip_animation.step(Ui::lerp_amount * 2);
     if (tooltip_animation < 0.01 && !rendering_tooltip)
         tooltip = nullptr;
     if (tooltip != nullptr) {

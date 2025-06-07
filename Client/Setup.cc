@@ -79,13 +79,13 @@ void main_loop() {
 
 int setup_canvas() {
     EM_ASM({
-        Module.canvas = document.createElement("canvas");
+        Module.canvas = document.getElementById("canvas");
         Module.canvas.id = "canvas";
         Module.canvas.width = innerWidth * devicePixelRatio;
         Module.canvas.height = innerHeight * devicePixelRatio;
         Module.canvas.oncontextmenu = function() { return false; };
         window.onbeforeunload = function(e) { return "Are you sure?"; };
-        document.body.appendChild(Module.canvas);
+        //document.body.appendChild(Module.canvas);
         Module.ctxs = [Module.canvas.getContext('2d')];
         Module.availableCtxs =
             new Array(256).fill(0).map(function(_, i) { return i; });

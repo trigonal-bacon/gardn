@@ -20,9 +20,9 @@ StatPetalSlot::StatPetalSlot(uint8_t p) : Element(50,50,{}), pos(p) {
 
 void StatPetalSlot::refactor() {
     if (pos < Game::loadout_count) {
-        width = height = 50;
+        width = height = 60;
     } else if (Game::cached_loadout[pos] != PetalID::kNone) {
-        width = height = 40;
+        width = height = 45;
     } else {
         width = height = 0;
     }
@@ -71,7 +71,7 @@ Element *Ui::make_stat_screen() {
             new StatPetalSlot(13),
             new StatPetalSlot(14),
             new StatPetalSlot(15),
-        }, 0, 15)
+        }, 0, 10)
     }, 20, 7);
     elt->style.animate = [](Element *elt, Renderer &ctx) {
         ctx.translate(0, (1 - elt->animation) * 30 * elt->height);

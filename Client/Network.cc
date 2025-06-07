@@ -42,8 +42,6 @@ void Game::send_inputs() {
     uint8_t packet[64];
     Writer writer(static_cast<uint8_t *>(packet));
     writer.write_uint8(kServerbound::kClientInput);
-    //float x = Input::keys_pressed.contains('D') - Input::keys_pressed.contains('A');
-    //float y = Input::keys_pressed.contains('S') - Input::keys_pressed.contains('W');
     if (Input::freeze_input) {
         writer.write_float(0);
         writer.write_float(0);
@@ -52,6 +50,10 @@ void Game::send_inputs() {
     }
     float x = (Input::mouse_x - renderer.width / 2) / Ui::scale;
     float y = (Input::mouse_y - renderer.height / 2) / Ui::scale;
+    if (Input::keyboard_movement) {
+        x = 300 * (Input::keys_pressed.contains('D') - Input::keys_pressed.contains('A'));
+        y = 300 * (Input::keys_pressed.contains('S') - Input::keys_pressed.contains('W'));
+    }
     writer.write_float(x);
     writer.write_float(y);
     uint8_t attack = Input::keys_pressed.contains('\x20') || BIT_AT(Input::mouse_buttons_state, Input::LeftMouse);

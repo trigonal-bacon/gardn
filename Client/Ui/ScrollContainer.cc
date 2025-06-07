@@ -21,7 +21,7 @@ void ScrollBar::on_event(uint8_t event) {
         layer = 1;
 }
 
-ScrollContainer::ScrollContainer(Element *content, float max_height) : HContainer({content, new ScrollBar()}, 0, 20, {}) {
+ScrollContainer::ScrollContainer(Element *content, float max_height) : HContainer({content, new ScrollBar()}, 0, 10, {}) {
     height = max_height;
     lerp_scroll = 0;
 }

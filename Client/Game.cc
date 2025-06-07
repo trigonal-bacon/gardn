@@ -40,7 +40,13 @@ void Game::init() {
         Ui::make_panel_buttons()
     );
     window.add_child(
+        Ui::make_settings_panel()
+    );
+    window.add_child(
         Ui::make_petal_gallery()
+    );
+    window.add_child(
+        Ui::make_mob_gallery()
     );
     window.set_divider();
     window.add_child(
