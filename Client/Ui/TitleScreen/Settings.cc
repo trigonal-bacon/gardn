@@ -16,7 +16,11 @@ Element *Ui::make_settings_panel() {
         new Ui::HContainer({
             new Ui::ToggleButton(30, &Input::keyboard_movement),
             new Ui::StaticText(16, "Keyboard movement")
-        }, 0, 10)
+        }, 0, 10, {.h_justify = Style::Left }),
+        new Ui::HContainer({
+            new Ui::ToggleButton(30, &Input::movement_helper),
+            new Ui::StaticText(16, "Movement helper")
+        }, 0, 10, {.h_justify = Style::Left })
     }, 20, 10, { 
         .fill = 0xff5a9fdb,
         .line_width = 7,

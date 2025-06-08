@@ -40,4 +40,5 @@ namespace Ui {
     Element *make_settings_panel();
     Element *make_petal_gallery();
     Element *make_mob_gallery();
+    Element *make_changelog();
 }

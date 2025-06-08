@@ -1,6 +1,6 @@
 #include <Client/Game.hh>
 
-#include <iostream>
+#include <cmath>
 
 static double g_last_time = 0;
 static const float max_transition_circle = 2500;
@@ -47,6 +47,9 @@ void Game::init() {
     );
     window.add_child(
         Ui::make_mob_gallery()
+    );
+    window.add_child(
+        Ui::make_changelog()
     );
     window.set_divider();
     window.add_child(
@@ -155,10 +158,19 @@ void Game::tick(double time) {
             renderer.fill_rect(0,0,renderer.width,renderer.height);
         }
         window.render_game_screen(renderer);
-        if (Input::keys_pressed_this_tick.contains('E')) {
+        //process keybind petal switches
+        if (Input::keys_pressed_this_tick.contains('E')) 
             Ui::advance_key_select();
+        else if (Ui::UiLoadout::selected_with_keys == MAX_SLOT_COUNT) {
+            for (uint8_t i = 0; i < Game::loadout_count; ++i) {
+                if (Input::keys_pressed_this_tick.contains('1' + i)) {
+                    Ui::advance_key_select();
+                    break;
+                }
+            }
         }
-        if (Ui::UiLoadout::selected_with_keys < MAX_SLOT_COUNT) {
+        if (Ui::UiLoadout::selected_with_keys < MAX_SLOT_COUNT 
+            && Game::cached_loadout[Game::loadout_count + Ui::UiLoadout::selected_with_keys] != PetalID::kNone) {
             if (Input::keys_pressed_this_tick.contains('T')) {
                 Ui::ui_delete_petal(Ui::UiLoadout::selected_with_keys + Game::loadout_count);
                 Ui::advance_key_select();
@@ -166,7 +178,8 @@ void Game::tick(double time) {
                 for (uint8_t i = 0; i < Game::loadout_count; ++i) {
                     if (Input::keys_pressed_this_tick.contains('1' + i)) {
                         Ui::ui_swap_petals(i, Ui::UiLoadout::selected_with_keys + Game::loadout_count);
-                        //Ui::advance_key_select();
+                        if (Game::cached_loadout[Game::loadout_count + Ui::UiLoadout::selected_with_keys] == PetalID::kNone)
+                            Ui::advance_key_select();
                         break;
                     }
                 }

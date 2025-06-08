@@ -15,27 +15,29 @@ namespace Ui {
     };
 
     class HContainer : public Container {
-    public:
+    protected:
         float outer_pad = 0;
         float inner_pad = 0;
+    public:
         HContainer(std::initializer_list<Element *>, float = 0, float = 0, Style = {});
 
         virtual void refactor() override;
     };
 
     class VContainer : public Container {
-    public:
+    protected:
         float outer_pad = 0;
         float inner_pad = 0;
+    public:
         VContainer(std::initializer_list<Element *>, float = 0, float = 0, Style = {});
 
         virtual void refactor() override;
     };
 
-    class HFlexContainer : public Container {
+    class HFlexContainer final : public Container {
+        float inner_pad = 0;
+        float outer_pad = 0;
     public:
-        float inner_pad;
-        float outer_pad;
         HFlexContainer(Element *, Element *, float, float, Style = {});
 
         virtual void refactor() override;

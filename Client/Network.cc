@@ -51,8 +51,8 @@ void Game::send_inputs() {
     float x = (Input::mouse_x - renderer.width / 2) / Ui::scale;
     float y = (Input::mouse_y - renderer.height / 2) / Ui::scale;
     if (Input::keyboard_movement) {
-        x = 300 * (Input::keys_pressed.contains('D') - Input::keys_pressed.contains('A'));
-        y = 300 * (Input::keys_pressed.contains('S') - Input::keys_pressed.contains('W'));
+        x = 300 * (Input::keys_pressed.contains('D') - Input::keys_pressed.contains('A') + Input::keys_pressed.contains(39) - Input::keys_pressed.contains(37));
+        y = 300 * (Input::keys_pressed.contains('S') - Input::keys_pressed.contains('W') + Input::keys_pressed.contains(40) - Input::keys_pressed.contains(38));
     }
     writer.write_float(x);
     writer.write_float(y);

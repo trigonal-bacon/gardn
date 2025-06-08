@@ -39,10 +39,11 @@ namespace Ui {
     };
 
     class Element {
-    public:
+    protected:
         std::vector<Element *> children;
-        Ui::Element *parent = nullptr;
         Ui::Element *tooltip = nullptr;
+    public:
+        Ui::Element *parent = nullptr;
         float width = 0;
         float height = 0;
         float x = 0;

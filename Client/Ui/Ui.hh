@@ -10,7 +10,6 @@
 #include <Client/Ui/Element.hh>
 #include <Client/Ui/ScrollContainer.hh>
 #include <Client/Ui/StaticText.hh>
-#include <Client/Ui/ToggleButton.hh>
 #include <Client/Ui/TextInput.hh>
 #include <Client/Ui/Window.hh>
 

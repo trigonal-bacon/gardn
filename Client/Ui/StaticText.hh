@@ -7,9 +7,8 @@
 
 namespace Ui {
     class StaticText : public Element {
-    public:
         std::string text;
-
+    public:
         StaticText(float, std::string, Style = { .fill = 0xffffffff });
         //StaticText(float, char const *, Style = { .fill = 0xffffffff });
 
@@ -18,6 +17,6 @@ namespace Ui {
 
     class StaticParagraph : public VContainer {
     public:
-        StaticParagraph(float, float, std::string, Style = { .fill = 0xffffffff });
+        StaticParagraph(float, float, std::string, Style = {});
     };
 }

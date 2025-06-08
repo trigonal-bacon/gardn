@@ -6,8 +6,8 @@
 
 namespace Ui {
     class TextInput : public Element {
-    public:
         char const *name;
+    public:
         TextInput(char const *, float, float, uint32_t, Style = {});
 
         virtual void on_render(Renderer &) override;

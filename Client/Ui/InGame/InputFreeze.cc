@@ -41,7 +41,9 @@ InputFreeze::InputFreeze() : Container({
             Input::freeze_input = 0;
     };
     style.round_radius = 6;
-    //style.fill = 0x80000000;
+    style.should_render = [](){
+        return !Input::keyboard_movement;
+    };
 }
 
 void InputFreeze::on_render(Renderer &ctx) {

@@ -76,7 +76,7 @@ Element *Ui::make_mob_gallery() {
     Element *elt = new Ui::VContainer({
         new Ui::StaticText(25, "Mob Gallery"),
         make_scroll()
-    }, 20, 10, { 
+    }, 15, 10, { 
         .fill = 0xff5a9fdb,
         .line_width = 7,
         .round_radius = 3,

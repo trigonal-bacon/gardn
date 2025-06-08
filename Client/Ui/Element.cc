@@ -38,7 +38,7 @@ void Element::render(Renderer &ctx) {
     float curr_animation = (float) animation;
     visible = curr_animation > 0.01;
     #ifdef DEBUG
-    if (0 && visible) {
+    if (visible) {
         RenderContext context(&ctx);
         ctx.set_stroke(0x40000000);
         ctx.set_line_width(1);
@@ -75,7 +75,6 @@ void Element::render(Renderer &ctx) {
         focus_state = kFocusLost;
         on_event(kFocusLost);
     }
-    //focus_state = kFocusLost;
 }
 
 void Element::on_render(Renderer &ctx) {
@@ -106,10 +105,6 @@ void Element::on_render_tooltip(Renderer &ctx) {
         ctx.scale(Ui::scale);
         ctx.translate(0, -(height + tooltip->height) / 2 - 10);
         ctx.set_global_alpha((float) tooltip_animation);
-        //tooltip->screen_x = ctx.context.transform_matrix[2];
-        //tooltip->screen_y = ctx.context.transform_matrix[5];
-        //tooltip->refactor();
-        //tooltip->poll_events();
         tooltip->on_render(ctx);
     }
     for (Element *elt : children) {

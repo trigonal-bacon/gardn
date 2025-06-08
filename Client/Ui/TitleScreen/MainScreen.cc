@@ -106,7 +106,17 @@ Element *Ui::make_panel_buttons() {
         ),
         new Ui::Button(110, 30, 
             new Ui::StaticText(16, "Changelog"), 
-            [](Element *elt, uint8_t e){ if (e == Ui::kClick) e = Ui::kClick; },
+            [](Element *elt, uint8_t e){ if (e == Ui::kClick) {
+                if (Ui::panel_open != Panel::kChangelog) {
+                    Ui::panel_open = Panel::kChangelog;
+                    Element *pg = Ui::Panel::changelog;
+                    pg->x = elt->screen_x - Ui::scale * pg->width / 2;
+                    pg->y = -Ui::scale * (elt->height + 20);
+                    if (pg->x < 10 * Ui::scale) 
+                        pg->x = 10 * Ui::scale;
+                }
+                else Ui::panel_open = Panel::kNone;
+            } },
             { .fill = 0xff5a9fdb, .line_width = 5, .round_radius = 3 }
         ),
    }, 10, 10, { .should_render = [](){ return Game::should_render_title_ui(); }, .h_justify = Style::Left, .v_justify = Style::Bottom });

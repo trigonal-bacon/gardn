@@ -4,8 +4,8 @@
 
 namespace Ui {
     class Button : public Element {
-    public:
         void (*on_click)(Element *, uint8_t);
+    public:
         Button(float, float, Element *, void (Element *, uint8_t) = [](Element *, uint8_t){}, Style = { .fill = 0xffffffff, .stroke_hsv = 0.8 });
 
         virtual void on_render(Renderer &) override;
@@ -14,9 +14,9 @@ namespace Ui {
     };
 
     class ToggleButton : public Element {
-    public:
         uint8_t *toggler;
         float lerp_toggle;
+    public:
         ToggleButton(float, uint8_t *);
 
         virtual void on_render(Renderer &) override;

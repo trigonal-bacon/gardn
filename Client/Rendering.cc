@@ -1,5 +1,7 @@
 #include <Client/Game.hh>
 
+#include <Client/Input.hh>
+
 #include <Client/Ui/Ui.hh>
 #include <Client/Render/RenderEntity.hh>
 #include <Shared/Map.hh>
@@ -59,6 +61,38 @@ void Game::render_game() {
             renderer.line_to(rightX, newTopY);
         }
         renderer.stroke();
+    }
+
+    if (alive() && Input::movement_helper && !Input::keyboard_movement) {
+        Entity const &player = simulation.get_ent(player_id);
+        float norm_mouse_x = (Input::mouse_x - renderer.width / 2) / Ui::scale;
+        float norm_mouse_y = (Input::mouse_y - renderer.height / 2) / Ui::scale;
+        Vector delta{norm_mouse_x, norm_mouse_y};
+        float dist = delta.magnitude();
+        if (dist >= player.radius + 80) {
+            RenderContext context(&renderer);
+            renderer.reset_transform();
+            renderer.translate(renderer.width/2,renderer.height/2);
+            renderer.scale(Ui::scale);
+            uint8_t alpha = (uint8_t) (fclamp((dist - player.radius - 80) / 80, 0, 1) * 255 * 0.15);
+            delta.set_magnitude(player.radius + 40);
+            renderer.set_line_width(18);
+            renderer.round_line_cap();
+            renderer.round_line_join();
+            renderer.set_stroke(alpha << 24);
+            renderer.begin_path();
+            renderer.move_to(delta.x,delta.y);
+            renderer.line_to(norm_mouse_x,norm_mouse_y);
+            renderer.translate(norm_mouse_x,norm_mouse_y);
+            renderer.rotate(delta.angle());
+            renderer.rotate(2.5);
+            renderer.move_to(0,0);
+            renderer.line_to(40,0);
+            renderer.rotate(-5);
+            renderer.move_to(0,0);
+            renderer.line_to(40,0);
+            renderer.stroke();
+        }
     }
 
     simulation.for_each<kWeb>([](Simulation *sim, Entity const &ent){
