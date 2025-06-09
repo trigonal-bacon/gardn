@@ -3,7 +3,6 @@
 
 #include <iostream>
 
-
 int main() {
     std::cout << "Diagnostics: {\n";
     std::cout << "  Simulation Size: " << sizeof(Simulation) << '\n';

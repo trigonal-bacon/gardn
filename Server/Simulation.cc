@@ -7,6 +7,8 @@
 #include <Server/Spawn.hh>
 #include <Server/SpatialHash.hh>
 
+#include <Shared/Map.hh>
+
 #include <algorithm>
 #include <vector>
 
@@ -64,7 +66,8 @@ static void calculate_leaderboard(Simulation *sim) {
 
 void Simulation::tick() {
     pre_tick();
-    if (frand() < 0.005) alloc_mob((float) MobID::kMassiveBeetle + 0 * frand() * (float) MobID::kNumMobs, frand() * ARENA_WIDTH, frand() * ARENA_HEIGHT, NULL_ENTITY);
+    if (frand() < 0.01)
+        for (uint32_t i = 0; i < 10; ++i) Map::spawn_random_mob();
     for (uint32_t i = 0; i < active_entities.length; ++i) {
         Entity &ent = get_ent(active_entities[i]);
         if (ent.has_component(kPhysics)) {
@@ -109,18 +112,18 @@ void Simulation::post_tick() {
         assert(ent_exists(pending_delete[i]));
         Entity &ent = get_ent(pending_delete[i]);
         if (!ent.has_component(kPhysics)) 
-            delete_ent(pending_delete[i]);
+            _delete_ent(pending_delete[i]);
         else {
-            if (ent.deletion_tick >= 4) {
+            if (ent.deletion_tick >= DELETION_ANIMATION_TICKS) {
                 spatial_hash.remove(ent);
-                delete_ent(pending_delete[i]);
+                _delete_ent(pending_delete[i]);
             }
             else {
                 if (ent.deletion_tick == 0)
                     entity_on_death(this, ent);
                 ent.set_deletion_tick(ent.deletion_tick + 1);
+                ent.pending_delete = 0;
             }
-            ent.pending_delete = 0;
         }
     }
     pending_delete.clear();

@@ -6,6 +6,11 @@
 #include <Shared/Simulation.hh>
 #include <Shared/StaticData.hh>
 
+#include <cmath>
+
+#define FOCUS_LOSE_CLAUSE \
+    if (v.magnitude() > 1.5 * MOB_DATA[ent.mob_id].attributes.aggro_radius) ent.target = NULL_ENTITY;
+
 static void default_tick_idle(Simulation *sim, Entity &ent) {
     if (ent.ai_tick >= 0.5 * TPS) {
         ent.ai_tick = 0;
@@ -67,6 +72,36 @@ static void tick_default_passive(Simulation *sim, Entity &ent) {
     }
 }
 
+static void tick_bee_passive(Simulation *sim, Entity &ent) {
+    switch(ent.ai_state) {
+        case AIState::kIdle: {
+            if (ent.ai_tick >= 5 * TPS) {
+                ent.ai_tick = 0;
+                ent.set_angle(frand() * 2 * M_PI);
+                ent.ai_state = AIState::kIdle;
+            }
+            ent.set_angle(ent.angle + sinf(((float) ent.lifetime) / (TPS / 2)) / TPS);
+            Vector v(cosf(ent.angle), sinf(ent.angle));
+            v *= PLAYER_ACCELERATION / 2;
+            if (ent.lifetime % (TPS * 3 / 2) < TPS / 2)
+                v *= 0.5;
+    
+            ent.acceleration.set(v.x, v.y);
+            break;
+        }
+        case AIState::kIdleMoving: {
+            break;
+        }
+        case AIState::kReturning: {
+            default_tick_returning(sim, ent);
+            break;
+        }
+        default:
+            ent.ai_state = AIState::kIdle;
+            break;
+    }
+}
+
 static void tick_default_neutral(Simulation *sim, Entity &ent) {
     if (sim->ent_alive(ent.target)) {
         Entity &target = sim->get_ent(ent.target);
@@ -89,6 +124,7 @@ static void tick_default_aggro(Simulation *sim, Entity &ent, float speed) {
     if (sim->ent_alive(ent.target)) {
         Entity &target = sim->get_ent(ent.target);
         Vector v(target.x - ent.x, target.y - ent.y);
+        FOCUS_LOSE_CLAUSE
         v.set_magnitude(PLAYER_ACCELERATION * speed);
         ent.acceleration = v;
         ent.set_angle(v.angle());
@@ -108,6 +144,7 @@ static void tick_hornet_aggro(Simulation *sim, Entity &ent) {
     if (sim->ent_alive(ent.target)) {
         Entity &target = sim->get_ent(ent.target);
         Vector v(target.x - ent.x, target.y - ent.y);
+        FOCUS_LOSE_CLAUSE
         float dist = v.magnitude();
         if (dist > 300) {
             v.set_magnitude(PLAYER_ACCELERATION * 0.975);
@@ -119,7 +156,8 @@ static void tick_hornet_aggro(Simulation *sim, Entity &ent) {
             //spawn missile;
             Entity &missile = alloc_petal(PetalID::kMissile, ent);
             missile.damage = 10;
-            missile.health = missile.max_health = 20;
+            missile.health = missile.max_health = 10;
+            //missile.health = missile.max_health = 20;
             //missile.despawn_tick = 1;
             missile.set_despawn_tick(3 * TPS);
             missile.set_radius(20);
@@ -200,6 +238,7 @@ static void tick_centipede_aggro(Simulation *sim, Entity &ent) {
     if (sim->ent_alive(ent.target)) {
         Entity &target = sim->get_ent(ent.target);
         Vector v(target.x - ent.x, target.y - ent.y);
+        FOCUS_LOSE_CLAUSE
         v.set_magnitude(PLAYER_ACCELERATION * 0.95);
         ent.acceleration = v;
         ent.set_angle(v.angle());
@@ -294,11 +333,13 @@ void tick_ai_behavior(Simulation *sim, Entity &ent) {
         }
     }
     switch(ent.mob_id) {
-        case MobID::kBabyAnt:
-        case MobID::kBee:
+        case MobID::kBabyAnt:            
         case MobID::kLadybug:
         case MobID::kMassiveLadybug:
             tick_default_passive(sim, ent);
+            break;
+        case MobID::kBee:
+            tick_bee_passive(sim, ent);
             break;
         case MobID::kCentipede:
             tick_centipede_passive(sim, ent);
@@ -341,6 +382,7 @@ void tick_ai_behavior(Simulation *sim, Entity &ent) {
         case MobID::kHornet:
             tick_hornet_aggro(sim, ent);
             break;
+        case MobID::kBoulder:
         case MobID::kRock:
         case MobID::kCactus:
             break;

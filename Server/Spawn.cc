@@ -3,6 +3,7 @@
 #include <Server/EntityFunctions.hh>
 #include <Server/Server.hh>
 #include <Shared/Helpers.hh>
+#include <Shared/Map.hh>
 #include <Shared/StaticData.hh>
 
 #include <cmath>
@@ -25,7 +26,7 @@ Entity &alloc_drop(PetalID::T drop_id) {
     return drop;
 }
 
-static Entity &__alloc_mob(MobID::T mob_id, float x, float y, EntityID team = NULL_ENTITY) {
+static Entity &__alloc_mob(MobID::T mob_id, float x, float y, EntityID const team = NULL_ENTITY) {
     struct MobData const &data = MOB_DATA[mob_id];
     float seed = frand();
     Entity &mob = Server::simulation.alloc_ent();
@@ -63,7 +64,7 @@ static Entity &__alloc_mob(MobID::T mob_id, float x, float y, EntityID team = NU
     return mob;
 }
 
-Entity &alloc_mob(MobID::T mob_id, float x, float y, EntityID team) {
+Entity &alloc_mob(MobID::T mob_id, float x, float y, EntityID const team) {
     struct MobData const &data = MOB_DATA[mob_id];
     if (data.attributes.segments == 0) {
         Entity &ent = __alloc_mob(mob_id, x, y, team);
@@ -106,7 +107,7 @@ Entity &alloc_mob(MobID::T mob_id, float x, float y, EntityID team) {
     }
 }
 
-Entity &alloc_player(Entity &camera) {
+Entity &alloc_player(Entity const &camera) {
     Entity &player = Server::simulation.alloc_ent();
 
     player.add_component(kPhysics);
@@ -116,7 +117,6 @@ Entity &alloc_player(Entity &camera) {
     player.friction = DEFAULT_FRICTION;
 
     player.add_component(kFlower);
-    camera.set_player(player.id);
 
     player.add_component(kRelations);
     entity_set_owner(player, camera.id);
@@ -129,7 +129,7 @@ Entity &alloc_player(Entity &camera) {
     player.set_health_ratio(1);
     player.damage = 25;
     player.immunity_ticks = 3.5 * TPS;
-    player.mass = 1;
+    player.mass = 0.1;
 
     player.add_component(kScore);
 
@@ -139,7 +139,7 @@ Entity &alloc_player(Entity &camera) {
     return player;
 }
 
-Entity &alloc_petal(PetalID::T petal_id, Entity &parent) {
+Entity &alloc_petal(PetalID::T petal_id, Entity const &parent) {
     struct PetalData const &petal_data = PETAL_DATA[petal_id];
     Entity &petal = Server::simulation.alloc_ent();
     petal.add_component(kPhysics);
@@ -148,7 +148,7 @@ Entity &alloc_petal(PetalID::T petal_id, Entity &parent) {
     petal.set_radius(petal_data.radius * 2);
     petal.mass = 0.05;
     if (petal_id == PetalID::kShield) petal.mass = 10;
-    petal.friction = 0.5;
+    petal.friction = 0.4;
     petal.add_component(kRelations);
     entity_set_owner(petal, parent.id);
     petal.set_team(parent.team);
@@ -163,7 +163,7 @@ Entity &alloc_petal(PetalID::T petal_id, Entity &parent) {
     return petal;
 }
 
-Entity &alloc_web(float radius, Entity &parent) {
+Entity &alloc_web(float radius, Entity const &parent) {
     Entity &web = Server::simulation.alloc_ent();
     web.add_component(kPhysics);
     web.set_x(parent.x);
@@ -181,20 +181,20 @@ Entity &alloc_web(float radius, Entity &parent) {
 }
 
 void player_spawn(Simulation *sim, Entity &camera, Entity &player) {
-    float spawn_x = frand() * ARENA_WIDTH;
-    float spawn_y = frand() * ARENA_HEIGHT;
+    camera.set_player(player.id);
+    uint32_t power = Map::difficulty_at_level(camera.respawn_level);
+    Map::ZoneDefinition const &zone = Map::MAP[power];
+    float spawn_x = (frand() - 0.5) * zone.w + zone.x;
+    float spawn_y = (frand() - 0.5) * zone.h + zone.y;
     camera.set_camera_x(spawn_x);
     camera.set_camera_y(spawn_y);
     player.set_x(spawn_x);
     player.set_y(spawn_y);
     player.set_score(level_to_score(camera.respawn_level));
-    player.set_loadout_count(loadOutSlotsAtLevel(camera.respawn_level));
-    player.health = player.max_health = hpAtLevel(camera.respawn_level);
-    for (uint32_t i = 0; i < player.loadout_count; ++i) {
-        //player.loadout[i].reset();
-        //player.loadout[i].id = camera.inventory[i];
+    player.set_loadout_count(loadout_slots_at_level(camera.respawn_level));
+    player.health = player.max_health = hp_at_level(camera.respawn_level);
+    for (uint32_t i = 0; i < player.loadout_count; ++i) 
         player.set_loadout_ids(i, camera.inventory[i]);
-    }
     for (uint32_t i = player.loadout_count; i < MAX_SLOT_COUNT * 2; ++i)
         player.set_loadout_ids(i, camera.inventory[i]);
 }

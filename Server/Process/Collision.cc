@@ -16,11 +16,6 @@ static bool should_interact(Entity const &ent1, Entity const &ent2) {
     return false;
 }
 
-//static bool should_collide(Entity &ent1, Entity &ent2) {
-    //if (ent1.has_component(kDrop) || ent2.has_component(kDrop)) return false;
-    //return true;
-//}
-
 static void pickup_drop(Simulation *sim, Entity &player, Entity &drop) {
     if (!sim->ent_alive(player.parent)) return;
     if (drop.immunity_ticks < 0.5 * TPS) return;
@@ -49,14 +44,18 @@ static void pickup_drop(Simulation *sim, Entity &player, Entity &drop) {
 #define NO(component) (!ent1.has_component(component) && !ent2.has_component(component))
 
 void on_collide(Simulation *sim, Entity &ent1, Entity &ent2) {
+    //do a distance dependent check first (it's faster)
+    float min_dist = ent1.radius + ent2.radius;
+    if (fabs(ent1.x - ent2.x) > min_dist || fabs(ent1.y - ent2.y) > min_dist) return;
     //check if collide (distance independent)
     if (!should_interact(ent1, ent2)) return;
-    //distance dependent check
+    //finer distance check
     Vector separation(ent1.x - ent2.x, ent1.y - ent2.y);
-    float dist = ent1.radius + ent2.radius - separation.magnitude();
+    float dist = min_dist - separation.magnitude();
     if (dist < 0) return;
     if (NO(kDrop) && NO(kWeb)) {
-        if (separation.x == 0 && separation.y == 0) separation.unit_normal(frand() * 2 * 3.14159);
+        if (separation.x == 0 && separation.y == 0)
+            separation.unit_normal(frand() * 2 * M_PI);
         separation.normalize();
         float ratio = ent2.mass / (ent1.mass + ent2.mass);
         Vector sep = separation;
@@ -87,9 +86,8 @@ void on_collide(Simulation *sim, Entity &ent1, Entity &ent2) {
         pickup_drop(sim, ent1, ent2);
     }
 
-    if (ent1.has_component(kWeb) && !ent2.has_component(kPetal) && !ent2.has_component(kDrop)) {
-        ent2.speed_ratio = 0.8;
-    } else if (ent2.has_component(kWeb) && !ent1.has_component(kPetal) && !ent1.has_component(kDrop)) {
-        ent1.speed_ratio = 0.8;
-    }
+    if (ent1.has_component(kWeb) && !ent2.has_component(kPetal) && !ent2.has_component(kDrop))
+        ent2.speed_ratio = 0.5;
+    else if (ent2.has_component(kWeb) && !ent1.has_component(kPetal) && !ent1.has_component(kDrop))
+        ent1.speed_ratio = 0.5;
 }

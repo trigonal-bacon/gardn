@@ -5,9 +5,9 @@
 #include <Shared/Simulation.hh>
 
 Entity &alloc_drop(PetalID::T);
-Entity &alloc_mob(MobID::T, float, float, EntityID);
-Entity &alloc_player(Entity &);
-Entity &alloc_petal(PetalID::T, Entity &);
-Entity &alloc_web(float, Entity &);
+Entity &alloc_mob(MobID::T, float, float, EntityID const);
+Entity &alloc_player(Entity const &);
+Entity &alloc_petal(PetalID::T, Entity const &);
+Entity &alloc_web(float, Entity const &);
 
 void player_spawn(Simulation *, Entity &, Entity &);

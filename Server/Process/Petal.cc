@@ -47,7 +47,7 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
                 break;
             }
             case PetalID::kMissile: {
-                petal.acceleration.unit_normal(petal.angle).set_magnitude(7 * PLAYER_ACCELERATION);
+                petal.acceleration.unit_normal(petal.angle).set_magnitude(4 * PLAYER_ACCELERATION);
                 break;
             }
             default:
@@ -65,7 +65,7 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
                     break;
                 case PetalID::kMissile:
                     if (BIT_AT(player.input, 0)) {
-                        petal.acceleration.unit_normal(petal.angle).set_magnitude(10 * PLAYER_ACCELERATION);
+                        petal.acceleration.unit_normal(petal.angle).set_magnitude(4 * PLAYER_ACCELERATION);
                         petal.set_despawn_tick(3 * TPS);
                     }
                     break;
@@ -85,7 +85,7 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
                 case PetalID::kBubble:
                     if (BIT_AT(player.input, 1)) {
                         Vector v(player.x - petal.x, player.y - petal.y);
-                        v.set_magnitude(PLAYER_ACCELERATION * 10);
+                        v.set_magnitude(PLAYER_ACCELERATION * 15);
                         player.acceleration += v;
                         sim->request_delete(petal.id);
                     }

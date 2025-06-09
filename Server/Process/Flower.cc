@@ -16,6 +16,7 @@ struct _PlayerBuffs {
     float extra_health;
     uint8_t has_antennae : 1;
     uint8_t has_observer : 1;
+    uint8_t is_poisonous : 1;
 };
 
 //maybe reconsider
@@ -32,20 +33,21 @@ static struct _PlayerBuffs petal_passive_buffs(Simulation *sim, Entity &player) 
         } else if (slot.id == PetalID::kObserver) {
             buffs.has_observer = 1;
             buffs.extra_vision = 0.75;
-        }
-        if (!player.loadout[i].already_spawned) continue;
-        if (petal_data.attributes.constant_heal > 0) {
-            buffs.heal += petal_data.attributes.constant_heal / TPS;
-            //inflict_heal(sim, player, petal_data.attributes.constant_heal / TPS);
-        }
-        if (slot.id == PetalID::kFaster) {
-            buffs.extra_rot += 1.0;
-        } else if (slot.id == PetalID::kThirdEye) {
+        }  else if (slot.id == PetalID::kThirdEye) {
             buffs.extra_range = 75;
-        } else if (slot.id == PetalID::kCactus) {
+        } 
+        if (!player.loadout[i].already_spawned) continue;
+        if (petal_data.attributes.constant_heal > 0)
+            buffs.heal += petal_data.attributes.constant_heal / TPS;
+        if (slot.id == PetalID::kFaster) 
+            buffs.extra_rot += 1.0;
+        else if (slot.id == PetalID::kCactus) 
             buffs.extra_health += 20;
-        } else if (slot.id == PetalID::kTricac) {
+        else if (slot.id == PetalID::kTricac) 
             buffs.extra_health += 60;
+        else if (slot.id == PetalID::kPoisonCactus) {
+            buffs.extra_health += 20;
+            buffs.is_poisonous = 1;
         }
     }
     return buffs;
@@ -53,14 +55,17 @@ static struct _PlayerBuffs petal_passive_buffs(Simulation *sim, Entity &player) 
 
 void tick_player_behavior(Simulation *sim, Entity &player) {
     if (player.pending_delete) return;
-
+    DEBUG_ONLY(assert(player.max_health > 0);)
     struct _PlayerBuffs buffs = petal_passive_buffs(sim, player);
-
+    float health_ratio = player.health / player.max_health;
+    player.max_health = hp_at_level(score_to_level(player.score)) + buffs.extra_health;
+    player.health = health_ratio * player.max_health;
     if (buffs.heal > 0)
         inflict_heal(sim, player, buffs.heal);
-    float health_ratio = player.health / player.max_health;
-    player.max_health = hpAtLevel(score_to_level(player.score)) + buffs.extra_health;
-    player.health = health_ratio * player.max_health;
+    if (buffs.is_poisonous)
+        player.poison_damage = {10.0, 2};
+    else
+        player.poison_damage = {0, 0};
     float rot_pos = 0;
     player.set_face_flags(0);
 
@@ -75,7 +80,7 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
         struct PetalData const &petal_data = PETAL_DATA[slot.id];
         //player.set_loadout_ids(i, slot.id);
         //other way around. loadout_ids should dictate loadout
-        if (slot.id != player.loadout_ids[i]) {
+        if (slot.id != player.loadout_ids[i] || player.overlevel_timer >= PETAL_DISABLE_DELAY * TPS) {
             //delete all old petals
             for (uint32_t j = 0; j < petal_data.count; ++j) {
                 LoadoutPetal &petal_slot = slot.petals[j];
@@ -86,9 +91,15 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
             slot.id = player.loadout_ids[i];
         }
 
-        if (slot.id == PetalID::kNone) continue;
+        if (slot.id == PetalID::kNone)
+            continue;
         if (petal_data.count == 0) 
             continue;
+        if (player.overlevel_timer >= PETAL_DISABLE_DELAY * TPS) {
+            player.set_loadout_reloads(i, 0);
+            continue;
+        }
+        //if overleveled timer too large continue
         float min_reload = 1;
         for (uint32_t j = 0; j < petal_data.count; ++j) {
             LoadoutPetal &petal_slot = slot.petals[j];

@@ -29,6 +29,7 @@ set(SOURCES
     ../Shared/Entity.cc
     ../Shared/EntityDef.cc
     ../Shared/Helpers.cc
+    ../Shared/Map.cc
     ../Shared/Simulation.cc
     ../Shared/StaticData.cc
     ../Shared/Vector.cc
@@ -37,7 +38,7 @@ set(SOURCES
 if(DEBUG)
     set(CMAKE_CXX_FLAGS "-std=c++20 -gdwarf-4 -lpthread -DDEBUG=1")
 else()
-    set(CMAKE_CXX_FLAGS "-std=c++20 -O3")
+    set(CMAKE_CXX_FLAGS "-std=c++20 -O3 -Ofast")
 endif()
 set(CMAKE_CXX_COMPILER "g++")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DSERVERSIDE=1")
