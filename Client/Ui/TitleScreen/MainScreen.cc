@@ -52,7 +52,7 @@ Element *Ui::make_title_main_screen() {
                 new Ui::VContainer({
                     new Ui::StaticText(16, "Use WASD or arrow keys to move"),
                     new Ui::StaticText(16, "SPACE to attack"),
-                    new Ui::StaticText(16, "SPACE to defend")
+                    new Ui::StaticText(16, "SHIFT to defend")
                 }, 0, 5, { .should_render = [](){ return Input::keyboard_movement; }, .no_animation = 1 }),
             }, 200, 65),
             new Ui::VContainer({

@@ -12,8 +12,8 @@ Element *Ui::UiLoadout::petal_tooltips[PetalID::kNumPetals] = {nullptr};
 
 static void make_petal_tooltip(PetalID::T id) {
     std::string rld_str = PETAL_DATA[id].reload == 0 ? "" :
-        PETAL_DATA[id].attributes.secondary_reload == 0 ? std::format("{:.1f}s", PETAL_DATA[id].reload) : 
-        std::format("{:.1f} + {:.1f}s", PETAL_DATA[id].reload, PETAL_DATA[id].attributes.secondary_reload);
+        PETAL_DATA[id].attributes.secondary_reload == 0 ? std::format("{:.1f}s ⟳", PETAL_DATA[id].reload) : 
+        std::format("{:.1f} + {:.1f}s ⟳", PETAL_DATA[id].reload, PETAL_DATA[id].attributes.secondary_reload);
     //std::cout << Renderer::get_ascii_text_size(rld_str.c_str()) << '\n';
     Element *tooltip = new Ui::VContainer({
         new Ui::HFlexContainer(

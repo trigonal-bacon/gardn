@@ -28,7 +28,7 @@ void OverlevelTimer::on_render(Renderer &ctx) {
 Element *Ui::make_overlevel_indicator() {
     Element *elt = new Ui::HContainer({
         new Ui::VContainer({
-            new Ui::StaticText(18, "MOVE RIGHT ->", { .fill = 0xffea7f80, .h_justify = Style::Left }),
+            new Ui::StaticText(18, "MOVE RIGHT →", { .fill = 0xffea7f80, .h_justify = Style::Left }),
             new Ui::StaticText(14, "You are overleveled for this zone", { .fill = 0xffffffff, .h_justify = Style::Left }),
             new Ui::StaticText(14, "You will be unable to attack", { .fill = 0xffffffff, .h_justify = Style::Left }),
         }, 0, 3),

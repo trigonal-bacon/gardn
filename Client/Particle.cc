@@ -35,7 +35,11 @@ void Particle::tick(Renderer &ctx, double dt) {
         if (frand() > 0.01) continue;
         ParticleEntity npart;
         npart.x = -30;
-        npart.id = (float) PetalID::kBasic + frand() * (PetalID::kNumPetals-PetalID::kBasic);
+        std::vector<PetalID::T> ids = {PetalID::kBasic};
+        for (PetalID::T pot = PetalID::kBasic + 1; pot < PetalID::kNumPetals; ++pot)
+            if (Game::seen_petals[pot]) ids.push_back(pot);
+        
+        npart.id = ids[frand() * ids.size()];   
         npart.y = frand() * ctx.height;
         npart.angle = frand() * 2 * M_PI;
         npart.x_velocity = frand() * 50 + 150;

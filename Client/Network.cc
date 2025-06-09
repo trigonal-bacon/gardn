@@ -12,17 +12,15 @@ void Game::on_message(uint8_t *ptr, uint32_t len) {
             simulation_ready = 1;
             camera_id = reader.read_entid();
             EntityID curr_id = reader.read_entid();
-            while(1) {
-                if (curr_id.null()) break;
+            while(!curr_id.null()) {
                 assert(simulation.ent_exists(curr_id));
                 Entity &ent = simulation.get_ent(curr_id);
-                simulation.delete_ent(curr_id);
+                simulation.request_delete(curr_id);
                 curr_id = reader.read_entid();
             }
             curr_id = reader.read_entid();
-            DEBUG_ONLY(assert(!curr_id.null());)
-            while(1) {
-                if (curr_id.null()) break;
+            //DEBUG_ONLY(assert(!curr_id.null());)
+            while(!curr_id.null()) {
                 uint8_t create = reader.read_uint8();
                 if (create) simulation.force_alloc_ent(curr_id);
                 DEBUG_ONLY(assert(simulation.ent_exists(curr_id));)
