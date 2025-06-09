@@ -101,7 +101,7 @@ void Server::run() {
                 case kServerbound::kClientSpawn: {
                     if (client->alive()) break;
                     Entity &camera = Server::simulation.get_ent(client->camera);
-                    Entity &player = alloc_player(camera);
+                    Entity &player = alloc_player(camera.id);
                     player_spawn(&Server::simulation, camera, player);
                     std::string name;
                     //check string length;

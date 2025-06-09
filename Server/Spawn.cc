@@ -9,6 +9,7 @@
 #include <cmath>
 
 Entity &alloc_drop(PetalID::T drop_id) {
+    DEBUG_ONLY(assert(drop_id < PetalID::kNumPetals);)
     Entity &drop = Server::simulation.alloc_ent();
     drop.add_component(kPhysics);
     drop.set_radius(0);
@@ -17,7 +18,7 @@ Entity &alloc_drop(PetalID::T drop_id) {
 
     drop.add_component(kRelations);
     drop.set_team(NULL_ENTITY);
-    entity_set_owner(drop, NULL_ENTITY);
+    //entity_set_owner(drop, NULL_ENTITY);
 
     drop.add_component(kDrop);
     drop.set_drop_id(drop_id);
@@ -27,6 +28,7 @@ Entity &alloc_drop(PetalID::T drop_id) {
 }
 
 static Entity &__alloc_mob(MobID::T mob_id, float x, float y, EntityID const team = NULL_ENTITY) {
+    DEBUG_ONLY(assert(mob_id < MobID::kNumMobs);)
     struct MobData const &data = MOB_DATA[mob_id];
     float seed = frand();
     Entity &mob = Server::simulation.alloc_ent();
@@ -44,7 +46,7 @@ static Entity &__alloc_mob(MobID::T mob_id, float x, float y, EntityID const tea
     
     mob.add_component(kRelations);
     mob.set_team(team);
-    entity_set_owner(mob, NULL_ENTITY);
+    //entity_set_owner(mob, NULL_ENTITY);
 
     mob.add_component(kMob);
     mob.set_mob_id(mob_id);
@@ -61,6 +63,8 @@ static Entity &__alloc_mob(MobID::T mob_id, float x, float y, EntityID const tea
 
     mob.add_component(kName);
     mob.set_name(data.name);
+
+    mob.base_entity = mob.id;
     return mob;
 }
 
@@ -69,21 +73,15 @@ Entity &alloc_mob(MobID::T mob_id, float x, float y, EntityID const team) {
     if (data.attributes.segments == 0) {
         Entity &ent = __alloc_mob(mob_id, x, y, team);
         if (mob_id == MobID::kAntHole) {
-            for (uint32_t i = 0; i < 3; ++i) {
+            std::vector<MobID::T> const spawns = { 
+                MobID::kBabyAnt, MobID::kBabyAnt, MobID::kBabyAnt, 
+                MobID::kWorkerAnt, MobID::kWorkerAnt, MobID::kSoldierAnt
+            };
+            for (MobID::T mob_id : spawns) {
                 Vector rand = Vector::rand(ent.radius * 2);
                 rand *= ent.radius * 2;
-                Entity &ant = __alloc_mob(MobID::kBabyAnt, x + rand.x, y + rand.y, team);
-                entity_set_owner(ant, ent.id);
-            }
-            for (uint32_t i = 0; i < 2; ++i) {
-                Vector rand = Vector::rand(ent.radius * 2);
-                Entity &ant = __alloc_mob(MobID::kWorkerAnt, x + rand.x, y + rand.y, team);
-                entity_set_owner(ant, ent.id);
-            }
-            for (uint32_t i = 0; i < 1; ++i) {
-                Vector rand = Vector::rand(ent.radius * 2);
-                Entity &ant = __alloc_mob(MobID::kSoldierAnt, x + rand.x, y + rand.y, team);
-                entity_set_owner(ant, ent.id);
+                Entity &ant = __alloc_mob(mob_id, x + rand.x, y + rand.y, team);
+                ant.set_parent(ent.id);
             }
         }
         return ent;
@@ -107,21 +105,21 @@ Entity &alloc_mob(MobID::T mob_id, float x, float y, EntityID const team) {
     }
 }
 
-Entity &alloc_player(Entity const &camera) {
+Entity &alloc_player(EntityID const camera_id) {
     Entity &player = Server::simulation.alloc_ent();
 
     player.add_component(kPhysics);
-    player.set_x(camera.camera_x);
-    player.set_y(camera.camera_y);
+    //player.set_x(camera.camera_x);
+    //player.set_y(camera.camera_y);
     player.set_radius(25);
     player.friction = DEFAULT_FRICTION;
 
     player.add_component(kFlower);
 
     player.add_component(kRelations);
-    entity_set_owner(player, camera.id);
+    player.set_parent(camera_id);
     player.owner = player.id;
-    player.set_team(camera.id);
+    player.set_team(camera_id);
 
     player.add_component(kHealth);
     player.health = 100;
@@ -136,10 +134,13 @@ Entity &alloc_player(Entity const &camera) {
     player.add_component(kName);
     //player.set_name("TestName.com");
     player.set_nametag_visible(1);
+
+    player.base_entity = player.id;
     return player;
 }
 
 Entity &alloc_petal(PetalID::T petal_id, Entity const &parent) {
+    DEBUG_ONLY(assert(petal_id < PetalID::kNumPetals);)
     struct PetalData const &petal_data = PETAL_DATA[petal_id];
     Entity &petal = Server::simulation.alloc_ent();
     petal.add_component(kPhysics);
@@ -150,7 +151,7 @@ Entity &alloc_petal(PetalID::T petal_id, Entity const &parent) {
     if (petal_id == PetalID::kShield) petal.mass = 10;
     petal.friction = 0.4;
     petal.add_component(kRelations);
-    entity_set_owner(petal, parent.id);
+    petal.set_parent(parent.id);
     petal.set_team(parent.team);
     petal.add_component(kPetal);
     petal.set_petal_id(petal_id);
@@ -160,6 +161,9 @@ Entity &alloc_petal(PetalID::T petal_id, Entity const &parent) {
     petal.set_health_ratio(1);
     petal.poison_damage = petal_data.attributes.poison_damage;
     if (petal_id == PetalID::kPincer) petal.slow_inflict = TPS * 0.8;
+
+    if (parent.id == NULL_ENTITY) petal.base_entity = petal.id;
+    else petal.base_entity = parent.id;
     return petal;
 }
 
@@ -174,7 +178,7 @@ Entity &alloc_web(float radius, Entity const &parent) {
     web.friction = 1.0;
     web.add_component(kRelations);
     web.set_team(parent.team);
-    entity_set_owner(web, parent.parent);
+    web.set_parent(parent.id);
     web.add_component(kWeb);
     web.set_despawn_tick(10 * TPS);
     return web;

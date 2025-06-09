@@ -6,7 +6,7 @@
 
 Entity &alloc_drop(PetalID::T);
 Entity &alloc_mob(MobID::T, float, float, EntityID const);
-Entity &alloc_player(Entity const &);
+Entity &alloc_player(EntityID const);
 Entity &alloc_petal(PetalID::T, Entity const &);
 Entity &alloc_web(float, Entity const &);
 

@@ -9,6 +9,10 @@
 #include <algorithm>
 
 static void __alloc_drops(std::vector<PetalID::T> const &success_drops, float x, float y) {
+    #ifdef DEBUG
+    for (PetalID::T id : success_drops)
+        assert(id != PetalID::kNone && id < PetalID::kNumPetals);
+    #endif
     size_t count = success_drops.size();
     if (count > 1) {
         for (size_t i = 0; i < count; ++i) {
@@ -24,26 +28,28 @@ static void __alloc_drops(std::vector<PetalID::T> const &success_drops, float x,
     }
 }
 
+static void __add_score(Simulation *sim, EntityID const killer_id, Entity const &target) {
+    if (!sim->ent_alive(killer_id)) return;
+    Entity &killer = sim->get_ent(killer_id);
+    if (killer.has_component(kFlower)) {
+        if (target.has_component(kMob))
+            killer.set_score(killer.score + target.score);
+        else
+            killer.set_score(killer.score + target.score / 2);
+    }
+    if (target.has_component(kFlower) && sim->ent_alive(target.parent)) {
+        Entity &camera = sim->get_ent(target.parent);
+        if (!killer.has_component(kName)) camera.set_killed_by("");
+        else camera.set_killed_by(killer.name);
+    }
+}
+
 void entity_on_death(Simulation *sim, Entity const &ent) {
     //don't do on_death for any despawned entity
     uint8_t natural_despawn = (ent.flags & EntityFlags::IsDespawning) && ent.despawn_tick == 0;
     if (ent.has_component(kScore) && sim->ent_exists(ent.last_damaged_by) && !natural_despawn) {
-        Entity *killer = &sim->get_ent(ent.last_damaged_by);
-        //defer to parent
-        if (sim->ent_alive(killer->owner) && sim->get_ent(killer->owner).has_component(kScore)) {
-            killer = &sim->get_ent(killer->owner);
-        }
-        if (killer->has_component(kScore) && killer->has_component(kFlower)) {
-            if (ent.has_component(kMob))
-                killer->set_score(killer->score + ent.score);
-            else
-                killer->set_score(killer->score + ent.score / 2);
-        }
-        if (ent.has_component(kFlower) && sim->ent_alive(ent.parent)) {
-            Entity &camera = sim->get_ent(ent.parent);
-            if (!killer->has_component(kName)) camera.set_killed_by("");
-            else camera.set_killed_by(killer->name);
-        }
+        EntityID killer_id = sim->get_ent(ent.last_damaged_by).base_entity;
+        __add_score(sim, killer_id, ent);
     }
     if (ent.has_component(kMob) && !natural_despawn) {
         if (!(ent.team == NULL_ENTITY)) return;
@@ -63,11 +69,11 @@ void entity_on_death(Simulation *sim, Entity const &ent) {
         std::vector<PetalID::T> potential = {};
         for (uint32_t i = 0; i < ent.loadout_count + MAX_SLOT_COUNT; ++i)
             if (ent.loadout_ids[i] != PetalID::kNone && 
-                ent.loadout_ids[i] != PetalID::kBasic && frand() > 0.95)
+                ent.loadout_ids[i] != PetalID::kBasic && frand() < 0.95)
                 potential.push_back(ent.loadout_ids[i]);
         for (uint32_t i = 0; i < ent.deleted_petals.size(); ++i)
             if (ent.deleted_petals[i] != PetalID::kNone && 
-                ent.deleted_petals[i] != PetalID::kBasic && frand() > 0.95)
+                ent.deleted_petals[i] != PetalID::kBasic && frand() < 0.95)
                 potential.push_back(ent.deleted_petals[i]);
         //no need to clear, the player dies
         //ent.deleted_petals.clear();
@@ -94,6 +100,7 @@ void entity_on_death(Simulation *sim, Entity const &ent) {
         if (numLeft > max) numLeft = max;
         //fill petals
         for (uint32_t i = 0; i < numLeft; ++i) {
+            DEBUG_ONLY(assert(potential.back() < PetalID::kNumPetals));
             camera.set_inventory(i, potential.back());
             potential.pop_back();
         }

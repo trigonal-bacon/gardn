@@ -9,10 +9,13 @@
 void tick_health_behavior(Simulation *sim, Entity &ent) {
     ent.set_damaged(0);
 
-    if (ent.poison.time > 0 && !ent.has_component(kPetal)) {
-        ent.poison.time--;
-        inflict_damage(sim, ent.target, ent, ent.poison.damage);
-        if ((int) ent.poison.time % 10) ent.set_damaged(0);
+    if (ent.poison_ticks > 0 && !ent.has_component(kPetal)) {
+        ent.poison_ticks--;
+        inflict_damage(sim, ent.poison_dealer, ent.id, ent.poison_inflicted, DamageType::kPoison);
+        if (ent.poison_ticks % (TPS / 2) != 0) ent.set_damaged(0);
+    } else {
+        ent.poison_inflicted = 0;
+        ent.poison_dealer = NULL_ENTITY;
     }
     if (ent.immunity_ticks > 0) --ent.immunity_ticks;
     if (ent.dandy_ticks > 0) --ent.dandy_ticks;

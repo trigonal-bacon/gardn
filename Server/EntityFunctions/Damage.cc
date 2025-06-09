@@ -22,14 +22,19 @@ static std::vector<std::vector<MobID::T>> anthole_spawns = {
 
 static uint32_t num_spawn_waves = anthole_spawns.size() - 1;
 
-void inflict_damage(Simulation *sim, EntityID const &atk_id, Entity &defender, float amt) {
-    assert(!defender.pending_delete);
-    assert(defender.has_component(kHealth));
+void inflict_damage(Simulation *sim, EntityID const atk_id, EntityID const def_id, float amt, uint8_t type) {
+    if (amt <= 0) return;
+    if (!sim->ent_alive(def_id)) return;
+    Entity &defender = sim->get_ent(def_id);
+    if (!defender.has_component(kHealth)) return;
+    DEBUG_ONLY(assert(!defender.pending_delete);)
+    DEBUG_ONLY(assert(defender.has_component(kHealth));)
     if (defender.immunity_ticks > 0) return;
     if (amt <= defender.armor) return;
     float old_health = defender.health;
     defender.set_damaged(1);
-    defender.health = fclamp(defender.health - amt, 0, defender.health);   
+    defender.health = fclamp(defender.health - amt, 0, defender.health);  
+    float damage_dealt = old_health - defender.health;
     //ant hole spawns
     //floor start, ceil end
     if (defender.has_component(kMob) && defender.mob_id == MobID::kAntHole) {
@@ -38,19 +43,29 @@ void inflict_damage(Simulation *sim, EntityID const &atk_id, Entity &defender, f
         for (uint32_t i = start; i + 1 > end; --i) {
             for (MobID::T mob_id : anthole_spawns[num_spawn_waves - i]) {
                 Entity &child = alloc_mob(mob_id, defender.x, defender.y, defender.team);
-                entity_set_owner(child, defender.id);
+                child.set_parent(defender.id);
                 child.target = defender.target;
             }
         }
     }
-    if (!sim->ent_alive(atk_id)) return;
+
+    if (!sim->ent_exists(atk_id)) return;
     Entity &attacker = sim->get_ent(atk_id);
-    if (defender.poison.time < attacker.poison_damage.time * TPS) {
-        defender.poison.time = attacker.poison_damage.time * TPS;
-        defender.poison.damage = attacker.poison_damage.damage / TPS;
+
+    if (type != DamageType::kReflect && defender.damage_reflection > 0)
+        inflict_damage(sim, def_id, attacker.base_entity, damage_dealt * defender.damage_reflection, DamageType::kReflect);
+    
+    if (!sim->ent_alive(atk_id)) return;
+
+    if (type == DamageType::kContact && defender.poison_ticks < attacker.poison_damage.time * TPS) {
+        defender.poison_ticks = attacker.poison_damage.time * TPS;
+        defender.poison_inflicted = attacker.poison_damage.damage / TPS;
+        defender.poison_dealer = atk_id;
     }
+
     if (defender.slow_ticks < attacker.slow_inflict)
         defender.slow_ticks = attacker.slow_inflict;
+    
     if (defender.has_component(kPetal)) {
         switch (defender.petal_id) {
             case PetalID::kDandelion:
@@ -60,6 +75,7 @@ void inflict_damage(Simulation *sim, EntityID const &atk_id, Entity &defender, f
                 break;
         }
     }
+
     if (attacker.has_component(kPetal)) {
         if (!sim->ent_alive(defender.target))
             defender.target = attacker.parent;

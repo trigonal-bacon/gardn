@@ -23,6 +23,7 @@ struct _PlayerBuffs {
 static struct _PlayerBuffs petal_passive_buffs(Simulation *sim, Entity &player) {
     struct _PlayerBuffs buffs = {};
     int count = 0;
+    player.damage_reflection = 0;
     for (uint8_t i = 0; i < player.loadout_count; ++i) {
         LoadoutSlot const &slot = player.loadout[i];
         struct PetalData const &petal_data = PETAL_DATA[slot.id];
@@ -48,6 +49,8 @@ static struct _PlayerBuffs petal_passive_buffs(Simulation *sim, Entity &player) 
         else if (slot.id == PetalID::kPoisonCactus) {
             buffs.extra_health += 20;
             buffs.is_poisonous = 1;
+        } else if (slot.id == PetalID::kSalt) {
+            player.damage_reflection = 0.25;
         }
     }
     return buffs;
@@ -122,9 +125,9 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
                     //petal rotation behavior
                     Vector wanting;
                     Vector delta(player.x - petal.x, player.y - petal.y);
-                    if (player.rotation_count > 0) {
+                    if (player.rotation_count > 0)
                         wanting.unit_normal(2 * M_PI * rot_pos / player.rotation_count + player.heading_angle);
-                    }
+
                     float range = 60;
                     if (BIT_AT(player.input, 0)) { 
                         if (petal_data.attributes.defend_only == 0) 
@@ -150,7 +153,9 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
                         petal.secondary_reload > petal_data.attributes.secondary_reload * TPS) {
                         uint8_t spawn_id = petal_data.attributes.spawns;
                         Entity &mob = alloc_mob(spawn_id, petal.x, petal.y, petal.team);
-                        entity_set_owner(mob, petal.parent);
+                        mob.set_parent(player.id);
+                        mob.base_entity = player.id;
+                        mob.set_score(0);
                         mob.flags |= EntityFlags::DieOnParentDeath;
                         if (petal_data.attributes.spawn_count == 0) {
                             petal_slot.ent_id = mob.id;
@@ -161,6 +166,7 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
                             petal.secondary_reload = 0;
                             //needed
                             mob.set_parent(petal.id);
+                            mob.base_entity = player.id;
                         }
                     }
                 } else 
@@ -174,7 +180,7 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
     player.heading_angle += (2.5 + buffs.extra_rot) / TPS;
     if (BIT_AT(player.input, 0)) player.set_face_flags(player.face_flags | 1);
     else if (BIT_AT(player.input, 1)) player.set_face_flags(player.face_flags | 2);
-    if (player.poison.time > 0) player.set_face_flags(player.face_flags | 4);
+    if (player.poison_ticks > 0) player.set_face_flags(player.face_flags | 4);
     if (player.dandy_ticks > 0) player.set_face_flags(player.face_flags | 8);
     if (buffs.extra_range > 0) player.set_face_flags(player.face_flags | 16);
     if (buffs.has_antennae) player.set_face_flags(player.face_flags | 32);

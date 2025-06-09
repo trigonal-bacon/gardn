@@ -352,6 +352,7 @@ void tick_ai_behavior(Simulation *sim, Entity &ent) {
             break;
         case MobID::kWorkerAnt:
         case MobID::kDarkLadybug:
+        case MobID::kShinyLadybug:
             tick_default_neutral(sim, ent);
             break;
         case MobID::kSoldierAnt:
@@ -375,7 +376,7 @@ void tick_ai_behavior(Simulation *sim, Entity &ent) {
                 Entity &spawned = alloc_mob(MobID::kSoldierAnt, ent.x + behind.x, ent.y + behind.y, ent.team);
                 spawned.flags |= EntityFlags::IsDespawning;
                 spawned.despawn_tick = 10 * TPS;
-                entity_set_owner(spawned, ent.parent);
+                spawned.set_parent(ent.parent);
             }
             tick_default_aggro(sim, ent, 0.95);
             break;
