@@ -2,7 +2,6 @@
 
 #include <Client/Render/Renderer.hh>
 #include <Client/Input.hh>
-#include <Client/Setup.hh>
 #include <Client/Socket.hh>
 #include <Client/Ui/Ui.hh>
 
@@ -11,17 +10,9 @@
 #include <Shared/Vector.hh>
 
 namespace Game {
-    class Particle {
-    public:
-        Vector pos;
-        float x_velocity;
-        float angle;
-        float sin_offset;
-        PetalID::T id;
-    };
-
     extern Simulation simulation;
     extern Renderer renderer;
+    extern Renderer game_ui_renderer;
     extern Socket socket;
     extern Ui::Window window;
     extern EntityID camera_id;
@@ -36,9 +27,12 @@ namespace Game {
 
     extern PetalID::T cached_loadout[2 * MAX_SLOT_COUNT];
 
+    extern uint8_t seen_petals[PetalID::kNumPetals];
+    extern uint8_t seen_mobs[MobID::kNumMobs];
     extern uint8_t loadout_count;
     extern uint8_t simulation_ready;
     extern uint8_t on_game_screen;
+    extern uint8_t show_debug;
     
     void init();
     uint8_t alive();

@@ -22,4 +22,6 @@ void render_mob(Renderer &ctx, Entity const &ent) {
     flags |= (ent.team == Game::camera_id);
     flags |= (ent.is_tail << 1);
     draw_static_mob(ent.mob_id, ctx, {ent.animation, ent.radius, ent.id.id, flags});
+    if (ent.deletion_animation > 0)
+        Game::seen_mobs[ent.mob_id] = 1;
 }

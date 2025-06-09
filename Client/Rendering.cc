@@ -19,7 +19,6 @@ void Game::render_game() {
     renderer.translate(-camera.camera_x, -camera.camera_y);
     if (alive()) {
         Entity const &player = simulation.get_ent(player_id);
-        Game::loadout_count = player.loadout_count;
         if (player.damaged) {
             Vector rand = Vector::rand(3);
             renderer.translate(rand.x, rand.y);

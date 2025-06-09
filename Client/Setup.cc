@@ -1,7 +1,9 @@
 #include <Client/Setup.hh>
 
+#include <Client/DOM.hh>
 #include <Client/Game.hh>
 #include <Client/Input.hh>
+#include <Client/Storage.hh>
 #include <emscripten.h>
 
 extern "C" {
@@ -92,4 +94,51 @@ int setup_canvas() {
         Module.TextDecoder = new TextDecoder('utf8');
     });
     return 0;
+}
+
+template<char const *c>
+char p(){
+    return *c;
+};
+
+void setup_localstorage() {
+    //for (PetalID::T i = 0; i < PetalID::kNumPetals; ++i) Game::seen_petals[i] = frand() * 2;
+    //for (MobID::T i = 0; i < MobID::kNumMobs; ++i) Game::seen_mobs[i] = frand() * 2;
+    Game::seen_petals[PetalID::kBasic] = 1;
+    {
+        uint32_t len = Storage::retrieve("mobs", 256);
+        Reader reader(&Storage::buffer[0]);
+        while (reader.at < Storage::buffer + len) {
+            MobID::T mob_id = reader.read_uint8();
+            if (mob_id >= MobID::kNumMobs) break;
+            Game::seen_mobs[mob_id] = 1;
+        }
+    }
+    {
+        uint32_t len = Storage::retrieve("petals", 256);
+        Reader reader(&Storage::buffer[0]);
+        while (reader.at < Storage::buffer + len) {
+            PetalID::T petal_id = reader.read_uint8();
+            if (petal_id >= PetalID::kNumPetals || petal_id == PetalID::kNone) break;
+            Game::seen_petals[petal_id] = 1;
+        }
+    }
+    {
+        uint32_t len = Storage::retrieve("settings", 1);
+        if (len > 0) {
+            Reader reader(&Storage::buffer[0]);
+            uint8_t opts = reader.read_uint8();
+            Input::movement_helper = BIT_AT(opts, 0);
+            Input::keyboard_movement = BIT_AT(opts, 1);
+        }
+    }
+    {
+        uint32_t len = Storage::retrieve("nickname", 72);
+        if (len > 0) {
+            Reader reader(&Storage::buffer[0]);
+            std::string name;
+            reader.read_string(name);
+            DOM::update_text("t0", name, 16);
+        }
+    }
 }

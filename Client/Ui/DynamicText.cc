@@ -10,7 +10,7 @@ DynamicText::DynamicText(float size, std::function<std::string(void)> genfunc, S
 }
 
 void DynamicText::refactor() {
-    text = generator();
+    text = std::move(generator());
     Game::renderer.set_text_size(height);
     width = Game::renderer.get_text_size(text.c_str());
 }

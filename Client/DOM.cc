@@ -79,3 +79,11 @@ std::string DOM::retrieve_text(char const *name, uint32_t max_length) {
     free(ptr);
     return out;
 }
+
+void DOM::update_text(char const *name, std::string const &contents, uint32_t max_length) {
+    EM_ASM({
+        const name = UTF8ToString($0);
+        const elem = document.getElementById(name);
+        elem.value = UTF8ToString($1).slice(0,$2);
+    }, name, contents.c_str(), max_length);
+}

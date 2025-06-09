@@ -7,14 +7,18 @@
 #include <Client/Game.hh>
 #include <Client/Assets/Assets.hh>
 
+#include <algorithm>
+#include <cstring>
+
 using namespace Ui;
 
 GalleryPetal::GalleryPetal(PetalID::T id, float w) : 
-    Element(w,w,{ .fill = 0x80000000, .round_radius = w/20 , .h_justify = Style::Left }), id(id) {}
+    Element(w,w,{ .fill = 0x40000000, .round_radius = w/20 , .h_justify = Style::Left }), id(id) {}
 
 void GalleryPetal::on_render(Renderer &ctx) {
-    if (0) {
+    if (!Game::seen_petals[id]) {
         Element::on_render(ctx);
+        ctx.draw_text("?", { .fill = 0xffeeeeee, .size = width / 2, .stroke_scale = 0});
     } else {
         ctx.scale(width / 60);
         draw_loadout_background(ctx, id);
@@ -22,20 +26,51 @@ void GalleryPetal::on_render(Renderer &ctx) {
 }
 
 void GalleryPetal::on_event(uint8_t event) {
-    if (event != kFocusLost && id != PetalID::kNone) {
+    if (event != kFocusLost && id != PetalID::kNone && Game::seen_petals[id]) {
         rendering_tooltip = 1;
         tooltip = Ui::UiLoadout::petal_tooltips[id];
-    } else {
+    } else
         rendering_tooltip = 0;
+}
+
+PetalsCollectedIndicator::PetalsCollectedIndicator(float w) : Element(w,w,{}) {}
+
+void PetalsCollectedIndicator::on_render(Renderer &ctx) {
+    uint32_t colct = 0;
+    uint32_t totct = 0;
+    for (PetalID::T i = PetalID::kBasic; i < PetalID::kNumPetals; ++i) {
+        colct += Game::seen_petals[i] != 0;
+        ++totct;
     }
+    ctx.set_fill(0x80000000);
+    ctx.begin_path();
+    ctx.arc(0,0,width/2);
+    ctx.fill();
+    ctx.set_fill(0xffeeeeee);
+    ctx.begin_path();
+    ctx.move_to(0,0);
+    ctx.partial_arc(0,0,width/2*0.8,-M_PI/2,-M_PI/2+2*M_PI*colct/totct,0);
+    ctx.close_path();
+    ctx.fill();
 }
 
 static Element *make_scroll() {
     Element *elt = new Ui::VContainer({}, 0, 10, {});
+
+    PetalID::T id_list[PetalID::kNumPetals];
+    for (PetalID::T i = 0; i < PetalID::kNumPetals; ++i)
+        id_list[i] = i;
+    std::sort(id_list, id_list + PetalID::kNumPetals, [](PetalID::T a, PetalID::T b){
+        if (a == PetalID::kNone) return true;
+        if (b == PetalID::kNone) return false;
+        if (PETAL_DATA[a].rarity < PETAL_DATA[b].rarity) return true;
+        if (PETAL_DATA[a].rarity > PETAL_DATA[b].rarity) return false;
+        return strcmp(PETAL_DATA[a].name, PETAL_DATA[b].name) <= 0;
+    });
     for (PetalID::T i = PetalID::kBasic; i < PetalID::kNumPetals;) {
         Element *row = new Ui::HContainer({}, 0, 10, { .v_justify = Style::Top });
         for (uint8_t j = 0; j < 4 && i < PetalID::kNumPetals; ++j, ++i) {
-            row->add_child(new GalleryPetal(i, 60));
+            row->add_child(new GalleryPetal(id_list[i], 60));
         }
         row->refactor();
         elt->add_child(row);

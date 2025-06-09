@@ -57,7 +57,7 @@ Element *Ui::make_leaderboard() {
                 format_string = std::format("{} Flowers", Game::simulation.arena_info.player_count);
             return format_string;
         })
-    }, LEADERBOARD_WIDTH + 20, 40, { .fill = 0xffa7ea59, .line_width = 7, .round_radius = 7 });
+    }, LEADERBOARD_WIDTH + 20, 45, { .fill = 0xffa7ea59, .line_width = 7, .round_radius = 7 });
 
     Element *leaderboard = new Ui::VContainer({
         lb_header,
@@ -72,7 +72,7 @@ Element *Ui::make_leaderboard() {
             new LeaderboardSlot(7),
             new LeaderboardSlot(8),
             new LeaderboardSlot(9),
-        }, 10, 5, {})
+        }, 10, 4, {})
     }, 0, 0, { .fill = 0xff777777, .line_width = 7, .round_radius = 7, .should_render = [](){ return Game::should_render_game_ui(); } });
     leaderboard->style.h_justify = Style::Right;
     leaderboard->style.v_justify = Style::Top;

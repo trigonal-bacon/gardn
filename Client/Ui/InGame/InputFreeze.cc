@@ -29,8 +29,8 @@ InputFreeze::InputFreeze() : Container({
     style.animate = [&](Element *elt, Renderer &ctx){
         if (!Game::alive()) Input::freeze_input = 0;
         if (Input::freeze_input) {
-            LERP(render_width, parent->width + 20, Ui::lerp_amount);
-            LERP(render_height, parent->height + 10, Ui::lerp_amount);
+            LERP(render_width, parent->width + 40, Ui::lerp_amount);
+            LERP(render_height, parent->height + 20, Ui::lerp_amount);
         } else {
             LERP(render_width, children[0]->width, Ui::lerp_amount);
             LERP(render_height, children[0]->height, Ui::lerp_amount);
@@ -40,19 +40,15 @@ InputFreeze::InputFreeze() : Container({
             Ui::UiLoadout::petal_selected == nullptr)
             Input::freeze_input = 0;
     };
-    style.round_radius = 6;
-    style.should_render = [](){
-        return !Input::keyboard_movement;
-    };
+    style.round_radius = 10;
+    style.should_render = [](){ return !Input::keyboard_movement; };
 }
 
 void InputFreeze::on_render(Renderer &ctx) {
-    {
-        ctx.set_fill(0x80000000);
-        ctx.begin_path();
-        ctx.round_rect(-render_width / 2, -render_height + height / 2, render_width, render_height + style.round_radius, style.round_radius);
-        ctx.fill();
-    }
+    ctx.set_fill(0x80000000);
+    ctx.begin_path();
+    ctx.round_rect(-render_width / 2, -render_height + height / 2, render_width, render_height + style.round_radius, style.round_radius);
+    ctx.fill();
     Container::on_render(ctx);
 }
 

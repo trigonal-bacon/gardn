@@ -1,6 +1,7 @@
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
+#include <vector>
 
 class Renderer;
 
@@ -17,6 +18,7 @@ public:
 
 class Renderer {
 public:
+    static std::vector<Renderer *> renderers;
     struct TextArgs {
         uint32_t fill = 0xffffffff;
         uint32_t stroke = 0xff222222;
@@ -34,6 +36,8 @@ public:
     static uint32_t HSV(uint32_t, float);
     static uint32_t MIX(uint32_t, uint32_t, float);
     static float get_ascii_text_size(char const *);
+
+    void set_dimensions(float, float);
 
     void add_color_filter(uint32_t, float);
     void set_fill(uint32_t);
@@ -73,6 +77,8 @@ public:
     void fill();
     void stroke();
     void clip();
+
+    void draw_image(Renderer &);
 
     void fill_text(char const *);
     void stroke_text(char const *);

@@ -94,7 +94,7 @@ void Element::on_render(Renderer &ctx) {
 
 void Element::on_render_tooltip(Renderer &ctx) {
     tooltip_animation.set(rendering_tooltip);
-    tooltip_animation.step(Ui::lerp_amount * 2);
+    tooltip_animation.step(Ui::lerp_amount * 1.5);
     if (tooltip_animation < 0.01 && !rendering_tooltip)
         tooltip = nullptr;
     if (tooltip != nullptr) {

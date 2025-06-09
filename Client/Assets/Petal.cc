@@ -474,6 +474,7 @@ void draw_static_petal(PetalID::T id, Renderer &ctx) {
 }
 
 void draw_loadout_background(Renderer &ctx, uint8_t id, float reload) {
+    RenderContext c(&ctx);
     ctx.set_fill(Renderer::HSV(RARITY_COLORS[PETAL_DATA[id].rarity], 0.8));
     ctx.round_line_join();
     ctx.round_line_cap();
@@ -500,6 +501,7 @@ void draw_loadout_background(Renderer &ctx, uint8_t id, float reload) {
     ctx.translate(0, -5);
     {
         RenderContext r(&ctx);
+        ctx.scale(0.833);
         if (PETAL_DATA[id].radius > 30) ctx.scale(30 / PETAL_DATA[id].radius);
         draw_static_petal(id, ctx);
     }

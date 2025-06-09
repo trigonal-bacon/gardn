@@ -1,11 +1,13 @@
 #include <Client/Ui/TitleScreen/TitleScreen.hh>
 
-#include <Client/Game.hh>
 #include <Client/Ui/Button.hh>
 #include <Client/Ui/Choose.hh>
 #include <Client/Ui/Container.hh>
 #include <Client/Ui/DynamicText.hh>
 #include <Client/Ui/TextInput.hh>
+
+#include <Client/Debug.hh>
+#include <Client/Game.hh>
 
 using namespace Ui;
 
@@ -14,14 +16,13 @@ Element *Ui::make_title_main_screen() {
         new Ui::StaticText(60, "gardn.clone"),
         new Ui::Element(0, 60),
         new Ui::Choose(
-            new Ui::StaticText(30, "Loading..."),
+            new Ui::StaticText(40, "Connecting..."),
             new Ui::VContainer({
                 new Ui::StaticText(20, "This pretty little flower is called..."),
                 new Ui::HContainer({
                     new Ui::TextInput("t0", 350, 40, 16, { 
                         .animate = [](Element *elt, Renderer &ctx) { 
-                            ctx.set_global_alpha((float) elt->animation);
-                            ctx.translate(0, ((float) elt->animation - 1) * ctx.height * 0.6);
+                            ctx.translate(0, (elt->animation - 1) * ctx.height * 0.6);
                         },
                         .should_render = [](){
                             return !Game::in_game() && Game::transition_circle == 0;
@@ -32,8 +33,10 @@ Element *Ui::make_title_main_screen() {
                         [](Element *elt, uint8_t e){ if (e == Ui::kClick) Game::spawn_in(); },
                         { .fill = 0xff94e873, .line_width = 5, .round_radius = 3 }
                     )
-                }, 0, 10, {}),
-            }, 10, 5),
+                }, 0, 10,{}),
+            }, 10, 5, { .animate = [](Element *elt, Renderer &ctx) {
+                ctx.translate(0, (elt->animation - 1) * ctx.height);
+            } }),
             [](){ return Game::socket.ready; }
         ),
         new Ui::Element(0,20),
@@ -59,8 +62,8 @@ Element *Ui::make_title_main_screen() {
 
 Element *Ui::make_panel_buttons() {
    Element *elt = new Ui::HContainer({
-        new Ui::Button(100, 30, 
-            new Ui::StaticText(16, "Settings"), 
+        new Ui::Button(120, 36, 
+            new Ui::StaticText(18, "Settings"), 
             [](Element *elt, uint8_t e){ if (e == Ui::kClick) {
                 if (Ui::panel_open != Panel::kSettings) {
                     Ui::panel_open = Panel::kSettings;
@@ -74,8 +77,11 @@ Element *Ui::make_panel_buttons() {
             } },
             { .fill = 0xff5a9fdb, .line_width = 5, .round_radius = 3 }
         ),
-        new Ui::Button(90, 30, 
-            new Ui::StaticText(16, "Petals"), 
+        new Ui::Button(120, 36, 
+            new Ui::HContainer({
+                new Ui::StaticText(18, "Petals"),
+                new Ui::PetalsCollectedIndicator(20)
+            }, 0, 10),
             [](Element *elt, uint8_t e){ if (e == Ui::kClick) {
                 if (Ui::panel_open != Panel::kPetals) {
                     Ui::panel_open = Panel::kPetals;
@@ -89,8 +95,8 @@ Element *Ui::make_panel_buttons() {
             } },
             { .fill = 0xff5a9fdb, .line_width = 5, .round_radius = 3 }
         ),
-        new Ui::Button(80, 30, 
-            new Ui::StaticText(16, "Mobs"), 
+        new Ui::Button(120, 36, 
+            new Ui::StaticText(18, "Mobs"), 
             [](Element *elt, uint8_t e){ if (e == Ui::kClick) {
                 if (Ui::panel_open != Panel::kMobs) {
                     Ui::panel_open = Panel::kMobs;
@@ -104,8 +110,8 @@ Element *Ui::make_panel_buttons() {
             } },
             { .fill = 0xff5a9fdb, .line_width = 5, .round_radius = 3 }
         ),
-        new Ui::Button(110, 30, 
-            new Ui::StaticText(16, "Changelog"), 
+        new Ui::Button(120, 36, 
+            new Ui::StaticText(18, "Changelog"), 
             [](Element *elt, uint8_t e){ if (e == Ui::kClick) {
                 if (Ui::panel_open != Panel::kChangelog) {
                     Ui::panel_open = Panel::kChangelog;
@@ -121,4 +127,43 @@ Element *Ui::make_panel_buttons() {
         ),
    }, 10, 10, { .should_render = [](){ return Game::should_render_title_ui(); }, .h_justify = Style::Left, .v_justify = Style::Bottom });
    return elt;
+}
+
+Element *Ui::make_debug_stats() {
+    Element *elt = new Ui::VContainer({
+        new Ui::DynamicText(12, [](){
+            float pxls = 0;
+            for (Renderer *r : Renderer::renderers) pxls += r->width * r->height;
+            return std::format("{} ctxs - {} pxls - {:.0f}x{:.0f}", Renderer::renderers.size(), format_score(pxls), Ui::window_width, Ui::window_height);
+        }, { .fill = 0xffffffff, .h_justify = Style::Right }),
+        new Ui::DynamicText(12, [](){
+            if (Debug::frame_times.size() == 0) return std::string{"Failed to show debug stats"};
+            float min_dt = Debug::tick_times[0];
+            float avg_dt = min_dt;
+            float max_dt = min_dt;
+            for (uint32_t i = 1; i < Debug::tick_times.size(); ++i) {
+                float const frame_time = Debug::tick_times[i];
+                if (min_dt > frame_time) min_dt = frame_time;
+                else if (max_dt < frame_time) max_dt = frame_time;
+                avg_dt += frame_time;
+            }
+            avg_dt /= Debug::tick_times.size();
+            return std::format("tick: {:.1f}/{:.1f}/{:.1f} ms (min/avg/max)", min_dt, avg_dt, max_dt, 1000 / Ui::dt);
+        }, { .fill = 0xffffffff, .h_justify = Style::Right }),
+        new Ui::DynamicText(12, [](){
+            if (Debug::frame_times.size() == 0) return std::string{"Failed to show debug stats"};
+            float min_dt = Debug::frame_times[0];
+            float avg_dt = min_dt;
+            float max_dt = min_dt;
+            for (uint32_t i = 1; i < Debug::frame_times.size(); ++i) {
+                float const frame_time = Debug::frame_times[i];
+                if (min_dt > frame_time) min_dt = frame_time;
+                else if (max_dt < frame_time) max_dt = frame_time;
+                avg_dt += frame_time;
+            }
+            avg_dt /= Debug::frame_times.size();
+            return std::format("frame: {:.1f}/{:.1f}/{:.1f} ms (min/avg/max) - {:.1f} fps", min_dt, avg_dt, max_dt, 1000 / Ui::dt);
+        }, { .fill = 0xffffffff, .h_justify = Style::Right })
+    }, 5, 5, { .should_render = [](){ return Game::show_debug; }, .h_justify = Style::Right, .v_justify = Style::Bottom, .no_animation = 1 });
+    return elt;
 }

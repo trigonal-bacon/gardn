@@ -5,7 +5,7 @@
 #include <Shared/StaticData.hh>
 
 namespace Ui {
-    class StatPetalSlot : public Element {
+    class StatPetalSlot final : public Element {
     public:
         uint8_t pos;
         StatPetalSlot(uint8_t);
@@ -16,7 +16,7 @@ namespace Ui {
         virtual void on_event(uint8_t) override;
     };
 
-    class GalleryPetal : public Element {
+    class GalleryPetal final : public Element {
     public:
         PetalID::T id;
         GalleryPetal(PetalID::T, float);
@@ -25,7 +25,14 @@ namespace Ui {
         virtual void on_event(uint8_t) override;
     };
 
-    class GalleryMob : public Element {
+    class PetalsCollectedIndicator final : public Element {
+    public:
+        PetalsCollectedIndicator(float);
+
+        virtual void on_render(Renderer &) override;
+    };
+
+    class GalleryMob final : public Element {
     public:
         MobID::T id;
         GalleryMob(MobID::T, float);
@@ -41,4 +48,5 @@ namespace Ui {
     Element *make_petal_gallery();
     Element *make_mob_gallery();
     Element *make_changelog();
+    Element *make_debug_stats();
 }

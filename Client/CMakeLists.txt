@@ -17,15 +17,18 @@ set(SRCS
     Render/RenderPetal.cc
     Render/RenderWeb.cc
     Render/Renderer.cc
+    Debug.cc
     DOM.cc
     Game.cc
     Input.cc
     Main.cc
     Network.cc
+    Particle.cc
     Rendering.cc
     Setup.cc
     Simulation.cc
     Socket.cc
+    Storage.cc
     Ui/InGame/InputFreeze.cc
     Ui/InGame/Leaderboard.cc
     Ui/InGame/LevelBar.cc

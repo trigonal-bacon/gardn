@@ -4,12 +4,14 @@
 #include <Client/Ui/StaticText.hh>
 #include <Client/Ui/Extern.hh>
 
-
 #include <Client/Assets/Assets.hh>
 #include <Client/Game.hh>
 
 #include <Shared/Helpers.hh>
 #include <Shared/StaticData.hh>
+
+#include <algorithm>
+#include <cstring>
 
 using namespace Ui;
 
@@ -60,14 +62,34 @@ static Element *make_mob_card(MobID::T id) {
         ),
         new Ui::Element(0,10),
         make_mob_drops(id)
-    }, 10, 0, { .fill = 0x40000000, .stroke_hsv = 1, .line_width = 3, .round_radius = 6, .v_justify = Style::Top });
-    return elt;
+    }, 10, 0, { .fill = 0x40000000, .stroke_hsv = 1, .line_width = 3, .round_radius = 6, .v_justify = Style::Top, .no_animation = 1 });
+    Element *chooser = new Ui::Choose(
+        new Ui::VContainer({
+            new Ui::Element(300,0),
+            new Ui::StaticText(16, "?"),
+            new Ui::Element(300,0)
+        }, 10, 0, { .fill = 0x40000000, .stroke_hsv = 1, .line_width = 3, .round_radius = 6, .v_justify = Style::Top, .no_animation = 1 }),
+        elt,
+        [=](){ return Game::seen_mobs[id]; }
+    );
+    chooser->style.v_justify = Style::Top;
+    chooser->style.no_animation = 1;
+    return chooser;
 }
 
 static Element *make_scroll() {
     Element *elt = new Ui::VContainer({}, 0, 10, {});
+    MobID::T id_list[MobID::kNumMobs];
+    for (MobID::T i = 0; i < MobID::kNumMobs; ++i)
+        id_list[i] = i;
+    std::sort(id_list, id_list + MobID::kNumMobs, [](MobID::T a, MobID::T b) {
+        if (MOB_DATA[a].rarity < MOB_DATA[b].rarity) return true;
+        if (MOB_DATA[b].rarity < MOB_DATA[a].rarity) return false;
+        return strcmp(MOB_DATA[a].name, MOB_DATA[b].name) <= 0;
+    });
+
     for (MobID::T i = 0; i < MobID::kNumMobs; ++i) 
-        elt->add_child(make_mob_card(i));
+        elt->add_child(make_mob_card(id_list[i]));
 
     return new Ui::ScrollContainer(elt, 300);
 }
