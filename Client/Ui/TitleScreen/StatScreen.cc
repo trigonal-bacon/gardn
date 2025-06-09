@@ -45,6 +45,36 @@ void StatPetalSlot::on_event(uint8_t event) {
     }
 }
 
+TitlePetalSlot::TitlePetalSlot(uint8_t p) : Element(50,50,{}), pos(p) {
+    style.v_justify = Style::Bottom;
+    style.should_render = [=](){
+        if (!Game::simulation.ent_exists(Game::camera_id))
+            return false;
+        Entity const &camera = Game::simulation.get_ent(Game::camera_id);
+        return camera.inventory[p] > PetalID::kBasic;
+    };
+}
+
+void TitlePetalSlot::on_render(Renderer &ctx) {
+    if (!Game::simulation.ent_exists(Game::camera_id))
+        return;
+    Entity const &camera = Game::simulation.get_ent(Game::camera_id);
+    uint8_t id = camera.inventory[pos];
+    if (id == PetalID::kNone) return;
+    ctx.scale(width / 60);
+    draw_loadout_background(ctx, id);
+}
+
+void TitlePetalSlot::on_event(uint8_t event) {
+    uint8_t id = Game::cached_loadout[pos];
+    if (event != kFocusLost && id != PetalID::kNone) {
+        rendering_tooltip = 1;
+        tooltip = Ui::UiLoadout::petal_tooltips[id];
+    } else {
+        rendering_tooltip = 0;
+    }
+}
+
 Element *Ui::make_stat_screen() {
     Element *elt = new Ui::VContainer({
         new Ui::StaticText(25, "Stats", { .fill = 0xffffffff, .h_justify = Style::Left }),

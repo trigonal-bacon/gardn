@@ -27,8 +27,11 @@ namespace Game {
     double timestamp = 0;
 
     float score = 0;
+    float overlevel_timer = 0;
     float slot_indicator_opacity = 0;
     float transition_circle = 0;
+
+    uint32_t respawn_level = 0;
 
     PetalID::T cached_loadout[2 * MAX_SLOT_COUNT] = {PetalID::kNone};
 
@@ -77,6 +80,9 @@ void Game::init() {
     for (uint8_t i = 0; i < MAX_SLOT_COUNT * 2; ++i) window.add_child(new Ui::UiLoadoutPetal(i));
     window.add_child(
         Ui::make_leaderboard()
+    );
+    window.add_child(
+        Ui::make_overlevel_indicator()
     );
     window.add_child(
         Ui::make_stat_screen()
@@ -176,11 +182,13 @@ void Game::tick(double time) {
             Game::seen_petals[cached_loadout[i]] = 1;
         }
         score = player.score;
+        overlevel_timer = player.overlevel_timer;
     } else {
         player_id = NULL_ENTITY;
+        overlevel_timer = 0;
     }
 
-    if (in_game()) 
+    if (in_game())
         transition_circle = fclamp(transition_circle * 1.05 + 5, 0, max_transition_circle);
     else 
         transition_circle = fclamp(transition_circle / 1.05 - 5, 0, max_transition_circle);

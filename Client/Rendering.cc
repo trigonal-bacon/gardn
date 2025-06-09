@@ -12,7 +12,7 @@
 
 void Game::render_game() {
     RenderContext context(&renderer);
-    assert(simulation.ent_exists(camera_id));
+    DEBUG_ONLY(assert(simulation.ent_exists(camera_id));)
     Entity const &camera = simulation.get_ent(camera_id);
     renderer.translate(renderer.width / 2, renderer.height / 2);
     renderer.scale(Ui::scale * camera.fov);
@@ -38,6 +38,10 @@ void Game::render_game() {
         for (Map::ZoneDefinition const &def : Map::MAP) {
             renderer.set_fill(def.color);
             renderer.fill_rect(def.x - def.w/2,def.y-def.h/2,def.w,def.h);
+            if (Map::difficulty_at_level(score_to_level(Game::score)) > def.difficulty) {
+                renderer.set_fill(0x40000000);
+                renderer.fill_rect(def.x - def.w/2,def.y-def.h/2,def.w,def.h);
+            }
         }
         renderer.set_stroke(alpha);
         renderer.set_line_width(0.5);

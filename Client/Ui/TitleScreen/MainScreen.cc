@@ -42,20 +42,58 @@ Element *Ui::make_title_main_screen() {
         new Ui::Element(0,20),
         new Ui::StaticText(16, "florr.io pvp clone"),
         new Ui::Element(0,5),
-        new Ui::Container({
+        new Ui::Choose(
+            new Ui::Container({
+                new Ui::VContainer({
+                    new Ui::StaticText(16, "Use mouse to move"),
+                    new Ui::StaticText(16, "Right click to attack"),
+                    new Ui::StaticText(16, "Left click to defend")
+                }, 0, 5, { .should_render = [](){ return !Input::keyboard_movement; }, .no_animation = 1 }),
+                new Ui::VContainer({
+                    new Ui::StaticText(16, "Use WASD or arrow keys to move"),
+                    new Ui::StaticText(16, "SPACE to attack"),
+                    new Ui::StaticText(16, "SPACE to defend")
+                }, 0, 5, { .should_render = [](){ return Input::keyboard_movement; }, .no_animation = 1 }),
+            }, 200, 65),
             new Ui::VContainer({
-                new Ui::StaticText(16, "Use mouse to move"),
-                new Ui::StaticText(16, "Right click to attack"),
-                new Ui::StaticText(16, "Left click to defend")
-            }, 0, 5, { .should_render = [](){ return !Input::keyboard_movement; }, .no_animation = 1 }),
-            new Ui::VContainer({
-                new Ui::StaticText(16, "Use WASD or arrow keys to move"),
-                new Ui::StaticText(16, "SPACE to attack"),
-                new Ui::StaticText(16, "SPACE to defend")
-            }, 0, 5, { .should_render = [](){ return Input::keyboard_movement; }, .no_animation = 1 }),
-        }, 200, 65)
+                new Ui::HContainer({
+                    new Ui::DynamicText(16, [](){
+                        return std::format("You will respawn at level {}", Game::respawn_level);
+                    }),
+                    new Ui::StaticText(16, " with:", {
+                        .fill = 0xffffffff,
+                        .should_render = [](){
+                            if (!Game::simulation.ent_exists(Game::camera_id)) return false;
+                            return Game::simulation.get_ent(Game::camera_id).inventory[0] > PetalID::kBasic;
+                        }
+                    })
+                }, 0, 0),
+                new Ui::HContainer({
+                    new Ui::TitlePetalSlot(0),
+                    new Ui::TitlePetalSlot(1),
+                    new Ui::TitlePetalSlot(2),
+                    new Ui::TitlePetalSlot(3),
+                    new Ui::TitlePetalSlot(4),
+                    new Ui::TitlePetalSlot(5),
+                    new Ui::TitlePetalSlot(6),
+                    new Ui::TitlePetalSlot(7),
+                }, 0, 10),
+                new Ui::HContainer({
+                    new Ui::TitlePetalSlot(8),
+                    new Ui::TitlePetalSlot(9),
+                    new Ui::TitlePetalSlot(10),
+                    new Ui::TitlePetalSlot(11),
+                    new Ui::TitlePetalSlot(12),
+                    new Ui::TitlePetalSlot(13),
+                    new Ui::TitlePetalSlot(14),
+                    new Ui::TitlePetalSlot(15),
+                }, 0, 10)
+            }, 0, 10),
+            [](){
+                return Game::respawn_level > 1 ? 1 : 0;
+            }
+        )
     }, 0, 0, { .animate = [](Element *elt, Renderer &ctx){}, .should_render = [](){ return Game::should_render_title_ui(); } });
-
     return title;
 }
 

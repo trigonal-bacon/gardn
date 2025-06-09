@@ -22,8 +22,11 @@ namespace Game {
     extern double timestamp;
     
     extern float score;
+    extern float overlevel_timer;
     extern float slot_indicator_opacity;
     extern float transition_circle;
+
+    extern uint32_t respawn_level;
 
     extern PetalID::T cached_loadout[2 * MAX_SLOT_COUNT];
 

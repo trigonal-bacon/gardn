@@ -26,7 +26,14 @@ namespace Ui {
         virtual void on_render(Renderer &) override;
     };
 
+    class OverlevelTimer final : public Element {
+    public:
+        OverlevelTimer(float);
+        virtual void on_render(Renderer &) override;
+    };
+
     Element *make_leaderboard();
     Element *make_level_bar();
     Element *make_minimap();
+    Element *make_overlevel_indicator();
 }

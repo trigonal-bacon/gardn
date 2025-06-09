@@ -19,12 +19,17 @@ Element *Ui::make_death_main_screen() {
     Ui::Element *container = new Ui::VContainer({
         new Ui::StaticText(25, "You were killed by"),
         new Ui::DynamicText(30, [](){
-            if (!Game::simulation.ent_exists(Game::camera_id)) return std::string{""};
+            if (!Game::simulation.ent_exists(Game::camera_id))
+                return std::string{""};
+            if (Game::simulation.get_ent(Game::camera_id).killed_by == "") 
+                return std::string{"a mysterious entity"};
             return Game::simulation.get_ent(Game::camera_id).killed_by;
         }),
         new Ui::Element(0,100),
         continue_button,
         new Ui::Element(0,15)
-    }, 0, 10, { .should_render = [](){ return !Game::alive() && Game::should_render_game_ui(); } });
+    }, 0, 10, { .animate = [](Element *elt, Renderer &ctx) {
+        ctx.translate(0, (elt->animation - 1) * ctx.height * 0.6);
+    }, .should_render = [](){ return !Game::alive() && Game::should_render_game_ui(); } });
     return container;
 }

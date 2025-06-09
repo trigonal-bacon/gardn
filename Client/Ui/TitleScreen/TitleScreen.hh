@@ -16,6 +16,16 @@ namespace Ui {
         virtual void on_event(uint8_t) override;
     };
 
+    class TitlePetalSlot final : public Element {
+    public:
+        uint8_t pos;
+        TitlePetalSlot(uint8_t);
+
+        virtual void on_render(Renderer &ctx) override;
+
+        virtual void on_event(uint8_t) override;
+    };
+
     class GalleryPetal final : public Element {
     public:
         PetalID::T id;

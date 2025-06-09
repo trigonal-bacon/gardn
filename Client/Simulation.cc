@@ -29,6 +29,7 @@ void Simulation::tick_lerp(double dt) {
             ent.camera_x.step(amt);
             ent.camera_y.step(amt);
             ent.fov.step(amt);
+            Game::respawn_level = ent.respawn_level;
         }
         if (ent.has_component(kHealth)) {
             ent.health_ratio.step(amt);
