@@ -1,0 +1,36 @@
+#include <Server/PetalTracker.hh>
+
+#include <Shared/Helpers.hh>
+
+#include <iostream>
+
+using namespace PetalTracker;
+
+static uint32_t COUNT_TRACKER[PetalID::kNumPetals] = {0};
+
+void PetalTracker::add_petal(PetalID::T id) {
+    DEBUG_ONLY(assert(id < PetalID::kNumPetals);)
+    if (id == PetalID::kNone) return;
+    ++COUNT_TRACKER[id];
+}
+
+void PetalTracker::remove_petal(PetalID::T id) {
+    DEBUG_ONLY(assert(id < PetalID::kNumPetals);)
+    if (id == PetalID::kNone) return;
+    --COUNT_TRACKER[id];
+}
+
+uint32_t PetalTracker::get_count(PetalID::T id) {
+    DEBUG_ONLY(assert(id < PetalID::kNumPetals);)
+    if (id == PetalID::kNone) return 0;
+    return COUNT_TRACKER[id];
+}
+
+void PetalTracker::print_count() {
+    std::cout << "{";
+    for (PetalID::T i = PetalID::kBasic; i < PetalID::kNumPetals; ++i) {
+        if (i != PetalID::kAntennae) continue;
+        std::cout << (int) i << ':' << COUNT_TRACKER[i] << ",";
+    }
+    std::cout << "}\n";
+}

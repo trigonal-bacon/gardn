@@ -20,6 +20,7 @@ set(SOURCES
     Process/Web.cc
     Client.cc
     Main.cc
+    PetalTracker.cc
     Server.cc
     Simulation.cc
     SpatialHash.cc

@@ -1,6 +1,7 @@
 #include <Server/Spawn.hh>
 
 #include <Server/EntityFunctions.hh>
+#include <Server/PetalTracker.hh>
 #include <Server/Server.hh>
 #include <Shared/Helpers.hh>
 #include <Shared/Map.hh>
@@ -10,6 +11,7 @@
 
 Entity &alloc_drop(PetalID::T drop_id) {
     DEBUG_ONLY(assert(drop_id < PetalID::kNumPetals);)
+    PetalTracker::add_petal(drop_id);
     Entity &drop = Server::simulation.alloc_ent();
     drop.add_component(kPhysics);
     drop.set_radius(0);
@@ -149,6 +151,7 @@ Entity &alloc_petal(PetalID::T petal_id, Entity const &parent) {
     petal.set_radius(petal_data.radius * 2);
     petal.mass = 0.05;
     if (petal_id == PetalID::kShield) petal.mass = 10;
+    else if (petal_id == PetalID::kMoon) petal.mass = 20000;
     petal.friction = 0.4;
     petal.add_component(kRelations);
     petal.set_parent(parent.id);
@@ -201,4 +204,7 @@ void player_spawn(Simulation *sim, Entity &camera, Entity &player) {
         player.set_loadout_ids(i, camera.inventory[i]);
     for (uint32_t i = player.loadout_count; i < MAX_SLOT_COUNT * 2; ++i)
         player.set_loadout_ids(i, camera.inventory[i]);
+    //peaceful transfer, no petal tracking needed
+    for (uint32_t i = 0; i < MAX_SLOT_COUNT * 2; ++i)
+        camera.set_inventory(i, PetalID::kNone);
 }

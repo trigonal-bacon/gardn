@@ -1,7 +1,9 @@
 #include <Server/Server.hh>
 
 #include <Server/Client.hh>
+#include <Server/PetalTracker.hh>
 #include <Server/Spawn.hh>
+
 #include <Shared/Map.hh>
 #include <Shared/Vector.hh>
 
@@ -189,6 +191,7 @@ void Server::run() {
         double mss = ts.tv_sec * 1000 + ts.tv_nsec / 1000000.0;
         double mse = te.tv_sec * 1000 + te.tv_nsec / 1000000.0;
         if (mse - mss > 10) std::cout << "tick took " << (mse - mss) << "ms\n";
+        //PetalTracker::print_count();
         //std::cout << (ts.tv_nsec / 1000000.0) << '\n';
         //std::cout << (1000 / TPS) << '\n';
     }, 1, 960 / TPS);

@@ -50,7 +50,6 @@ static void update_client(Simulation *sim, Client *client) {
     client->ws->send(message, uWS::OpCode::BINARY, 0);
 }
 
-
 static void calculate_leaderboard(Simulation *sim) {
     std::vector<Entity *> players;
     sim->for_each<kFlower>([&](Simulation *s, Entity &ent) { players.push_back(&ent); });
@@ -96,7 +95,7 @@ void Simulation::post_tick() {
     //send_state & reset all remaining active entities
     //reset state of all entities FIRST
     for (uint32_t i = 0; i < active_entities.length; ++i) {
-        assert(ent_exists(active_entities[i])); //no deletions mid tick
+        DEBUG_ONLY(assert(ent_exists(active_entities[i]));) //no deletions mid tick
         Entity &ent = get_ent(active_entities[i]);
         ent.reset_protocol();
         ++ent.lifetime;
@@ -107,6 +106,7 @@ void Simulation::post_tick() {
                 --ent.despawn_tick;
         }
     }
+    
     for (uint32_t i = 0; i < pending_delete.length; ++i) {
         //guarantee entity exists
         assert(ent_exists(pending_delete[i]));

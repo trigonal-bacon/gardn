@@ -18,25 +18,16 @@ static bool should_interact(Entity const &ent1, Entity const &ent2) {
 
 static void pickup_drop(Simulation *sim, Entity &player, Entity &drop) {
     if (!sim->ent_alive(player.parent)) return;
-    if (drop.immunity_ticks < 0.5 * TPS) return;
-    //Entity &camera = sim->get_ent(player.parent);
-    for (uint32_t i = 0; i < MAX_SLOT_COUNT; ++i) {
-        if (player.loadout_ids[i] != PetalID::kNone) continue;
-        //no need since we reset in player behavior
-        //player.loadout[i].reset();
-        //player.loadout[i].id = drop.drop_id;
-        player.set_loadout_ids(i, drop.drop_id);
-        drop.set_x(player.x);
-        drop.set_y(player.y);
-        sim->request_delete(drop.id);
-        return;
-    }
-    for (uint32_t i = MAX_SLOT_COUNT; i < player.loadout_count + MAX_SLOT_COUNT; ++i) {
+    if (drop.immunity_ticks < TPS / 3) return;
+
+    for (uint32_t i = 0; i <  player.loadout_count + MAX_SLOT_COUNT; ++i) {
         if (player.loadout_ids[i] != PetalID::kNone) continue;
         player.set_loadout_ids(i, drop.drop_id);
         drop.set_x(player.x);
         drop.set_y(player.y);
+        drop.flags &= ~EntityFlags::IsDespawning;
         sim->request_delete(drop.id);
+        //peaceful transfer, no petal tracking needed
         return;
     }
 }

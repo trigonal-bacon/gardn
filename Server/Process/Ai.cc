@@ -386,6 +386,7 @@ void tick_ai_behavior(Simulation *sim, Entity &ent) {
         case MobID::kBoulder:
         case MobID::kRock:
         case MobID::kCactus:
+        case MobID::kSquare:
             break;
         case MobID::kSandstorm:
             tick_sandstorm(sim, ent);

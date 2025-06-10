@@ -1,9 +1,10 @@
 #include <Server/Client.hh>
 
+#include <Server/PetalTracker.hh>
 #include <Server/Server.hh>
-#include <Shared/Simulation.hh>
-#include <Shared/Binary.hh>
 
+#include <Shared/Binary.hh>
+#include <Shared/Simulation.hh>
 
 Client::Client() {}
 
@@ -14,9 +15,16 @@ void Client::init() {
     //ent.set_camera_x(frand() * ARENA_WIDTH);
     //ent.set_camera_y(frand() * ARENA_HEIGHT);
     ent.set_respawn_level(1); //respawn at level 0, NOT 1
-    for (uint32_t i = 0; i < loadout_slots_at_level(ent.respawn_level); ++i)
+    for (uint32_t i = 0; i < loadout_slots_at_level(ent.respawn_level); ++i) {
+        PetalTracker::add_petal(PetalID::kBasic);
         ent.set_inventory(i, PetalID::kBasic);
-    //ent.set_inventory(0, PetalID::kThirdEye);
+    }
+    if (frand() < 0.0001 && PetalTracker::get_count(PetalID::kUniqueBasic) == 0) {
+        PetalTracker::remove_petal(PetalID::kBasic);
+        PetalTracker::add_petal(PetalID::kUniqueBasic);
+        ent.set_inventory(0, PetalID::kUniqueBasic);
+    } 
+    //no need to track PetalID::kNone
     camera = ent.id;
 }
 
@@ -25,6 +33,8 @@ void Client::remove() {
         Entity &c = Server::simulation.get_ent(camera);
         if (Server::simulation.ent_exists(c.player))
             Server::simulation.request_delete(c.player);
+        for (uint32_t i = 0; i < 2 * MAX_SLOT_COUNT; ++i)
+            PetalTracker::remove_petal(c.inventory[i]);
         Server::simulation.request_delete(camera);
         std::cout << "deleting camera from " << this << "\n";
     }
