@@ -78,7 +78,7 @@ SINGLE(Segmented, is_tail, uint8)
 #define FIELDS_Web ;
 
 #define FIELDS_Score \
-SINGLE(Score, score, float)
+SINGLE(Score, score, uint32)
 
 #define FIELDS_Name \
 SINGLE(Name, name, string) \

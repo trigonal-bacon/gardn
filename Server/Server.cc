@@ -144,7 +144,7 @@ void Server::run() {
                     PetalID::T old_id = player.loadout_ids[pos];
                     if (old_id != PetalID::kNone && old_id != PetalID::kBasic) {
                         uint8_t rarity = PETAL_DATA[old_id].rarity;
-                        float rarity_to_xp[RarityID::kNumRarities] = { 2, 10, 50, 200, 1000, 5000 };
+                        uint32_t rarity_to_xp[RarityID::kNumRarities] = { 2, 10, 50, 200, 1000, 5000, 0 };
                         player.set_score(player.score + rarity_to_xp[rarity]);
                         player.deleted_petals.push(old_id);
                     }

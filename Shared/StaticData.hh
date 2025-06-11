@@ -187,7 +187,7 @@ struct MobData {
     RangeValue health;
     float damage;
     RangeValue radius;
-    float xp;
+    uint32_t xp;
     std::vector<MobDrop> const drops;
     struct MobAttributes attributes;
 };
@@ -198,9 +198,9 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs];
 extern uint32_t const RARITY_COLORS[RarityID::kNumRarities];
 extern char const *RARITY_NAMES[RarityID::kNumRarities];
 
-extern float score_to_pass_level(uint32_t);
-extern uint32_t score_to_level(float);
-extern float level_to_score(uint32_t);
+extern uint32_t score_to_pass_level(uint32_t);
+extern uint32_t score_to_level(uint32_t);
+extern uint32_t level_to_score(uint32_t);
 extern uint32_t loadout_slots_at_level(uint32_t);
 
 extern float hp_at_level(uint32_t);

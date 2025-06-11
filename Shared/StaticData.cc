@@ -189,7 +189,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
     {
         "Baby Ant",
         "Weak and defenseless, but big dreams.",
-        RarityID::kCommon, {10.0}, 10.0, {14.0}, 1.0, {
+        RarityID::kCommon, {10.0}, 10.0, {14.0}, 1, {
         {PetalID::kLight, 0.36},
         {PetalID::kTwin, 0.12},
         {PetalID::kLeaf, 0.09},
@@ -198,7 +198,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
     {
         "Worker Ant",
         "It's temperamental, probably from working all the time.",
-        RarityID::kCommon, {20.0}, 10.0, {14.0}, 3.0, {
+        RarityID::kCommon, {20.0}, 10.0, {14.0}, 3, {
         {PetalID::kLight, 0.36},
         {PetalID::kTwin, 0.12},
         {PetalID::kLeaf, 0.09}
@@ -206,7 +206,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
     {
         "Soldier Ant",
         "It's got wings and it's ready to use them.",
-        RarityID::kUnusual, {40.0}, 10.0, {14.0}, 5.0, {
+        RarityID::kUnusual, {40.0}, 10.0, {14.0}, 5, {
         {PetalID::kLight, 0.36},
         {PetalID::kTwin, 0.12},
         {PetalID::kWing, 0.03}
@@ -214,7 +214,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
     {
         "Bee",
         "It stings. Don't touch it.",
-        RarityID::kCommon, {20.0}, 50.0, {20.0}, 4.0, {
+        RarityID::kCommon, {20.0}, 50.0, {20.0}, 4, {
         {PetalID::kLight, 0.36},
         {PetalID::kStinger, 0.12},
         {PetalID::kWing, 0.03},
@@ -223,7 +223,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
     {
         "Ladybug",
         "Cute and harmless.",
-        RarityID::kCommon, {25.0}, 10.0, {30.0}, 3.0, {
+        RarityID::kCommon, {25.0}, 10.0, {30.0}, 3, {
         {PetalID::kLight, 0.36},
         {PetalID::kRose, 0.18},
         {PetalID::kTwin, 0.12},
@@ -233,7 +233,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
     {
         "Beetle",
         "It's hungry and flowers are its favorite meal.",
-        RarityID::kUnusual, {40.0}, 25.0, {35.0}, 10.0, {
+        RarityID::kUnusual, {40.0}, 25.0, {35.0}, 10, {
         {PetalID::kIris, 0.18},
         {PetalID::kTwin, 0.12},
         {PetalID::kSalt, 0.06},
@@ -242,7 +242,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
     {
         "Massive Ladybug",
         "Much larger, but still cute.",
-        RarityID::kEpic, {1000.0}, 10.0, {90.0}, 400.0, {
+        RarityID::kEpic, {1000.0}, 10.0, {90.0}, 400, {
         {PetalID::kRose, 1},
         {PetalID::kDahlia, 1},
         {PetalID::kBubble, 1},
@@ -252,7 +252,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
     {
         "Massive Beetle",
         "Someone overfed this one, you might be next.",
-        RarityID::kRare, {600.0}, 30.0, {75.0}, 50.0, {
+        RarityID::kRare, {600.0}, 30.0, {75.0}, 50, {
         {PetalID::kIris, 1},
         {PetalID::kSalt, 1},
         {PetalID::kTriplet, 0.06},
@@ -262,7 +262,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
     {
         "Dark Ladybug",
         "Cute and harmless... if left unprovoked.",
-        RarityID::kUnusual, {35.0}, 10.0, {30.0}, 5.0, {
+        RarityID::kUnusual, {35.0}, 10.0, {30.0}, 5, {
         {PetalID::kWing, 0.12},
         {PetalID::kDahlia, 0.36},
         {PetalID::kAzalea, 0.02}
@@ -270,7 +270,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
     {
         "Hornet",
         "These aren't quite as nice as the little bees.",
-        RarityID::kUnusual, {40.0}, 40.0, {35.0}, 12.0, {
+        RarityID::kUnusual, {40.0}, 40.0, {35.0}, 12, {
         {PetalID::kMissile, 0.18},
         {PetalID::kDandelion, 0.12},
         {PetalID::kWing, 0.09},
@@ -279,7 +279,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
     {
         "Cactus",
         "This one's prickly, don't touch it either.",
-        RarityID::kCommon, {25.0, 50.0}, 30.0, {30.0, 60.0}, 2.0, {
+        RarityID::kCommon, {25.0, 50.0}, 30.0, {30.0, 60.0}, 2, {
         {PetalID::kStinger, 0.18},
         {PetalID::kCactus, 0.03},
         {PetalID::kPoisonCactus, 0.001},
@@ -288,7 +288,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
     {
         "Rock",
         "A rock. It doesn't do much.",
-        RarityID::kCommon, {10.0, 20.0}, 10.0, {10.0, 25.0}, 1.0, {
+        RarityID::kCommon, {10.0, 20.0}, 10.0, {10.0, 25.0}, 1, {
         {PetalID::kHeavy, 0.24},
         {PetalID::kLight, 0.12},
         {PetalID::kRock, 0.01}
@@ -296,7 +296,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
     {
         "Boulder",
         "A bigger rock. It also doesn't do much.",
-        RarityID::kUnusual, {35.0, 50.0}, 10.0, {35.0, 50.0}, 1.0, {
+        RarityID::kUnusual, {35.0, 50.0}, 10.0, {35.0, 50.0}, 1, {
         {PetalID::kHeavy, 1},
         {PetalID::kRock, 0.04},
         {PetalID::kShield, 0.001},
@@ -305,7 +305,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
     {
         "Centipede",
         "It's just there doing its thing.",
-        RarityID::kUnusual, {50.0}, 10.0, {35.0}, 2.0, {
+        RarityID::kUnusual, {50.0}, 10.0, {35.0}, 2, {
         {PetalID::kLight, 0.24},
         {PetalID::kTwin, 0.12},
         {PetalID::kLeaf, 0.12},
@@ -314,7 +314,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
     {
         "Evil Centipede",
         "This one loves flowers.",
-        RarityID::kRare, {50.0}, 10.0, {35.0}, 3.0, {
+        RarityID::kRare, {50.0}, 10.0, {35.0}, 3, {
         {PetalID::kIris, 0.18},
         {PetalID::kTwin, 0.12},
         {PetalID::kPoisonPeas, 0.01},
@@ -323,7 +323,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
     {
         "Desert Centipede",
         "It doesn't like it when you interrupt its run.",
-        RarityID::kRare, {50.0}, 10.0, {35.0}, 4.0, {
+        RarityID::kRare, {50.0}, 10.0, {35.0}, 4, {
         {PetalID::kTwin, 0.12},
         {PetalID::kLeaf, 0.12},
         {PetalID::kFaster, 0.01},
@@ -332,7 +332,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
     {
         "Sandstorm",
         "Quite unpredictable.",
-        RarityID::kUnusual, {30.0, 45.0}, 40.0, {32.0, 48.0}, 5.0, {
+        RarityID::kUnusual, {30.0, 45.0}, 40.0, {32.0, 48.0}, 5, {
         {PetalID::kSand, 0.12},
         {PetalID::kFaster, 0.12},
         {PetalID::kStick, 0.005}
@@ -340,7 +340,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
     {
         "Scorpion",
         "This one stings, now with poison.",
-        RarityID::kUnusual, {35.0}, 15.0, {35.0}, 10.0, {
+        RarityID::kUnusual, {35.0}, 15.0, {35.0}, 10, {
         {PetalID::kIris, 0.24},
         {PetalID::kStinger, 0.18},
         {PetalID::kPincer, 0.06},
@@ -349,7 +349,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
     {
         "Spider",
         "Spooky.",
-        RarityID::kUnusual, {35.0}, 10.0, {15.0}, 8.0, {
+        RarityID::kUnusual, {35.0}, 10.0, {15.0}, 8, {
         {PetalID::kStinger, 0.24},
         {PetalID::kWeb, 0.18},
         {PetalID::kTriweb, 0.005}
@@ -357,7 +357,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
     {
         "Ant Hole",
         "Ants go in, and come out. Can't explain that.",
-        RarityID::kRare, {500.0}, 10.0, {45.0}, 25.0, {
+        RarityID::kRare, {500.0}, 10.0, {45.0}, 25, {
         {PetalID::kTwin, 1},
         {PetalID::kIris, 1},
         {PetalID::kWing, 0.48},
@@ -367,7 +367,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
     {
         "Queen Ant",
         "You must have done something really bad if she's chasing you.",
-        RarityID::kRare, {350.0}, 10.0, {25.0}, 15.0, {
+        RarityID::kRare, {350.0}, 10.0, {25.0}, 15, {
         {PetalID::kTwin, 1},
         {PetalID::kWing, 0.24},
         {PetalID::kTriplet, 0.06},
@@ -377,7 +377,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
     {
         "Ladybug",
         "This one is shiny... I wonder what it could mean...",
-        RarityID::kEpic, {25.0}, 10.0, {30.0}, 3.0, {
+        RarityID::kEpic, {25.0}, 10.0, {30.0}, 3, {
         {PetalID::kRose, 1},
         {PetalID::kWing, 1},
         {PetalID::kDahlia, 1},
@@ -386,7 +386,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
     {
         "Square",
         "???",
-        RarityID::kUnique, {20.0}, 10.0, {40.0}, 1.0, {
+        RarityID::kUnique, {20.0}, 10.0, {40.0}, 1, {
         {PetalID::kSquare, 1}
     }, { .stationary = 1 }},
 };
@@ -407,22 +407,23 @@ char const *RARITY_NAMES[RarityID::kNumRarities] = {
     "Unique"
 };
 
-float score_to_pass_level(uint32_t level) {
-    return pow(1.05, level) * (level) * 2;
+uint32_t score_to_pass_level(uint32_t level) {
+    return (uint32_t)(pow(1.05, level) * level * 2);
 }
 
-uint32_t score_to_level(float score) {
+uint32_t score_to_level(uint32_t score) {
     uint32_t level = 1;
     while (1) {
-        score -= score_to_pass_level(level);
-        if (score < 0) break;
+        uint32_t level_score = score_to_pass_level(level);
+        if (score < level_score) break;
+        score -= level_score;
         ++level;
     }
     return level;
 }
 
-float level_to_score(uint32_t level) {
-    float score = 0.01;
+uint32_t level_to_score(uint32_t level) {
+    uint32_t score = 0;
     for (uint32_t i = 1; i < level; ++i)
         score += score_to_pass_level(i);
     return score;
