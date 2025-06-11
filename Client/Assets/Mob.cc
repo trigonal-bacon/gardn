@@ -153,8 +153,10 @@ void draw_static_mob(MobID::T mob_id, Renderer &ctx, MobRenderAttributes attr) {
         case MobID::kLadybug:
         case MobID::kMassiveLadybug:
         case MobID::kDarkLadybug:
+        case MobID::kShinyLadybug:
             ctx.scale(radius / 30);
             if (mob_id == MobID::kDarkLadybug) SET_BASE_COLOR(0xff962921)
+            else if (mob_id == MobID::kShinyLadybug) SET_BASE_COLOR(0xffebeb34)
             else SET_BASE_COLOR(0xffeb4034)
             ctx.set_fill(0xff111111);
             ctx.begin_path();
@@ -654,6 +656,17 @@ void draw_static_mob(MobID::T mob_id, Renderer &ctx, MobRenderAttributes attr) {
             ctx.arc(25,0,17.5);
             ctx.set_fill(0xff555555);
             ctx.fill();
+            break;
+        case MobID::kSquare:
+            ctx.set_fill(0xffffe869);
+            ctx.set_stroke(0xffcfbc55);
+            ctx.set_line_width(0.15*radius);
+            ctx.round_line_cap();
+            ctx.round_line_join();
+            ctx.begin_path();
+            ctx.rect(-radius * 0.707, -radius * 0.707, radius * 1.414, radius * 1.414);
+            ctx.fill();
+            ctx.stroke();
             break;
         default:
             assert(!"Didn't cover mob render");

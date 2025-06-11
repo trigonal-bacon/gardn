@@ -36,15 +36,16 @@ SINGLE(Physics, x, Float) \
 SINGLE(Physics, y, Float) \
 SINGLE(Physics, radius, Float) \
 SINGLE(Physics, angle, Float) \
-SINGLE(Physics, deletion_tick, Float)
+SINGLE(Physics, deletion_tick, uint8)
 
 #define FIELDS_Camera \
-SINGLE(Camera, camera_x, Float) \
-SINGLE(Camera, camera_y, Float) \
-SINGLE(Camera, fov, Float) \
 SINGLE(Camera, player, entid) \
 SINGLE(Camera, respawn_level, uint8) \
-MULTIPLE(Camera, inventory, uint8, 2 * MAX_SLOT_COUNT)
+MULTIPLE(Camera, inventory, uint8, 2 * MAX_SLOT_COUNT) \
+SINGLE(Camera, killed_by, string) \
+SINGLE(Camera, camera_x, Float) \
+SINGLE(Camera, camera_y, Float) \
+SINGLE(Camera, fov, Float) 
 
 #define FIELDS_Relations \
 SINGLE(Relations, team, entid) \
@@ -52,6 +53,7 @@ SINGLE(Relations, parent, entid)
 
 #define FIELDS_Flower \
 SINGLE(Flower, eye_angle, float) \
+SINGLE(Flower, overlevel_timer, float) \
 SINGLE(Flower, loadout_count, uint32) \
 SINGLE(Flower, face_flags, uint8) \
 MULTIPLE(Flower, loadout_ids, uint8, 2 * MAX_SLOT_COUNT) \
@@ -91,25 +93,31 @@ SINGLE(Name, nametag_visible, uint8)
     SINGLE(mass, float, =1) \
     SINGLE(speed_ratio, float, =1) \
     SINGLE(lifetime, uint32_t, =0) \
+    SINGLE(zone, uint32_t, =0) \
     \
     MULTIPLE(loadout, LoadoutSlot, MAX_SLOT_COUNT, .reset()) \
     SINGLE(heading_angle, float, =0) \
     SINGLE(input, uint8_t, =0) \
     SINGLE(rotation_count, uint8_t, =1) \
     \
-    SINGLE(slow_ticks, uint8_t, =0) \
-    SINGLE(slow_inflict, uint8_t, =0) \
+    SINGLE(slow_ticks, uint16_t, =0) \
+    SINGLE(slow_inflict, uint16_t, =0) \
     SINGLE(immunity_ticks, uint16_t, =0) \
     SINGLE(dandy_ticks, uint16_t, =0) \
-    SINGLE(poison_damage, Poison, ={}) \
-    SINGLE(poison, Poison, ={}) \
+    SINGLE(poison_ticks, uint16_t, =0) \
+    SINGLE(poison_inflicted, float, =0) \
+    SINGLE(poison_dealer, EntityID, =NULL_ENTITY) \
+    SINGLE(poison_damage, PoisonDamage, ={}) \
     SINGLE(health, float, =0) \
     SINGLE(max_health, float, =0) \
     SINGLE(damage, float, =0) \
     SINGLE(armor, float, =0) \
+    SINGLE(poison_armor, float, =0) \
+    SINGLE(damage_reflection, float, =0) \
     SINGLE(last_damaged_by, EntityID, =NULL_ENTITY) \
     \
     SINGLE(owner, EntityID, =NULL_ENTITY) \
+    SINGLE(base_entity, EntityID, =NULL_ENTITY) \
     SINGLE(target, EntityID, =NULL_ENTITY) \
     SINGLE(seg_head, EntityID, =NULL_ENTITY) \
     SINGLE(detection_radius, float, =0) \
@@ -123,6 +131,10 @@ SINGLE(Name, nametag_visible, uint8)
 
 #else
 #define PER_EXTRA_FIELD \
+    SINGLE(last_damaged_time, double, =0) \
+    SINGLE(healthbar_lag, float, =0) \
+    SINGLE(healthbar_opacity, float, =0) \
+    SINGLE(deletion_animation, float, =0) \
     SINGLE(eye_x, float, =3) \
     SINGLE(eye_y, float, =0) \
     SINGLE(mouth, float, =15) \
@@ -134,7 +146,8 @@ namespace EntityFlags {
     enum {
         IsDespawning = 1 << 0,
         NoFriendlyCollision = 1 << 1,
-        DieOnParentDeath = 1 << 2
+        DieOnParentDeath = 1 << 2,
+        SpawnedFromZone = 1 << 3
     };
 };
 

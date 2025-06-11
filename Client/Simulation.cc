@@ -33,7 +33,7 @@ void Simulation::tick_lerp(double dt) {
         }
         if (ent.has_component(kHealth)) {
             ent.health_ratio.step(amt);
-            if (ent.damaged == 1 && ent.damage_flash < 0.05)
+            if (ent.damaged == 1 && ent.damage_flash < 0.01)
                 ent.damage_flash = 1;
             else LERP(ent.damage_flash, 0, amt);
             if (ent.damaged)
@@ -70,9 +70,12 @@ void Simulation::post_tick() {
         Entity &ent = get_ent(active_entities[i]);
         ent.reset_protocol();
     }
+    /*
+    MUST delete instantly in protocol, or it won't allow instant realloc
     for (uint32_t i = 0; i < pending_delete.length; ++i) {
         assert(ent_exists(pending_delete[i]));
         _delete_ent(pending_delete[i]);
     }
     pending_delete.clear();
+    */
 }

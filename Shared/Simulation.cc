@@ -14,6 +14,7 @@ void Simulation::reset() {
         hash_tracker[i] = entity_tracker[i] = 0;
         entities[i].init();
     }
+    arena_info.init();
 }
 
 Entity &Simulation::alloc_ent() {
@@ -53,14 +54,14 @@ uint8_t Simulation::ent_alive(EntityID const &id) const {
 }
 
 void Simulation::request_delete(EntityID const &id) {
-    DEBUG_ONLY(std::cout << "ent_request_delete <" << id.hash << ',' << id.id << ">\n";)
+    //DEBUG_ONLY(std::cout << "ent_request_delete <" << id.hash << ',' << id.id << ">\n";)
     DEBUG_ONLY(assert(ent_exists(id)));
     if (entities[id.id].pending_delete) return;
     entities[id.id].pending_delete = 1;
     pending_delete.push(id);
 }
 
-void Simulation::delete_ent(EntityID const &id) {
+void Simulation::_delete_ent(EntityID const &id) {
     DEBUG_ONLY(std::cout << "ent_delete <" << id.hash << ',' << id.id << ">\n";)
     DEBUG_ONLY(assert(ent_exists(id)));
     entity_tracker[id.id] = 0;

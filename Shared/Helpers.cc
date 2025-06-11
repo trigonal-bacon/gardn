@@ -36,6 +36,19 @@ float angle_lerp(float start, float end, float t)
     }
 }
 
+std::string format_pct(float pct) {
+    if (pct >= 1) return std::format("{:.0f}%", pct);
+    if (pct >= 0.1) return std::format("{:.1f}%", pct);
+    if (pct >= 0.01) return std::format("{:.2f}%", pct);
+    return std::format("{:.3f}%", pct);
+}
+
+std::string format_score(float score) {
+    if (score <= 1000) return std::format("{:.0f}", score);
+    if (score < 1000000) return std::format("{:.1f}k", score / 1000);
+    return std::format("{:.1f}m", score / 1000000);
+}
+
 LerpFloat::LerpFloat() {
     value = lerp_value = 0;
     touched = 0;

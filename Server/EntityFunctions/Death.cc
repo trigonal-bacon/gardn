@@ -64,8 +64,8 @@ void entity_on_death(Simulation *sim, Entity const &ent) {
     }
     if (ent.has_component(kMob) && !natural_despawn) {
         if (!(ent.team == NULL_ENTITY)) return;
-        if (ent.zone != (uint8_t)-1)
-            --Map::MAP[ent.zone].num_mobs;
+        if (ent.flags & EntityFlags::SpawnedFromZone)
+            Map::remove_mob(ent.zone);
         struct MobData const &mob_data = MOB_DATA[ent.mob_id];
         std::vector<struct MobDrop> const &drops = mob_data.drops;
         std::vector<PetalID::T> success_drops = {};

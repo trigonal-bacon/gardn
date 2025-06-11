@@ -41,6 +41,7 @@ public:
     uint8_t const *packet;
     uint8_t const *at;
     Reader(uint8_t const *);
+
     uint8_t read_uint8();
     uint32_t read_uint32();
     uint64_t read_uint64();
@@ -55,4 +56,17 @@ public:
     void read_entid(EntityID &);
     void read_Float(Float &);
     void read_string(std::string &);
+};
+
+class Validator {
+public:
+    uint8_t const *at;
+    uint8_t const *end;
+    Validator(uint8_t const *, uint8_t const *);
+
+    uint8_t validate_uint8();
+    uint8_t validate_uint32();
+    uint8_t validate_uint64();
+    uint8_t validate_float();
+    uint8_t validate_string(uint32_t);
 };

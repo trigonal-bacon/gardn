@@ -6,7 +6,7 @@
 #include <Shared/Vector.hh>
 
 namespace Particle {
-    class ParticleEntity {
+    class TitleParticleEntity {
     public:
         float x;
         float y;
@@ -17,5 +17,17 @@ namespace Particle {
         PetalID::T id;
     };
 
-    void tick(Renderer &, double);
+    class GameParticleEntity {
+    public:
+        float x;
+        float y;
+        float x_velocity;
+        float y_velocity;
+        float radius;
+        float opacity;
+    };
+
+    void tick_title(Renderer &, double);
+    void tick_game(Renderer &, double);
+    void add_unique_particle(float, float);
 }

@@ -52,8 +52,9 @@ void Writer::write_entid(EntityID const &id) {
 }
 
 void Writer::write_string(std::string const &str) {
-    write_uint32(str.size());
-    for (uint32_t i = 0; i < str.size(); ++i) write_uint32(str[i]);
+    uint32_t len = str.size();
+    write_uint32(len);
+    for (uint32_t i = 0; i < len; ++i) write_uint32(str[i]);
 }
 
 Reader::Reader(uint8_t const *buf) : at(buf), packet(buf) {}
@@ -135,4 +136,46 @@ void Reader::read_string(std::string &ref) {
     ref.clear();
     ref.reserve(len);
     for (uint32_t i = 0; i < len; ++i) ref.push_back(read_uint32());
+}
+
+Validator::Validator(uint8_t const *start, uint8_t const *end) : at(start), end(end) {}
+
+uint8_t Validator::validate_uint8() {
+    return (at += sizeof(uint8_t)) <= end;
+}
+
+uint8_t Validator::validate_uint32() {
+    for (uint8_t i = 0; i < 5; ++i) {
+        uint8_t x = *at;
+        if (!validate_uint8()) return 0;
+        if (x <= 127) return 1;
+    }
+    return 0;
+}
+
+uint8_t Validator::validate_uint64() {
+    for (uint8_t i = 0; i < 10; ++i) {
+        uint8_t x = *at;
+        if (!validate_uint8()) return 0;
+        if (x <= 127) return 1;
+    }
+    return 0;
+}
+
+uint8_t Validator::validate_float() {
+    return validate_uint32();
+}
+
+uint8_t Validator::validate_string(uint32_t max_len) {
+    uint8_t const *old = at;
+    if (!validate_uint32()) return 0;
+    at = old;
+    uint32_t len = 0;
+    for (uint32_t i = 0; i < 5; ++i) {
+        uint8_t o = *at++;
+        len |= ((o & 127) << (i * 7));
+        if (o <= 127) break;
+    }
+    if (len > max_len) return 0;
+    return (at += len) <= end;
 }

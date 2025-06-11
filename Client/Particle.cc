@@ -9,17 +9,18 @@
 
 using namespace Particle;
 
-static std::vector<ParticleEntity> particles;
+static std::vector<TitleParticleEntity> title_particles;
+static std::vector<GameParticleEntity> game_particles;
 
-void Particle::tick(Renderer &ctx, double dt) {
+void Particle::tick_title(Renderer &ctx, double dt) {
     RenderContext c(&ctx);
     ctx.reset_transform();
-    size_t len = particles.size();
+    size_t len = title_particles.size();
     for (size_t i = len; i > 0; --i) {
-        ParticleEntity &part = particles[i - 1];
+        TitleParticleEntity &part = title_particles[i - 1];
         if (part.x > ctx.width + 10 * part.radius) {
-            part = particles[particles.size() - 1];
-            particles.pop_back();
+            part = title_particles[title_particles.size() - 1];
+            title_particles.pop_back();
             continue;
         }
         RenderContext c(&ctx);
@@ -33,7 +34,7 @@ void Particle::tick(Renderer &ctx, double dt) {
     }
     for (size_t i = 0; i < 5; ++i) {
         if (frand() > 0.01) continue;
-        ParticleEntity npart;
+        TitleParticleEntity npart;
         npart.x = -30;
         std::vector<PetalID::T> ids = {PetalID::kBasic};
         for (PetalID::T pot = PetalID::kBasic + 1; pot < PetalID::kNumPetals; ++pot)
@@ -45,6 +46,40 @@ void Particle::tick(Renderer &ctx, double dt) {
         npart.x_velocity = frand() * 50 + 150;
         npart.sin_offset = frand() * M_PI;
         npart.radius = frand() * 0.5 + 1;
-        particles.push_back(std::move(npart));
+        title_particles.push_back(std::move(npart));
     }
+}
+
+
+void Particle::tick_game(Renderer &ctx, double dt) {
+    size_t len = game_particles.size();
+    for (size_t i = len; i > 0; --i) {
+        GameParticleEntity &part = game_particles[i - 1];
+        if (part.opacity < 0.1) {
+            part = game_particles[game_particles.size() - 1];
+            game_particles.pop_back();
+            continue;
+        }
+        RenderContext c(&ctx);
+        part.x += part.x_velocity * dt / 1000;
+        part.y += part.y_velocity * dt / 1000;
+        part.opacity *= 0.95;
+        ctx.set_global_alpha(part.opacity);
+        ctx.set_fill(0x80ffffff);
+        ctx.begin_path();
+        ctx.arc(part.x,part.y,part.radius);
+        ctx.fill();
+    }
+}
+
+void Particle::add_unique_particle(float x, float y) {
+    GameParticleEntity part;
+    part.x = x;
+    part.y = y;
+    part.radius = 4;
+    part.opacity = 1;
+    Vector rand = Vector::rand(50);
+    part.x_velocity = rand.x;
+    part.y_velocity = rand.y;
+    game_particles.push_back(std::move(part));
 }

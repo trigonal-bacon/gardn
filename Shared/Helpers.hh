@@ -1,8 +1,10 @@
 #pragma once
 
-#include <stdint.h>
 #include <assert.h>
 
+#include <chrono>
+#include <cstdint>
+#include <iostream>
 #include <string>
 
 #ifndef M_PI
@@ -27,6 +29,17 @@
 #define DEBUG_ONLY(...)
 #endif
 
+#define TIME_FN(fn_body) { \
+    struct timespec ts; \
+    struct timespec te; \
+    timespec_get(&ts, TIME_UTC); \
+    fn_body; \
+    timespec_get(&te, TIME_UTC); \
+    double mss = ts.tv_sec * 1000 + ts.tv_nsec / 1000000.0; \
+    double mse = te.tv_sec * 1000 + te.tv_nsec / 1000000.0; \
+    std::printf("[%s]: %.4f\n", #fn_body, mse - mss); \
+}
+
 #define BIT_AT(val, bit) (((val) >> (bit)) & 1)
 #define BIT_SET(val, bit) (val |= (1 << (bit)));
 #define BIT_SHIFT(bit, shift) ((bit) << (shift))
@@ -42,6 +55,10 @@ double frand();
 float fclamp(float, float, float);
 float lerp(float, float, float);
 float angle_lerp(float, float, float);
+
+std::string format_pct(float);
+
+std::string format_score(float);
 
 template<typename T, uint32_t capacity>
 class StaticArray {
@@ -60,13 +77,22 @@ public:
 
 template<typename T, uint32_t capacity>
 class CircularArray {
-public:
     T values[capacity];
     uint32_t at;
-    CircularArray() : at(0) {};
-    T &operator[](uint32_t at) { return values[at]; };
-    void push(T val) { values[at] = val; at = (at + 1) % capacity; };
-    void clear() { for (size_t i = 0; i < capacity; ++i) values[i] = {}; };
+    uint32_t length;
+public:
+    CircularArray() : at(0), length(0) {};
+    uint32_t size() const { return length; }
+    T operator[](uint32_t idx) const { return values[idx]; };
+    void push(T val) { 
+        values[at] = val; at = (at + 1) % capacity;
+        if (length < capacity) ++length;
+    };
+    void clear() { 
+        for (size_t i = 0; i < capacity; ++i) values[i] = {};
+        length = 0;
+        at = 0;
+    };
 };
 
 class LerpFloat {

@@ -1,9 +1,11 @@
 #include <Client/Game.hh>
 
 #include <Client/Input.hh>
+#include <Client/Particle.hh>
 
-#include <Client/Ui/Ui.hh>
+#include <Client/Ui/Extern.hh>
 #include <Client/Render/RenderEntity.hh>
+
 #include <Shared/Map.hh>
 #include <Shared/StaticData.hh>
 #include <Shared/Vector.hh>
@@ -97,6 +99,8 @@ void Game::render_game() {
             renderer.stroke();
         }
     }
+
+    Particle::tick_game(renderer, Ui::dt);
 
     simulation.for_each<kWeb>([](Simulation *sim, Entity const &ent){
         RenderContext context(&renderer);

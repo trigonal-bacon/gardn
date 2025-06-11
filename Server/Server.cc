@@ -22,6 +22,28 @@ using namespace Server;
 
 #define VALIDATE(expr) if (!expr) { std::cout << #expr << '\n'; client->disconnect(); }
 
+double msl = 0;
+
+void _loop_fn() {
+    while(1) {
+        struct timespec ts;
+        struct timespec te;
+        timespec_get(&ts, TIME_UTC);
+        Server::simulation.tick();
+        //update all clients
+        timespec_get(&te, TIME_UTC);
+
+        double mss = ts.tv_sec * 1000 + ts.tv_nsec / 1000000.0;
+        double mse = te.tv_sec * 1000 + te.tv_nsec / 1000000.0;
+        if (mse - mss > 10) std::cout << "tick took " << (mse - mss) << "ms\n";
+        //PetalTracker::print_count();
+        //std::cout << (ts.tv_nsec / 1000000.0) << '\n';
+        //std::cout << (1000 / TPS) << '\n';
+        std::cout << "loop" << '\n';
+        usleep((1000 / TPS - (mse - mss)) * 1000);
+    }
+}
+
 void Server::run() {
     for (uint32_t i = 0; i < 2000; ++i)
         Map::spawn_random_mob();
@@ -194,6 +216,13 @@ void Server::run() {
         //PetalTracker::print_count();
         //std::cout << (ts.tv_nsec / 1000000.0) << '\n';
         //std::cout << (1000 / TPS) << '\n';
-    }, 1, 960 / TPS);
+    }, 1, 1000 / TPS);
+
+    //std::thread loop_thread = std::thread(_loop_fn);
+    //loop_thread.detach();
     app.run();
+    /*
+    
+    */
+    //app.run();
 }

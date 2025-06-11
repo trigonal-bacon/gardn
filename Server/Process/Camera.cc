@@ -14,8 +14,8 @@ void tick_camera_behavior(Simulation *sim, Entity &ent) {
         ent.set_camera_y(player.y);
         player.set_loadout_count(loadout_slots_at_level(score_to_level(player.score)));
         ent.last_damaged_by = player.last_damaged_by;
-        struct Map::ZoneDefinition const *zone = Map::get_zone_from_pos(player.x, player.y);
-        if (zone->difficulty < Map::difficulty_at_level(score_to_level(player.score))) {
+        struct Map::ZoneDefinition const &zone = Map::MAP[Map::get_zone_from_pos(player.x, player.y)];
+        if (zone.difficulty < Map::difficulty_at_level(score_to_level(player.score))) {
             if (player.overlevel_timer < PETAL_DISABLE_DELAY * TPS)
                 player.set_overlevel_timer(player.overlevel_timer + 1);
             else player.set_overlevel_timer(PETAL_DISABLE_DELAY * TPS);

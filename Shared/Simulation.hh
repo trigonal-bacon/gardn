@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Shared/Arena.hh>
 #include <Shared/Entity.hh>
 #include <Shared/Helpers.hh>
 
@@ -11,11 +12,11 @@
 #include <string>
 
 extern const uint64_t VERSION_HASH;
-static const EntityID::id_type ENTITY_CAP = 4096;
 
 class Simulation {
 public:
     SERVER_ONLY(SpatialHash spatial_hash;)
+    Arena arena_info;
     uint8_t entity_tracker[ENTITY_CAP] = {0};
     EntityID::hash_type hash_tracker[ENTITY_CAP] = {0};
     Entity entities[ENTITY_CAP];
@@ -24,12 +25,12 @@ public:
     Simulation();
     void reset();
     Entity &alloc_ent();
-    Entity &get_ent(EntityID const &);
+    void _delete_ent(EntityID const &); //DANGEROUS
     void force_alloc_ent(EntityID const &);
+    void request_delete(EntityID const &);
+    Entity &get_ent(EntityID const &);
     uint8_t ent_exists(EntityID const &) const;
     uint8_t ent_alive(EntityID const &) const;
-    void request_delete(EntityID const &);
-    void delete_ent(EntityID const &); //DANGEROUS
     void pre_tick();
     void tick();
     void post_tick();

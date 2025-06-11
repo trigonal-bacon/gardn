@@ -51,6 +51,7 @@ TitlePetalSlot::TitlePetalSlot(uint8_t p) : Element(50,50,{}), pos(p) {
         if (!Game::simulation.ent_exists(Game::camera_id))
             return false;
         Entity const &camera = Game::simulation.get_ent(Game::camera_id);
+        if (p >= loadout_slots_at_level(camera.respawn_level) + MAX_SLOT_COUNT) return false;
         return camera.inventory[p] > PetalID::kBasic;
     };
 }

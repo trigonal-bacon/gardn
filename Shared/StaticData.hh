@@ -5,21 +5,31 @@
 #include <cstdint>
 #include <vector>
 
-//MSPT * TPS = 1000
-#define TPS (25)
+const uint32_t ENTITY_CAP = 32768;
+const uint32_t MAX_SLOT_COUNT = 8;
+const uint32_t LEADERBOARD_SIZE = 10;
+const uint32_t ARENA_WIDTH = 40000;
+const uint32_t ARENA_HEIGHT = 4000;
 
-#define ARENA_WIDTH (4000)
-#define ARENA_HEIGHT (2000)
+extern const uint32_t TPS;
+extern const uint32_t DELETION_ANIMATION_TICKS;
 
-#define PLAYER_ACCELERATION (3.0)
-#define DEFAULT_FRICTION (0.25)
+extern const float PETAL_DISABLE_DELAY;
+extern const float PLAYER_ACCELERATION;
+extern const float DEFAULT_FRICTION;
 
-#define SUMMON_RETREAT_RADIUS (600)
+extern const float SUMMON_RETREAT_RADIUS;
 
-#define BASE_FOV (1.0f)
-#define BASE_HEALTH (100.0f)
+extern const float BASE_FOV;
+extern const float BASE_HEALTH;
 
-#define MAX_SLOT_COUNT (8)
+namespace DamageType {
+    enum : uint8_t {
+        kContact,
+        kPoison,
+        kReflect
+    };
+}
 
 namespace PetalID {
     typedef uint8_t T;
@@ -60,6 +70,11 @@ namespace PetalID {
         kShield,
         kThirdEye,
         kObserver,
+        kPoisonCactus,
+        kSalt,
+        kUniqueBasic,
+        kSquare,
+        kMoon,
         kNumPetals
     };
 };
@@ -79,6 +94,7 @@ namespace MobID {
         kHornet,
         kCactus,
         kRock,
+        kBoulder,
         kCentipede,
         kEvilCentipede,
         kDesertCentipede,
@@ -87,6 +103,8 @@ namespace MobID {
         kSpider,
         kAntHole,
         kQueenAnt,
+        kShinyLadybug,
+        kSquare,
         kNumMobs
     };
 };
@@ -100,6 +118,7 @@ public:
         kEpic,
         kLegendary,
         kMythic,
+        kUnique,
         kNumRarities
     };
 };
@@ -114,7 +133,7 @@ public:
     };
 };
 
-struct Poison {
+struct PoisonDamage {
     float damage;
     float time;
 };
@@ -132,13 +151,14 @@ struct PetalAttributes {
     uint8_t defend_only;
     float icon_angle;
     uint8_t rotation_style;
-    struct Poison poison_damage;
+    struct PoisonDamage poison_damage;
     uint8_t spawns = MobID::kNumMobs;
     uint8_t spawn_count;
 };
 
 struct PetalData {
     char const *name;
+    char const *description;
     float health;
     float damage;
     float radius;
@@ -149,10 +169,10 @@ struct PetalData {
 };
 
 struct MobAttributes {
-    float aggro_radius = 500;
+    float aggro_radius = 600;
     uint8_t segments;
     uint8_t stationary;
-    struct Poison poison_damage;
+    struct PoisonDamage poison_damage;
 };
 
 struct MobDrop {
@@ -162,23 +182,25 @@ struct MobDrop {
 
 struct MobData {
     char const *name;
+    char const *description;
     uint8_t rarity;
     RangeValue health;
     float damage;
     RangeValue radius;
     float xp;
-    std::vector<MobDrop> drops;
+    std::vector<MobDrop> const drops;
     struct MobAttributes attributes;
 };
 
-extern struct PetalData PETAL_DATA[PetalID::kNumPetals];
-extern struct MobData MOB_DATA[MobID::kNumMobs];
+extern struct PetalData const PETAL_DATA[PetalID::kNumPetals];
+extern struct MobData const MOB_DATA[MobID::kNumMobs];
 
-extern uint32_t RARITY_COLORS[RarityID::kNumRarities];
+extern uint32_t const RARITY_COLORS[RarityID::kNumRarities];
+extern char const *RARITY_NAMES[RarityID::kNumRarities];
 
-extern float scoreToPassLevel(uint32_t);
-extern uint32_t scoreToLevel(float);
-extern float levelToScore(uint32_t);
-extern uint32_t loadOutSlotsAtLevel(uint32_t);
+extern float score_to_pass_level(uint32_t);
+extern uint32_t score_to_level(float);
+extern float level_to_score(uint32_t);
+extern uint32_t loadout_slots_at_level(uint32_t);
 
-extern float hpAtLevel(uint32_t);
+extern float hp_at_level(uint32_t);

@@ -140,7 +140,7 @@ void Renderer::center_text_baseline() {
 
 static void update_transform(Renderer *r) {
 EM_ASM({
-    Module.ctxs[$0].setTransform($1, $2, $4, $5, $3|0, $6|0);
+    Module.ctxs[$0].setTransform($1, $2, $4, $5, $3, $6);
 }, r->id, r->context.transform_matrix[0],r->context.transform_matrix[1],r->context.transform_matrix[2], 
 r->context.transform_matrix[3],r->context.transform_matrix[4],r->context.transform_matrix[5]);
 }

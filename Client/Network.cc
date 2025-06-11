@@ -15,7 +15,7 @@ void Game::on_message(uint8_t *ptr, uint32_t len) {
             while(!curr_id.null()) {
                 assert(simulation.ent_exists(curr_id));
                 Entity &ent = simulation.get_ent(curr_id);
-                simulation.request_delete(curr_id);
+                simulation._delete_ent(curr_id);
                 curr_id = reader.read_entid();
             }
             curr_id = reader.read_entid();

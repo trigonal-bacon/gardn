@@ -198,7 +198,7 @@ void Game::tick(double time) {
 
     if (should_render_title_ui()) {
         render_title_screen();
-        Particle::tick(renderer, Ui::dt);
+        Particle::tick_title(renderer, Ui::dt);
         window.render_title_screen(renderer);
     }
 
