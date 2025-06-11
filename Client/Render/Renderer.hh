@@ -8,9 +8,13 @@ class Renderer;
 class RenderContext {
     Renderer *renderer;
 public:
-    float transform_matrix[6] = {0};
-    uint32_t color_filter = 0xff000000;
-    float amount = 0;
+    float transform_matrix[6];
+    uint32_t color_filter;
+    float amount;
+    float clip_x;
+    float clip_y;
+    float clip_w;
+    float clip_h;
     RenderContext(Renderer *);
     void reset();
     ~RenderContext();
@@ -36,6 +40,8 @@ public:
     static uint32_t HSV(uint32_t, float);
     static uint32_t MIX(uint32_t, uint32_t, float);
     static float get_ascii_text_size(char const *);
+
+    void reset();
 
     void set_dimensions(float, float);
 
@@ -77,6 +83,7 @@ public:
     void fill();
     void stroke();
     void clip();
+    void clip_rect(float, float, float, float);
 
     void draw_image(Renderer &);
 

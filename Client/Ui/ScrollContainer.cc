@@ -43,9 +43,7 @@ void ScrollContainer::on_render(Renderer &ctx) {
     } else 
         content->y = scroll->y = 0;
     RenderContext c(&ctx);
-    ctx.begin_path();
-    ctx.rect(-width/2,-height/2,width,height);
-    ctx.clip();
+    ctx.clip_rect(0,0,width,height);
     for (Element *elt : children) {
         RenderContext context(&ctx);
         ctx.translate(elt->x, elt->y);

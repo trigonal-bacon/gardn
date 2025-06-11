@@ -52,7 +52,13 @@ void Element::render(Renderer &ctx) {
         //get abs x, y;
         screen_x = ctx.context.transform_matrix[2];
         screen_y = ctx.context.transform_matrix[5];
-        on_render(ctx);
+        float eff_w = ctx.context.transform_matrix[0] * width;
+        float eff_h = ctx.context.transform_matrix[4] * height;
+        if (std::abs(screen_x - ctx.context.clip_x) <= eff_w + ctx.context.clip_w / 2 &&
+            std::abs(screen_y - ctx.context.clip_y) <= eff_h + ctx.context.clip_h / 2)
+            on_render(ctx);
+        else
+            on_render_skip(ctx);
         showed = 1;
         //possibly poll events?
     } else 
@@ -115,6 +121,10 @@ void Element::on_render_tooltip(Renderer &ctx) {
 }
 
 void Element::on_render_skip(Renderer &ctx) {
+    if (focus_state != kFocusLost) {
+        focus_state = kFocusLost;
+        on_event(kFocusLost);
+    }
     for (Element *elt : children)
         elt->on_render_skip(ctx);
 }

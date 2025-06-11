@@ -150,23 +150,11 @@ void Game::tick(double time) {
     Ui::dt = time - g_last_time;
     Ui::lerp_amount = 1 - pow(1 - 0.2, Ui::dt * 60 / 1000);
     g_last_time = time;
-    {
-        renderer.reset_transform();
-        renderer.context.reset();
-        renderer.round_line_cap();
-        renderer.round_line_join();
-        renderer.center_text_align();
-        renderer.center_text_baseline();
-    }
-    {
-        game_ui_renderer.set_dimensions(renderer.width, renderer.height);
-        game_ui_renderer.reset_transform();
-        game_ui_renderer.context.reset();
-        game_ui_renderer.round_line_cap();
-        game_ui_renderer.round_line_join();
-        game_ui_renderer.center_text_align();
-        game_ui_renderer.center_text_baseline();
-    }
+    
+    renderer.reset();
+    game_ui_renderer.set_dimensions(renderer.width, renderer.height);
+    game_ui_renderer.reset();
+
     Ui::window_width = renderer.width;
     Ui::window_height = renderer.height;
     double a = Ui::window_width / 1920;

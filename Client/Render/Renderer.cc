@@ -18,6 +18,10 @@ EM_ASM({
 void RenderContext::reset() {
     amount = 0;
     color_filter = 0;
+    clip_x = renderer->width / 2;
+    clip_y = renderer->height / 2;
+    clip_w = renderer->width;
+    clip_h = renderer->height;
 }
 
 RenderContext::~RenderContext() {
@@ -66,6 +70,15 @@ uint32_t Renderer::MIX(uint32_t base, uint32_t mix, float v) {
     uint8_t r = fclamp(((mix >> 16) & 255) * v + ((base >> 16) & 255) * (1 - v), 0, 255);
     uint8_t a = base >> 24;
     return (a << 24) | (r << 16) | (g << 8) | b;
+}
+
+void Renderer::reset() {
+    reset_transform();
+    context.reset();
+    round_line_cap();
+    round_line_join();
+    center_text_align();
+    center_text_baseline();
 }
 
 void Renderer::set_dimensions(float w, float h) {
@@ -302,6 +315,17 @@ void Renderer::clip() {
     EM_ASM({
         Module.ctxs[$0].clip();
     }, id);
+}
+
+void Renderer::clip_rect(float x, float y, float w, float h) {
+    //assumes axis oriented scaling
+    context.clip_x = x * context.transform_matrix[0] + context.transform_matrix[2];
+    context.clip_w = w * context.transform_matrix[0];
+    context.clip_y = y * context.transform_matrix[4] + context.transform_matrix[5];
+    context.clip_h = h * context.transform_matrix[4];
+    begin_path();
+    rect(x-w/2,y-h/2,w,h);
+    clip();
 }
 
 void Renderer::draw_image(Renderer &ctx) {
