@@ -10,7 +10,6 @@ int main() {
     std::cout << "  Entity Size: " << sizeof(Entity) << '\n';
     std::cout << "}\n";
     Server::run();
-    
     return 0;
 }
 

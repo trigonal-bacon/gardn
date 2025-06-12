@@ -58,10 +58,10 @@ void on_collide(Simulation *sim, Entity &ent1, Entity &ent2) {
             ent2.velocity += norm_sep;
         }
         sep *= ratio * dist;
-        ent1.collision_velocity += sep;
+        if (ratio > 0.01) ent1.collision_velocity += sep;
         sep = separation;
         sep *= (ratio - 1) * dist;
-        ent2.collision_velocity += sep;
+        if (1 - ratio > 0.01) ent2.collision_velocity += sep;
     }
 
     if (ent1.has_component(kHealth) && ent2.has_component(kHealth) && !(ent1.team == ent2.team)) {

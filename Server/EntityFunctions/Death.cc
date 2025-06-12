@@ -72,6 +72,13 @@ void entity_on_death(Simulation *sim, Entity const &ent) {
         for (MobDrop const &d : drops) 
             if (frand() < d.chance) success_drops.push_back(d.id);
         __alloc_drops(success_drops, ent.x, ent.y);
+        if (ent.mob_id == MobID::kAntHole && frand() < 0.10) { 
+            EntityID team = NULL_ENTITY;
+            if (sim->ent_exists(ent.last_damaged_by))
+                team = sim->get_ent(ent.last_damaged_by).team;
+            alloc_mob(MobID::kDigger, ent.x, ent.y, team);
+        }
+
     } else if (ent.has_component(kPetal)) {
         if (ent.petal_id == PetalID::kWeb || ent.petal_id == PetalID::kTriweb) {
             alloc_web(100, ent);

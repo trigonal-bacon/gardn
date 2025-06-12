@@ -52,8 +52,8 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
             }
             case PetalID::kMoon: {
                 Vector delta(player.x - petal.x, player.y - petal.y);
-                if (delta.magnitude() > 100) {
-                    delta.set_magnitude(25000 * PLAYER_ACCELERATION / (delta.x * delta.x + delta.y * delta.y));
+                if (delta.magnitude() > 50) {
+                    delta.set_magnitude(20000 * PLAYER_ACCELERATION / (delta.x * delta.x + delta.y * delta.y));
                     petal.acceleration.set(delta.x, delta.y);
                 } else petal.acceleration.set(0,0);
                 break;
@@ -69,12 +69,12 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
                 case PetalID::kRose:
                 case PetalID::kAzalea:
                     if (player.health != player.max_health && player.dandy_ticks == 0)
-                        petal.set_despawn_tick(10); //doesn't matter what it is
+                        entity_set_despawn_tick(petal, 10); //doesn't matter what it is
                     break;
                 case PetalID::kMissile:
                     if (BIT_AT(player.input, 0)) {
                         petal.acceleration.unit_normal(petal.angle).set_magnitude(4 * PLAYER_ACCELERATION);
-                        petal.set_despawn_tick(3 * TPS);
+                        entity_set_despawn_tick(petal, 3 * TPS);
                     }
                     break;
                 case PetalID::kTriweb:
@@ -85,9 +85,9 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
                         float angle = delta.angle();
                         if (petal.petal_id == PetalID::kTriweb) angle += frand() - 0.5;
                         petal.acceleration.unit_normal(angle).set_magnitude(30 * PLAYER_ACCELERATION);
-                        petal.set_despawn_tick(0.6 * TPS);
+                        entity_set_despawn_tick(petal, 0.6 * TPS);
                     } else if (BIT_AT(player.input, 1))
-                        petal.set_despawn_tick(0.6 * TPS);
+                        entity_set_despawn_tick(petal, 0.6 * TPS);
                     break;
                 }
                 case PetalID::kBubble:
@@ -101,7 +101,7 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
                 case PetalID::kPollen:
                     if (BIT_AT(player.input, 0) || BIT_AT(player.input, 1)) {
                         petal.friction = DEFAULT_FRICTION;
-                        petal.set_despawn_tick(4.0 * TPS);
+                        entity_set_despawn_tick(petal, 4.0 * TPS);
                     }
                     break;
                 case PetalID::kPeas:
@@ -110,15 +110,15 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
                         Vector delta(petal.x - player.x, petal.y - player.y);
                         petal.friction = DEFAULT_FRICTION;
                         petal.acceleration.unit_normal(delta.angle()).set_magnitude(25 * PLAYER_ACCELERATION);
-                        petal.set_despawn_tick(0.25 * TPS);
+                        entity_set_despawn_tick(petal, 0.25 * TPS);
                     }
                     break;
                 case PetalID::kMoon: {
                     if (BIT_AT(player.input, 0)) {
                         Vector delta(petal.x - player.x, petal.y - player.y);
                         petal.friction = 0;
-                        petal.acceleration.unit_normal(delta.angle() + M_PI / 3).set_magnitude(3 * PLAYER_ACCELERATION);
-                        petal.set_despawn_tick(20 * TPS);
+                        petal.acceleration.unit_normal(delta.angle() + M_PI / 3).set_magnitude(10 * PLAYER_ACCELERATION);
+                        entity_set_despawn_tick(petal, 20 * TPS);
                     }
                     break;
                 }

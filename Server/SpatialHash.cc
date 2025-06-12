@@ -13,8 +13,8 @@ void SpatialHash::clear() {
 
 void SpatialHash::insert(Entity &ent) {
     assert(ent.has_component(kPhysics));
-    uint32_t x = fclamp(ent.x, 0, ARENA_WIDTH - 1) / GRID_SIZE;
-    uint32_t y = fclamp(ent.y, 0, ARENA_HEIGHT - 1) / GRID_SIZE;
+    uint32_t x = fclamp(ent.x, 0, Map::ARENA_WIDTH - 1) / GRID_SIZE;
+    uint32_t y = fclamp(ent.y, 0, Map::ARENA_HEIGHT - 1) / GRID_SIZE;
     cells[x][y].push_back(ent.id);
 }
 
@@ -49,10 +49,10 @@ void SpatialHash::collide(std::function<void(Simulation *, Entity &, Entity &)> 
 }
 
 void SpatialHash::query(float x, float y, float w, float h, std::function<void(Simulation *, Entity &)> cb) {
-    uint32_t sx = fclamp(x - w - GRID_SIZE, 0, ARENA_WIDTH - 1) / GRID_SIZE;
-    uint32_t sy = fclamp(y - h - GRID_SIZE, 0, ARENA_HEIGHT - 1) / GRID_SIZE;
-    uint32_t ex = fclamp(x + w + GRID_SIZE, 0, ARENA_WIDTH - 1) / GRID_SIZE;
-    uint32_t ey = fclamp(y + h + GRID_SIZE, 0, ARENA_HEIGHT - 1) / GRID_SIZE;
+    uint32_t sx = fclamp(x - w - GRID_SIZE, 0, Map::ARENA_WIDTH - 1) / GRID_SIZE;
+    uint32_t sy = fclamp(y - h - GRID_SIZE, 0, Map::ARENA_HEIGHT - 1) / GRID_SIZE;
+    uint32_t ex = fclamp(x + w + GRID_SIZE, 0, Map::ARENA_WIDTH - 1) / GRID_SIZE;
+    uint32_t ey = fclamp(y + h + GRID_SIZE, 0, Map::ARENA_HEIGHT - 1) / GRID_SIZE;
     for (uint32_t _x = sx; _x <= ex; ++_x) {
         for (uint32_t _y = sy; _y <= ey; ++_y) {
             std::vector<EntityID> &cell = cells[_x][_y];

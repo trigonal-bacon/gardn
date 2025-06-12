@@ -44,7 +44,7 @@ void Client::disconnect() {
     if (ws == nullptr) return;
     remove();
     Writer writer(Server::OUTGOING_PACKET);
-    writer.write_uint8(kClientbound::kDisconnect);
+    writer.write<uint8_t>(kClientbound::kDisconnect);
     std::string_view message(reinterpret_cast<char const *>(writer.packet), writer.at - writer.packet);
     ws->send(message, uWS::OpCode::BINARY, 0);
     ws->end();

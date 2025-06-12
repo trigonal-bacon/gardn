@@ -24,7 +24,7 @@ Entity &alloc_drop(PetalID::T drop_id) {
 
     drop.add_component(kDrop);
     drop.set_drop_id(drop_id);
-    drop.set_despawn_tick(10 * (2 + PETAL_DATA[drop_id].rarity) * TPS);
+    entity_set_despawn_tick(drop, 10 * (2 + PETAL_DATA[drop_id].rarity) * TPS);
     drop.immunity_ticks = 0;
     return drop;
 }
@@ -67,6 +67,10 @@ static Entity &__alloc_mob(MobID::T mob_id, float x, float y, EntityID const tea
     mob.set_name(data.name);
 
     mob.base_entity = mob.id;
+    if (mob_id == MobID::kDigger) {
+        mob.add_component(kFlower);
+        mob.set_angle(0);
+    }
     return mob;
 }
 
@@ -150,7 +154,7 @@ Entity &alloc_petal(PetalID::T petal_id, Entity const &parent) {
     petal.set_y(parent.y);
     petal.set_radius(petal_data.radius * 2);
     petal.mass = 0.05;
-    if (petal_id == PetalID::kShield) petal.mass = 10;
+    if (petal_id == PetalID::kHeaviest) petal.mass = 10;
     else if (petal_id == PetalID::kMoon) petal.mass = 20000;
     petal.friction = 0.4;
     petal.add_component(kRelations);
@@ -183,7 +187,7 @@ Entity &alloc_web(float radius, Entity const &parent) {
     web.set_team(parent.team);
     web.set_parent(parent.id);
     web.add_component(kWeb);
-    web.set_despawn_tick(10 * TPS);
+    entity_set_despawn_tick(web, 10 * TPS);
     return web;
 }
 
@@ -200,8 +204,15 @@ void player_spawn(Simulation *sim, Entity &camera, Entity &player) {
     player.set_score(level_to_score(camera.respawn_level));
     player.set_loadout_count(loadout_slots_at_level(camera.respawn_level));
     player.health = player.max_health = hp_at_level(camera.respawn_level);
-    for (uint32_t i = 0; i < player.loadout_count; ++i) 
-        player.set_loadout_ids(i, camera.inventory[i]);
+    for (uint32_t i = 0; i < player.loadout_count; ++i) {
+        PetalID::T id = camera.inventory[i];
+        player.set_loadout_ids(i, id);
+        player.loadout[i].id = id;
+        player.loadout[i].already_spawned = 1;
+        for (uint32_t j = 0; j < PETAL_DATA[id].count; ++j)
+            player.loadout[i].petals[j].reload = PETAL_DATA[id].reload * TPS;
+    }
+
     for (uint32_t i = player.loadout_count; i < MAX_SLOT_COUNT * 2; ++i)
         player.set_loadout_ids(i, camera.inventory[i]);
     //peaceful transfer, no petal tracking needed

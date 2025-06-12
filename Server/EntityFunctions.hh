@@ -15,3 +15,4 @@ EntityID find_nearest_enemy(Simulation *, Entity const &, float);
 
 void entity_set_owner(Entity &, EntityID const);
 void entity_set_base(Entity &, EntityID const);
+void entity_set_despawn_tick(Entity &, uint16_t);

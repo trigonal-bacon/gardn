@@ -30,7 +30,10 @@ void inflict_damage(Simulation *sim, EntityID const atk_id, EntityID const def_i
     DEBUG_ONLY(assert(!defender.pending_delete);)
     DEBUG_ONLY(assert(defender.has_component(kHealth));)
     if (defender.immunity_ticks > 0) return;
-    if (amt <= defender.armor) return;
+    if (type == DamageType::kContact) amt -= defender.armor;
+    else if (type == DamageType::kPoison) amt -= defender.poison_armor;
+    if (amt <= 0) return;
+    //if (amt <= defender.armor) return;
     float old_health = defender.health;
     defender.set_damaged(1);
     defender.health = fclamp(defender.health - amt, 0, defender.health);  

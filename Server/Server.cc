@@ -45,7 +45,7 @@ void _loop_fn() {
 }
 
 void Server::run() {
-    for (uint32_t i = 0; i < 2000; ++i)
+    for (uint32_t i = 0; i < 10000; ++i)
         Map::spawn_random_mob();
     /* Keep in mind that uWS::SSLApp({options}) is the same as uWS::App() when compiled without SSL support.
      * You may swap to using uWS:App() if you don't need SSL */
@@ -83,13 +83,13 @@ void Server::run() {
             }
             if (!client->verified) {
                 VALIDATE(validator.validate_uint8());
-                if (reader.read_uint8() != kServerbound::kVerify) {
+                if (reader.read<uint8_t>() != kServerbound::kVerify) {
                     //disconnect
                     client->disconnect();
                     return;
                 }
                 VALIDATE(validator.validate_uint64());
-                if (reader.read_uint64() != VERSION_HASH) {
+                if (reader.read<uint64_t>() != VERSION_HASH) {
                     client->disconnect();
                     return;
                 }
@@ -97,7 +97,7 @@ void Server::run() {
                 return;
             }
             VALIDATE(validator.validate_uint8());
-            switch (reader.read_uint8()) {
+            switch (reader.read<uint8_t>()) {
                 case kServerbound::kVerify:
                     client->disconnect();
                     return;
@@ -107,8 +107,8 @@ void Server::run() {
                     Entity &player = Server::simulation.get_ent(camera.player);
                     VALIDATE(validator.validate_float());
                     VALIDATE(validator.validate_float());
-                    float x = reader.read_float();
-                    float y = reader.read_float();
+                    float x = reader.read<float>();
+                    float y = reader.read<float>();
                     if (x == 0 && y == 0) player.acceleration.set(0,0);
                     else {
                         if (fabsf(x) > 5e3 || fabsf(y) > 5e3) break;
@@ -119,7 +119,7 @@ void Server::run() {
                         player.acceleration = accel;
                     }
                     VALIDATE(validator.validate_uint8());
-                    player.input = reader.read_uint8() & 3;
+                    player.input = reader.read<uint8_t>() & 3;
                     break;
                 }
                 case kServerbound::kClientSpawn: {
@@ -130,7 +130,7 @@ void Server::run() {
                     std::string name;
                     //check string length;
                     VALIDATE(validator.validate_string(20));
-                    reader.read_string(name);
+                    reader.read<std::string>(name);
                     player.set_name(name);
                     break;
                 }
@@ -139,7 +139,7 @@ void Server::run() {
                     Entity &camera = Server::simulation.get_ent(client->camera);
                     Entity &player = Server::simulation.get_ent(camera.player);
                     VALIDATE(validator.validate_uint8());
-                    uint8_t pos = reader.read_uint8();
+                    uint8_t pos = reader.read<uint8_t>();
                     if (pos >= MAX_SLOT_COUNT + player.loadout_count) break;
                     PetalID::T old_id = player.loadout_ids[pos];
                     if (old_id != PetalID::kNone && old_id != PetalID::kBasic) {
@@ -156,10 +156,10 @@ void Server::run() {
                     Entity &camera = Server::simulation.get_ent(client->camera);
                     Entity &player = Server::simulation.get_ent(camera.player);
                     VALIDATE(validator.validate_uint8());
-                    uint8_t pos1 = reader.read_uint8();
+                    uint8_t pos1 = reader.read<uint8_t>();
                     if (pos1 >= MAX_SLOT_COUNT + player.loadout_count) break;
                     VALIDATE(validator.validate_uint8());
-                    uint8_t pos2 = reader.read_uint8();
+                    uint8_t pos2 = reader.read<uint8_t>();
                     if (pos2 >= MAX_SLOT_COUNT + player.loadout_count) break;
                     PetalID::T tmp = player.loadout_ids[pos1];
                     player.set_loadout_ids(pos1, player.loadout_ids[pos2]);
@@ -213,16 +213,7 @@ void Server::run() {
         double mss = ts.tv_sec * 1000 + ts.tv_nsec / 1000000.0;
         double mse = te.tv_sec * 1000 + te.tv_nsec / 1000000.0;
         if (mse - mss > 10) std::cout << "tick took " << (mse - mss) << "ms\n";
-        //PetalTracker::print_count();
-        //std::cout << (ts.tv_nsec / 1000000.0) << '\n';
-        //std::cout << (1000 / TPS) << '\n';
     }, 1, 1000 / TPS);
 
-    //std::thread loop_thread = std::thread(_loop_fn);
-    //loop_thread.detach();
     app.run();
-    /*
-    
-    */
-    //app.run();
 }

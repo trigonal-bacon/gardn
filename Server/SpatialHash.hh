@@ -2,7 +2,7 @@
 
 #include <Shared/EntityDef.hh>
 #include <Shared/Helpers.hh>
-#include <Shared/StaticData.hh>
+#include <Shared/Map.hh>
 
 #include <functional>
 #include <vector>
@@ -11,9 +11,9 @@
 class Simulation;
 class Entity;
 
-static const uint32_t GRID_SIZE = 90 * 2;
-static const uint32_t MAX_GRID_X = div_round_up(ARENA_WIDTH, GRID_SIZE);
-static const uint32_t MAX_GRID_Y = div_round_up(ARENA_HEIGHT, GRID_SIZE);
+static const uint32_t GRID_SIZE = 50 * 2;
+static const uint32_t MAX_GRID_X = div_round_up(Map::ARENA_WIDTH, GRID_SIZE);
+static const uint32_t MAX_GRID_Y = div_round_up(Map::ARENA_HEIGHT, GRID_SIZE);
 class SpatialHash {
 public:
     Simulation *simulation;

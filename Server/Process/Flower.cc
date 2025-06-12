@@ -14,16 +14,20 @@ struct _PlayerBuffs {
     float heal;
     float extra_vision;
     float extra_health;
+    uint8_t yinyang_count;
     uint8_t has_antennae : 1;
     uint8_t has_observer : 1;
     uint8_t is_poisonous : 1;
+    uint8_t has_cutter : 1;
 };
 
 //maybe reconsider
 static struct _PlayerBuffs petal_passive_buffs(Simulation *sim, Entity &player) {
-    struct _PlayerBuffs buffs = {};
+    struct _PlayerBuffs buffs = {0};
+    if (player.has_component(kMob)) return buffs;
     int count = 0;
     player.damage_reflection = 0;
+    player.poison_armor = 0;
     for (uint8_t i = 0; i < player.loadout_count; ++i) {
         LoadoutSlot const &slot = player.loadout[i];
         struct PetalData const &petal_data = PETAL_DATA[slot.id];
@@ -34,9 +38,13 @@ static struct _PlayerBuffs petal_passive_buffs(Simulation *sim, Entity &player) 
         } else if (slot.id == PetalID::kObserver) {
             buffs.has_observer = 1;
             buffs.extra_vision = 0.75;
-        }  else if (slot.id == PetalID::kThirdEye) {
+        } else if (slot.id == PetalID::kThirdEye) {
             buffs.extra_range = 75;
-        } 
+        } else if (slot.id == PetalID::kCutter) {
+            buffs.has_cutter = 1;
+        } else if (slot.id == PetalID::kYinYang) {
+            ++buffs.yinyang_count;
+        }
         if (!player.loadout[i].already_spawned) continue;
         if (petal_data.attributes.constant_heal > 0)
             buffs.heal += petal_data.attributes.constant_heal / TPS;
@@ -51,6 +59,8 @@ static struct _PlayerBuffs petal_passive_buffs(Simulation *sim, Entity &player) 
             buffs.is_poisonous = 1;
         } else if (slot.id == PetalID::kSalt) {
             player.damage_reflection = 0.25;
+        } else if (slot.id == PetalID::kLotus) {
+            player.poison_armor = 2.5f / TPS;
         }
     }
     return buffs;
@@ -61,7 +71,8 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
     DEBUG_ONLY(assert(player.max_health > 0);)
     struct _PlayerBuffs buffs = petal_passive_buffs(sim, player);
     float health_ratio = player.health / player.max_health;
-    player.max_health = hp_at_level(score_to_level(player.score)) + buffs.extra_health;
+    if (!player.has_component(kMob))
+        player.max_health = hp_at_level(score_to_level(player.score)) + buffs.extra_health;
     player.health = health_ratio * player.max_health;
     if (buffs.heal > 0)
         inflict_heal(sim, player, buffs.heal);
@@ -69,6 +80,10 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
         player.poison_damage = {10.0, 2};
     else
         player.poison_damage = {0, 0};
+    if (buffs.has_cutter)
+        player.damage = 10 + 20;
+    else
+        player.damage = 10;
     float rot_pos = 0;
     player.set_face_flags(0);
 
@@ -108,9 +123,11 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
             LoadoutPetal &petal_slot = slot.petals[j];
             if (!sim->ent_alive(petal_slot.ent_id)) {
                 petal_slot.ent_id = NULL_ENTITY;
-                float this_reload = (float) petal_slot.reload / (petal_data.reload * TPS);
+                uint32_t reload_time = (petal_data.reload * TPS);
+                if (!slot.already_spawned) reload_time += (TPS * 5 / 2);
+                float this_reload = (float) petal_slot.reload / reload_time;
                 if (this_reload < min_reload) min_reload = this_reload;
-                if (petal_slot.reload >= petal_data.reload * TPS) {
+                if (petal_slot.reload >= reload_time) {
                     Entity &petal = alloc_petal(slot.id, player);
                     petal_slot.ent_id = petal.id;
                     petal_slot.reload = 0;
@@ -162,7 +179,7 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
                             sim->request_delete(petal.id);
                             break;
                         } else {
-                            mob.set_despawn_tick(petal_data.attributes.secondary_reload * TPS * petal_data.attributes.spawn_count);
+                            entity_set_despawn_tick(mob, petal_data.attributes.secondary_reload * TPS * petal_data.attributes.spawn_count);
                             petal.secondary_reload = 0;
                             //needed
                             mob.set_parent(petal.id);
@@ -177,7 +194,6 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
         if (petal_data.attributes.clump_radius > 0) ++rot_pos;
         player.set_loadout_reloads(i, min_reload * 255);
     };
-    player.heading_angle += (2.5 + buffs.extra_rot) / TPS;
     if (BIT_AT(player.input, 0)) player.set_face_flags(player.face_flags | 1);
     else if (BIT_AT(player.input, 1)) player.set_face_flags(player.face_flags | 2);
     if (player.poison_ticks > 0) player.set_face_flags(player.face_flags | 4);
@@ -185,5 +201,18 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
     if (buffs.extra_range > 0) player.set_face_flags(player.face_flags | 16);
     if (buffs.has_antennae) player.set_face_flags(player.face_flags | 32);
     if (buffs.has_observer) player.set_face_flags(player.face_flags | 64);
+    if (buffs.has_cutter) player.set_face_flags(player.face_flags | 128);
+    if (buffs.yinyang_count < MAX_SLOT_COUNT) {
+        switch (buffs.yinyang_count % 3) {
+            case 0:
+                player.heading_angle += (2.5 + buffs.extra_rot) / TPS;
+                break;
+            case 1:
+                player.heading_angle -= (2.5 + buffs.extra_rot) / TPS;
+                break;
+        }
+    } else {
+        player.heading_angle += 10 * (2.5 + buffs.extra_rot) / TPS;
+    }
     player.rotation_count = rot_pos;
 }

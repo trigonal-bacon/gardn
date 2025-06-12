@@ -20,26 +20,26 @@ static void update_client(Simulation *sim, Client *client) {
     if (sim->ent_exists(camera.player)) 
         in_view.insert(camera.player);
     Writer writer(Server::OUTGOING_PACKET);
-    writer.write_uint8(kClientbound::kClientUpdate);
-    writer.write_entid(client->camera);
+    writer.write<uint8_t>(kClientbound::kClientUpdate);
+    writer.write<EntityID>(client->camera);
     sim->spatial_hash.query(camera.camera_x, camera.camera_y, 960 / camera.fov, 540 / camera.fov, [&](Simulation *, Entity &ent){
         in_view.insert(ent.id);
     });
 
-    for (EntityID i: client->last_in_view) {
-        if (!in_view.contains(i)) writer.write_entid(i);
-    }
-    writer.write_entid(NULL_ENTITY);
+    for (EntityID i: client->last_in_view)
+        if (!in_view.contains(i)) writer.write<EntityID>(i);
+
+    writer.write<EntityID>(NULL_ENTITY);
     //upcreates
     for (EntityID id: in_view) {
         assert(sim->ent_exists(id));
         Entity &ent = sim->get_ent(id);
         uint8_t create = !client->last_in_view.contains(id);
-        writer.write_entid(id);
-        writer.write_uint8(create);
+        writer.write<EntityID>(id);
+        writer.write<uint8_t>(create);
         ent.write(&writer, create);
     }
-    writer.write_entid(NULL_ENTITY);
+    writer.write<EntityID>(NULL_ENTITY);
     //write arena stuff
     sim->arena_info.write(&writer, 0);
     //set client->last_in_view
@@ -52,7 +52,7 @@ static void update_client(Simulation *sim, Client *client) {
 
 static void calculate_leaderboard(Simulation *sim) {
     std::vector<Entity *> players;
-    sim->for_each<kFlower>([&](Simulation *s, Entity &ent) { players.push_back(&ent); });
+    sim->for_each<kFlower>([&](Simulation *s, Entity &ent) { if (!ent.has_component(kMob)) players.push_back(&ent); });
     std::stable_sort(players.begin(), players.end(), [](Entity *a, Entity *b){ return a->score > b->score; });
     uint32_t num = players.size();
     sim->arena_info.player_count = num;
