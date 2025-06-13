@@ -18,7 +18,7 @@ static bool should_interact(Entity const &ent1, Entity const &ent2) {
 
 static void pickup_drop(Simulation *sim, Entity &player, Entity &drop) {
     if (!sim->ent_alive(player.parent)) return;
-    if (drop.immunity_ticks < TPS / 3) return;
+    if (drop.immunity_ticks > 0) return;
 
     for (uint32_t i = 0; i <  player.loadout_count + MAX_SLOT_COUNT; ++i) {
         if (player.loadout_ids[i] != PetalID::kNone) continue;
@@ -51,10 +51,12 @@ void on_collide(Simulation *sim, Entity &ent1, Entity &ent2) {
         float ratio = ent2.mass / (ent1.mass + ent2.mass);
         Vector sep = separation;
         if (!(ent1.team == ent2.team)) {
-            float scale = PLAYER_ACCELERATION * 5;
+            float scale = PLAYER_ACCELERATION * 2;
             Vector norm_sep = separation * scale * ratio;
+            ent1.collision_velocity += norm_sep;
             ent1.velocity += norm_sep;
             norm_sep = separation * scale * (ratio - 1);
+            ent2.collision_velocity += norm_sep;
             ent2.velocity += norm_sep;
         }
         sep *= ratio * dist;

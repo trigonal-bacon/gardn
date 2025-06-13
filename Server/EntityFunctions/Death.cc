@@ -30,7 +30,7 @@ static void __alloc_drops(std::vector<PetalID::T> &success_drops, float x, float
             Entity &drop = alloc_drop(success_drops[i]);
             drop.set_x(x);
             drop.set_y(y);
-            drop.velocity.unit_normal(i * 2 * M_PI / count).set_magnitude(PLAYER_ACCELERATION * 8.5);
+            drop.velocity.unit_normal(i * 2 * M_PI / count).set_magnitude(25);
         }
     } else if (count == 1) {
         Entity &drop = alloc_drop(success_drops[0]);
@@ -40,7 +40,7 @@ static void __alloc_drops(std::vector<PetalID::T> &success_drops, float x, float
 }
 
 static void __add_score(Simulation *sim, EntityID const killer_id, Entity const &target) {
-    if (!sim->ent_alive(killer_id)) return;
+    if (!sim->ent_exists(killer_id)) return;
     Entity &killer = sim->get_ent(killer_id);
     if (killer.has_component(kFlower)) {
         if (target.has_component(kMob))
@@ -62,17 +62,19 @@ void entity_on_death(Simulation *sim, Entity const &ent) {
         EntityID killer_id = sim->get_ent(ent.last_damaged_by).base_entity;
         __add_score(sim, killer_id, ent);
     }
-    if (ent.has_component(kMob) && !natural_despawn) {
-        if (!(ent.team == NULL_ENTITY)) return;
+    if (ent.has_component(kMob)) {
+        //if (!(ent.team == NULL_ENTITY)) return;
         if (ent.flags & EntityFlags::SpawnedFromZone)
             Map::remove_mob(ent.zone);
-        struct MobData const &mob_data = MOB_DATA[ent.mob_id];
-        std::vector<struct MobDrop> const &drops = mob_data.drops;
-        std::vector<PetalID::T> success_drops = {};
-        for (MobDrop const &d : drops) 
-            if (frand() < d.chance) success_drops.push_back(d.id);
-        __alloc_drops(success_drops, ent.x, ent.y);
-        if (ent.mob_id == MobID::kAntHole && frand() < 0.10) { 
+        if (!natural_despawn && !(ent.flags & EntityFlags::NoDrops)) {
+            struct MobData const &mob_data = MOB_DATA[ent.mob_id];
+            std::vector<struct MobDrop> const &drops = mob_data.drops;
+            std::vector<PetalID::T> success_drops = {};
+            for (MobDrop const &d : drops) 
+                if (frand() < d.chance) success_drops.push_back(d.id);
+            __alloc_drops(success_drops, ent.x, ent.y);
+        }
+        if (ent.mob_id == MobID::kAntHole && ent.team == NULL_ENTITY && frand() < 0.10) { 
             EntityID team = NULL_ENTITY;
             if (sim->ent_exists(ent.last_damaged_by))
                 team = sim->get_ent(ent.last_damaged_by).team;
@@ -80,9 +82,8 @@ void entity_on_death(Simulation *sim, Entity const &ent) {
         }
 
     } else if (ent.has_component(kPetal)) {
-        if (ent.petal_id == PetalID::kWeb || ent.petal_id == PetalID::kTriweb) {
+        if (ent.petal_id == PetalID::kWeb || ent.petal_id == PetalID::kTriweb)
             alloc_web(100, ent);
-        }
     } else if (ent.has_component(kFlower)) {
         std::vector<PetalID::T> potential = {};
         for (uint32_t i = 0; i < ent.loadout_count + MAX_SLOT_COUNT; ++i) {

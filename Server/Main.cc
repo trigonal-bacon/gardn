@@ -9,7 +9,7 @@ int main() {
     std::cout << "  Spatial Hash Size: " << sizeof(SpatialHash) << '\n';
     std::cout << "  Entity Size: " << sizeof(Entity) << '\n';
     std::cout << "}\n";
-    Server::run();
+    Server::init();
     return 0;
 }
 

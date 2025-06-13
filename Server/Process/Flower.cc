@@ -71,8 +71,13 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
     DEBUG_ONLY(assert(player.max_health > 0);)
     struct _PlayerBuffs buffs = petal_passive_buffs(sim, player);
     float health_ratio = player.health / player.max_health;
-    if (!player.has_component(kMob))
+    if (!player.has_component(kMob)) {
         player.max_health = hp_at_level(score_to_level(player.score)) + buffs.extra_health;
+        if (buffs.has_cutter)
+            player.damage = 10 + 20;
+        else
+            player.damage = 10;
+    }
     player.health = health_ratio * player.max_health;
     if (buffs.heal > 0)
         inflict_heal(sim, player, buffs.heal);
@@ -80,10 +85,6 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
         player.poison_damage = {10.0, 2};
     else
         player.poison_damage = {0, 0};
-    if (buffs.has_cutter)
-        player.damage = 10 + 20;
-    else
-        player.damage = 10;
     float rot_pos = 0;
     player.set_face_flags(0);
 
@@ -173,7 +174,7 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
                         mob.set_parent(player.id);
                         mob.base_entity = player.id;
                         mob.set_score(0);
-                        mob.flags |= EntityFlags::DieOnParentDeath;
+                        mob.flags |= EntityFlags::DieOnParentDeath | EntityFlags::NoDrops;
                         if (petal_data.attributes.spawn_count == 0) {
                             petal_slot.ent_id = mob.id;
                             sim->request_delete(petal.id);
@@ -186,8 +187,10 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
                             mob.base_entity = player.id;
                         }
                     }
-                } else 
+                } else {
                     if (petal.has_component(kMob)) --rot_pos;
+                    else petal_slot.ent_id = NULL_ENTITY;
+                }
             }
             if (petal_data.attributes.clump_radius == 0) ++rot_pos;
         }

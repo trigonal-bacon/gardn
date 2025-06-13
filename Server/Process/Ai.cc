@@ -12,7 +12,7 @@
     if (v.magnitude() > 1.5 * MOB_DATA[ent.mob_id].attributes.aggro_radius) ent.target = NULL_ENTITY;
 
 static void default_tick_idle(Simulation *sim, Entity &ent) {
-    if (ent.ai_tick >= 0.5 * TPS) {
+    if (ent.ai_tick >= 1 * TPS) {
         ent.ai_tick = 0;
         ent.set_angle(frand() * 2 * M_PI);
         ent.ai_state = AIState::kIdleMoving;
@@ -20,15 +20,15 @@ static void default_tick_idle(Simulation *sim, Entity &ent) {
 }
 
 static void default_tick_idle_moving(Simulation *sim, Entity &ent) {
-    if (ent.ai_tick > 2 * TPS) {
+    if (ent.ai_tick > 2.5 * TPS) {
         ent.ai_tick = 0;
         ent.ai_state = AIState::kIdle;
         return;
     }
-    float r = ent.ai_tick / (2.0f * TPS);
+    float r = ent.ai_tick / (2.5f * TPS);
     ent.acceleration
         .unit_normal(ent.angle)
-        .set_magnitude(3 * PLAYER_ACCELERATION * (r - r * r));
+        .set_magnitude(2 * PLAYER_ACCELERATION * (r - r * r));
 }
 
 static void default_tick_returning(Simulation *sim, Entity &ent, float speed = 1.0) {
@@ -120,7 +120,7 @@ static void tick_bee_passive(Simulation *sim, Entity &ent) {
             }
             ent.set_angle(ent.angle + 1.5 * sinf(((float) ent.lifetime) / (TPS / 2)) / TPS);
             Vector v(cosf(ent.angle), sinf(ent.angle));
-            v *= PLAYER_ACCELERATION / 2;
+            v *= PLAYER_ACCELERATION / 4;
             if (ent.lifetime % (TPS * 3 / 2) < TPS / 2)
                 v *= 0.5;
     
@@ -339,7 +339,7 @@ static void tick_digger(Simulation *sim, Entity &ent) {
                 break;
             }
             case AIState::kIdleMoving: {
-                if (ent.ai_tick > 2 * TPS)
+                if (ent.ai_tick > 5 * TPS)
                     ent.ai_state = AIState::kIdle;
                 ent.acceleration.unit_normal(ent.eye_angle).set_magnitude(PLAYER_ACCELERATION);
                 break;

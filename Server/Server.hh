@@ -2,23 +2,28 @@
 
 #include <Shared/Simulation.hh>
 
-#include <App.h>
-
 #include <set>
 
 class Client;
 
-static const int max_buffer_size = 1024 * 1024;
+size_t const max_buffer_size = 1024 * 1024;
+
+#ifdef WASM_SERVER
+class WebSocketServer {
+public:
+    WebSocketServer();
+};
+#else
+#include <App.h>
+typedef uWS::App WebSocketServer;
+#endif
 
 namespace Server {
     extern uint8_t OUTGOING_PACKET[max_buffer_size];
     extern Simulation simulation;
-    extern uWS::App *socket;
+    extern WebSocketServer server;
     extern std::set<Client *> clients;
-    void init();
-    void run();
-    void tick();
+    extern void init();
+    extern void run();
+    extern void tick();
 };
-
-
-//extern Server *game_server;

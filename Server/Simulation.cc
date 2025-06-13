@@ -13,6 +13,7 @@
 #include <vector>
 
 static void update_client(Simulation *sim, Client *client) {
+    if (!client->verified) return;
     if (!sim->ent_exists(client->camera)) return;
     std::set<EntityID> in_view;
     in_view.insert(client->camera);
@@ -46,8 +47,7 @@ static void update_client(Simulation *sim, Client *client) {
     client->last_in_view.clear();
     for (EntityID i: in_view) client->last_in_view.insert(i);
 
-    std::string_view message(reinterpret_cast<char const *>(writer.packet), writer.at - writer.packet);
-    client->ws->send(message, uWS::OpCode::BINARY, 0);
+    client->send_packet(writer.packet, writer.at - writer.packet);
 }
 
 static void calculate_leaderboard(Simulation *sim) {

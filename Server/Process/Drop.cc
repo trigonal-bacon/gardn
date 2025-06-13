@@ -9,6 +9,6 @@
 void tick_drop_behavior(Simulation *sim, Entity &ent) {
     if (ent.lifetime > 0)
         ent.set_radius(20);
-    if (ent.immunity_ticks < TPS / 2)
-        ++ent.immunity_ticks;
+    if (ent.immunity_ticks > 0)
+        --ent.immunity_ticks;
 }
