@@ -40,13 +40,34 @@ extern "C" {
 }
 
 WebSocketServer::WebSocketServer() {
-    int const port = 9001;
     EM_ASM({
         const WSS = require("ws");
         const http = require("http");
+        const fs = require("fs");
         const server = http.createServer(function(req, res) {
-            res.writeHead(200, {"Content-Type": "text/plain"});
-            res.write("Hello World!");
+            let encodeType = "text/html";
+            let file = "index.html";
+            switch (req.url) {
+                case "/":
+                    break;
+                case "/gardn-client":
+                    encodeType = "application/javascript";
+                    file = "gardn-client";
+                    break;
+                case "/gardn-client.wasm":
+                    encodeType = "application/wasm";
+                    file = "gardn-client.wasm";
+                    break;
+                default:
+                    file = "";
+                    break;
+            }
+            if (fs.existsSync(file)) {            
+                res.writeHead(200, {"Content-Type": encodeType});
+                res.end(fs.readFileSync(file));
+                return;
+            }
+            res.writeHead(404, {"Content-Type": encodeType});
             res.end();
         });
 
@@ -74,7 +95,7 @@ WebSocketServer::WebSocketServer() {
                 delete Module.ws_connections[ws_id];
             });
         })
-    }, port, INCOMING_BUFFER, MAX_BUFFER_LEN);
+    }, SERVER_PORT, INCOMING_BUFFER, MAX_BUFFER_LEN);
 }
 
 void Server::run() {

@@ -120,7 +120,9 @@ void entity_on_death(Simulation *sim, Entity const &ent) {
         //reset all reloads and stuff
         uint32_t numLeft = potential.size();
         //set respawn level
-        camera.set_respawn_level(div_round_up(3 * score_to_level(ent.score), 4));
+        uint32_t respawn_level = div_round_up(3 * score_to_level(ent.score), 4);
+        if (respawn_level > MAX_LEVEL) respawn_level = MAX_LEVEL;
+        camera.set_respawn_level(respawn_level);
         uint32_t max_possible = MAX_SLOT_COUNT + loadout_slots_at_level(camera.respawn_level);
         if (numLeft > max_possible) numLeft = max_possible;
         //fill petals

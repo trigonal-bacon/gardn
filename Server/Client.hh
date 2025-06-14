@@ -16,10 +16,11 @@ typedef uWS::WebSocket<false, true, Client> WebSocket;
 
 class Client {
 public:
-    uint8_t verified = 0;
     EntityID camera;
     std::set<EntityID> last_in_view;
     WebSocket *ws;
+    uint8_t verified = 0;
+    uint8_t seen_arena = 0;
     Client();
     void init();
     void remove();

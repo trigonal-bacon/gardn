@@ -13,6 +13,7 @@
 #include <vector>
 
 static void update_client(Simulation *sim, Client *client) {
+    if (client == nullptr) return;
     if (!client->verified) return;
     if (!sim->ent_exists(client->camera)) return;
     std::set<EntityID> in_view;
@@ -42,7 +43,9 @@ static void update_client(Simulation *sim, Client *client) {
     }
     writer.write<EntityID>(NULL_ENTITY);
     //write arena stuff
-    sim->arena_info.write(&writer, 0);
+    writer.write<uint8_t>(client->seen_arena);
+    sim->arena_info.write(&writer, client->seen_arena);
+    client->seen_arena = 1;
     //set client->last_in_view
     client->last_in_view.clear();
     for (EntityID i: in_view) client->last_in_view.insert(i);
@@ -55,11 +58,11 @@ static void calculate_leaderboard(Simulation *sim) {
     sim->for_each<kFlower>([&](Simulation *s, Entity &ent) { if (!ent.has_component(kMob)) players.push_back(&ent); });
     std::stable_sort(players.begin(), players.end(), [](Entity *a, Entity *b){ return a->score > b->score; });
     uint32_t num = players.size();
-    sim->arena_info.player_count = num;
+    sim->arena_info.set_player_count(num);
     if (num > 10) num = 10;
     for (uint32_t i = 0; i < num; ++i) {
-        sim->arena_info.names[i] = players[i]->name;
-        sim->arena_info.scores[i] = players[i]->score;
+        sim->arena_info.set_names(i, players[i]->name);
+        sim->arena_info.set_scores(i, players[i]->score);
     }
 }
 
@@ -94,6 +97,7 @@ void Simulation::post_tick() {
     for (Client *client: Server::clients) update_client(this, client);
     //send_state & reset all remaining active entities
     //reset state of all entities FIRST
+    arena_info.reset_protocol();
     for (uint32_t i = 0; i < active_entities.length; ++i) {
         DEBUG_ONLY(assert(ent_exists(active_entities[i]));) //no deletions mid tick
         Entity &ent = get_ent(active_entities[i]);

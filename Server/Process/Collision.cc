@@ -50,14 +50,14 @@ void on_collide(Simulation *sim, Entity &ent1, Entity &ent2) {
         separation.normalize();
         float ratio = ent2.mass / (ent1.mass + ent2.mass);
         Vector sep = separation;
-        if (!(ent1.team == ent2.team)) {
+        if (!(ent1.team == ent2.team) && (ent1.has_component(kFlower) || ent2.has_component(kFlower))) {
             float scale = PLAYER_ACCELERATION * 2;
             Vector norm_sep = separation * scale * ratio;
             ent1.collision_velocity += norm_sep;
-            ent1.velocity += norm_sep;
+            ent1.velocity += norm_sep * 2;
             norm_sep = separation * scale * (ratio - 1);
             ent2.collision_velocity += norm_sep;
-            ent2.velocity += norm_sep;
+            ent2.velocity += norm_sep * 2;
         }
         sep *= ratio * dist;
         if (ratio > 0.01) ent1.collision_velocity += sep;

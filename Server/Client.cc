@@ -13,9 +13,7 @@ void Client::init() {
     Entity &ent = Server::simulation.alloc_ent();
     ent.add_component(kCamera);
     ent.set_fov(BASE_FOV);
-    //ent.set_camera_x(frand() * ARENA_WIDTH);
-    //ent.set_camera_y(frand() * ARENA_HEIGHT);
-    ent.set_respawn_level(1); //respawn at level 0, NOT 1
+    ent.set_respawn_level(1); 
     for (uint32_t i = 0; i < loadout_slots_at_level(ent.respawn_level); ++i) {
         PetalTracker::add_petal(PetalID::kBasic);
         ent.set_inventory(i, PetalID::kBasic);
@@ -27,6 +25,7 @@ void Client::init() {
     } 
     //no need to track PetalID::kNone
     camera = ent.id;
+    seen_arena = 0;
 }
 
 void Client::remove() {
@@ -37,18 +36,18 @@ void Client::remove() {
         for (uint32_t i = 0; i < 2 * MAX_SLOT_COUNT; ++i)
             PetalTracker::remove_petal(c.inventory[i]);
         Server::simulation.request_delete(camera);
-        std::cout << "deleting camera from " << this << "\n";
+        //std::cout << "deleting camera from " << this << "\n";
     }
 }
 
 void Client::disconnect() {
     if (ws == nullptr) return;
     remove();
-    Writer writer(Server::OUTGOING_PACKET);
-    writer.write<uint8_t>(kClientbound::kDisconnect);
-    send_packet(writer.packet, writer.at - writer.packet);
+    //Writer writer(Server::OUTGOING_PACKET);
+    //writer.write<uint8_t>(kClientbound::kDisconnect);
+    //send_packet(writer.packet, writer.at - writer.packet);
     ws->end();
-    std::cout << "deleting client " << this << "\n";
+    //std::cout << "deleting client " << this << "\n";
 }
 
 uint8_t Client::alive() {
@@ -78,6 +77,9 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
         }
         VALIDATE(validator.validate_uint64());
         if (reader.read<uint64_t>() != VERSION_HASH) {
+            Writer writer(Server::OUTGOING_PACKET);
+            writer.write<uint8_t>(kClientbound::kOutdated);
+            client->send_packet(writer.packet, writer.at - writer.packet);
             client->disconnect();
             return;
         }

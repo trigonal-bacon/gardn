@@ -54,9 +54,9 @@ uWS::App Server::server = uWS::App({
     .close = [](WebSocket *ws, int code, std::string_view message) {
         Client::on_disconnect(ws, code, message);
     }
-}).listen(9001, [](auto *listen_socket) {
+}).listen(SERVER_PORT, [](auto *listen_socket) {
     if (listen_socket) {
-        std::cout << "Listening on port " << 9001 << std::endl;
+        std::cout << "Listening on port " << SERVER_PORT << std::endl;
     }
 });
 

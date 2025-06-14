@@ -120,7 +120,7 @@ static void tick_bee_passive(Simulation *sim, Entity &ent) {
             }
             ent.set_angle(ent.angle + 1.5 * sinf(((float) ent.lifetime) / (TPS / 2)) / TPS);
             Vector v(cosf(ent.angle), sinf(ent.angle));
-            v *= PLAYER_ACCELERATION / 4;
+            v *= 1.5;
             if (ent.lifetime % (TPS * 3 / 2) < TPS / 2)
                 v *= 0.5;
     
