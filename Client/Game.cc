@@ -119,23 +119,23 @@ static void _encode_storage() {
     {
         Writer writer(&Storage::buffer[0]);
         for (PetalID::T id = PetalID::kBasic; id < PetalID::kNumPetals; ++id)
-            if (Game::seen_petals[id]) writer.write_uint8(id);
+            if (Game::seen_petals[id]) writer.write<uint8_t>(id);
         Storage::store("petals", writer.at - writer.packet);
     }
     {
         Writer writer(&Storage::buffer[0]);
         for (MobID::T id = 0; id < MobID::kNumMobs; ++id)
-            if (Game::seen_mobs[id]) writer.write_uint8(id);
+            if (Game::seen_mobs[id]) writer.write<uint8_t>(id);
         Storage::store("mobs", writer.at - writer.packet);
     }
     {
         Writer writer(&Storage::buffer[0]);
-        writer.write_string(DOM::retrieve_text("t0", 16));
+        writer.write<std::string>(DOM::retrieve_text("t0", 16));
         Storage::store("nickname", writer.at - writer.packet);
     }
     {
         Writer writer(&Storage::buffer[0]);
-        writer.write_uint8(
+        writer.write<uint8_t>(
             Input::movement_helper | (Input::keyboard_movement << 1)
         );
         Storage::store("settings", writer.at - writer.packet);

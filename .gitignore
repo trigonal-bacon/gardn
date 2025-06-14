@@ -1,4 +1,5 @@
 build/
+wasm_build/
 node_modules/
 .vs/
 .vscode/

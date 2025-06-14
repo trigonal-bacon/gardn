@@ -7,6 +7,8 @@
 #include <vector>
 
 namespace Map {
+    const uint32_t ARENA_WIDTH = 40000;
+    const uint32_t ARENA_HEIGHT = 4000;
     uint32_t const MAX_DIFFICULTY = 3;
     struct SpawnChance {
         MobID::T const id;

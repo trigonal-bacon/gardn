@@ -7,12 +7,8 @@
 
 #include <cstdint>
 
-typedef EntityID entid;
-typedef uint8_t uint8;
-typedef uint32_t uint32;
-typedef int32_t int32;
-typedef std::string string;
-#define CIRCARR CircularArray<PetalID::T, 8>
+typedef uint16_t game_tick_t;
+typedef CircularArray<PetalID::T, 8> circ_arr_t;
 
 enum Components {
     #define COMPONENT(name) k##name,
@@ -31,20 +27,21 @@ enum Fields {
 };
 
 class Entity {
+    uint32_t components;
+    uint8_t state[div_round_up(kFieldCount, 8)];
+    #define SINGLE(component, name, type);
+    #define MULTIPLE(component, name, type, amt) uint8_t state_per_##name[div_round_up(amt, 8)];
+    PERFIELD
+    #undef SINGLE
+    #undef MULTIPLE
 public:
     Entity();
     void init();
     void reset_protocol();
-    uint32_t components;
     EntityID id;
     uint8_t pending_delete;
 #define SINGLE(component, name, type) type name;
 #define MULTIPLE(component, name, type, amt) type name[amt];
-PERFIELD
-#undef SINGLE
-#undef MULTIPLE
-#define SINGLE(component, name, type) uint8_t state_##name;
-#define MULTIPLE(component, name, type, amt) uint8_t state_##name; uint8_t state_per_##name[amt];
 PERFIELD
 #undef SINGLE
 #undef MULTIPLE
@@ -59,12 +56,24 @@ PER_EXTRA_FIELD
     //make this an entityfunction
     void set_despawn_tick(uint16_t);
     void write(Writer *, uint8_t);
+
+    template<bool>
+    void write(Writer *);
     #define SINGLE(component, name, type) void set_##name(type const);
     #define MULTIPLE(component, name, type, amt) void set_##name(uint32_t, type const);
     PERFIELD
     #undef SINGLE
     #undef MULTIPLE
 #else
+    void read(Reader *, uint8_t);
+
+    template<bool>
     void read(Reader *);
+
+    #define SINGLE(component, name, type) uint8_t get_state_##name();
+    #define MULTIPLE(component, name, type, amt) uint8_t get_state_##name(uint32_t);
+    PERFIELD
+    #undef SINGLE
+    #undef MULTIPLE
 #endif
 };

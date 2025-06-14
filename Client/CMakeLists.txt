@@ -6,6 +6,7 @@ project(gardn-client)
 include_directories(..)
 
 set(SRCS
+    Assets/Flower.cc
     Assets/Mob.cc
     Assets/Petal.cc
     Assets/Web.cc

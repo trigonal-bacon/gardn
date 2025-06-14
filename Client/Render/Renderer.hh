@@ -80,7 +80,7 @@ public:
     void stroke_rect(float, float, float, float);
 
     void close_path();
-    void fill();
+    void fill(uint8_t=0);
     void stroke();
     void clip();
     void clip_rect(float, float, float, float);

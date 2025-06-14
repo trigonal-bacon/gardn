@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+extern const uint32_t SERVER_PORT = 9001;
+extern const uint32_t MAX_LEVEL = 99;
 extern const uint32_t TPS = 25;
 extern const uint32_t DELETION_ANIMATION_TICKS = TPS / 5;
 
@@ -159,8 +161,8 @@ extern struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
         15.0, 5.0, 10.0, 1.0, 3, RarityID::kLegendary, {
         .clump_radius = 10,
     }},
-    {"Shield", "Captain America",
-        1000.0, 1.0, 25.0, 5.0, 1, RarityID::kMythic, {
+    {"Heaviest", "Very strong, but even slower to recharge",
+        200.0, 10.0, 12.0, 15.0, 1, RarityID::kEpic, {
         .rotation_style = PetalAttributes::kNoRot
     }},
     {"Third Eye", "Your petals now hate you",
@@ -183,6 +185,14 @@ extern struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
         10000.0, 1.0, 50.0, 10.0, 1, RarityID::kUnique, {
         .secondary_reload = 0.5
     }},
+    {"Lotus", "Where did this come from?",
+        5.0, 5.0, 12.0, 2.0, 1, RarityID::kEpic, {
+        .icon_angle = 0.1
+    }},
+    {"Cutter", "Where did this come from?",
+        0.0, 0.0, 50.0, 0.0, 0, RarityID::kEpic, {}},
+    {"Yin Yang", "Alters the flower's petal rotation",
+        15.0, 15.0, 10.0, 2.5, 1, RarityID::kEpic, {}},
 };
 
 extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
@@ -299,7 +309,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
         RarityID::kUnusual, {35.0, 50.0}, 10.0, {35.0, 50.0}, 1, {
         {PetalID::kHeavy, 1},
         {PetalID::kRock, 0.04},
-        {PetalID::kShield, 0.001},
+        {PetalID::kHeaviest, 0.001},
         {PetalID::kMoon, 0.00001}
     }, { .stationary = 1 }},
     {
@@ -372,7 +382,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
         {PetalID::kWing, 0.24},
         {PetalID::kTriplet, 0.06},
         {PetalID::kAntEgg, 0.06},
-        {PetalID::kShield, 0.0006}
+        {PetalID::kHeaviest, 0.0006}
     }, { . aggro_radius = 750 }},
     {
         "Ladybug",
@@ -389,6 +399,12 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
         RarityID::kUnique, {20.0}, 10.0, {40.0}, 1, {
         {PetalID::kSquare, 1}
     }, { .stationary = 1 }},
+    {
+        "Digger",
+        "???",
+        RarityID::kEpic, {100.0}, 20.0, {40.0}, 1, {
+        {PetalID::kCutter, 0.06}
+    }, {}},
 };
 
 extern uint32_t const RARITY_COLORS[RarityID::kNumRarities] = { 

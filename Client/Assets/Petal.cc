@@ -33,7 +33,6 @@ void draw_static_petal_single(PetalID::T id, Renderer &ctx) {
             ctx.stroke();
             break;
         case PetalID::kHeavy:
-        case PetalID::kShield:
             ctx.set_fill(0xffaaaaaa);
             ctx.set_stroke(0xff888888);
             ctx.set_line_width(3);
@@ -451,7 +450,7 @@ void draw_static_petal_single(PetalID::T id, Renderer &ctx) {
                 ctx.arc(_x,_y,_r);
             }
             ctx.stroke();
-            ctx.fill();
+            ctx.fill(1);
             break;
         }
         case PetalID::kLotus:
@@ -486,7 +485,6 @@ void draw_static_petal_single(PetalID::T id, Renderer &ctx) {
             ctx.arc(0,0,1.74);
             ctx.fill();
             break;
-        /*
         case PetalID::kHeaviest:
             ctx.begin_path();
             ctx.arc(0,0,16);
@@ -500,6 +498,22 @@ void draw_static_petal_single(PetalID::T id, Renderer &ctx) {
             ctx.set_fill(0xffcccccc);
             ctx.fill();
             break;
+        case PetalID::kCutter:
+            ctx.set_fill(0xff111111);
+            ctx.begin_path();
+            ctx.arc(0,0,25);
+            ctx.move_to(24.748737335205078,24.748737335205078);
+            ctx.qcurve_to(9.899494171142578,23.899494171142578,-0.0000015298985545086907,35);
+            ctx.qcurve_to(-9.899496078491211,23.899494171142578,-24.748737335205078,24.748737335205078);
+            ctx.qcurve_to(-23.899494171142578,9.899493217468262,-35,-0.0000030597971090173814);
+            ctx.qcurve_to(-23.89949607849121,-9.899496078491211,-24.74873924255371,-24.748735427856445);
+            ctx.qcurve_to(-9.899496078491211,-23.899494171142578,4.173708134658227e-7,-35);
+            ctx.qcurve_to(9.899493217468262,-23.89949607849121,24.748733520507812,-24.748741149902344);
+            ctx.qcurve_to(23.899494171142578,-9.899494171142578,35,0.000006119594218034763);
+            ctx.qcurve_to(23.899494171142578,9.899497032165527,24.748737335205078,24.748737335205078);
+            ctx.fill();
+            break;
+        /*
         case PetalID::kCactus:
         case PetalID::kTricac:
             ctx.set_fill(0xff38c75f);

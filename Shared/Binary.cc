@@ -1,141 +1,186 @@
 #include <Shared/Binary.hh>
 
+#include <iostream>
+
+const uint32_t PROTOCOL_FLOAT_SCALE = 16;
+
 Writer::Writer(uint8_t *buf) : at(buf), packet(buf) {}
 
-void Writer::write_uint8(uint8_t v) {
-    *at = v;
+template<>
+void Writer::write<uint8_t>(uint8_t const &val) {
+    *at = val;
     ++at;
 }
 
-void Writer::write_uint32(uint32_t v) {
+template<>
+void Writer::write<uint16_t>(uint16_t const &val) {
+    uint16_t v = val;
     while (v > 127)
     {
-        write_uint8((v & 127) | 128);
+        write<uint8_t>((v & 127) | 128);
         v >>= 7;
     }
-    write_uint8(v);
+    write<uint8_t>(v);
 }
 
-void Writer::write_uint64(uint64_t v) {
+template<>
+void Writer::write<uint32_t>(uint32_t const &val) {
+    uint32_t v = val;
+    while (v > 127)
+    {
+        write<uint8_t>((v & 127) | 128);
+        v >>= 7;
+    }
+    write<uint8_t>(v);
+}
+
+template<>
+void Writer::write<uint64_t>(uint64_t const &val) {
+    uint64_t v = val;
     while (v > 127ll)
     {
-        write_uint8((v & 127ll) | 128ll);
+        write<uint8_t>((v & 127ll) | 128ll);
         v >>= 7ll;
     }
-    write_uint8(v);
+    write<uint8_t>(v);
 }
 
-void Writer::write_int32(int32_t v) {
+template<>
+void Writer::write<int32_t>(int32_t const &val) {
+    int32_t v = val;
     uint32_t sign = v < 0;
     if (sign) v *= -1;
     v = (v << 1) | sign;
-    write_uint32(v);
+    write<uint32_t>(v);
 }
 
-void Writer::write_float(float v) {
-    write_int32(v * 1024);
+template<>
+void Writer::write<float>(float const &v) {
+    write<int32_t>(v * 1024);
 }
 
-#ifdef SERVERSIDE
-void Writer::write_Float(float v) {
-    write_int32(v * 1024);
-}
-#else
-void Writer::write_Float(LerpFloat v) {
-    write_int32(((float) v) * 1024);
-}
-#endif
-
-void Writer::write_entid(EntityID const &id) {
-    write_uint32(id.id);
-    if (id.id) write_uint32(id.hash);
+template<>
+void Writer::write<EntityID>(EntityID const &id) {
+    write<EntityID::id_type>(id.id);
+    if (id.id) write<EntityID::hash_type>(id.hash);
 }
 
-void Writer::write_string(std::string const &str) {
+template<>
+void Writer::write<std::string>(std::string const &str) {
     uint32_t len = str.size();
-    write_uint32(len);
-    for (uint32_t i = 0; i < len; ++i) write_uint32(str[i]);
+    write<uint32_t>(len);
+    for (uint32_t i = 0; i < len; ++i) write<uint8_t>(str[i]);
 }
+
 
 Reader::Reader(uint8_t const *buf) : at(buf), packet(buf) {}
 
-uint8_t Reader::read_uint8() {
+template<>
+uint8_t Reader::read<uint8_t>() {
     return *at++;
 }
 
-uint32_t Reader::read_uint32() {
-    uint32_t ret = 0;
+
+template<>
+uint16_t Reader::read<uint16_t>() {
+    uint16_t ret = 0;
     for (uint32_t i = 0; i < 5; ++i) {
-        uint8_t o = read_uint8();
+        uint8_t o = read<uint8_t>();
         ret |= ((o & 127) << (i * 7));
         if (o <= 127) break;
     }
     return ret;
 }
 
-uint64_t Reader::read_uint64() {
+template<>
+uint32_t Reader::read<uint32_t>() {
+    uint32_t ret = 0;
+    for (uint32_t i = 0; i < 5; ++i) {
+        uint8_t o = read<uint8_t>();
+        ret |= ((o & 127) << (i * 7));
+        if (o <= 127) break;
+    }
+    return ret;
+}
+
+template<>
+uint64_t Reader::read<uint64_t>() {
     uint64_t ret = 0ll;
     for (uint32_t i = 0; i < 10; ++i) {
-        uint8_t o = read_uint8();
+        uint8_t o = read<uint8_t>();
         ret |= ((o & 127ll) << (i * 7ll));
         if (o <= 127ll) break;
     }
     return ret;
 }
 
-int32_t Reader::read_int32() {
-    uint32_t r = read_uint32();
+template<>
+int32_t Reader::read<int32_t>() {
+    uint32_t r = read<uint32_t>();
     uint32_t s = r & 1;
     int32_t ret = r >> 1;
     if (s) ret *= -1;
     return ret;
 }
 
-float Reader::read_float() {
-    return read_int32() / 1024.0;
+template<>
+float Reader::read<float>() {
+    return read<int32_t>() / 1024.0f;
 }
 
-EntityID Reader::read_entid() {
-    uint16_t id = read_uint32();
-    uint16_t hash = id ? read_uint32() : 0;
+template<>
+EntityID Reader::read<EntityID>() {
+    uint16_t id = read<EntityID::id_type>();
+    uint16_t hash = id ? read<EntityID::hash_type>() : 0;
     return {id, hash};
 }
 
-void Reader::read_uint8(uint8_t &ref) {
-    ref = read_uint8();
+template<>
+void Reader::read<uint8_t>(uint8_t &ref) {
+    ref = read<uint8_t>();
 }
 
-void Reader::read_uint32(uint32_t &ref) {
-    ref = read_uint32();
+template<>
+void Reader::read<uint16_t>(uint16_t &ref) {
+    ref = read<uint16_t>();
 }
 
-void Reader::read_int32(int32_t &ref) {
-    ref = read_int32();
+template<>
+void Reader::read<uint32_t>(uint32_t &ref) {
+    ref = read<uint32_t>();
 }
 
-void Reader::read_float(float &ref) {
-    ref = read_float();
+template<>
+void Reader::read<uint64_t>(uint64_t &ref) {
+    ref = read<uint64_t>();
 }
 
-#ifdef SERVERSIDE
-void Reader::read_Float(float &ref) {
-    ref = read_float();
-}
-#else
-void Reader::read_Float(LerpFloat &ref) {
-    ref.set(read_float());
-}
-#endif
-
-void Reader::read_entid(EntityID &ref) {
-    ref = read_entid();
+template<>
+void Reader::read<int32_t>(int32_t &ref) {
+    ref = read<int32_t>();
 }
 
-void Reader::read_string(std::string &ref) {
-    uint32_t len = read_uint32();
+template<>
+void Reader::read<float>(float &ref) {
+    ref = read<float>();
+}
+
+template<>
+void Reader::read<LerpFloat>(LerpFloat &ref) {
+    ref.set(read<float>());
+}
+
+template<>
+void Reader::read<EntityID>(EntityID &ref) {
+    ref = read<EntityID>();
+}
+
+template<>
+void Reader::read<std::string>(std::string &ref) {
+    uint32_t len = read<uint32_t>();
     ref.clear();
     ref.reserve(len);
-    for (uint32_t i = 0; i < len; ++i) ref.push_back(read_uint32());
+    for (uint32_t i = 0; i < len; ++i) ref.push_back(read<uint8_t>());
 }
 
 Validator::Validator(uint8_t const *start, uint8_t const *end) : at(start), end(end) {}

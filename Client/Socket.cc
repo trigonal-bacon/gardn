@@ -11,8 +11,8 @@ extern "C" {
     void on_message(uint8_t type, uint32_t len) {
         if (type == 0) {
             Writer w(INCOMING_PACKET);
-            w.write_uint8(kServerbound::kVerify);
-            w.write_uint64(VERSION_HASH);
+            w.write<uint8_t>(kServerbound::kVerify);
+            w.write<uint64_t>(VERSION_HASH);
             Game::socket.ready = 1;
             Game::on_game_screen = 0;
             Game::socket.send(&INCOMING_PACKET[0], w.at - w.packet);
@@ -33,7 +33,7 @@ extern "C" {
 
 Socket::Socket() {}
 
-void Socket::connect(char const *url) {
+void Socket::connect(std::string const url) {
     EM_ASM({
         let string = UTF8ToString($1);
         function connect() {
@@ -57,7 +57,7 @@ void Socket::connect(char const *url) {
             };
         }
         setTimeout(connect, 1000);
-    }, INCOMING_PACKET, url);
+    }, INCOMING_PACKET, url.c_str());
 }
 
 void Socket::send(uint8_t *ptr, uint32_t len) {

@@ -24,7 +24,8 @@ void GalleryMob::on_render(Renderer &ctx) {
     ctx.round_rect(-width / 2, -height / 2, width, height, style.round_radius);
     ctx.clip();
     struct MobData const &data = MOB_DATA[id];
-    ctx.rotate(-3*M_PI/4);
+    if (id != MobID::kDigger)
+        ctx.rotate(-3*M_PI/4);
     float radius = (data.radius.upper + data.radius.lower) / 2;
     if (radius > width * 0.5) ctx.scale(0.5 * width / radius);
     ctx.scale(0.5);

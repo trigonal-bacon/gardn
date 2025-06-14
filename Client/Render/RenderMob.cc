@@ -21,7 +21,19 @@ void render_mob(Renderer &ctx, Entity const &ent) {
     uint32_t flags = 0;
     flags |= (ent.team == Game::camera_id);
     flags |= (ent.is_tail << 1);
-    draw_static_mob(ent.mob_id, ctx, {ent.animation, ent.radius, ent.id.id, flags});
+    MobRenderAttributes attrs = {ent.animation, ent.radius, ent.id.id, flags};
+    if (ent.has_component(kFlower)) {
+        attrs.flower_attrs = {
+            .radius = ent.radius,
+            .eye_x = ent.eye_x,
+            .eye_y = ent.eye_y,
+            .mouth = ent.mouth,
+            .cutter_angle = (float) (Game::timestamp / 200),
+            .face_flags = ent.face_flags,
+            .flags = 1
+        };
+    }
+    draw_static_mob(ent.mob_id, ctx, attrs);
     if (ent.deletion_animation > 0)
         Game::seen_mobs[ent.mob_id] = 1;
 }

@@ -299,10 +299,10 @@ void Renderer::close_path() {
     }, id);
 }
 
-void Renderer::fill() {
+void Renderer::fill(uint8_t o) {
     EM_ASM({
-        Module.ctxs[$0].fill();
-    }, id);
+        Module.ctxs[$0].fill($1 ? "nonzero" : "evenodd");
+    }, id, o);
 }
 
 void Renderer::stroke() {

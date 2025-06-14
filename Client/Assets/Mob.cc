@@ -668,6 +668,13 @@ void draw_static_mob(MobID::T mob_id, Renderer &ctx, MobRenderAttributes attr) {
             ctx.fill();
             ctx.stroke();
             break;
+        case MobID::kDigger: {
+            attr.flower_attrs.radius = attr.radius;
+            attr.flower_attrs.flags |= 1;
+            attr.flower_attrs.face_flags |= (1 << 7);
+            draw_static_flower(ctx, attr.flower_attrs);
+            break;
+        };
         default:
             assert(!"Didn't cover mob render");
             break;

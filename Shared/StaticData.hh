@@ -5,11 +5,11 @@
 #include <cstdint>
 #include <vector>
 
+extern const uint32_t SERVER_PORT;
+extern const uint32_t MAX_LEVEL;
 const uint32_t ENTITY_CAP = 32768;
 const uint32_t MAX_SLOT_COUNT = 8;
 const uint32_t LEADERBOARD_SIZE = 10;
-const uint32_t ARENA_WIDTH = 40000;
-const uint32_t ARENA_HEIGHT = 4000;
 
 extern const uint32_t TPS;
 extern const uint32_t DELETION_ANIMATION_TICKS;
@@ -67,7 +67,7 @@ namespace PetalID {
         kTriweb,
         kAntennae,
         kTricac,
-        kShield,
+        kHeaviest,
         kThirdEye,
         kObserver,
         kPoisonCactus,
@@ -75,6 +75,9 @@ namespace PetalID {
         kUniqueBasic,
         kSquare,
         kMoon,
+        kLotus,
+        kCutter,
+        kYinYang,
         kNumPetals
     };
 };
@@ -105,6 +108,7 @@ namespace MobID {
         kQueenAnt,
         kShinyLadybug,
         kSquare,
+        kDigger,
         kNumMobs
     };
 };

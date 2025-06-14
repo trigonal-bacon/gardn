@@ -33,9 +33,9 @@ void Simulation::tick_lerp(double dt) {
         }
         if (ent.has_component(kHealth)) {
             ent.health_ratio.step(amt);
-            if (ent.damaged == 1 && ent.damage_flash < 0.01)
+            if (ent.damaged == 1 && ent.damage_flash < 0.1)
                 ent.damage_flash = 1;
-            else LERP(ent.damage_flash, 0, amt);
+            else ent.damage_flash = fclamp(ent.damage_flash - Ui::dt / 100, 0, 1);
             if (ent.damaged)
             ent.last_damaged_time = Game::timestamp;
             if ((float) ent.health_ratio > 0.999)

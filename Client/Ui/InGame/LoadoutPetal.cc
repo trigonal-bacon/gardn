@@ -86,7 +86,7 @@ UiLoadoutPetal::UiLoadoutPetal(uint8_t pos) : Element(60, 60),
         if (curr_pos == 2 * MAX_SLOT_COUNT) return false;
         if (Game::alive()) {
             Entity &player = Game::simulation.get_ent(Game::player_id);
-            if (no_change_ticks == 0 || player.state_per_loadout_ids[static_pos]) {
+            if (no_change_ticks == 0 || player.get_state_loadout_ids(static_pos)) {
                 no_change_ticks = 0;
                 petal_id = Game::cached_loadout[static_pos];
                 if (petal_id != PetalID::kNone)
@@ -95,7 +95,7 @@ UiLoadoutPetal::UiLoadoutPetal(uint8_t pos) : Element(60, 60),
         }
         if (static_pos < Game::loadout_count && Game::alive()) {
             Entity &player = Game::simulation.get_ent(Game::player_id);
-            if (player.state_per_loadout_reloads[static_pos]) {
+            if (player.get_state_loadout_reloads(static_pos)) {
                 float old = player.loadout_reloads[static_pos] / 255.0f;
                 if (old > reload) reload.set(old);
                 else reload = old;

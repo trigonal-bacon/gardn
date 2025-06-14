@@ -36,53 +36,53 @@ SINGLE(Physics, x, Float) \
 SINGLE(Physics, y, Float) \
 SINGLE(Physics, radius, Float) \
 SINGLE(Physics, angle, Float) \
-SINGLE(Physics, deletion_tick, uint8)
+SINGLE(Physics, deletion_tick, uint8_t)
 
 #define FIELDS_Camera \
-SINGLE(Camera, player, entid) \
-SINGLE(Camera, respawn_level, uint8) \
-MULTIPLE(Camera, inventory, uint8, 2 * MAX_SLOT_COUNT) \
-SINGLE(Camera, killed_by, string) \
+SINGLE(Camera, player, EntityID) \
+SINGLE(Camera, respawn_level, uint8_t) \
+MULTIPLE(Camera, inventory, uint8_t, 2 * MAX_SLOT_COUNT) \
+SINGLE(Camera, killed_by, std::string) \
 SINGLE(Camera, camera_x, Float) \
 SINGLE(Camera, camera_y, Float) \
 SINGLE(Camera, fov, Float) 
 
 #define FIELDS_Relations \
-SINGLE(Relations, team, entid) \
-SINGLE(Relations, parent, entid)
+SINGLE(Relations, team, EntityID) \
+SINGLE(Relations, parent, EntityID)
 
 #define FIELDS_Flower \
 SINGLE(Flower, eye_angle, float) \
 SINGLE(Flower, overlevel_timer, float) \
-SINGLE(Flower, loadout_count, uint32) \
-SINGLE(Flower, face_flags, uint8) \
-MULTIPLE(Flower, loadout_ids, uint8, 2 * MAX_SLOT_COUNT) \
-MULTIPLE(Flower, loadout_reloads, uint8, MAX_SLOT_COUNT)
+SINGLE(Flower, loadout_count, uint32_t) \
+SINGLE(Flower, face_flags, uint8_t) \
+MULTIPLE(Flower, loadout_ids, uint8_t, 2 * MAX_SLOT_COUNT) \
+MULTIPLE(Flower, loadout_reloads, uint8_t, MAX_SLOT_COUNT)
 
 #define FIELDS_Petal \
-SINGLE(Petal, petal_id, uint8)
+SINGLE(Petal, petal_id, uint8_t)
 
 #define FIELDS_Health \
 SINGLE(Health, health_ratio, Float) \
-SINGLE(Health, damaged, uint8)
+SINGLE(Health, damaged, uint8_t)
 
 #define FIELDS_Mob \
-SINGLE(Mob, mob_id, uint8)
+SINGLE(Mob, mob_id, uint8_t)
 
 #define FIELDS_Drop \
-SINGLE(Drop, drop_id, uint8)
+SINGLE(Drop, drop_id, uint8_t)
 
 #define FIELDS_Segmented \
-SINGLE(Segmented, is_tail, uint8)
+SINGLE(Segmented, is_tail, uint8_t)
 
 #define FIELDS_Web ;
 
 #define FIELDS_Score \
-SINGLE(Score, score, uint32)
+SINGLE(Score, score, uint32_t)
 
 #define FIELDS_Name \
-SINGLE(Name, name, string) \
-SINGLE(Name, nametag_visible, uint8)
+SINGLE(Name, name, std::string) \
+SINGLE(Name, nametag_visible, uint8_t)
 
 #ifdef SERVERSIDE
 #define PER_EXTRA_FIELD \
@@ -100,11 +100,11 @@ SINGLE(Name, nametag_visible, uint8)
     SINGLE(input, uint8_t, =0) \
     SINGLE(rotation_count, uint8_t, =1) \
     \
-    SINGLE(slow_ticks, uint16_t, =0) \
-    SINGLE(slow_inflict, uint16_t, =0) \
-    SINGLE(immunity_ticks, uint16_t, =0) \
-    SINGLE(dandy_ticks, uint16_t, =0) \
-    SINGLE(poison_ticks, uint16_t, =0) \
+    SINGLE(slow_ticks, game_tick_t, =0) \
+    SINGLE(slow_inflict, game_tick_t, =0) \
+    SINGLE(immunity_ticks, game_tick_t, =0) \
+    SINGLE(dandy_ticks, game_tick_t, =0) \
+    SINGLE(poison_ticks, game_tick_t, =0) \
     SINGLE(poison_inflicted, float, =0) \
     SINGLE(poison_dealer, EntityID, =NULL_ENTITY) \
     SINGLE(poison_damage, PoisonDamage, ={}) \
@@ -121,14 +121,13 @@ SINGLE(Name, nametag_visible, uint8)
     SINGLE(target, EntityID, =NULL_ENTITY) \
     SINGLE(seg_head, EntityID, =NULL_ENTITY) \
     SINGLE(detection_radius, float, =0) \
-    SINGLE(ai_tick, uint16_t, =0) \
+    SINGLE(ai_tick, game_tick_t, =0) \
     SINGLE(ai_state, uint8_t, =0) \
     \
     SINGLE(flags, uint8_t, =0) \
-    SINGLE(despawn_tick, uint16_t, =0) \
-    SINGLE(secondary_reload, uint16_t, =0) \
-    SINGLE(deleted_petals, CIRCARR, ={})
-
+    SINGLE(despawn_tick, game_tick_t, =0) \
+    SINGLE(secondary_reload, game_tick_t, =0) \
+    SINGLE(deleted_petals, circ_arr_t, ={})
 #else
 #define PER_EXTRA_FIELD \
     SINGLE(last_damaged_time, double, =0) \
@@ -147,7 +146,8 @@ namespace EntityFlags {
         IsDespawning = 1 << 0,
         NoFriendlyCollision = 1 << 1,
         DieOnParentDeath = 1 << 2,
-        SpawnedFromZone = 1 << 3
+        SpawnedFromZone = 1 << 3,
+        NoDrops = 1 << 4
     };
 };
 

@@ -19,6 +19,14 @@ typedef std::string string;
 
 class Arena {
 public:
+    enum Fields {
+        #define SINGLE(name, type) k##name,
+        #define MULTIPLE(name, type, amt) k##name,
+        FIELDS_Arena
+        #undef SINGLE
+        #undef MULTIPLE
+        kFieldCount
+    };
     uint8_t protocol_state;
     #define SINGLE(name, type) type name;
     #define MULTIPLE(name, type, count) type name[count];
@@ -31,6 +39,11 @@ public:
     void reset_protocol();
 #ifdef SERVERSIDE
     void write(Writer *, uint8_t);
+    #define SINGLE(name, type) void set_##name(type const);
+    #define MULTIPLE(name, type, amt) void set_##name(uint32_t, type const);
+    FIELDS_Arena
+    #undef SINGLE
+    #undef MULTIPLE
 #else
     void read(Reader *);
 #endif

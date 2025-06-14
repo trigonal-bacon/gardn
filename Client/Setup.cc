@@ -109,7 +109,7 @@ void setup_localstorage() {
         uint32_t len = Storage::retrieve("mobs", 256);
         Reader reader(&Storage::buffer[0]);
         while (reader.at < Storage::buffer + len) {
-            MobID::T mob_id = reader.read_uint8();
+            MobID::T mob_id = reader.read<uint8_t>();
             if (mob_id >= MobID::kNumMobs) break;
             Game::seen_mobs[mob_id] = 1;
         }
@@ -118,7 +118,7 @@ void setup_localstorage() {
         uint32_t len = Storage::retrieve("petals", 256);
         Reader reader(&Storage::buffer[0]);
         while (reader.at < Storage::buffer + len) {
-            PetalID::T petal_id = reader.read_uint8();
+            PetalID::T petal_id = reader.read<uint8_t>();
             if (petal_id >= PetalID::kNumPetals || petal_id == PetalID::kNone) break;
             Game::seen_petals[petal_id] = 1;
         }
@@ -127,7 +127,7 @@ void setup_localstorage() {
         uint32_t len = Storage::retrieve("settings", 1);
         if (len > 0) {
             Reader reader(&Storage::buffer[0]);
-            uint8_t opts = reader.read_uint8();
+            uint8_t opts = reader.read<uint8_t>();
             Input::movement_helper = BIT_AT(opts, 0);
             Input::keyboard_movement = BIT_AT(opts, 1);
         }
@@ -137,7 +137,7 @@ void setup_localstorage() {
         if (len > 0) {
             Reader reader(&Storage::buffer[0]);
             std::string name;
-            reader.read_string(name);
+            reader.read<std::string>(name);
             DOM::update_text("t0", name, 16);
         }
     }
