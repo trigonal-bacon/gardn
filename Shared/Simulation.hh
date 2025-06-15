@@ -11,8 +11,6 @@
 #include <functional>
 #include <string>
 
-extern const uint64_t VERSION_HASH;
-
 class Simulation {
 public:
     SERVER_ONLY(SpatialHash spatial_hash;)

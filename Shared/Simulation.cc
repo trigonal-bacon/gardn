@@ -3,8 +3,6 @@
 
 #include <iostream>
 
-extern const uint64_t VERSION_HASH = 198456321345ll;
-
 Simulation::Simulation() SERVER_ONLY(: spatial_hash(this)) {}
 
 void Simulation::reset() {

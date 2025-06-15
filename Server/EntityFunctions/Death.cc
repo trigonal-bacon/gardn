@@ -74,7 +74,7 @@ void entity_on_death(Simulation *sim, Entity const &ent) {
                 if (frand() < d.chance) success_drops.push_back(d.id);
             __alloc_drops(success_drops, ent.x, ent.y);
         }
-        if (1 || ent.mob_id == MobID::kAntHole && ent.team == NULL_ENTITY && frand() < 0.10) { 
+        if (ent.mob_id == MobID::kAntHole && ent.team == NULL_ENTITY && frand() < 0.10) { 
             EntityID team = NULL_ENTITY;
             if (sim->ent_exists(ent.last_damaged_by))
                 team = sim->get_ent(ent.last_damaged_by).team;

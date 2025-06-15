@@ -2,13 +2,14 @@
 
 #include <cmath>
 
+extern const uint64_t VERSION_HASH = 198456321345ll;
 extern const uint32_t SERVER_PORT = 9001;
 extern const uint32_t MAX_LEVEL = 99;
-extern const uint32_t TPS = 25;
+extern const uint32_t TPS = 20;
 extern const uint32_t DELETION_ANIMATION_TICKS = TPS / 5;
 
 extern const float PETAL_DISABLE_DELAY = 30.0f;
-extern const float PLAYER_ACCELERATION = 3.0f;
+extern const float PLAYER_ACCELERATION = 4.0f;
 extern const float DEFAULT_FRICTION = 0.25f;
 
 extern const float SUMMON_RETREAT_RADIUS = 600.0f;
@@ -193,7 +194,7 @@ extern struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
         0.0, 0.0, 40.0, 0.0, 0, RarityID::kEpic, {}},
     {"Yin Yang", "Alters the flower's petal rotation",
         15.0, 15.0, 10.0, 2.5, 1, RarityID::kEpic, {}},
-    {"Yggdrasil", "Unfortunately, it's powers are useless here",
+    {"Yggdrasil", "Unfortunately, its powers are useless here",
         1.0, 1.0, 12.0, 10.0, 1, RarityID::kUnique, {
         .defend_only = 1,
         .icon_angle = M_PI
@@ -431,7 +432,7 @@ char const *RARITY_NAMES[RarityID::kNumRarities] = {
 };
 
 uint32_t score_to_pass_level(uint32_t level) {
-    return (uint32_t)(pow(1.05, level) * level * 2);
+    return (uint32_t)(pow(1.06, level - 1) * level) + 3;
 }
 
 uint32_t score_to_level(uint32_t score) {

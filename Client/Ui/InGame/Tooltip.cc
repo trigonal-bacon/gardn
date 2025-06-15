@@ -16,11 +16,14 @@ static void make_petal_tooltip(PetalID::T id) {
         std::format("{:.1f} + {:.1f}s ⟳", PETAL_DATA[id].reload, PETAL_DATA[id].attributes.secondary_reload);
     //std::cout << Renderer::get_ascii_text_size(rld_str.c_str()) << '\n';
     Element *tooltip = new Ui::VContainer({
+        /*
         new Ui::HFlexContainer(
             new Ui::StaticText(20, PETAL_DATA[id].name, { .fill = 0xffffffff, .h_justify = Style::Left }),
             new Ui::StaticText(16, rld_str, { .fill = 0xffffffff, .v_justify = Style::Top }),
             5, 10, {}
         ),
+        */
+        new Ui::StaticText(20, PETAL_DATA[id].name, { .fill = 0xffffffff, .h_justify = Style::Left }),
         new Ui::StaticText(14, RARITY_NAMES[PETAL_DATA[id].rarity], { .fill = RARITY_COLORS[PETAL_DATA[id].rarity], .h_justify = Style::Left }),
         new Ui::Element(0,10),
         new Ui::StaticText(12, PETAL_DATA[id].description, { .fill = 0xffffffff, .h_justify = Style::Left })

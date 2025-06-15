@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <vector>
 
+extern const uint64_t VERSION_HASH;
 extern const uint32_t SERVER_PORT;
 extern const uint32_t MAX_LEVEL;
 const uint32_t ENTITY_CAP = 32768;
