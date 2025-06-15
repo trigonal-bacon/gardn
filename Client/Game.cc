@@ -23,6 +23,9 @@ namespace Game {
     EntityID camera_id;
     EntityID player_id;
     Vector screen_shake;
+    std::string nickname;
+    std::array<uint8_t, PetalID::kNumPetals> seen_petals;
+    std::array<uint8_t, MobID::kNumMobs> seen_mobs;
 
     double timestamp = 0;
 
@@ -35,8 +38,6 @@ namespace Game {
 
     PetalID::T cached_loadout[2 * MAX_SLOT_COUNT] = {PetalID::kNone};
 
-    uint8_t seen_petals[PetalID::kNumPetals] = {0};
-    uint8_t seen_mobs[MobID::kNumMobs] = {0};
     uint8_t loadout_count = 5;
     uint8_t simulation_ready = 0;
     uint8_t on_game_screen = 0;
@@ -92,7 +93,7 @@ void Game::init() {
     window.add_child(
         Ui::make_debug_stats()
     );
-    setup_localstorage();
+    Storage::retrieve();
     socket.connect("ws://localhost:9001");
 }
 
@@ -113,33 +114,6 @@ uint8_t Game::should_render_title_ui() {
 
 uint8_t Game::should_render_game_ui() {
     return transition_circle > 0 && simulation_ready && simulation.ent_exists(camera_id);
-}
-
-static void _encode_storage() {
-    {
-        Writer writer(&Storage::buffer[0]);
-        for (PetalID::T id = PetalID::kBasic; id < PetalID::kNumPetals; ++id)
-            if (Game::seen_petals[id]) writer.write<uint8_t>(id);
-        Storage::store("petals", writer.at - writer.packet);
-    }
-    {
-        Writer writer(&Storage::buffer[0]);
-        for (MobID::T id = 0; id < MobID::kNumMobs; ++id)
-            if (Game::seen_mobs[id]) writer.write<uint8_t>(id);
-        Storage::store("mobs", writer.at - writer.packet);
-    }
-    {
-        Writer writer(&Storage::buffer[0]);
-        writer.write<std::string>(DOM::retrieve_text("t0", 16));
-        Storage::store("nickname", writer.at - writer.packet);
-    }
-    {
-        Writer writer(&Storage::buffer[0]);
-        writer.write<uint8_t>(
-            Input::movement_helper | (Input::keyboard_movement << 1)
-        );
-        Storage::store("settings", writer.at - writer.packet);
-    }
 }
 
 void Game::tick(double time) {
@@ -255,10 +229,13 @@ void Game::tick(double time) {
 
     if (Input::keys_pressed_this_tick.contains((char) 186)) //';'
         show_debug = !show_debug;
+    if (Input::keys_pressed_this_tick.contains('\x0d') && !Game::alive())
+        Game::spawn_in();
 
     //clearing operations
     simulation.post_tick();
-    _encode_storage();
+    Game::nickname = DOM::retrieve_text("t0", 16);
+    Storage::set();
     Input::keys_pressed_this_tick.clear();
     Input::mouse_buttons_pressed = Input::mouse_buttons_released = 0;
     Input::prev_mouse_x = Input::mouse_x;

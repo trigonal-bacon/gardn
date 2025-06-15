@@ -16,7 +16,7 @@ void Client::init() {
     ent.set_respawn_level(1); 
     for (uint32_t i = 0; i < loadout_slots_at_level(ent.respawn_level); ++i) {
         PetalTracker::add_petal(PetalID::kBasic);
-        ent.set_inventory(i, PetalID::kBasic);
+        ent.set_inventory(i, PetalID::kYggdrasil);
     }
     if (frand() < 0.0001 && PetalTracker::get_count(PetalID::kUniqueBasic) == 0) {
         PetalTracker::remove_petal(PetalID::kBasic);

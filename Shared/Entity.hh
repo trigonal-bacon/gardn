@@ -17,16 +17,15 @@ enum Components {
     kComponentCount
 };
 
-enum Fields {
-    #define SINGLE(component, name, type) k##name,
-    #define MULTIPLE(component, name, type, amt) k##name,
-    PERFIELD
-    #undef SINGLE
-    #undef MULTIPLE
-    kFieldCount
-};
-
 class Entity {
+    enum Fields {
+        #define SINGLE(component, name, type) k##name,
+        #define MULTIPLE(component, name, type, amt) k##name,
+        PERFIELD
+        #undef SINGLE
+        #undef MULTIPLE
+        kFieldCount
+    };
     uint32_t components;
     uint8_t state[div_round_up(kFieldCount, 8)];
     #define SINGLE(component, name, type);

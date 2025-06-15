@@ -189,10 +189,15 @@ extern struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
         5.0, 5.0, 12.0, 2.0, 1, RarityID::kEpic, {
         .icon_angle = 0.1
     }},
-    {"Cutter", "Where did this come from?",
-        0.0, 0.0, 50.0, 0.0, 0, RarityID::kEpic, {}},
+    {"Cutter", "Increases the flower's body damage?",
+        0.0, 0.0, 40.0, 0.0, 0, RarityID::kEpic, {}},
     {"Yin Yang", "Alters the flower's petal rotation",
         15.0, 15.0, 10.0, 2.5, 1, RarityID::kEpic, {}},
+    {"Yggdrasil", "Unfortunately, it's powers are useless here",
+        1.0, 1.0, 12.0, 10.0, 1, RarityID::kUnique, {
+        .defend_only = 1,
+        .icon_angle = M_PI
+    }},
 };
 
 extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
@@ -275,7 +280,8 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
         RarityID::kUnusual, {35.0}, 10.0, {30.0}, 5, {
         {PetalID::kWing, 0.12},
         {PetalID::kDahlia, 0.36},
-        {PetalID::kAzalea, 0.02}
+        {PetalID::kYinYang, 0.02},
+        {PetalID::kAzalea, 0.002}
     }, {}},
     {
         "Hornet",
@@ -389,9 +395,10 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
         "This one is shiny... I wonder what it could mean...",
         RarityID::kEpic, {25.0}, 10.0, {30.0}, 3, {
         {PetalID::kRose, 1},
-        {PetalID::kWing, 1},
-        {PetalID::kDahlia, 1},
-        {PetalID::kAzalea, 0.06}
+        {PetalID::kWing, 0.34},
+        {PetalID::kDahlia, 0.34},
+        {PetalID::kAzalea, 0.006},
+        {PetalID::kYggdrasil, 0.00001}
     }, {}},
     {
         "Square",
@@ -401,7 +408,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
     }, { .stationary = 1 }},
     {
         "Digger",
-        "???",
+        "Friend or foe? You'll never know...",
         RarityID::kEpic, {100.0}, 20.0, {40.0}, 1, {
         {PetalID::kCutter, 0.06}
     }, {}},

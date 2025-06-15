@@ -27,7 +27,7 @@ Element *Ui::make_death_main_screen() {
         }),
         new Ui::Element(0,100),
         continue_button,
-        new Ui::Element(0,15)
+        new Ui::StaticText(14, "(or press ENTER to continue)")
     }, 0, 10, { .animate = [](Element *elt, Renderer &ctx) {
         ctx.translate(0, (elt->animation - 1) * ctx.height * 0.6);
     }, .should_render = [](){ return !Game::alive() && Game::should_render_game_ui(); } });

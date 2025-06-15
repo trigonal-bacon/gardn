@@ -1,6 +1,5 @@
 #include <Client/Game.hh>
 
-#include <Client/DOM.hh>
 #include <Client/Ui/Ui.hh>
 
 using namespace Game;
@@ -28,7 +27,7 @@ void Game::on_message(uint8_t *ptr, uint32_t len) {
                 ent.read(&reader, create);
                 curr_id = reader.read<EntityID>();
             }
-            simulation.arena_info.read(&reader);
+            simulation.arena_info.read(&reader, reader.read<uint8_t>());
             break;
         }
         default:
@@ -66,10 +65,10 @@ void Game::spawn_in() {
     if (Game::alive()) return;
     if (Game::on_game_screen == 0) {
         writer.write<uint8_t>(kServerbound::kClientSpawn);
-        std::string name = DOM::retrieve_text("t0", 16);
+        std::string name = Game::nickname;
         writer.write<std::string>(name);
         socket.send(writer.packet, writer.at - writer.packet);
-    }
+    } else Game::on_game_screen = 0;
 }
 
 void Game::delete_petal(uint8_t pos) {

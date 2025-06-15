@@ -34,6 +34,7 @@ Element *Ui::make_title_main_screen() {
                         { .fill = 0xff94e873, .line_width = 5, .round_radius = 3 }
                     )
                 }, 0, 10,{}),
+                new Ui::StaticText(14, "(or press ENTER to spawn)")
             }, 10, 5, { .animate = [](Element *elt, Renderer &ctx) {
                 ctx.translate(0, (elt->animation - 1) * ctx.height);
             } }),

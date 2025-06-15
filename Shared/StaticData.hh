@@ -78,6 +78,7 @@ namespace PetalID {
         kLotus,
         kCutter,
         kYinYang,
+        kYggdrasil,
         kNumPetals
     };
 };

@@ -18,7 +18,6 @@ typedef std::string string;
     MULTIPLE(names, string, LEADERBOARD_SIZE)
 
 class Arena {
-public:
     enum Fields {
         #define SINGLE(name, type) k##name,
         #define MULTIPLE(name, type, amt) k##name,
@@ -27,7 +26,13 @@ public:
         #undef MULTIPLE
         kFieldCount
     };
-    uint8_t protocol_state;
+    uint8_t state[div_round_up(kFieldCount, 8)];
+    #define SINGLE(name, type);
+    #define MULTIPLE(name, type, amt) uint8_t state_per_##name[div_round_up(amt, 8)];
+    FIELDS_Arena
+    #undef SINGLE
+    #undef MULTIPLE
+public:
     #define SINGLE(name, type) type name;
     #define MULTIPLE(name, type, count) type name[count];
     FIELDS_Arena
@@ -45,6 +50,6 @@ public:
     #undef SINGLE
     #undef MULTIPLE
 #else
-    void read(Reader *);
+    void read(Reader *, uint8_t);
 #endif
 };

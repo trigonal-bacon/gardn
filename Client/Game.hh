@@ -9,6 +9,8 @@
 #include <Shared/StaticData.hh>
 #include <Shared/Vector.hh>
 
+#include <array>
+
 namespace Game {
     extern Simulation simulation;
     extern Renderer renderer;
@@ -18,7 +20,10 @@ namespace Game {
     extern EntityID camera_id;
     extern EntityID player_id;
     extern Vector screen_shake;
-
+    extern std::string nickname;
+    extern std::array<uint8_t, PetalID::kNumPetals> seen_petals;
+    extern std::array<uint8_t, MobID::kNumMobs> seen_mobs;
+    
     extern double timestamp;
     
     extern float score;
@@ -30,8 +35,6 @@ namespace Game {
 
     extern PetalID::T cached_loadout[2 * MAX_SLOT_COUNT];
 
-    extern uint8_t seen_petals[PetalID::kNumPetals];
-    extern uint8_t seen_mobs[MobID::kNumMobs];
     extern uint8_t loadout_count;
     extern uint8_t simulation_ready;
     extern uint8_t on_game_screen;
