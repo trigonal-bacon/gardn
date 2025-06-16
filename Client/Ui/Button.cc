@@ -42,7 +42,7 @@ void Button::on_event(uint8_t event) {
 }
 
 ToggleButton::ToggleButton(float w, uint8_t *t) : 
-    Element(w,w,{ .fill = 0xff555555, .stroke_hsv = 0.6, .line_width = 4, .round_radius = 5 }), toggler(t) {
+    Element(w,w,{ .fill = 0xff666666, .stroke_hsv = 0.4, .line_width = 4, .round_radius = 5 }), toggler(t) {
     lerp_toggle = 0;
 }
 

@@ -105,10 +105,13 @@ void Entity::write(Writer *writer, uint8_t create) {
 template<>
 void Entity::read<true>(Reader *reader) {
     components = reader->read<uint32_t>();
-    #define SINGLE(component, name, type) { reader->read<type>(name); }
+    #define SINGLE(component, name, type) { reader->read<type>(name); BIT_SET_ARR(state, k##name); }
     #define MULTIPLE(component, name, type, amt) { \
-        for (uint32_t n = 0; n < amt; ++n) \
+        BIT_SET_ARR(state, k##name); \
+        for (uint32_t n = 0; n < amt; ++n) { \
+            BIT_SET_ARR(state_per_##name, n); \
             reader->read<type>(name[n]); \
+        } \
     }
     #define COMPONENT(name) if (has_component(k##name)) { FIELDS_##name }
     PERCOMPONENT

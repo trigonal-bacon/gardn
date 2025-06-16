@@ -13,7 +13,7 @@ using namespace Ui;
 
 Element *Ui::make_title_main_screen() {
     Ui::Element *title = new Ui::VContainer({
-        new Ui::StaticText(60, "gardn.clone"),
+        new Ui::StaticText(60, "the gardn project"),
         new Ui::Element(0, 60),
         new Ui::Choose(
             new Ui::StaticText(40, "Connecting..."),
