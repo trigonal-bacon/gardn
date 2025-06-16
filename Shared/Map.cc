@@ -154,7 +154,7 @@ void Map::spawn_random_mob() {
 
 std::array<std::vector<float>, MobID::kNumMobs> const Map::get_auto_petal_drops() {
     std::array<std::vector<float>, MobID::kNumMobs> ret = {};
-    double RARITY_MULT[RarityID::kNumRarities] = {50000,15000,2500,100,5,2.5,1};
+    double const RARITY_MULT[RarityID::kNumRarities] = {60000,20000,2500,100,5,2.5,1};
     double MOB_SPAWN_RATES[MobID::kNumMobs] = {0};
     double PETAL_AGGREGATE_DROPS[PetalID::kNumPetals] = {0};
     for (struct ZoneDefinition const &zone : MAP) {

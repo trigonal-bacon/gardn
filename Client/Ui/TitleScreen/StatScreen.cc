@@ -67,7 +67,10 @@ void TitlePetalSlot::on_render(Renderer &ctx) {
 }
 
 void TitlePetalSlot::on_event(uint8_t event) {
-    uint8_t id = Game::cached_loadout[pos];
+    if (!Game::simulation.ent_exists(Game::camera_id))
+        return;
+    Entity const &camera = Game::simulation.get_ent(Game::camera_id);
+    uint8_t id = camera.inventory[pos];
     if (event != kFocusLost && id != PetalID::kNone) {
         rendering_tooltip = 1;
         tooltip = Ui::UiLoadout::petal_tooltips[id];
