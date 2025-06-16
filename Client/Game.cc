@@ -9,7 +9,7 @@
 #include <cmath>
 
 static double g_last_time = 0;
-const float max_transition_circle = 2500;
+const float MAX_TRANSITION_CIRCLE = 2500;
 
 static int _c = setup_canvas();
 static int _i = setup_inputs();
@@ -114,7 +114,7 @@ uint8_t Game::in_game() {
 }
 
 uint8_t Game::should_render_title_ui() {
-    return transition_circle < max_transition_circle;
+    return transition_circle < MAX_TRANSITION_CIRCLE;
 }
 
 uint8_t Game::should_render_game_ui() {
@@ -156,9 +156,9 @@ void Game::tick(double time) {
     }
 
     if (in_game())
-        transition_circle = fclamp(transition_circle * 1.05 + 5, 0, max_transition_circle);
+        transition_circle = fclamp(transition_circle * powf(1.05, Ui::dt * 60 / 1000) + Ui::dt / 5, 0, MAX_TRANSITION_CIRCLE);
     else 
-        transition_circle = fclamp(transition_circle / 1.05 - 5, 0, max_transition_circle);
+        transition_circle = fclamp(transition_circle / powf(1.05, Ui::dt * 60 / 1000) - Ui::dt / 5, 0, MAX_TRANSITION_CIRCLE);
 
     window.refactor();
     window.poll_events();

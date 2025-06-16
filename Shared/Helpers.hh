@@ -42,9 +42,11 @@
 
 #define BIT_AT(val, bit) (((val) >> (bit)) & 1)
 #define BIT_SET(val, bit) (val |= (1 << (bit)));
+#define BIT_UNSET(val, bit) (val &= ~(1 << (bit)));
 #define BIT_SHIFT(bit, shift) ((bit) << (shift))
 #define BIT_AT_ARR(val, bit) (((val[(bit) >> 3]) >> ((bit) & 7)) & 1)
 #define BIT_SET_ARR(val, bit) (val[(bit) >> 3]) |= (1 << ((bit) & 7));
+#define BIT_UNSET_ARR(val, bit) (val[(bit) >> 3]) &= ~(1 << ((bit) & 7));
 
 
 constexpr uint32_t bit_count(uint32_t v) {return 32 - __builtin_clz(v - 1); };

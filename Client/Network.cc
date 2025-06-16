@@ -55,7 +55,7 @@ void Game::send_inputs() {
     writer.write<float>(y);
     uint8_t attack = Input::keys_pressed.contains('\x20') || BIT_AT(Input::mouse_buttons_state, Input::LeftMouse);
     uint8_t defend = Input::keys_pressed.contains('\x10') || BIT_AT(Input::mouse_buttons_state, Input::RightMouse);
-    writer.write<uint8_t>(attack | (defend << 1));
+    writer.write<uint8_t>((attack << InputFlags::kAttacking) | (defend << InputFlags::kDefending));
     socket.send(writer.packet, writer.at - writer.packet);
 }
 

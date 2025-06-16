@@ -144,7 +144,7 @@ void Map::spawn_random_mob() {
             MobID::T spawn_id = s.id;
             Entity &ent = alloc_mob(spawn_id, x, y, NULL_ENTITY);
             ent.zone = zone_id;
-            ent.flags |= EntityFlags::SpawnedFromZone;
+            BIT_SET(ent.flags, EntityFlags::kSpawnedFromZone);
             ZONE_MOB_COUNTS[zone_id]++;
             return;
         }

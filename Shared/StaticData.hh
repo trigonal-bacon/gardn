@@ -119,8 +119,7 @@ namespace MobID {
     };
 };
 
-class RarityID {
-public:
+namespace RarityID {
     enum {
         kCommon,
         kUnusual,
@@ -133,8 +132,7 @@ public:
     };
 };
 
-class AIState {
-public:
+namespace AIState {
     enum {
         kIdle,
         kIdleMoving,
@@ -142,6 +140,36 @@ public:
         kBasicAggro
     };
 };
+
+namespace EntityFlags {
+    enum {
+        kIsDespawning,
+        kNoFriendlyCollision,
+        kDieOnParentDeath,
+        kSpawnedFromZone,
+        kNoDrops
+    };
+};
+
+namespace FaceFlags {
+    enum {
+        kAttacking,
+        kDefending,
+        kPoisoned,
+        kDandelioned,
+        kThirdEye,
+        kAntennae,
+        kObserver,
+        kCutter
+    };
+};
+
+namespace InputFlags {
+    enum {
+        kAttacking,
+        kDefending
+    };
+}
 
 struct PoisonDamage {
     float damage;

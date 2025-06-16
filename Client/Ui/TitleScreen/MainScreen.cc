@@ -25,7 +25,7 @@ Element *Ui::make_title_main_screen() {
                             ctx.translate(0, (elt->animation - 1) * ctx.height * 0.6);
                         },
                         .should_render = [](){
-                            return !Game::in_game() && Game::transition_circle == 0;
+                            return !Game::in_game() && Game::transition_circle <= 0;
                         }
                     }),
                     new Ui::Button(110, 36, 

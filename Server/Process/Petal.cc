@@ -20,17 +20,17 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
         float rot_amt = petal.petal_id == PetalID::kWing ? 10.0 : 1.0;
         if (petal.id.id % 2) petal.set_angle(petal.angle + rot_amt / TPS);
         else petal.set_angle(petal.angle - rot_amt / TPS);
-    } else if (petal_data.attributes.rotation_style == PetalAttributes::kFollowRot && !(petal.flags & EntityFlags::IsDespawning)) {
+    } else if (petal_data.attributes.rotation_style == PetalAttributes::kFollowRot && !(BIT_AT(petal.flags, EntityFlags::kIsDespawning))) {
         Vector delta(petal.x - player.x, petal.y - player.y);
         petal.set_angle(delta.angle());
     }
-    if (petal.flags & EntityFlags::IsDespawning) {
+    if (BIT_AT(petal.flags, EntityFlags::kIsDespawning)) {
         switch (petal.petal_id) {
             case PetalID::kRose:
             case PetalID::kDahlia:
             case PetalID::kAzalea: {
                 if (player.health == player.max_health) {
-                    petal.flags &= ~EntityFlags::IsDespawning;
+                    BIT_UNSET(petal.flags, EntityFlags::kIsDespawning);
                     return;
                 }
                 petal.despawn_tick = 10; //prevent despawn
@@ -72,26 +72,26 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
                         entity_set_despawn_tick(petal, 10); //doesn't matter what it is
                     break;
                 case PetalID::kMissile:
-                    if (BIT_AT(player.input, 0)) {
+                    if (BIT_AT(player.input, InputFlags::kAttacking)) {
                         petal.acceleration.unit_normal(petal.angle).set_magnitude(4 * PLAYER_ACCELERATION);
                         entity_set_despawn_tick(petal, 3 * TPS);
                     }
                     break;
                 case PetalID::kTriweb:
                 case PetalID::kWeb: {
-                    if (BIT_AT(player.input, 0)) {
+                    if (BIT_AT(player.input, InputFlags::kAttacking)) {
                         Vector delta(petal.x - player.x, petal.y - player.y);
                         petal.friction = DEFAULT_FRICTION;
                         float angle = delta.angle();
                         if (petal.petal_id == PetalID::kTriweb) angle += frand() - 0.5;
                         petal.acceleration.unit_normal(angle).set_magnitude(30 * PLAYER_ACCELERATION);
                         entity_set_despawn_tick(petal, 0.6 * TPS);
-                    } else if (BIT_AT(player.input, 1))
+                    } else if (BIT_AT(player.input, InputFlags::kDefending))
                         entity_set_despawn_tick(petal, 0.6 * TPS);
                     break;
                 }
                 case PetalID::kBubble:
-                    if (BIT_AT(player.input, 1)) {
+                    if (BIT_AT(player.input, InputFlags::kDefending)) {
                         Vector v(player.x - petal.x, player.y - petal.y);
                         v.set_magnitude(PLAYER_ACCELERATION * 15);
                         player.acceleration += v;
@@ -99,14 +99,14 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
                     }
                     break;
                 case PetalID::kPollen:
-                    if (BIT_AT(player.input, 0) || BIT_AT(player.input, 1)) {
+                    if (BIT_AT(player.input, InputFlags::kAttacking) || BIT_AT(player.input, InputFlags::kDefending)) {
                         petal.friction = DEFAULT_FRICTION;
                         entity_set_despawn_tick(petal, 4.0 * TPS);
                     }
                     break;
                 case PetalID::kPeas:
                 case PetalID::kPoisonPeas:
-                    if (BIT_AT(player.input, 0)) {
+                    if (BIT_AT(player.input, InputFlags::kAttacking)) {
                         Vector delta(petal.x - player.x, petal.y - player.y);
                         petal.friction = DEFAULT_FRICTION;
                         petal.acceleration.unit_normal(delta.angle()).set_magnitude(25 * PLAYER_ACCELERATION);
@@ -114,7 +114,7 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
                     }
                     break;
                 case PetalID::kMoon: {
-                    if (BIT_AT(player.input, 0)) {
+                    if (BIT_AT(player.input, InputFlags::kAttacking)) {
                         Vector delta(petal.x - player.x, petal.y - player.y);
                         petal.friction = 0;
                         petal.acceleration.unit_normal(delta.angle() + M_PI / 3).set_magnitude(10 * PLAYER_ACCELERATION);

@@ -34,7 +34,7 @@ static struct _PlayerBuffs petal_passive_buffs(Simulation *sim, Entity &player) 
 
         if (slot.id == PetalID::kAntennae) {
             buffs.has_antennae = 1;
-            buffs.extra_vision = fclamp(0.25,buffs.extra_vision,1);
+            buffs.extra_vision = fclamp(0.4,buffs.extra_vision,1);
         } else if (slot.id == PetalID::kObserver) {
             buffs.has_observer = 1;
             buffs.extra_vision = 0.75;
@@ -48,7 +48,7 @@ static struct _PlayerBuffs petal_passive_buffs(Simulation *sim, Entity &player) 
         if (!player.loadout[i].already_spawned) continue;
         if (slot.id == PetalID::kLeaf) 
             buffs.heal += petal_data.attributes.constant_heal / TPS;
-        else if (slot.id == PetalID::kYucca && BIT_AT(player.input, 1) && !BIT_AT(player.input, 0)) 
+        else if (slot.id == PetalID::kYucca && BIT_AT(player.input, InputFlags::kDefending) && !BIT_AT(player.input, InputFlags::kAttacking)) 
             buffs.heal += petal_data.attributes.constant_heal / TPS;
         if (slot.id == PetalID::kFaster) 
             buffs.extra_rot += 1.0;
@@ -142,7 +142,7 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
             if (sim->ent_alive(petal_slot.ent_id)) {
                 Entity &petal = sim->get_ent(petal_slot.ent_id);
                 //only do this if petal not despawning (detached <-> despawn_tick != 0)
-                if (petal.has_component(kPetal) && !(petal.flags & EntityFlags::IsDespawning)) {
+                if (petal.has_component(kPetal) && !(BIT_AT(petal.flags, EntityFlags::kIsDespawning))) {
                     //petal rotation behavior
                     Vector wanting;
                     Vector delta(player.x - petal.x, player.y - petal.y);
@@ -150,7 +150,7 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
                         wanting.unit_normal(2 * M_PI * rot_pos / player.rotation_count + player.heading_angle);
 
                     float range = 60;
-                    if (BIT_AT(player.input, 0)) { 
+                    if (BIT_AT(player.input, InputFlags::kAttacking)) { 
                         if (petal_data.attributes.defend_only == 0) 
                             range = 120 + buffs.extra_range; 
                         if (petal.petal_id == PetalID::kWing) {
@@ -159,7 +159,7 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
                             range += wave * 120;
                         }
                     }
-                    else if (BIT_AT(player.input, 1)) range = 40;
+                    else if (BIT_AT(player.input, InputFlags::kDefending)) range = 40;
                     wanting *= range;
                     if (petal_data.attributes.clump_radius > 0) {
                         Vector secondary;
@@ -177,7 +177,8 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
                         mob.set_parent(player.id);
                         mob.base_entity = player.id;
                         mob.set_score(0);
-                        mob.flags |= EntityFlags::DieOnParentDeath | EntityFlags::NoDrops;
+                        BIT_SET(mob.flags, EntityFlags::kDieOnParentDeath)
+                        BIT_SET(mob.flags, EntityFlags::kNoDrops)
                         if (petal_data.attributes.spawn_count == 0) {
                             petal_slot.ent_id = mob.id;
                             sim->request_delete(petal.id);
@@ -200,14 +201,16 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
         if (petal_data.attributes.clump_radius > 0) ++rot_pos;
         player.set_loadout_reloads(i, min_reload * 255);
     };
-    if (BIT_AT(player.input, 0)) player.set_face_flags(player.face_flags | 1);
-    else if (BIT_AT(player.input, 1)) player.set_face_flags(player.face_flags | 2);
-    if (player.poison_ticks > 0) player.set_face_flags(player.face_flags | 4);
-    if (player.dandy_ticks > 0) player.set_face_flags(player.face_flags | 8);
-    if (buffs.extra_range > 0) player.set_face_flags(player.face_flags | 16);
-    if (buffs.has_antennae) player.set_face_flags(player.face_flags | 32);
-    if (buffs.has_observer) player.set_face_flags(player.face_flags | 64);
-    if (buffs.has_cutter) player.set_face_flags(player.face_flags | 128);
+    if (BIT_AT(player.input, InputFlags::kAttacking)) 
+        player.set_face_flags(player.face_flags | (1 << FaceFlags::kAttacking));
+    else if (BIT_AT(player.input, InputFlags::kDefending))
+        player.set_face_flags(player.face_flags | (1 << FaceFlags::kDefending));
+    if (player.poison_ticks > 0) player.set_face_flags(player.face_flags | (1 << FaceFlags::kPoisoned));
+    if (player.dandy_ticks > 0) player.set_face_flags(player.face_flags | (1 << FaceFlags::kDandelioned));
+    if (buffs.extra_range > 0) player.set_face_flags(player.face_flags | (1 << FaceFlags::kThirdEye));
+    if (buffs.has_antennae) player.set_face_flags(player.face_flags | (1 << FaceFlags::kAntennae));
+    if (buffs.has_observer) player.set_face_flags(player.face_flags | (1 << FaceFlags::kObserver));
+    if (buffs.has_cutter) player.set_face_flags(player.face_flags | (1 << FaceFlags::kCutter));
     if (buffs.yinyang_count < MAX_SLOT_COUNT) {
         switch (buffs.yinyang_count % 3) {
             case 0:

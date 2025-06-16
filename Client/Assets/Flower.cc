@@ -1,15 +1,15 @@
 #include <Client/Assets/Assets.hh>
 
 void draw_static_flower(Renderer &ctx, FlowerRenderAttributes attributes) {
-    if (BIT_AT(attributes.face_flags, 7)) {
+    if (BIT_AT(attributes.face_flags, FaceFlags::kCutter)) {
         RenderContext context(&ctx);
         ctx.scale(attributes.radius / 25);
         ctx.rotate(attributes.cutter_angle);
         draw_static_petal_single(PetalID::kCutter, ctx);
     }
     uint32_t base_color = 0xffffe763;
-    if (BIT_AT(attributes.face_flags, 2)) base_color = 0xffce76db;
-    else if (BIT_AT(attributes.face_flags, 3)) base_color = Renderer::MIX(base_color, 0xffcfcfcf, 0.5);
+    if (BIT_AT(attributes.face_flags, FaceFlags::kPoisoned)) base_color = 0xffce76db;
+    else if (BIT_AT(attributes.face_flags, FaceFlags::kDandelioned)) base_color = Renderer::MIX(base_color, 0xffcfcfcf, 0.5);
     else if (BIT_AT(attributes.flags, 0)) base_color = 0xff999999;
     ctx.set_stroke(Renderer::HSV(base_color, 0.8));
     ctx.set_fill(base_color);
@@ -58,7 +58,7 @@ void draw_static_flower(Renderer &ctx, FlowerRenderAttributes attributes) {
     ctx.move_to(-6, 10);
     ctx.qcurve_to(0, attributes.mouth, 6, 10);
     ctx.stroke();
-    if (attributes.mouth <= 8 && BIT_AT(attributes.face_flags, 0))
+    if (attributes.mouth <= 8 && BIT_AT(attributes.face_flags, FaceFlags::kAttacking))
     {
         RenderContext context(&ctx);
         ctx.translate(0, -attributes.mouth - 8);
@@ -70,19 +70,19 @@ void draw_static_flower(Renderer &ctx, FlowerRenderAttributes attributes) {
         ctx.line_to(-12, 0);
         ctx.fill();
     }
-    if (BIT_AT(attributes.face_flags, 4))
+    if (BIT_AT(attributes.face_flags, FaceFlags::kThirdEye))
     {
         RenderContext g(&ctx);
         ctx.translate(0, -14);
         ctx.scale(0.5);
         draw_static_petal(PetalID::kThirdEye, ctx);
     }
-    if (BIT_AT(attributes.face_flags, 6))
+    if (BIT_AT(attributes.face_flags, FaceFlags::kObserver))
     {
         RenderContext g(&ctx);
         ctx.translate(0, -35);
         draw_static_petal(PetalID::kObserver, ctx);
-    } else if (BIT_AT(attributes.face_flags, 5))
+    } else if (BIT_AT(attributes.face_flags, FaceFlags::kAntennae))
     {
         RenderContext g(&ctx);
         ctx.translate(0, -35);

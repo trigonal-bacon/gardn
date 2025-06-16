@@ -41,7 +41,7 @@ SINGLE(Physics, deletion_tick, uint8_t)
 #define FIELDS_Camera \
 SINGLE(Camera, player, EntityID) \
 SINGLE(Camera, respawn_level, uint8_t) \
-MULTIPLE(Camera, inventory, uint8_t, 2 * MAX_SLOT_COUNT) \
+MULTIPLE(Camera, inventory, PetalID::T, 2 * MAX_SLOT_COUNT) \
 SINGLE(Camera, killed_by, std::string) \
 SINGLE(Camera, camera_x, Float) \
 SINGLE(Camera, camera_y, Float) \
@@ -56,21 +56,21 @@ SINGLE(Flower, eye_angle, float) \
 SINGLE(Flower, overlevel_timer, float) \
 SINGLE(Flower, loadout_count, uint32_t) \
 SINGLE(Flower, face_flags, uint8_t) \
-MULTIPLE(Flower, loadout_ids, uint8_t, 2 * MAX_SLOT_COUNT) \
+MULTIPLE(Flower, loadout_ids, PetalID::T, 2 * MAX_SLOT_COUNT) \
 MULTIPLE(Flower, loadout_reloads, uint8_t, MAX_SLOT_COUNT)
 
 #define FIELDS_Petal \
-SINGLE(Petal, petal_id, uint8_t)
+SINGLE(Petal, petal_id, PetalID::T)
 
 #define FIELDS_Health \
 SINGLE(Health, health_ratio, Float) \
 SINGLE(Health, damaged, uint8_t)
 
 #define FIELDS_Mob \
-SINGLE(Mob, mob_id, uint8_t)
+SINGLE(Mob, mob_id, MobID::T)
 
 #define FIELDS_Drop \
-SINGLE(Drop, drop_id, uint8_t)
+SINGLE(Drop, drop_id, PetalID::T)
 
 #define FIELDS_Segmented \
 SINGLE(Segmented, is_tail, uint8_t)
@@ -140,16 +140,6 @@ SINGLE(Name, nametag_visible, uint8_t)
     SINGLE(animation, float, =0) \
     SINGLE(damage_flash, float, =0)
 #endif
-
-namespace EntityFlags {
-    enum {
-        IsDespawning = 1 << 0,
-        NoFriendlyCollision = 1 << 1,
-        DieOnParentDeath = 1 << 2,
-        SpawnedFromZone = 1 << 3,
-        NoDrops = 1 << 4
-    };
-};
 
 class EntityID {
 public:

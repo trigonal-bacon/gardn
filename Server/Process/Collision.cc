@@ -10,7 +10,7 @@ static bool should_interact(Entity const &ent1, Entity const &ent2) {
     //if (ent1.has_component(kPetal) || ent2.has_component(kPetal)) return false;
     if (ent1.pending_delete || ent2.pending_delete) return false;
     if (!(ent1.team == ent2.team)) return true;
-    if ((ent1.flags | ent2.flags) & EntityFlags::NoFriendlyCollision) return false;
+    if (BIT_AT((ent1.flags | ent2.flags), EntityFlags::kNoFriendlyCollision)) return false;
     //if (ent1.has_component(kPetal) || ent2.has_component(kPetal)) return false;
     if (ent1.has_component(kMob) && ent2.has_component(kMob)) return true;
     return false;
@@ -25,7 +25,7 @@ static void pickup_drop(Simulation *sim, Entity &player, Entity &drop) {
         player.set_loadout_ids(i, drop.drop_id);
         drop.set_x(player.x);
         drop.set_y(player.y);
-        drop.flags &= ~EntityFlags::IsDespawning;
+        BIT_UNSET(drop.flags, EntityFlags::kIsDespawning);
         sim->request_delete(drop.id);
         //peaceful transfer, no petal tracking needed
         return;

@@ -323,7 +323,7 @@ static void tick_digger(Simulation *sim, Entity &ent) {
         v.set_magnitude(PLAYER_ACCELERATION * 0.95);
         ent.acceleration = v;
         ent.set_eye_angle(v.angle());
-        ent.input = 1 << 0;
+        BIT_SET(ent.input, InputFlags::kAttacking);
         return;
     } else {
         if (!(ent.target == NULL_ENTITY)) {
@@ -357,7 +357,7 @@ void tick_ai_behavior(Simulation *sim, Entity &ent) {
     if (sim->ent_alive(ent.seg_head)) return;
     if (!(ent.parent == NULL_ENTITY)) { 
         if (!sim->ent_alive(ent.parent)) {
-            if (ent.flags & EntityFlags::DieOnParentDeath)
+            if (BIT_AT(ent.flags, EntityFlags::kDieOnParentDeath))
                 sim->request_delete(ent.id);
             ent.parent = NULL_ENTITY;
         } else {
@@ -412,7 +412,7 @@ void tick_ai_behavior(Simulation *sim, Entity &ent) {
                 behind.unit_normal(ent.angle + M_PI);
                 behind *= ent.radius;
                 Entity &spawned = alloc_mob(MobID::kSoldierAnt, ent.x + behind.x, ent.y + behind.y, ent.team);
-                spawned.flags |= EntityFlags::IsDespawning;
+                BIT_SET(spawned.flags, EntityFlags::kIsDespawning);
                 spawned.despawn_tick = 10 * TPS;
                 spawned.set_parent(ent.parent);
             }

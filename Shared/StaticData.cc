@@ -134,7 +134,7 @@ extern struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
         .rotation_style = PetalAttributes::kNoRot,
         .spawns = MobID::kBeetle
     }},
-    {"Azalea", "Extremely powerful rose, almost unheard of",
+    {"Rose", "Extremely powerful rose, almost unheard of",
         5.0, 5.0, 10.0, 3.5, 1, RarityID::kEpic, { 
         .secondary_reload = 1.0,
         .burst_heal = 22,
@@ -366,8 +366,8 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
 extern uint32_t const RARITY_COLORS[RarityID::kNumRarities] = { 
     0xff7eef6d, 0xffffe65d, 0xff4d52e3, 
     0xff861fde, 0xffde1f1f, 0xff1fdbde,
-    0xffff2b75
- }; // 0xfff70fb6};
+    0xffde1f65
+ }; // 0xffff2b75, 0xfff70fb6};
 
 char const *RARITY_NAMES[RarityID::kNumRarities] = {
     "Common",

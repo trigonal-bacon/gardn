@@ -44,7 +44,7 @@ static Entity &__alloc_mob(MobID::T mob_id, float x, float y, EntityID const tea
     mob.mass = 1 + mob.radius * mob.radius / 100;
     if (data.attributes.stationary) mob.mass *= 10000;
     if (mob_id == MobID::kAntHole)
-        mob.flags |= EntityFlags::NoFriendlyCollision;
+        BIT_SET(mob.flags, EntityFlags::kNoFriendlyCollision);
     
     mob.add_component(kRelations);
     mob.set_team(team);

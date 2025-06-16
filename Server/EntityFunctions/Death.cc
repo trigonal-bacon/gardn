@@ -57,16 +57,16 @@ static void __add_score(Simulation *sim, EntityID const killer_id, Entity const 
 
 void entity_on_death(Simulation *sim, Entity const &ent) {
     //don't do on_death for any despawned entity
-    uint8_t natural_despawn = (ent.flags & EntityFlags::IsDespawning) && ent.despawn_tick == 0;
+    uint8_t natural_despawn = BIT_AT(ent.flags, EntityFlags::kIsDespawning) && ent.despawn_tick == 0;
     if (ent.has_component(kScore) && sim->ent_exists(ent.last_damaged_by) && !natural_despawn) {
         EntityID killer_id = sim->get_ent(ent.last_damaged_by).base_entity;
         __add_score(sim, killer_id, ent);
     }
     if (ent.has_component(kMob)) {
         //if (!(ent.team == NULL_ENTITY)) return;
-        if (ent.flags & EntityFlags::SpawnedFromZone)
+        if (BIT_AT(ent.flags, EntityFlags::kSpawnedFromZone))
             Map::remove_mob(ent.zone);
-        if (!natural_despawn && !(ent.flags & EntityFlags::NoDrops)) {
+        if (!natural_despawn && !(BIT_AT(ent.flags, EntityFlags::kNoDrops))) {
             struct MobData const &mob_data = MOB_DATA[ent.mob_id];
             std::vector<PetalID::T> success_drops = {};
             std::vector<float> const &drop_chances = MOB_DROP_CHANCES[ent.mob_id];
@@ -146,7 +146,7 @@ void entity_on_death(Simulation *sim, Entity const &ent) {
             camera.set_inventory(i, PetalID::kBasic);
         }
     } else if (ent.has_component(kDrop)) {
-        if (ent.flags & EntityFlags::IsDespawning)
+        if (BIT_AT(ent.flags, EntityFlags::kIsDespawning))
             PetalTracker::remove_petal(ent.drop_id);
     }
 }

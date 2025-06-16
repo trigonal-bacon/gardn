@@ -110,7 +110,7 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
                 player.acceleration = accel;
             }
             VALIDATE(validator.validate_uint8());
-            player.input = reader.read<uint8_t>() & 3;
+            player.input = reader.read<uint8_t>();
             break;
         }
         case kServerbound::kClientSpawn: {

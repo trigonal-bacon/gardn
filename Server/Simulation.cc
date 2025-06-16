@@ -103,7 +103,7 @@ void Simulation::post_tick() {
         Entity &ent = get_ent(active_entities[i]);
         ent.reset_protocol();
         ++ent.lifetime;
-        if (ent.flags & EntityFlags::IsDespawning) {
+        if (BIT_AT(ent.flags, EntityFlags::kIsDespawning)) {
             if (ent.despawn_tick == 0)
                 request_delete(ent.id);
             else
