@@ -5,8 +5,9 @@
 namespace Ui {
     class Button : public Element {
         void (*on_click)(Element *, uint8_t);
+        bool (*should_darken)();
     public:
-        Button(float, float, Element *, void (Element *, uint8_t) = [](Element *, uint8_t){}, Style = { .fill = 0xffffffff, .stroke_hsv = 0.8 });
+        Button(float, float, Element *, void (Element *, uint8_t) = [](Element *, uint8_t){}, bool (void) = nullptr, Style = { .fill = 0xffffffff, .stroke_hsv = 0.8 });
 
         virtual void on_render(Renderer &) override;
         virtual void refactor() override;

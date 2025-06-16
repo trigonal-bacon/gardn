@@ -37,9 +37,9 @@ float angle_lerp(float start, float end, float t)
 }
 
 std::string format_pct(float pct) {
-    if (pct >= 1) return std::format("{:.0f}%", pct);
-    if (pct >= 0.1) return std::format("{:.1f}%", pct);
-    if (pct >= 0.01) return std::format("{:.2f}%", pct);
+    if (pct >= 0.9) return std::format("{:.0f}%", pct);
+    if (pct >= 0.09) return std::format("{:.1f}%", pct);
+    if (pct >= 0.009) return std::format("{:.2f}%", pct);
     return std::format("{:.3f}%", pct);
 }
 

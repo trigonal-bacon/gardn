@@ -32,6 +32,21 @@ static Element *make_entries(std::initializer_list<std::string const> contents) 
 
 static Element *make_changelog_contents() {
     Element *elt = new Ui::VContainer({
+        make_date("June 15th 2025"),
+        make_entries({
+            "Finished base game",
+            "Added 3 new petals",
+            "Drop rates are now autobalanced",
+            "Spawning a petal for the first time now takes 2.5 extra seconds"
+        }),
+        make_divider(),
+        make_date("June 11th 2025"),
+        make_entries({
+            "Added 1 new mob",
+            "Balanced some mob stats",
+            "Revamped petal descriptions"
+        }),
+        make_divider(),
         make_date("June 7th 2025"),
         make_entries({
             "Finished changelog",
@@ -39,29 +54,17 @@ static Element *make_changelog_contents() {
             "Added settings and mob gallery"
         }),
         make_divider(),
-        make_date("February 6th 2020"),
+        make_date("June 6th 2025"),
         make_entries({
-            "Added Petal Gallery to keep track of which petals you've seen",
-            "New petal announcements will no longer include their names, to make it a bit more mysterious",
-            "Added 1 new petal"
+            "Added Changelog",
+            "Added 2 new petals",
+            "Added 1 new mob",
         }),
         make_divider(),
-        make_date("February 3rd 2020"),
+        make_date("March 23 2025"),
         make_entries({
-            "Added Ants",
-            "A few balance tweaks"
-        }),
-        make_divider(),
-        make_date("February 1st 2020"),
-        make_entries({
-            "Changed map background",
-            "Early levels are now a bit slower",
-            "Added cacti to medium zone",
-            "Added Massive Beetle",
-            "Added Massive Centipede",
-            "Buffed Iris",
-            "Buffed Peas",
-            "Nerfed Rose"
+            "Game is now playable",
+            "Added spawner petals"
         }),
         make_divider(),
         new Ui::StaticText(14, "Older changelog entries not available")

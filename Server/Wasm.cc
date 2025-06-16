@@ -16,7 +16,7 @@ static uint8_t INCOMING_BUFFER[MAX_BUFFER_LEN] = {0};
 
 extern "C" {
     void on_connect(int ws_id) {
-        std::cout << "client conection\n";
+        std::cout << "client connection\n";
         WebSocket *ws = new WebSocket(ws_id);
         Server::clients.insert(&ws->client);
     }

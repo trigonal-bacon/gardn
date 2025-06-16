@@ -3,6 +3,7 @@
 #include <Shared/Helpers.hh>
 #include <Shared/StaticData.hh>
 
+#include <array>
 #include <cstdint>
 #include <vector>
 
@@ -21,6 +22,7 @@ namespace Map {
         float const w;
         float const h;
         float const density;
+        float const drop_multiplier;
         std::vector<struct SpawnChance> const spawns;
         uint32_t const difficulty;
         uint32_t const color;
@@ -31,6 +33,7 @@ namespace Map {
 
     extern uint32_t difficulty_at_level(uint32_t);
     extern uint32_t get_zone_from_pos(float, float);
+    extern std::array<std::vector<float>, MobID::kNumMobs> const get_auto_petal_drops();
     #ifdef SERVERSIDE
     extern void remove_mob(uint32_t);
     extern void spawn_random_mob();

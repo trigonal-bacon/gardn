@@ -5,15 +5,17 @@
 
 using namespace Ui;
 
-Button::Button(float w, float h, Element *l, void x(Element *, uint8_t), Style s) :
-    Element(w, h, s), on_click(x)
+Button::Button(float w, float h, Element *l, void x(Element *, uint8_t), bool y (void), Style s) :
+    Element(w, h, s), on_click(x), should_darken(y)
 {
     if (l != nullptr) children.push_back(l);
 }
 
 void Button::on_render(Renderer &ctx) {
     if (style.fill != 0x00000000) {
-        if (focus_state == kMouseHover)
+        if (should_darken != nullptr && should_darken())
+            ctx.set_fill(Renderer::HSV(style.fill, 0.9));
+        else if (focus_state == kMouseHover)
             ctx.set_fill(Renderer::HSV(style.fill, 1.1));
         else if (focus_state == kMouseDown)
             ctx.set_fill(Renderer::HSV(style.fill, 0.9));

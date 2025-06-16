@@ -126,7 +126,7 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
                 petal_slot.ent_id = NULL_ENTITY;
                 uint32_t reload_time = (petal_data.reload * TPS);
                 if (!slot.already_spawned) reload_time += (TPS * 5 / 2);
-                float this_reload = (float) petal_slot.reload / reload_time;
+                float this_reload = reload_time == 0 ? 1 : (float) petal_slot.reload / reload_time;
                 if (this_reload < min_reload) min_reload = this_reload;
                 if (petal_slot.reload >= reload_time) {
                     Entity &petal = alloc_petal(slot.id, player);
@@ -136,7 +136,8 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
                 } 
                 else
                     ++petal_slot.reload;
-            } else {
+            } 
+            if (sim->ent_alive(petal_slot.ent_id)) {
                 Entity &petal = sim->get_ent(petal_slot.ent_id);
                 //only do this if petal not despawning (detached <-> despawn_tick != 0)
                 if (petal.has_component(kPetal) && !(petal.flags & EntityFlags::IsDespawning)) {

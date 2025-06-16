@@ -2,6 +2,7 @@
 
 #include <Shared/Helpers.hh>
 
+#include <array>
 #include <cstdint>
 #include <vector>
 
@@ -80,6 +81,8 @@ namespace PetalID {
         kCutter,
         kYinYang,
         kYggdrasil,
+        kRice,
+        kBone,
         kNumPetals
     };
 };
@@ -176,14 +179,9 @@ struct PetalData {
 
 struct MobAttributes {
     float aggro_radius = 600;
-    uint8_t segments;
+    uint8_t segments = 1;
     uint8_t stationary;
     struct PoisonDamage poison_damage;
-};
-
-struct MobDrop {
-    PetalID::T id;
-    float chance;
 };
 
 struct MobData {
@@ -194,7 +192,7 @@ struct MobData {
     float damage;
     RangeValue radius;
     uint32_t xp;
-    std::vector<MobDrop> const drops;
+    std::vector<PetalID::T> const drops;
     struct MobAttributes attributes;
 };
 
@@ -203,6 +201,8 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs];
 
 extern uint32_t const RARITY_COLORS[RarityID::kNumRarities];
 extern char const *RARITY_NAMES[RarityID::kNumRarities];
+
+extern std::array<std::vector<float>, MobID::kNumMobs> const MOB_DROP_CHANCES;
 
 extern uint32_t score_to_pass_level(uint32_t);
 extern uint32_t score_to_level(uint32_t);

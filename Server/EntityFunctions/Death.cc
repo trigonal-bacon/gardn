@@ -68,10 +68,11 @@ void entity_on_death(Simulation *sim, Entity const &ent) {
             Map::remove_mob(ent.zone);
         if (!natural_despawn && !(ent.flags & EntityFlags::NoDrops)) {
             struct MobData const &mob_data = MOB_DATA[ent.mob_id];
-            std::vector<struct MobDrop> const &drops = mob_data.drops;
             std::vector<PetalID::T> success_drops = {};
-            for (MobDrop const &d : drops) 
-                if (frand() < d.chance) success_drops.push_back(d.id);
+            std::vector<float> const &drop_chances = MOB_DROP_CHANCES[ent.mob_id];
+            for (uint32_t i = 0; i < mob_data.drops.size(); ++i) 
+                if (frand() < drop_chances[i]) success_drops.push_back(mob_data.drops[i]);
+
             __alloc_drops(success_drops, ent.x, ent.y);
         }
         if (ent.mob_id == MobID::kAntHole && ent.team == NULL_ENTITY && frand() < 0.10) { 
@@ -108,7 +109,9 @@ void entity_on_death(Simulation *sim, Entity const &ent) {
         if (numDrops > 3)
             numDrops = 3;
         for (uint32_t i = 0; i < numDrops; ++i) {
-            success_drops.push_back(potential.back());
+            PetalID::T p_id = potential.back();
+            if (PETAL_DATA[p_id].rarity >= RarityID::kRare && frand() < 0.05) p_id = PetalID::kPollen;
+            success_drops.push_back(p_id);
             potential.pop_back();
         }
         __alloc_drops(success_drops, ent.x, ent.y);

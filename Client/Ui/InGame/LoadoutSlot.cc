@@ -48,14 +48,7 @@ void UiDeleteSlot::on_render(Renderer &ctx) {
     UiLoadoutSlot::on_render(ctx);
     if ((float) delete_text_opacity > 0.01) {
         ctx.set_global_alpha((float) delete_text_opacity);
-        ctx.set_fill(0xffffffff);
-        ctx.set_stroke(0xff222222);
-        ctx.center_text_align();
-        ctx.center_text_baseline();
-        ctx.set_text_size(height / 4);
-        ctx.set_line_width(height / 4 * 0.12);
-        ctx.stroke_text("Delete");
-        ctx.fill_text("Delete");
+        ctx.draw_text("Delete", { .size = height / 4});
     }
 }
 

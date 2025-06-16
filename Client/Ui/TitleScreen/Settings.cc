@@ -24,7 +24,8 @@ Element *Ui::make_settings_panel() {
         new Ui::HContainer({
             new Ui::ToggleButton(30, &Game::show_debug),
             new Ui::StaticText(16, "Debug stats")
-        }, 0, 10, {.h_justify = Style::Left })
+        }, 0, 10, {.h_justify = Style::Left }),
+        new Ui::StaticText(12, "Made by bismuth")
     }, 20, 10, { 
         .fill = 0xff5a9fdb,
         .line_width = 7,

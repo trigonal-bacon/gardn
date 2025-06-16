@@ -366,14 +366,12 @@ void draw_static_petal_single(PetalID::T id, Renderer &ctx) {
             ctx.set_stroke(0xffcf78a3);
             ctx.set_line_width(3);
             ctx.begin_path();
-            float l = 0.75 * r;
-            float h = 1.5 * r;
-            uint32_t s = 5;
-            ctx.move_to(l, 0);
+            uint32_t s = 3;
+            ctx.move_to(r, 0);
             for (uint32_t i = 1; i <= s; ++i) {
                 float angle = i * 2 * M_PI / s;
                 float angle2 = angle - M_PI / s;
-                ctx.qcurve_to(h * cosf(angle2), h * sinf(angle2), l * cosf(angle),l * sinf(angle));
+                ctx.qcurve_to(2 * r * cosf(angle2), 2 * r * sinf(angle2), r * cosf(angle), r * sinf(angle));
             }
             ctx.fill();
             ctx.stroke();
@@ -842,6 +840,34 @@ void draw_static_petal_single(PetalID::T id, Renderer &ctx) {
             ctx.bcurve_to(147.39, 163.18, 145.89, 173.92, 145.00, 184.84);
             ctx.bcurve_to(151.12, 185.32, 157.26, 185.71, 163.47, 185.97);
             ctx.bcurve_to(160.88, 177.96, 157.91, 169.93, 154.56, 161.90);
+            ctx.fill();
+            break;
+        case PetalID::kRice:
+            ctx.set_stroke(0xffcfcfcf);
+            ctx.set_line_width(9);
+            ctx.scale(r / 13);
+            ctx.begin_path();
+            ctx.move_to(-8,0);
+            ctx.qcurve_to(0,-3.5,8,0);
+            ctx.stroke();
+            ctx.set_stroke(0xffffffff);
+            ctx.set_line_width(5);
+            ctx.stroke();
+            break;
+        case PetalID::kBone:
+            ctx.set_fill(0xffffffff);
+            ctx.set_stroke(0xffcfcfcf);
+            ctx.set_line_width(5);
+            ctx.scale(r / 12);
+            ctx.begin_path();
+            ctx.move_to(-10,-4);
+            ctx.qcurve_to(0,0,10,-4);
+            ctx.bcurve_to(14,-10,20,-2,14,0);
+            ctx.bcurve_to(20,2,14,10,10,4);
+            ctx.qcurve_to(0,0,-10,4);
+            ctx.bcurve_to(-14,10,-20,2,-14,0);
+            ctx.bcurve_to(-20,-2,-14,-10,-10,-4);
+            ctx.stroke();
             ctx.fill();
             break;
         default:

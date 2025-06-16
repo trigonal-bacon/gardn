@@ -291,10 +291,10 @@ static void tick_sandstorm(Simulation *sim, Entity &ent) {
                 ent.heading_angle += frand() * M_PI - M_PI / 2;
             Vector head;
             head.unit_normal(ent.heading_angle);
-            head.set_magnitude(PLAYER_ACCELERATION * 0.5);
+            head.set_magnitude(PLAYER_ACCELERATION);
             Vector rand;
             rand.unit_normal(ent.heading_angle + frand() * M_PI - M_PI / 2);
-            rand.set_magnitude(PLAYER_ACCELERATION * 0.25);
+            rand.set_magnitude(PLAYER_ACCELERATION * 0.5);
             head += rand;
             ent.acceleration.set(head.x, head.y);
             break;

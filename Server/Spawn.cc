@@ -76,7 +76,7 @@ static Entity &__alloc_mob(MobID::T mob_id, float x, float y, EntityID const tea
 
 Entity &alloc_mob(MobID::T mob_id, float x, float y, EntityID const team) {
     struct MobData const &data = MOB_DATA[mob_id];
-    if (data.attributes.segments == 0) {
+    if (data.attributes.segments <= 1) {
         Entity &ent = __alloc_mob(mob_id, x, y, team);
         if (mob_id == MobID::kAntHole) {
             std::vector<MobID::T> const spawns = { 
@@ -165,9 +165,10 @@ Entity &alloc_petal(PetalID::T petal_id, Entity const &parent) {
     petal.add_component(kHealth);
     petal.health = petal.max_health = petal_data.health;
     petal.damage = petal_data.damage;
+    if (petal_id == PetalID::kBone) petal.armor = 4;
     petal.set_health_ratio(1);
     petal.poison_damage = petal_data.attributes.poison_damage;
-    if (petal_id == PetalID::kPincer) petal.slow_inflict = TPS * 0.8;
+    if (petal_id == PetalID::kPincer) petal.slow_inflict = TPS * 1.0;
 
     if (parent.id == NULL_ENTITY) petal.base_entity = petal.id;
     else petal.base_entity = parent.id;

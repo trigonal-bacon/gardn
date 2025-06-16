@@ -39,10 +39,20 @@ void GalleryMob::on_render(Renderer &ctx) {
 static Element *make_mob_drops(MobID::T id) {
     Element *elt = new Ui::HContainer({}, 0, 5, { .h_justify = Style::Left });
     struct MobData const &data = MOB_DATA[id];
-    for (MobDrop const &drop : data.drops) {
+    std::vector<float> const &drop_chances = MOB_DROP_CHANCES[id];
+    std::vector<uint8_t> order;
+    for (uint32_t i = 0; i < data.drops.size(); ++i)
+        order.push_back(i);
+    
+    std::sort(order.begin(), order.end(), [&](uint8_t a, uint8_t b) {
+        return drop_chances[a] > drop_chances[b];
+    });
+
+    for (uint32_t i = 0; i < data.drops.size(); ++i) {
+        uint32_t j = order[i];
         elt->add_child(new Ui::VContainer({
-            new GalleryPetal(drop.id, 45),
-            new StaticText(12, format_pct(drop.chance * 100))
+            new GalleryPetal(data.drops[j], 45),
+            new StaticText(12, format_pct(drop_chances[j] * 100))
         }, 0, 5, { .h_justify = Style::Left }));
     }
     return elt;
@@ -66,9 +76,9 @@ static Element *make_mob_card(MobID::T id) {
     }, 10, 0, { .fill = 0x20000000, .stroke_hsv = 1, .line_width = 3, .round_radius = 6, .v_justify = Style::Top, .no_animation = 1 });
     Element *chooser = new Ui::Choose(
         new Ui::VContainer({
-            new Ui::Element(300,0),
+            new Ui::Element(300,5),
             new Ui::StaticText(16, "?"),
-            new Ui::Element(300,0)
+            new Ui::Element(300,5)
         }, 10, 0, { .fill = 0x20000000, .stroke_hsv = 1, .line_width = 3, .round_radius = 6, .v_justify = Style::Top, .no_animation = 1 }),
         elt,
         [=](){ return Game::seen_mobs[id]; }

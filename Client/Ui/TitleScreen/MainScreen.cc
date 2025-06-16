@@ -31,6 +31,7 @@ Element *Ui::make_title_main_screen() {
                     new Ui::Button(110, 36, 
                         new Ui::StaticText(25, "Spawn"), 
                         [](Element *elt, uint8_t e){ if (e == Ui::kClick) Game::spawn_in(); },
+                        [](){ return Game::in_game() != 0; },
                         { .fill = 0xff94e873, .line_width = 5, .round_radius = 3 }
                     )
                 }, 0, 10,{}),
@@ -46,16 +47,20 @@ Element *Ui::make_title_main_screen() {
         new Ui::Choose(
             new Ui::Container({
                 new Ui::VContainer({
+                    new Ui::StaticText(30, "How to play"),
+                    new Ui::Element(0,5),
                     new Ui::StaticText(16, "Use mouse to move"),
                     new Ui::StaticText(16, "Right click to attack"),
                     new Ui::StaticText(16, "Left click to defend")
                 }, 0, 5, { .should_render = [](){ return !Input::keyboard_movement; }, .no_animation = 1 }),
                 new Ui::VContainer({
+                    new Ui::StaticText(26, "How to play"),
+                    new Ui::Element(0,5),
                     new Ui::StaticText(16, "Use WASD or arrow keys to move"),
                     new Ui::StaticText(16, "SPACE to attack"),
                     new Ui::StaticText(16, "SHIFT to defend")
                 }, 0, 5, { .should_render = [](){ return Input::keyboard_movement; }, .no_animation = 1 }),
-            }, 200, 65),
+            }, 200, 110),
             new Ui::VContainer({
                 new Ui::HContainer({
                     new Ui::DynamicText(16, [](){
@@ -101,8 +106,8 @@ Element *Ui::make_title_main_screen() {
 
 Element *Ui::make_panel_buttons() {
    Element *elt = new Ui::HContainer({
-        new Ui::Button(120, 36, 
-            new Ui::StaticText(18, "Settings"), 
+        new Ui::Button(100, 35, 
+            new Ui::StaticText(16, "Settings"), 
             [](Element *elt, uint8_t e){ if (e == Ui::kClick) {
                 if (Ui::panel_open != Panel::kSettings) {
                     Ui::panel_open = Panel::kSettings;
@@ -114,11 +119,12 @@ Element *Ui::make_panel_buttons() {
                 }
                 else Ui::panel_open = Panel::kNone;
             } },
+            [](){ return Ui::panel_open == Panel::kSettings; },
             { .fill = 0xff5a9fdb, .line_width = 5, .round_radius = 3 }
         ),
-        new Ui::Button(120, 36, 
+        new Ui::Button(100, 35, 
             new Ui::HContainer({
-                new Ui::StaticText(18, "Petals"),
+                new Ui::StaticText(16, "Petals"),
                 new Ui::PetalsCollectedIndicator(20)
             }, 0, 10),
             [](Element *elt, uint8_t e){ if (e == Ui::kClick) {
@@ -132,10 +138,11 @@ Element *Ui::make_panel_buttons() {
                 }
                 else Ui::panel_open = Panel::kNone;
             } },
+            [](){ return Ui::panel_open == Panel::kPetals; },
             { .fill = 0xff5a9fdb, .line_width = 5, .round_radius = 3 }
         ),
-        new Ui::Button(120, 36, 
-            new Ui::StaticText(18, "Mobs"), 
+        new Ui::Button(100, 35, 
+            new Ui::StaticText(16, "Mobs"), 
             [](Element *elt, uint8_t e){ if (e == Ui::kClick) {
                 if (Ui::panel_open != Panel::kMobs) {
                     Ui::panel_open = Panel::kMobs;
@@ -147,10 +154,11 @@ Element *Ui::make_panel_buttons() {
                 }
                 else Ui::panel_open = Panel::kNone;
             } },
+            [](){ return Ui::panel_open == Panel::kMobs; },
             { .fill = 0xff5a9fdb, .line_width = 5, .round_radius = 3 }
         ),
-        new Ui::Button(120, 36, 
-            new Ui::StaticText(18, "Changelog"), 
+        new Ui::Button(120, 35, 
+            new Ui::StaticText(16, "Changelog"), 
             [](Element *elt, uint8_t e){ if (e == Ui::kClick) {
                 if (Ui::panel_open != Panel::kChangelog) {
                     Ui::panel_open = Panel::kChangelog;
@@ -162,6 +170,7 @@ Element *Ui::make_panel_buttons() {
                 }
                 else Ui::panel_open = Panel::kNone;
             } },
+            [](){ return Ui::panel_open == Panel::kChangelog; },
             { .fill = 0xff5a9fdb, .line_width = 5, .round_radius = 3 }
         ),
    }, 10, 10, { .should_render = [](){ return Game::should_render_title_ui(); }, .h_justify = Style::Left, .v_justify = Style::Bottom });

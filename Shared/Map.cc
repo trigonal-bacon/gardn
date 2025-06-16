@@ -7,6 +7,7 @@
 #endif
 
 #include <cmath>
+#include <iostream>
 
 using namespace Map;
 
@@ -17,15 +18,16 @@ std::vector<struct ZoneDefinition> const Map::MAP = {
         .w = 10000,
         .h = 4000,
         .density = 2.5,
+        .drop_multiplier = 0.3,
         .spawns = {
-            { MobID::kBabyAnt, 2 },
-            { MobID::kWorkerAnt, 2 },
-            { MobID::kRock, 4 },
-            { MobID::kLadybug, 1.5 },
-            { MobID::kBee, 1.5 },
-            { MobID::kCentipede, 0.1 },
-            { MobID::kBoulder, 0.04 },
-            { MobID::kMassiveLadybug, 0.001 }
+            { MobID::kRock, 500000 },
+            { MobID::kLadybug, 100000 },
+            { MobID::kBee, 100000 },
+            { MobID::kBabyAnt, 25000 },
+            { MobID::kCentipede, 10000 },
+            { MobID::kBoulder, 10000 },
+            { MobID::kMassiveLadybug, 200 },
+            { MobID::kSquare, 1 }
         },
         .difficulty = 0,
         .color = 0xff1ea761,
@@ -36,17 +38,19 @@ std::vector<struct ZoneDefinition> const Map::MAP = {
         .y = 2000,
         .w = 10000,
         .h = 4000,
-        .density = 3.1,
+        .density = 3,
+        .drop_multiplier = 0.15,
         .spawns = {
-            { MobID::kCactus, 5 },
-            { MobID::kBee, 1 },
-            { MobID::kLadybug, 1},
-            { MobID::kSandstorm, 0.2},
-            { MobID::kBeetle, 0.2},
-            { MobID::kScorpion, 0.1},
-            { MobID::kDesertCentipede, 0.02 },
-            { MobID::kAntHole, 0.01 },
-            { MobID::kShinyLadybug, 0.001 }
+            { MobID::kCactus, 500000 },
+            { MobID::kSandstorm, 150000 },
+            { MobID::kBeetle, 150000 },
+            { MobID::kBee, 50000 },
+            { MobID::kScorpion, 50000 },
+            { MobID::kLadybug, 25000 },
+            { MobID::kDesertCentipede, 10000 },
+            { MobID::kAntHole, 2000 },
+            { MobID::kShinyLadybug, 200 },
+            { MobID::kSquare, 1 }
         },
         .difficulty = 1,
         .color = 0xffdecf7c,
@@ -57,18 +61,21 @@ std::vector<struct ZoneDefinition> const Map::MAP = {
         .y = 2000,
         .w = 10000,
         .h = 4000,
-        .density = 3.9,
+        .density = 3.5,
+        .drop_multiplier = 0.1,
         .spawns = {
-            { MobID::kRock, 4 },
-            { MobID::kBoulder, 5 },
-            { MobID::kHornet, 2 },
-            { MobID::kBee, 2 },
-            { MobID::kBeetle, 3 },
-            { MobID::kSpider, 2},
-            { MobID::kCentipede, 0.1},
-            { MobID::kEvilCentipede, 0.1},
-            { MobID::kMassiveBeetle, 0.03 },
-            { MobID::kAntHole, 0.01 }
+            { MobID::kRock, 150000 },
+            { MobID::kBeetle, 150000 },
+            { MobID::kSpider, 100000 },
+            { MobID::kBoulder, 100000 },
+            { MobID::kBee, 100000 },
+            { MobID::kHornet, 50000 },
+            { MobID::kLadybug, 25000 },
+            { MobID::kCentipede, 10000 },
+            { MobID::kEvilCentipede, 10000 },
+            { MobID::kMassiveBeetle, 2000 },
+            { MobID::kAntHole, 2000 },
+            { MobID::kSquare, 1 }
         },
         .difficulty = 2,
         .color = 0xffb06655,
@@ -79,17 +86,18 @@ std::vector<struct ZoneDefinition> const Map::MAP = {
         .y = 2000,
         .w = 10000,
         .h = 4000,
-        .density = 5.0,
+        .density = 3.5,
+        .drop_multiplier = 0.025,
         .spawns = {
-            { MobID::kBoulder, 3 },
-            { MobID::kDarkLadybug, 5 },
-            { MobID::kBeetle, 3 },
-            { MobID::kHornet, 3 },
-            { MobID::kSpider, 2 },
-            { MobID::kEvilCentipede, 0.01 },
-            { MobID::kMassiveBeetle, 0.01 },
-            { MobID::kAntHole, 0.01 },
-            { MobID::kRock, 0.1}
+            { MobID::kBoulder, 250000 },
+            { MobID::kDarkLadybug, 150000 },
+            { MobID::kBeetle, 150000 },
+            { MobID::kHornet, 100000 },
+            { MobID::kSpider, 100000 },
+            { MobID::kEvilCentipede, 25000 },
+            { MobID::kMassiveBeetle, 2000 },
+            { MobID::kAntHole, 2000 },
+            { MobID::kSquare, 1 }
         },
         .difficulty = 3,
         .color = 0xff777777,
@@ -133,7 +141,7 @@ void Map::spawn_random_mob() {
     for (SpawnChance const &s : try_zone.spawns) {
         sum -= s.chance;
         if (sum <= 0) {
-            MobID::T spawn_id = frand() < 0.00001 ? MobID::kSquare : s.id;
+            MobID::T spawn_id = s.id;
             Entity &ent = alloc_mob(spawn_id, x, y, NULL_ENTITY);
             ent.zone = zone_id;
             ent.flags |= EntityFlags::SpawnedFromZone;
@@ -143,3 +151,38 @@ void Map::spawn_random_mob() {
     }
 }
 #endif
+
+std::array<std::vector<float>, MobID::kNumMobs> const Map::get_auto_petal_drops() {
+    std::array<std::vector<float>, MobID::kNumMobs> ret = {};
+    double RARITY_MULT[RarityID::kNumRarities] = {50000,15000,2500,100,5,2.5,1};
+    double MOB_SPAWN_RATES[MobID::kNumMobs] = {0};
+    double PETAL_AGGREGATE_DROPS[PetalID::kNumPetals] = {0};
+    for (struct ZoneDefinition const &zone : MAP) {
+        double total = 0;
+        for (SpawnChance const &s : zone.spawns) total += s.chance;
+        for (SpawnChance const &s : zone.spawns) {
+            double xx = (s.chance * zone.drop_multiplier / total);
+            MOB_SPAWN_RATES[s.id] += xx;
+            if (s.id == MobID::kAntHole) {
+                MOB_SPAWN_RATES[MobID::kQueenAnt] += xx;
+                MOB_SPAWN_RATES[MobID::kDigger] += 0.1 * xx;
+                MOB_SPAWN_RATES[MobID::kSoldierAnt] += 15 * xx;
+                MOB_SPAWN_RATES[MobID::kWorkerAnt] += 10 * xx;
+                MOB_SPAWN_RATES[MobID::kBabyAnt] += 5 * xx;
+            }
+        }
+    }
+
+    for (MobID::T id = 0; id < MobID::kNumMobs; ++id)
+        for (PetalID::T drop_id : MOB_DATA[id].drops) PETAL_AGGREGATE_DROPS[drop_id]++;
+
+    double BASE_NUM = MOB_SPAWN_RATES[MobID::kSquare];
+
+    for (MobID::T id = 0; id < MobID::kNumMobs; ++id) {
+        for (PetalID::T drop_id : MOB_DATA[id].drops) {
+            float chance = fclamp((BASE_NUM * RARITY_MULT[PETAL_DATA[drop_id].rarity]) / (PETAL_AGGREGATE_DROPS[drop_id] * MOB_SPAWN_RATES[id] * MOB_DATA[id].attributes.segments), 0, 1);
+            ret[id].push_back(chance);
+        }
+    }
+    return ret;
+}
