@@ -10,7 +10,7 @@ extern const uint32_t MAX_LEVEL = 99;
 extern const uint32_t TPS = 20;
 extern const uint32_t DELETION_ANIMATION_TICKS = TPS / 5;
 
-extern const float PETAL_DISABLE_DELAY = 30.0f;
+extern const float PETAL_DISABLE_DELAY = 45.0f; //seconds
 extern const float PLAYER_ACCELERATION = 4.0f;
 extern const float DEFAULT_FRICTION = 0.25f;
 
