@@ -32,21 +32,28 @@ void Particle::tick_title(Renderer &ctx, double dt) {
         ctx.rotate(part.angle);
         draw_static_petal(part.id, ctx);
     }
-    for (size_t i = 0; i < 5; ++i) {
-        if (frand() > 0.01) continue;
+    for (size_t i = 0; i < 4; ++i) {
+        if (frand() > 0.02) continue;
         TitleParticleEntity npart;
         npart.x = -30;
         std::vector<PetalID::T> ids = {PetalID::kBasic};
+        float freq_sum = 1;
         for (PetalID::T pot = PetalID::kBasic + 1; pot < PetalID::kNumPetals; ++pot)
-            if (Game::seen_petals[pot]) ids.push_back(pot);
+            if (Game::seen_petals[pot]) { ids.push_back(pot); freq_sum += pow(0.5, PETAL_DATA[pot].rarity); }
         
-        npart.id = ids[frand() * ids.size()];   
-        npart.y = frand() * ctx.height;
-        npart.angle = frand() * 2 * M_PI;
-        npart.x_velocity = frand() * 50 + 150;
-        npart.sin_offset = frand() * M_PI;
-        npart.radius = frand() * 0.5 + 1;
-        title_particles.push_back(std::move(npart));
+        freq_sum *= frand();
+        for (PetalID::T id : ids) {
+            freq_sum -= pow(0.5, PETAL_DATA[id].rarity);
+            if (freq_sum > 0) continue;
+            npart.id = id;   
+            npart.y = frand() * ctx.height;
+            npart.angle = frand() * 2 * M_PI;
+            npart.x_velocity = frand() * 50 + 150;
+            npart.sin_offset = frand() * M_PI;
+            npart.radius = frand() * 0.5 + 1;
+            title_particles.push_back(std::move(npart));
+            break;
+        }
     }
 }
 
