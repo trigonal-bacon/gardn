@@ -124,6 +124,7 @@ Element *Ui::make_panel_buttons() {
         ),
         new Ui::Button(100, 35, 
             new Ui::HContainer({
+                new Ui::Element(0,0),
                 new Ui::StaticText(16, "Petals"),
                 new Ui::PetalsCollectedIndicator(20)
             }, 0, 10),

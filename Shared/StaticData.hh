@@ -83,6 +83,7 @@ namespace PetalID {
         kYggdrasil,
         kRice,
         kBone,
+        kYucca,
         kNumPetals
     };
 };

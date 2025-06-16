@@ -32,7 +32,7 @@ extern struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
     {"Stinger", "It really hurts, but it's really fragile",
         5.0, 35.0, 7.0, 3.5, 1, RarityID::kUnusual, {}},
     {"Leaf", "Gathers energy from the sun to passively heal your flower",
-        8.0, 10.0, 10.0, 1.0, 1, RarityID::kUnusual, {
+        10.0, 8.0, 10.0, 1.0, 1, RarityID::kUnusual, {
         .constant_heal = 1,
         .icon_angle = -1
     }},
@@ -209,6 +209,11 @@ extern struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
         12.0, 10.0, 12.0, 2.5, 1, RarityID::kLegendary, {
         .icon_angle = 1
     }},
+    {"Yucca", "Heals the flower, but only while in the defensive position",
+        10.0, 5.0, 10.0, 1.0, 1, RarityID::kUnusual, {
+        .constant_heal = 1.5,
+        .icon_angle = -1
+    }},
 };
 
 extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
@@ -276,7 +281,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
         "Cactus",
         "This one's prickly, don't touch it either.",
         RarityID::kCommon, {25.0, 50.0}, 30.0, {30.0, 60.0}, 2, {
-        PetalID::kStinger, PetalID::kCactus, PetalID::kPoisonCactus, PetalID::kTricac
+        PetalID::kStinger, PetalID::kYucca, PetalID::kCactus, PetalID::kPoisonCactus, PetalID::kTricac
     }, { .stationary = 1 }},
     {
         "Rock",
@@ -313,7 +318,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
         "Quite unpredictable.",
         RarityID::kUnusual, {30.0, 45.0}, 40.0, {32.0, 48.0}, 5, {
         PetalID::kSand, PetalID::kFaster, PetalID::kStick
-    }, { .stationary = 1 }},
+    }, {}},
     {
         "Scorpion",
         "This one stings, now with poison.",
@@ -342,7 +347,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
         "Ladybug",
         "This one is shiny... I wonder what it could mean...",
         RarityID::kEpic, {25.0}, 10.0, {30.0}, 3, {
-        PetalID::kRose, PetalID::kDahlia, PetalID::kWing, PetalID::kYggdrasil
+        PetalID::kDahlia, PetalID::kWing, PetalID::kBubble, PetalID::kYggdrasil
     }, {}},
     {
         "Square",
@@ -353,7 +358,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
     {
         "Digger",
         "Friend or foe? You'll never know...",
-        RarityID::kEpic, {100.0}, 20.0, {40.0}, 1, {
+        RarityID::kEpic, {250.0}, 25.0, {40.0}, 1, {
         PetalID::kCutter
     }, {}},
 };

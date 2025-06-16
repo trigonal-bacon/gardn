@@ -46,7 +46,9 @@ static struct _PlayerBuffs petal_passive_buffs(Simulation *sim, Entity &player) 
             ++buffs.yinyang_count;
         }
         if (!player.loadout[i].already_spawned) continue;
-        if (petal_data.attributes.constant_heal > 0)
+        if (slot.id == PetalID::kLeaf) 
+            buffs.heal += petal_data.attributes.constant_heal / TPS;
+        else if (slot.id == PetalID::kYucca && BIT_AT(player.input, 1) && !BIT_AT(player.input, 0)) 
             buffs.heal += petal_data.attributes.constant_heal / TPS;
         if (slot.id == PetalID::kFaster) 
             buffs.extra_rot += 1.0;

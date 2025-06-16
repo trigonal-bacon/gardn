@@ -25,7 +25,7 @@ public:
     static std::vector<Renderer *> renderers;
     struct TextArgs {
         uint32_t fill = 0xffffffff;
-        uint32_t stroke = 0xff222222;
+        uint32_t stroke = 0xff000000;
         float size = 0;
         float stroke_scale = 0.12;
     };

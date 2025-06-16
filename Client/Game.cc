@@ -88,6 +88,11 @@ void Game::init() {
     window.add_child(
         Ui::make_stat_screen()
     );
+    window.add_child(
+        new Ui::HContainer({
+            new Ui::StaticText(20, "the gardn project")
+        }, 20, 0, { .h_justify = Ui::Style::Left, .v_justify = Ui::Style::Top })
+    );
     Ui::make_petal_tooltips();
     window.set_game_divider();
     window.add_child(

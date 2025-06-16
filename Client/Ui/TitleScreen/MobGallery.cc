@@ -37,7 +37,7 @@ void GalleryMob::on_render(Renderer &ctx) {
 }
 
 static Element *make_mob_drops(MobID::T id) {
-    Element *elt = new Ui::HContainer({}, 0, 5, { .h_justify = Style::Left });
+    Element *elt = new Ui::HContainer({}, 0, 6, { .h_justify = Style::Left });
     struct MobData const &data = MOB_DATA[id];
     std::vector<float> const &drop_chances = MOB_DROP_CHANCES[id];
     std::vector<uint8_t> order;
@@ -63,7 +63,7 @@ static Element *make_mob_card(MobID::T id) {
         new Ui::Element(300,0),
         new Ui::HFlexContainer(
             new Ui::VContainer({
-                new Ui::StaticText(20, MOB_DATA[id].name, { .fill = 0xffffffff, .h_justify = Style::Left }),
+                new Ui::StaticText(18, MOB_DATA[id].name, { .fill = 0xffffffff, .h_justify = Style::Left }),
                 new Ui::StaticText(14, RARITY_NAMES[MOB_DATA[id].rarity], { .fill = RARITY_COLORS[MOB_DATA[id].rarity], .h_justify = Style::Left }),
                 new Ui::Element(0,2),
                 new Ui::StaticParagraph(220, 14, MOB_DATA[id].description, { .h_justify = Style::Left })

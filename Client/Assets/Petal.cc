@@ -870,6 +870,22 @@ void draw_static_petal_single(PetalID::T id, Renderer &ctx) {
             ctx.stroke();
             ctx.fill();
             break;
+        case PetalID::kYucca:
+            ctx.set_fill(0xff74b53f);
+            ctx.set_stroke(0xff5e9333);
+            ctx.set_line_width(3);
+            ctx.begin_path();
+            ctx.move_to(14,0);
+            ctx.qcurve_to(0,-12,-14,0);
+            ctx.qcurve_to(0,12,14,0);
+            ctx.fill();
+            ctx.stroke();
+            ctx.set_line_width(2);
+            ctx.begin_path();
+            ctx.move_to(14,0);
+            ctx.qcurve_to(0,-3,-14,0);
+            ctx.stroke();
+            break;
         default:
             std::cout << (int) id << '\n';
             assert(id < PetalID::kNumPetals);
