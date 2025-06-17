@@ -99,7 +99,8 @@ void Simulation::post_tick() {
     //reset state of all entities FIRST
     arena_info.reset_protocol();
     for (uint32_t i = 0; i < active_entities.length; ++i) {
-        DEBUG_ONLY(assert(ent_exists(active_entities[i]));) //no deletions mid tick
+        //no deletions mid tick
+        DEBUG_ONLY(assert(ent_exists(active_entities[i]));)
         Entity &ent = get_ent(active_entities[i]);
         ent.reset_protocol();
         ++ent.lifetime;
@@ -113,15 +114,13 @@ void Simulation::post_tick() {
     
     for (uint32_t i = 0; i < pending_delete.length; ++i) {
         //guarantee entity exists
-        assert(ent_exists(pending_delete[i]));
+        DEBUG_ONLY(assert(ent_exists(pending_delete[i]));)
         Entity &ent = get_ent(pending_delete[i]);
         if (!ent.has_component(kPhysics)) 
             _delete_ent(pending_delete[i]);
         else {
-            if (ent.deletion_tick >= DELETION_ANIMATION_TICKS) {
-                spatial_hash.remove(ent);
+            if (ent.deletion_tick >= DELETION_ANIMATION_TICKS) 
                 _delete_ent(pending_delete[i]);
-            }
             else {
                 if (ent.deletion_tick == 0)
                     entity_on_death(this, ent);

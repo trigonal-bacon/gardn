@@ -18,9 +18,6 @@ void SpatialHash::insert(Entity &ent) {
     cells[x][y].push_back(ent.id);
 }
 
-void SpatialHash::remove(Entity &ent) {
-}
-
 void SpatialHash::collide(std::function<void(Simulation *, Entity &, Entity &)> on_collide) {
     for (uint32_t x = 0; x < MAX_GRID_X; ++x) {
         for (uint32_t y = 0; y < MAX_GRID_Y; ++y) {

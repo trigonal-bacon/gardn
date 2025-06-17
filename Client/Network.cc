@@ -43,19 +43,19 @@ void Game::send_inputs() {
         writer.write<float>(0);
         writer.write<float>(0);
         writer.write<uint8_t>(0);
-        return;
+    } else {
+        float x = (Input::mouse_x - renderer.width / 2) / Ui::scale;
+        float y = (Input::mouse_y - renderer.height / 2) / Ui::scale;
+        if (Input::keyboard_movement) {
+            x = 300 * (Input::keys_pressed.contains('D') - Input::keys_pressed.contains('A') + Input::keys_pressed.contains(39) - Input::keys_pressed.contains(37));
+            y = 300 * (Input::keys_pressed.contains('S') - Input::keys_pressed.contains('W') + Input::keys_pressed.contains(40) - Input::keys_pressed.contains(38));
+        }
+        writer.write<float>(x);
+        writer.write<float>(y);
+        uint8_t attack = Input::keys_pressed.contains('\x20') || BIT_AT(Input::mouse_buttons_state, Input::LeftMouse);
+        uint8_t defend = Input::keys_pressed.contains('\x10') || BIT_AT(Input::mouse_buttons_state, Input::RightMouse);
+        writer.write<uint8_t>((attack << InputFlags::kAttacking) | (defend << InputFlags::kDefending));
     }
-    float x = (Input::mouse_x - renderer.width / 2) / Ui::scale;
-    float y = (Input::mouse_y - renderer.height / 2) / Ui::scale;
-    if (Input::keyboard_movement) {
-        x = 300 * (Input::keys_pressed.contains('D') - Input::keys_pressed.contains('A') + Input::keys_pressed.contains(39) - Input::keys_pressed.contains(37));
-        y = 300 * (Input::keys_pressed.contains('S') - Input::keys_pressed.contains('W') + Input::keys_pressed.contains(40) - Input::keys_pressed.contains(38));
-    }
-    writer.write<float>(x);
-    writer.write<float>(y);
-    uint8_t attack = Input::keys_pressed.contains('\x20') || BIT_AT(Input::mouse_buttons_state, Input::LeftMouse);
-    uint8_t defend = Input::keys_pressed.contains('\x10') || BIT_AT(Input::mouse_buttons_state, Input::RightMouse);
-    writer.write<uint8_t>((attack << InputFlags::kAttacking) | (defend << InputFlags::kDefending));
     socket.send(writer.packet, writer.at - writer.packet);
 }
 

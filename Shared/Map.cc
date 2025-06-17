@@ -65,10 +65,10 @@ std::vector<struct ZoneDefinition> const Map::MAP = {
         .drop_multiplier = 0.05,
         .spawns = {
             { MobID::kRock, 150000 },
-            { MobID::kBeetle, 150000 },
             { MobID::kSpider, 100000 },
             { MobID::kBoulder, 100000 },
             { MobID::kBee, 100000 },
+            { MobID::kBeetle, 50000 },
             { MobID::kHornet, 50000 },
             { MobID::kLadybug, 50000 },
             { MobID::kCentipede, 10000 },

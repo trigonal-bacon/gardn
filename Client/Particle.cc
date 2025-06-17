@@ -35,7 +35,7 @@ void Particle::tick_title(Renderer &ctx, double dt) {
     for (size_t i = 0; i < 4; ++i) {
         if (frand() > 0.02) continue;
         TitleParticleEntity npart;
-        npart.x = -30;
+        npart.x = -100;
         std::vector<PetalID::T> ids = {PetalID::kBasic};
         float freq_sum = 1;
         for (PetalID::T pot = PetalID::kBasic + 1; pot < PetalID::kNumPetals; ++pot)

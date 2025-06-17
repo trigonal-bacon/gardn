@@ -10,6 +10,8 @@
 void tick_camera_behavior(Simulation *sim, Entity &ent) {
     if (sim->ent_exists(ent.player)) {
         Entity &player = sim->get_ent(ent.player);
+        player.acceleration = ent.acceleration;
+        player.input = ent.input;
         ent.set_camera_x(player.x);
         ent.set_camera_y(player.y);
         player.set_loadout_count(loadout_slots_at_level(score_to_level(player.score)));

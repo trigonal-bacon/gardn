@@ -26,6 +26,8 @@ void GalleryMob::on_render(Renderer &ctx) {
     struct MobData const &data = MOB_DATA[id];
     if (id != MobID::kDigger)
         ctx.rotate(-3*M_PI/4);
+    if (id == MobID::kBeetle || id == MobID::kMassiveBeetle)
+        ctx.translate(-5,0);
     float radius = (data.radius.upper + data.radius.lower) / 2;
     if (radius > width * 0.5) ctx.scale(0.5 * width / radius);
     ctx.scale(0.5);
