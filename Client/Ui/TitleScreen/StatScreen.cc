@@ -11,8 +11,8 @@
 
 using namespace Ui;
 
-StatPetalSlot::StatPetalSlot(uint8_t p) : Element(50,50,{}), pos(p) {
-    style.v_justify = Style::Bottom;
+StatPetalSlot::StatPetalSlot(uint8_t p) : Element(60,60,{}), pos(p) {
+    //style.v_justify = Style::Bottom;
     style.should_render = [=](){
         return p < Game::loadout_count + MAX_SLOT_COUNT && Game::cached_loadout[p] != PetalID::kNone;
     };
@@ -22,7 +22,7 @@ void StatPetalSlot::refactor() {
     if (pos < Game::loadout_count) {
         width = height = 60;
     } else if (Game::cached_loadout[pos] != PetalID::kNone) {
-        width = height = 45;
+        width = height = 50;
     } else {
         width = height = 0;
     }

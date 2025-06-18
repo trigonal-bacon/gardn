@@ -50,7 +50,19 @@ using namespace Game;
 void Game::init() {
     Storage::retrieve();
     window.add_child(
-        Ui::make_title_main_screen()
+        new Ui::StaticText(60, "the gardn project", {
+            .fill = 0xffffffff,
+            .animate = [](Ui::Element *elt, Renderer &ctx) {
+                elt->x = 0;
+                elt->y = -Ui::window_height / 4;
+            }
+        })
+    );
+    window.add_child(
+        Ui::make_title_input_box()
+    );
+    window.add_child(
+        Ui::make_title_info_box()
     );
     window.add_child(
         Ui::make_panel_buttons()

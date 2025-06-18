@@ -50,7 +50,8 @@ namespace Ui {
         virtual void on_render(Renderer &) override;
     };
 
-    Element *make_title_main_screen();
+    Element *make_title_input_box();
+    Element *make_title_info_box();
     Element *make_panel_buttons();
     Element *make_death_main_screen();
     Element *make_stat_screen();

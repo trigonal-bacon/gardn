@@ -13,16 +13,15 @@
 
 using namespace Ui;
 
-Element *Ui::make_title_main_screen() {
+Element *Ui::make_title_input_box() {
     Ui::Element *title = new Ui::VContainer({
-        new Ui::StaticText(60, "the gardn project"),
         new Ui::Element(0, 60),
         new Ui::Choose(
             new Ui::StaticText(40, "Connecting..."),
             new Ui::VContainer({
                 new Ui::StaticText(20, "This pretty little flower is called..."),
                 new Ui::HContainer({
-                    new Ui::TextInput(Game::nickname, "t0", 400, 45, MAX_NAME_LENGTH, {
+                    new Ui::TextInput(Game::nickname, 400, 45, MAX_NAME_LENGTH, {
                         .line_width = 5,
                         .round_radius = 5,
                         .animate = [](Element *elt, Renderer &ctx) { 
@@ -47,64 +46,71 @@ Element *Ui::make_title_main_screen() {
         ),
         new Ui::Element(0,20),
         new Ui::StaticText(16, "florr.io pvp clone"),
-        new Ui::Element(0,5),
-        new Ui::Choose(
-            new Ui::Container({
-                new Ui::VContainer({
-                    new Ui::StaticText(30, "How to play"),
-                    new Ui::Element(0,5),
-                    new Ui::StaticText(16, "Use mouse to move"),
-                    new Ui::StaticText(16, "Right click to attack"),
-                    new Ui::StaticText(16, "Left click to defend")
-                }, 0, 5, { .should_render = [](){ return !Input::keyboard_movement; }, .no_animation = 1 }),
-                new Ui::VContainer({
-                    new Ui::StaticText(26, "How to play"),
-                    new Ui::Element(0,5),
-                    new Ui::StaticText(16, "Use WASD or arrow keys to move"),
-                    new Ui::StaticText(16, "SPACE to attack"),
-                    new Ui::StaticText(16, "SHIFT to defend")
-                }, 0, 5, { .should_render = [](){ return Input::keyboard_movement; }, .no_animation = 1 }),
-            }, 200, 110),
-            new Ui::VContainer({
-                new Ui::HContainer({
-                    new Ui::DynamicText(16, [](){
-                        return std::format("You will respawn at level {}", Game::respawn_level);
-                    }),
-                    new Ui::StaticText(16, " with:", {
-                        .fill = 0xffffffff,
-                        .should_render = [](){
-                            if (!Game::simulation.ent_exists(Game::camera_id)) return false;
-                            return Game::simulation.get_ent(Game::camera_id).inventory[0] > PetalID::kBasic;
-                        }
-                    })
-                }, 0, 0),
-                new Ui::HContainer({
-                    new Ui::TitlePetalSlot(0),
-                    new Ui::TitlePetalSlot(1),
-                    new Ui::TitlePetalSlot(2),
-                    new Ui::TitlePetalSlot(3),
-                    new Ui::TitlePetalSlot(4),
-                    new Ui::TitlePetalSlot(5),
-                    new Ui::TitlePetalSlot(6),
-                    new Ui::TitlePetalSlot(7),
-                }, 0, 10),
-                new Ui::HContainer({
-                    new Ui::TitlePetalSlot(8),
-                    new Ui::TitlePetalSlot(9),
-                    new Ui::TitlePetalSlot(10),
-                    new Ui::TitlePetalSlot(11),
-                    new Ui::TitlePetalSlot(12),
-                    new Ui::TitlePetalSlot(13),
-                    new Ui::TitlePetalSlot(14),
-                    new Ui::TitlePetalSlot(15),
-                }, 0, 10)
-            }, 0, 10),
-            [](){
-                return Game::respawn_level > 1 ? 1 : 0;
-            }
-        )
     }, 0, 0, { .animate = [](Element *elt, Renderer &ctx){}, .should_render = [](){ return Game::should_render_title_ui(); } });
     return title;
+}
+
+Element *Ui::make_title_info_box() {
+    Element *elt = new Ui::Choose(
+        new Ui::Container({
+            new Ui::VContainer({
+                new Ui::StaticText(30, "How to play"),
+                new Ui::Element(0,5),
+                new Ui::StaticText(16, "Use mouse to move"),
+                new Ui::StaticText(16, "Right click to attack"),
+                new Ui::StaticText(16, "Left click to defend")
+            }, 0, 5, { .should_render = [](){ return !Input::keyboard_movement; }, .no_animation = 1 }),
+            new Ui::VContainer({
+                new Ui::StaticText(26, "How to play"),
+                new Ui::Element(0,5),
+                new Ui::StaticText(16, "Use WASD or arrow keys to move"),
+                new Ui::StaticText(16, "SPACE to attack"),
+                new Ui::StaticText(16, "SHIFT to defend")
+            }, 0, 5, { .should_render = [](){ return Input::keyboard_movement; }, .no_animation = 1 }),
+        }, 200, 110),
+        new Ui::VContainer({
+            new Ui::HContainer({
+                new Ui::DynamicText(16, [](){
+                    return std::format("You will respawn at level {}", Game::respawn_level);
+                }),
+                new Ui::StaticText(16, " with:", {
+                    .fill = 0xffffffff,
+                    .should_render = [](){
+                        if (!Game::simulation.ent_exists(Game::camera_id)) return false;
+                        return Game::simulation.get_ent(Game::camera_id).inventory[0] > PetalID::kBasic;
+                    }
+                })
+            }, 0, 0),
+            new Ui::HContainer({
+                new Ui::TitlePetalSlot(0),
+                new Ui::TitlePetalSlot(1),
+                new Ui::TitlePetalSlot(2),
+                new Ui::TitlePetalSlot(3),
+                new Ui::TitlePetalSlot(4),
+                new Ui::TitlePetalSlot(5),
+                new Ui::TitlePetalSlot(6),
+                new Ui::TitlePetalSlot(7),
+            }, 0, 10),
+            new Ui::HContainer({
+                new Ui::TitlePetalSlot(8),
+                new Ui::TitlePetalSlot(9),
+                new Ui::TitlePetalSlot(10),
+                new Ui::TitlePetalSlot(11),
+                new Ui::TitlePetalSlot(12),
+                new Ui::TitlePetalSlot(13),
+                new Ui::TitlePetalSlot(14),
+                new Ui::TitlePetalSlot(15),
+            }, 0, 10)
+        }, 0, 10),
+        [](){
+            return Game::respawn_level > 1 ? 1 : 0;
+        }
+    );
+    elt->style.animate = [](Element *elt, Renderer &ctx) {
+        elt->x = 0;
+        elt->y = 200;
+    };
+    return elt;
 }
 
 
@@ -117,7 +123,7 @@ Element *Ui::make_panel_buttons() {
                     Ui::panel_open = Panel::kSettings;
                     Element *pg = Ui::Panel::settings;
                     pg->x = elt->screen_x - Ui::scale * pg->width / 2;
-                    pg->y = -Ui::scale * (elt->height + 20);
+                    pg->y = -Ui::scale * (elt->height + 15);
                     if (pg->x < 10 * Ui::scale) 
                         pg->x = 10 * Ui::scale;
                 }
@@ -137,7 +143,7 @@ Element *Ui::make_panel_buttons() {
                     Ui::panel_open = Panel::kPetals;
                     Element *pg = Ui::Panel::petal_gallery;
                     pg->x = elt->screen_x - Ui::scale * pg->width / 2;
-                    pg->y = -Ui::scale * (elt->height + 20);
+                    pg->y = -Ui::scale * (elt->height + 15);
                     if (pg->x < 10 * Ui::scale) 
                         pg->x = 10 * Ui::scale;
                 }
@@ -153,7 +159,7 @@ Element *Ui::make_panel_buttons() {
                     Ui::panel_open = Panel::kMobs;
                     Element *pg = Ui::Panel::mob_gallery;
                     pg->x = elt->screen_x - Ui::scale * pg->width / 2;
-                    pg->y = -Ui::scale * (elt->height + 20);
+                    pg->y = -Ui::scale * (elt->height + 15);
                     if (pg->x < 10 * Ui::scale) 
                         pg->x = 10 * Ui::scale;
                 }
@@ -169,7 +175,7 @@ Element *Ui::make_panel_buttons() {
                     Ui::panel_open = Panel::kChangelog;
                     Element *pg = Ui::Panel::changelog;
                     pg->x = elt->screen_x - Ui::scale * pg->width / 2;
-                    pg->y = -Ui::scale * (elt->height + 20);
+                    pg->y = -Ui::scale * (elt->height + 15);
                     if (pg->x < 10 * Ui::scale) 
                         pg->x = 10 * Ui::scale;
                 }

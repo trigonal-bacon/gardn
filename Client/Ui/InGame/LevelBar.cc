@@ -9,7 +9,7 @@
 
 using namespace Ui;
 
-LevelBar::LevelBar() : Element(300,35) {
+LevelBar::LevelBar() : Element(300,40) {
     progress = 0;
     style.animate = [&](Element *elt, Renderer &ctx) {
         if (Game::alive()) {
@@ -40,16 +40,11 @@ void LevelBar::on_render(Renderer &ctx) {
     ctx.move_to(-width / 2, 0);
     ctx.line_to(-width / 2 + width * ((float) progress), 0);
     ctx.stroke();
-    ctx.set_text_size(height / 2);
-    ctx.set_line_width(height / 2 * 0.12);
-    ctx.center_text_align();
-    ctx.center_text_baseline();
-    ctx.set_stroke(0xff222222);
-    ctx.set_fill(0xffffffff);
     char text[16];
     std::snprintf(text, 15, "Lvl %d Flower", level);
-    ctx.stroke_text(text);
-    ctx.fill_text(text);
+    ctx.draw_text(text, { .size = 16 });
+    ctx.translate(0, -height/2 - 16);
+    ctx.draw_text(Game::nickname.c_str(), { .size = 24 });
 }
 
 Element *Ui::make_level_bar() {
@@ -65,7 +60,7 @@ Element *Ui::make_level_bar() {
             }
             return format_string;
         }),
-        new Ui::Element(1,60)
+        new Ui::Element(0,65)
     }, 0, 5, { .should_render = []() { return Game::alive(); } });
     level_bar->style.h_justify = Style::Left;
     level_bar->style.v_justify = Style::Bottom;

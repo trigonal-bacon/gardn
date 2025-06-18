@@ -124,6 +124,7 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
             //check string length;
             VALIDATE(validator.validate_string(MAX_NAME_LENGTH));
             reader.read<std::string>(name);
+            name = UTF8Parser::trunc_string(name, MAX_NAME_LENGTH);
             player.set_name(name);
             break;
         }

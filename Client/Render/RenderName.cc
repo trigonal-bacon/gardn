@@ -2,10 +2,13 @@
 
 #include <Client/Render/Renderer.hh>
 
+#include <Client/Game.hh>
+
 #include <Shared/Entity.hh>
 
 void render_name(Renderer &ctx, Entity const &ent) {
     if (!ent.nametag_visible) return;
+    if (ent.id == Game::player_id) return;
     ctx.translate(0, -ent.radius - 18);
     //ctx.center_text_align();
     //ctx.center_text_baseline();
