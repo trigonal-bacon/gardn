@@ -34,6 +34,7 @@ extern "C" {
 Socket::Socket() {}
 
 void Socket::connect(std::string const url) {
+    std::cout << "Connecting to " << url << '\n';
     EM_ASM({
         let string = UTF8ToString($1);
         function connect() {
