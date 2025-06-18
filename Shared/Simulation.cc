@@ -48,7 +48,9 @@ uint8_t Simulation::ent_exists(EntityID const &id) const {
 }
 
 uint8_t Simulation::ent_alive(EntityID const &id) const {
-    return ent_exists(id) && entities[id.id].pending_delete == 0 && entities[id.id].deletion_tick == 0;
+    return ent_exists(id) && entities[id.id].pending_delete == 0 && 
+    SERVER_ONLY(entities[id.id].deletion_tick == 0;)
+    CLIENT_ONLY(entities[id.id].deleting == 0;)
 }
 
 void Simulation::request_delete(EntityID const &id) {

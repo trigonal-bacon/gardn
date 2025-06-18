@@ -38,8 +38,8 @@ static void update_client(Simulation *sim, Client *client) {
         Entity &ent = sim->get_ent(id);
         uint8_t create = !client->last_in_view.contains(id);
         writer.write<EntityID>(id);
-        writer.write<uint8_t>(create);
-        ent.write(&writer, create);
+        writer.write<uint8_t>(create | (ent.pending_delete << 1));
+        ent.write(&writer, create & 1);
     }
     writer.write<EntityID>(NULL_ENTITY);
     //write arena stuff
@@ -95,8 +95,7 @@ void Simulation::tick() {
 
 void Simulation::post_tick() {
     for (Client *client: Server::clients) update_client(this, client);
-    //send_state & reset all remaining active entities
-    //reset state of all entities FIRST
+
     arena_info.reset_protocol();
     for (uint32_t i = 0; i < active_entities.length; ++i) {
         //no deletions mid tick
@@ -124,11 +123,12 @@ void Simulation::post_tick() {
             else {
                 if (ent.deletion_tick == 0)
                     entity_on_death(this, ent);
-                ent.set_deletion_tick(ent.deletion_tick + 1);
+                ent.deletion_tick += 1;
                 ent.pending_delete = 0;
             }
         }
     }
+
     pending_delete.clear();
     active_entities.clear();
     spatial_hash.clear();

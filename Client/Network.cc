@@ -4,6 +4,8 @@
 
 #include <Shared/Config.hh>
 
+#include <iostream>
+
 using namespace Game;
 
 void Game::on_message(uint8_t *ptr, uint32_t len) {
@@ -23,10 +25,11 @@ void Game::on_message(uint8_t *ptr, uint32_t len) {
             //DEBUG_ONLY(assert(!curr_id.null());)
             while(!curr_id.null()) {
                 uint8_t create = reader.read<uint8_t>();
-                if (create) simulation.force_alloc_ent(curr_id);
+                if (BIT_AT(create, 0)) simulation.force_alloc_ent(curr_id);
                 DEBUG_ONLY(assert(simulation.ent_exists(curr_id));)
                 Entity &ent = simulation.get_ent(curr_id);
-                ent.read(&reader, create);
+                ent.read(&reader, BIT_AT(create, 0));
+                if (BIT_AT(create, 1)) ent.deleting = 1;
                 curr_id = reader.read<EntityID>();
             }
             simulation.arena_info.read(&reader, reader.read<uint8_t>());
@@ -66,6 +69,7 @@ void Game::spawn_in() {
     Writer writer(static_cast<uint8_t *>(packet));
     if (Game::alive()) return;
     if (Game::on_game_screen == 0) {
+        std::cout << "spawning in\n";
         writer.write<uint8_t>(kServerbound::kClientSpawn);
         std::string name = Game::nickname;
         writer.write<std::string>(name);

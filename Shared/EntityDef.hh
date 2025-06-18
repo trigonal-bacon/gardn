@@ -37,8 +37,7 @@ FIELDS_Name
 SINGLE(Physics, x, Float) \
 SINGLE(Physics, y, Float) \
 SINGLE(Physics, radius, Float) \
-SINGLE(Physics, angle, Float) \
-SINGLE(Physics, deletion_tick, uint8_t)
+SINGLE(Physics, angle, Float)
 
 #define FIELDS_Camera \
 SINGLE(Camera, player, EntityID) \
@@ -127,6 +126,7 @@ SINGLE(Name, nametag_visible, uint8_t)
     \
     SINGLE(zone, uint8_t, =0) \
     SINGLE(flags, uint8_t, =0) \
+    SINGLE(deletion_tick, uint8_t, =0) \
     SINGLE(despawn_tick, game_tick_t, =0) \
     SINGLE(secondary_reload, game_tick_t, =0) \
     SINGLE(deleted_petals, circ_arr_t, ={})
@@ -140,7 +140,8 @@ SINGLE(Name, nametag_visible, uint8_t)
     SINGLE(eye_y, float, =0) \
     SINGLE(mouth, float, =15) \
     SINGLE(animation, float, =0) \
-    SINGLE(damage_flash, float, =0)
+    SINGLE(damage_flash, float, =0) \
+    SINGLE(deleting, uint8_t, =0)
 #endif
 
 class EntityID {

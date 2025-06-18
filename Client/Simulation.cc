@@ -22,7 +22,7 @@ void Simulation::tick_lerp(double dt) {
             ent.animation += (1 + 0.75 * vel.magnitude()) * 0.075;
             ent.radius.step(amt);
             ent.angle.step_angle(amt);
-            if (ent.deletion_tick > 0)
+            if (ent.deleting)
                 LERP(ent.deletion_animation, 1, amt * 1.5);
         }
         if (ent.has_component(kCamera)) {
