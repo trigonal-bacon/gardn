@@ -138,6 +138,7 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
                 uint8_t rarity = PETAL_DATA[old_id].rarity;
                 uint32_t rarity_to_xp[RarityID::kNumRarities] = { 2, 10, 50, 200, 1000, 5000, 0 };
                 player.set_score(player.score + rarity_to_xp[rarity]);
+                //need to delete if over cap
                 player.deleted_petals.push(old_id);
             }
             player.set_loadout_ids(pos, PetalID::kNone);

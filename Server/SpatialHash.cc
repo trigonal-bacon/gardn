@@ -12,7 +12,7 @@ void SpatialHash::clear() {
 }
 
 void SpatialHash::insert(Entity &ent) {
-    assert(ent.has_component(kPhysics));
+    DEBUG_ONLY(assert(ent.has_component(kPhysics));)
     uint32_t x = fclamp(ent.x, 0, Map::ARENA_WIDTH - 1) / GRID_SIZE;
     uint32_t y = fclamp(ent.y, 0, Map::ARENA_HEIGHT - 1) / GRID_SIZE;
     cells[x][y].push_back(ent.id);

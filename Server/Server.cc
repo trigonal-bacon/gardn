@@ -17,7 +17,6 @@ void Server::tick() {
     struct timespec te;
     timespec_get(&ts, TIME_UTC);
     Server::simulation.tick();
-    //update all clients
     timespec_get(&te, TIME_UTC);
 
     double mss = ts.tv_sec * 1000 + ts.tv_nsec / 1000000.0;

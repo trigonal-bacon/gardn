@@ -99,6 +99,7 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
     for (uint8_t i = 0; i < player.loadout_count; ++i) {
         LoadoutSlot &slot = player.loadout[i];
         struct PetalData const &petal_data = PETAL_DATA[slot.id];
+        DEBUG_ONLY(assert(petal_data.count <= MAX_PETALS_IN_CLUMP;))
         //player.set_loadout_ids(i, slot.id);
         //other way around. loadout_ids should dictate loadout
         if (slot.id != player.loadout_ids[i] || player.overlevel_timer >= PETAL_DISABLE_DELAY * TPS) {

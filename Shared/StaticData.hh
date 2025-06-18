@@ -6,12 +6,14 @@
 #include <cstdint>
 #include <vector>
 
+extern std::string const HOST_NAME;
 extern const uint64_t VERSION_HASH;
 extern const uint32_t SERVER_PORT;
 extern const uint32_t MAX_LEVEL;
 const uint32_t ENTITY_CAP = 32768;
 const uint32_t MAX_SLOT_COUNT = 8;
 const uint32_t LEADERBOARD_SIZE = 10;
+const uint32_t MAX_PETALS_IN_CLUMP = 4;
 
 extern const uint32_t TPS;
 extern const uint32_t DELETION_ANIMATION_TICKS;

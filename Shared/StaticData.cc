@@ -4,6 +4,7 @@
 
 #include <cmath>
 
+extern std::string const HOST_NAME = "localhost";
 extern const uint64_t VERSION_HASH = 198456321345ll;
 extern const uint32_t SERVER_PORT = 9001;
 extern const uint32_t MAX_LEVEL = 99;
@@ -18,7 +19,6 @@ extern const float SUMMON_RETREAT_RADIUS = 600.0f;
 
 extern const float BASE_FOV = 0.9f;
 extern const float BASE_HEALTH = 100.0f;
-
 
 extern struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
     {"None", "How can you see this?",

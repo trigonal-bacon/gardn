@@ -4,6 +4,8 @@
 
 #include <cstdint>
 
+typedef uint16_t game_tick_t;
+
 #define PERCOMPONENT \
     COMPONENT(Physics) \
     COMPONENT(Camera) \
@@ -93,7 +95,6 @@ SINGLE(Name, nametag_visible, uint8_t)
     SINGLE(mass, float, =1) \
     SINGLE(speed_ratio, float, =1) \
     SINGLE(lifetime, uint32_t, =0) \
-    SINGLE(zone, uint32_t, =0) \
     \
     MULTIPLE(loadout, LoadoutSlot, MAX_SLOT_COUNT, .reset()) \
     SINGLE(heading_angle, float, =0) \
@@ -124,6 +125,7 @@ SINGLE(Name, nametag_visible, uint8_t)
     SINGLE(ai_tick, game_tick_t, =0) \
     SINGLE(ai_state, uint8_t, =0) \
     \
+    SINGLE(zone, uint8_t, =0) \
     SINGLE(flags, uint8_t, =0) \
     SINGLE(despawn_tick, game_tick_t, =0) \
     SINGLE(secondary_reload, game_tick_t, =0) \
@@ -160,17 +162,16 @@ bool operator==(const EntityID &, const EntityID &);
 extern EntityID NULL_ENTITY;
 
 #ifdef SERVER_ONLY
-class LoadoutPetal {
-public:
-    uint32_t reload;
+struct LoadoutPetal {
+    game_tick_t reload;
     EntityID ent_id;
 };
 
 class LoadoutSlot {
 public:
-    uint8_t id;
+    PetalID::T id;
     uint8_t already_spawned;
-    LoadoutPetal petals[5];
+    LoadoutPetal petals[MAX_PETALS_IN_CLUMP];
     LoadoutSlot();
     void reset();
 };

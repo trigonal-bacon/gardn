@@ -99,7 +99,7 @@ void Game::init() {
         Ui::make_debug_stats()
     );
     Storage::retrieve();
-    socket.connect("ws://localhost:9001");
+    socket.connect("ws://"+HOST_NAME+":"+std::to_string(SERVER_PORT));
 }
 
 uint8_t Game::alive() {

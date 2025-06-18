@@ -5,7 +5,7 @@
 
 #include <cmath>
 
-static bool should_interact(Entity const &ent1, Entity const &ent2) {
+static bool _should_interact(Entity const &ent1, Entity const &ent2) {
     //if (ent1.has_component(kFlower) || ent2.has_component(kFlower)) return false;
     //if (ent1.has_component(kPetal) || ent2.has_component(kPetal)) return false;
     if (ent1.pending_delete || ent2.pending_delete) return false;
@@ -16,7 +16,7 @@ static bool should_interact(Entity const &ent1, Entity const &ent2) {
     return false;
 }
 
-static void pickup_drop(Simulation *sim, Entity &player, Entity &drop) {
+static void _pickup_drop(Simulation *sim, Entity &player, Entity &drop) {
     if (!sim->ent_alive(player.parent)) return;
     if (drop.immunity_ticks > 0) return;
 
@@ -33,13 +33,29 @@ static void pickup_drop(Simulation *sim, Entity &player, Entity &drop) {
 }
 
 #define NO(component) (!ent1.has_component(component) && !ent2.has_component(component))
+#define BOTH(component) (ent1.has_component(component) && ent2.has_component(component))
+#define EITHER(component) (ent1.has_component(component) || ent2.has_component(component))
+
+void _deal_push(Entity &ent, Vector knockback, float mass_ratio, float scale) {
+    if (fabsf(mass_ratio) < 0.01) return;
+    knockback *= scale * mass_ratio;
+    ent.collision_velocity += knockback;
+}
+
+void _deal_knockback(Entity &ent, Vector knockback, float mass_ratio) {
+    if (fabsf(mass_ratio) < 0.01) return;
+    float scale = PLAYER_ACCELERATION * 2;
+    knockback *= scale * mass_ratio;
+    ent.collision_velocity += knockback;
+    ent.velocity += knockback * 2;
+}
 
 void on_collide(Simulation *sim, Entity &ent1, Entity &ent2) {
     //do a distance dependent check first (it's faster)
     float min_dist = ent1.radius + ent2.radius;
     if (fabs(ent1.x - ent2.x) > min_dist || fabs(ent1.y - ent2.y) > min_dist) return;
     //check if collide (distance independent)
-    if (!should_interact(ent1, ent2)) return;
+    if (!_should_interact(ent1, ent2)) return;
     //finer distance check
     Vector separation(ent1.x - ent2.x, ent1.y - ent2.y);
     float dist = min_dist - separation.magnitude();
@@ -47,23 +63,15 @@ void on_collide(Simulation *sim, Entity &ent1, Entity &ent2) {
     if (NO(kDrop) && NO(kWeb)) {
         if (separation.x == 0 && separation.y == 0)
             separation.unit_normal(frand() * 2 * M_PI);
-        separation.normalize();
+        else
+            separation.normalize();
         float ratio = ent2.mass / (ent1.mass + ent2.mass);
-        Vector sep = separation;
-        if (!(ent1.team == ent2.team) && (ent1.has_component(kFlower) || ent2.has_component(kFlower))) {
-            float scale = PLAYER_ACCELERATION * 2;
-            Vector norm_sep = separation * scale * ratio;
-            ent1.collision_velocity += norm_sep;
-            ent1.velocity += norm_sep * 2;
-            norm_sep = separation * scale * (ratio - 1);
-            ent2.collision_velocity += norm_sep;
-            ent2.velocity += norm_sep * 2;
+        if (!(ent1.team == ent2.team) && EITHER(kFlower)) {
+            _deal_knockback(ent1, separation, ratio);
+            _deal_knockback(ent2, separation, ratio - 1);
         }
-        sep *= ratio * dist;
-        if (ratio > 0.01) ent1.collision_velocity += sep;
-        sep = separation;
-        sep *= (ratio - 1) * dist;
-        if (1 - ratio > 0.01) ent2.collision_velocity += sep;
+        _deal_push(ent1, separation, ratio, dist);
+        _deal_push(ent2, separation, ratio - 1, dist);
     }
 
     if (ent1.has_component(kHealth) && ent2.has_component(kHealth) && !(ent1.team == ent2.team)) {
@@ -74,9 +82,9 @@ void on_collide(Simulation *sim, Entity &ent1, Entity &ent2) {
     }
 
     if (ent1.has_component(kDrop) && ent2.has_component(kFlower)) {
-        pickup_drop(sim, ent2, ent1);
+        _pickup_drop(sim, ent2, ent1);
     } else if (ent2.has_component(kDrop) && ent1.has_component(kFlower)) {
-        pickup_drop(sim, ent1, ent2);
+        _pickup_drop(sim, ent1, ent2);
     }
 
     if (ent1.has_component(kWeb) && !ent2.has_component(kPetal) && !ent2.has_component(kDrop))

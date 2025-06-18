@@ -7,7 +7,6 @@
 
 #include <cstdint>
 
-typedef uint16_t game_tick_t;
 typedef CircularArray<PetalID::T, 8> circ_arr_t;
 
 enum Components {

@@ -34,7 +34,7 @@ static void update_client(Simulation *sim, Client *client) {
     writer.write<EntityID>(NULL_ENTITY);
     //upcreates
     for (EntityID id: in_view) {
-        assert(sim->ent_exists(id));
+        DEBUG_ONLY(assert(sim->ent_exists(id));)
         Entity &ent = sim->get_ent(id);
         uint8_t create = !client->last_in_view.contains(id);
         writer.write<EntityID>(id);

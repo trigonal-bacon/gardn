@@ -89,18 +89,14 @@ public:
         values[at] = val; at = (at + 1) % capacity;
         if (length < capacity) ++length;
     };
-    void clear() { 
-        for (size_t i = 0; i < capacity; ++i) values[i] = {};
-        length = 0;
-        at = 0;
-    };
+    void clear() { length = at = 0; };
 };
 
 class LerpFloat {
     float value;
     float lerp_value;
-public:
     uint32_t touched;
+public:
     LerpFloat();
     void operator=(float);
     void set(float);

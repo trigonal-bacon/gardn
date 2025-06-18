@@ -91,7 +91,7 @@ void inflict_damage(Simulation *sim, EntityID const atk_id, EntityID const def_i
 }
 
 void inflict_heal(Simulation *sim, Entity &ent, float amt) {
-    assert(ent.has_component(kHealth));
+    DEBUG_ONLY(assert(ent.has_component(kHealth));)
     if (ent.pending_delete || ent.health <= 0) return;
     if (ent.dandy_ticks > 0) return;
     ent.health = fclamp(ent.health + amt, 0, ent.max_health);
