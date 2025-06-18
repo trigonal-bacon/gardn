@@ -46,7 +46,7 @@ void PetalsCollectedIndicator::on_render(Renderer &ctx) {
     ctx.begin_path();
     ctx.arc(0,0,width/2);
     ctx.fill();
-    ctx.set_fill(0xffeeeeee);
+    ctx.set_fill(0xc0eeeeee);
     ctx.begin_path();
     ctx.move_to(0,0);
     ctx.partial_arc(0,0,width/2*0.8,-M_PI/2,-M_PI/2+2*M_PI*colct/totct,0);

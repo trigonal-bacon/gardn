@@ -2,12 +2,12 @@
 #include <Server/Client.hh>
 #include <Server/Server.hh>
 
-#include <Shared/StaticData.hh>
-
-#include <emscripten.h>
+#include <Shared/Config.hh>
 
 #include <map>
 #include <string>
+
+#include <emscripten.h>
 
 std::map<int, WebSocket *> WS_MAP;
 

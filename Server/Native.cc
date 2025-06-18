@@ -2,15 +2,7 @@
 #include <Server/Server.hh>
 
 #include <Server/Client.hh>
-#include <Server/PetalTracker.hh>
-#include <Server/Spawn.hh>
-
-#include <Shared/Map.hh>
-#include <Shared/Vector.hh>
-
-#include <chrono>
-#include <cmath>
-#include <thread>
+#include <Shared/Config.hh>
 
 uWS::App Server::server = uWS::App({
     .key_file_name = "misc/key.pem",

@@ -23,7 +23,21 @@ void draw_static_flower(Renderer &ctx, FlowerRenderAttributes attributes) {
         RenderContext context(&ctx);
         ctx.set_fill(0xff222222);
         ctx.begin_path();
-        if (BIT_AT(attributes.flags, 0)) {
+        if (BIT_AT(attributes.flags, 1)) {
+            float const len = 4;
+            ctx.set_stroke(0xff222222);
+            ctx.set_line_width(3);
+            ctx.begin_path();
+            ctx.move_to(-7-len, -5-len);
+            ctx.line_to(-7+len,-5+len);
+            ctx.move_to(-7+len,-5-len);
+            ctx.line_to(-7-len,-5+len);
+            ctx.move_to(7-len, -5-len);
+            ctx.line_to(7+len,-5+len);
+            ctx.move_to(7+len,-5-len);
+            ctx.line_to(7-len,-5+len);
+            ctx.stroke();
+        } else if (BIT_AT(attributes.flags, 0)) {
             ctx.rect(-7-3.25, -5-6.5, 6.5, 13);
             ctx.rect(7-3.25, -5-6.5, 6.5, 13);
             ctx.fill();
@@ -58,7 +72,7 @@ void draw_static_flower(Renderer &ctx, FlowerRenderAttributes attributes) {
     ctx.move_to(-6, 10);
     ctx.qcurve_to(0, attributes.mouth, 6, 10);
     ctx.stroke();
-    if (attributes.mouth <= 8 && BIT_AT(attributes.face_flags, FaceFlags::kAttacking))
+    if (!BIT_AT(attributes.flags, 1) && attributes.mouth <= 8 && BIT_AT(attributes.face_flags, FaceFlags::kAttacking))
     {
         RenderContext context(&ctx);
         ctx.translate(0, -attributes.mouth - 8);

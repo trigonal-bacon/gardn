@@ -9,7 +9,7 @@
 
 using namespace Ui;
 
-LevelBar::LevelBar() : Element(300,40) {
+LevelBar::LevelBar() : Element(300,35) {
     progress = 0;
     style.animate = [&](Element *elt, Renderer &ctx) {
         if (Game::alive()) {
@@ -47,7 +47,7 @@ void LevelBar::on_render(Renderer &ctx) {
     ctx.set_stroke(0xff222222);
     ctx.set_fill(0xffffffff);
     char text[16];
-    std::snprintf(text, 15, "Level %d", level);
+    std::snprintf(text, 15, "Lvl %d Flower", level);
     ctx.stroke_text(text);
     ctx.fill_text(text);
 }
@@ -55,8 +55,8 @@ void LevelBar::on_render(Renderer &ctx) {
 Element *Ui::make_level_bar() {
     Element *level_bar = new Ui::VContainer({
         new Ui::LevelBar(),
-        new Ui::DynamicText(12, [](){
-            std::string format_string{};
+        new Ui::DynamicText(14, [](){
+            std::string format_string;
             if (Game::alive()) {
                 Entity &player = Game::simulation.get_ent(Game::player_id);
                 uint32_t level = score_to_level(player.score);

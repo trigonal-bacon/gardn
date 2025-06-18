@@ -6,6 +6,8 @@
 #include <Client/Setup.hh>
 #include <Client/Storage.hh>
 
+#include <Shared/Config.hh>
+
 #include <cmath>
 
 static double g_last_time = 0;
@@ -100,7 +102,7 @@ void Game::init() {
     );
     Storage::retrieve();
     socket.connect(
-        std::format("ws%s://%s%s", "", HOST_NAME, (SERVER_PORT==0?"":":"+std::to_string(SERVER_PORT)))
+        std::format("ws{}://{}{}", "", HOST_NAME, (SERVER_PORT==0?"":":"+std::to_string(SERVER_PORT)))
     );
 }
 

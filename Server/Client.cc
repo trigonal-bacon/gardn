@@ -5,6 +5,7 @@
 #include <Server/Spawn.hh>
 
 #include <Shared/Binary.hh>
+#include <Shared/Config.hh>
 #include <Shared/Simulation.hh>
 
 Client::Client() {}

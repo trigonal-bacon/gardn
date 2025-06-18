@@ -4,26 +4,13 @@
 
 #include <cmath>
 
-#define STR1(arg) #arg
-#define ARG_TO_STR(arg) STR1(arg)
-
-extern std::string const HOST_NAME = 
-#ifdef HOSTNAME
-ARG_TO_STR(HOSTNAME);
-#else
-"localhost";
-#endif
-#undef STR1
-#undef ARG_TO_STR
-extern const uint64_t VERSION_HASH = 198456321345ll;
-extern const uint32_t SERVER_PORT = 9001;
 extern const uint32_t MAX_LEVEL = 99;
 extern const uint32_t TPS = 20;
 extern const uint32_t DELETION_ANIMATION_TICKS = TPS / 5;
 
 extern const float PETAL_DISABLE_DELAY = 45.0f; //seconds
-extern const float PLAYER_ACCELERATION = 4.0f;
-extern const float DEFAULT_FRICTION = 0.25f;
+extern const float PLAYER_ACCELERATION = 5.0f;
+extern const float DEFAULT_FRICTION = 0.333f;
 
 extern const float SUMMON_RETREAT_RADIUS = 600.0f;
 

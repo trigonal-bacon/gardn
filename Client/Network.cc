@@ -2,6 +2,8 @@
 
 #include <Client/Ui/Ui.hh>
 
+#include <Shared/Config.hh>
+
 using namespace Game;
 
 void Game::on_message(uint8_t *ptr, uint32_t len) {

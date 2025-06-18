@@ -41,6 +41,6 @@ void render_flower(Renderer &ctx, Entity const &ent) {
         .mouth = ent.mouth,
         .cutter_angle = (float) (Game::timestamp / 200),
         .face_flags = ent.face_flags,
-        .flags = 0
+        .flags = static_cast<uint8_t>(((ent.deletion_animation > 0) ? 1 : 0) << 1)
     });
 }

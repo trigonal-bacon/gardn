@@ -57,6 +57,7 @@ set(SRCS
     Ui/Window.cc
     ../Shared/Arena.cc
     ../Shared/Binary.cc
+    ../Shared/Config.cc
     ../Shared/Entity.cc
     ../Shared/EntityDef.cc
     ../Shared/Helpers.cc

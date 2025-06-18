@@ -6,9 +6,6 @@
 #include <cstdint>
 #include <vector>
 
-extern std::string const HOST_NAME;
-extern const uint64_t VERSION_HASH;
-extern const uint32_t SERVER_PORT;
 extern const uint32_t MAX_LEVEL;
 const uint32_t ENTITY_CAP = 32768;
 const uint32_t MAX_SLOT_COUNT = 8;

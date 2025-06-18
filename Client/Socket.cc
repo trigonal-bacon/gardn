@@ -2,6 +2,7 @@
 #include <Client/Game.hh>
 
 #include <Shared/Binary.hh>
+#include <Shared/Config.hh>
 
 #include <emscripten.h>
 
