@@ -7,15 +7,10 @@
 #include <string>
 #include <stdint.h>
 
-typedef uint8_t uint8;
-typedef uint32_t uint32;
-typedef int32_t int32;
-typedef std::string string;
-
 #define FIELDS_Arena \
-    SINGLE(player_count, uint32) \
+    SINGLE(player_count, uint32_t) \
     MULTIPLE(scores, Float, LEADERBOARD_SIZE) \
-    MULTIPLE(names, string, LEADERBOARD_SIZE)
+    MULTIPLE(names, std::string, LEADERBOARD_SIZE)
 
 class Arena {
     enum Fields {

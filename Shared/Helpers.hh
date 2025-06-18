@@ -73,11 +73,7 @@ public:
     StaticArray() : length(0) {};
     T &operator[](uint32_t at) { return values[at]; };
     void push(T val) { DEBUG_ONLY(assert(length < capacity); ) values[length++] = val; };
-    void clear() { length = 0;}
-    int32_t index_of(T val) const {
-        for (uint32_t i = 0; i < length; ++i) if (values[i] == val) return i;
-        return -1;
-    };
+    void clear() { length = 0; }
 };
 
 template<typename T, uint32_t capacity>

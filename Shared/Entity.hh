@@ -52,8 +52,6 @@ PER_EXTRA_FIELD
 #undef SINGLE
 #undef MULTIPLE
 #ifdef SERVERSIDE
-    //make this an entityfunction
-    void set_despawn_tick(uint16_t);
     void write(Writer *, uint8_t);
 
     template<bool>

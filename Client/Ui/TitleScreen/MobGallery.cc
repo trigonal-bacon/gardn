@@ -16,7 +16,7 @@
 using namespace Ui;
 
 GalleryMob::GalleryMob(MobID::T id, float w) : 
-    Element(w,w,{ .fill=0xff5a9fdb, .stroke_hsv=1, .line_width=3, .round_radius=3, .v_justify=Style::Top }), id(id) {}
+    Element(w,w,{ .fill=0xff5a9fdb, .stroke_hsv=1, .line_width=3, .round_radius=6, .v_justify=Style::Top }), id(id) {}
 
 void GalleryMob::on_render(Renderer &ctx) {
     Element::on_render(ctx);
@@ -75,13 +75,13 @@ static Element *make_mob_card(MobID::T id) {
         ),
         new Ui::Element(0,10),
         make_mob_drops(id)
-    }, 10, 0, { .fill = 0x20000000, .stroke_hsv = 1, .line_width = 3, .round_radius = 6, .v_justify = Style::Top, .no_animation = 1 });
+    }, 10, 0, { .fill = 0x33000000, .stroke_hsv = 1, .line_width = 3, .round_radius = 6, .v_justify = Style::Top, .no_animation = 1 });
     Element *chooser = new Ui::Choose(
         new Ui::VContainer({
             new Ui::Element(300,5),
             new Ui::StaticText(16, "?"),
             new Ui::Element(300,5)
-        }, 10, 0, { .fill = 0x20000000, .stroke_hsv = 1, .line_width = 3, .round_radius = 6, .v_justify = Style::Top, .no_animation = 1 }),
+        }, 10, 0, { .fill = 0x33000000, .stroke_hsv = 1, .line_width = 3, .round_radius = 6, .v_justify = Style::Top, .no_animation = 1 }),
         elt,
         [=](){ return Game::seen_mobs[id]; }
     );

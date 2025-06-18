@@ -30,7 +30,7 @@ bool operator==(const EntityID &a, const EntityID &b) {
     return a.id == b.id && a.hash == b.hash;
 }
 
-void EntityID::print() {
+void EntityID::print() const {
     std::cout << '<' << hash << ',' << id << '>';
 }
 

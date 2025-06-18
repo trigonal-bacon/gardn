@@ -40,11 +40,6 @@ uint8_t Entity::has_component(uint32_t comp) const {
 }
 
 #ifdef SERVERSIDE
-void Entity::set_despawn_tick(uint16_t t) {
-    despawn_tick = t;
-    BIT_SET(flags, EntityFlags::kIsDespawning);
-}
-
 #define SINGLE(component, name, type) \
 void Entity::set_##name(type const v) { \
     DEBUG_ONLY(assert(has_component(k##component));) \

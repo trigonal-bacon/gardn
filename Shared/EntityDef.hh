@@ -151,7 +151,7 @@ public:
     EntityID(id_type, hash_type);
     bool null() const;
     void operator=(EntityID const &);
-    void print();
+    void print() const;
 };
 
 bool operator<(const EntityID &, const EntityID &);

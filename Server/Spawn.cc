@@ -132,8 +132,8 @@ Entity &alloc_player(EntityID const camera_id) {
     player.max_health = 100;
     player.set_health_ratio(1);
     player.damage = 25;
-    player.immunity_ticks = 3.5 * TPS;
-    player.mass = 0.1;
+    player.immunity_ticks = 2.5 * TPS;
+    player.mass = 0.5;
 
     player.add_component(kScore);
 
@@ -153,7 +153,7 @@ Entity &alloc_petal(PetalID::T petal_id, Entity const &parent) {
     petal.set_x(parent.x);
     petal.set_y(parent.y);
     petal.set_radius(petal_data.radius * 2);
-    petal.mass = 0.05;
+    petal.mass = 0.5;
     if (petal_id == PetalID::kHeaviest) petal.mass = 10;
     else if (petal_id == PetalID::kMoon) petal.mass = 20000;
     petal.friction = 0.4;
