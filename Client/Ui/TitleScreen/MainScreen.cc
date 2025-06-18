@@ -9,6 +9,8 @@
 #include <Client/Debug.hh>
 #include <Client/Game.hh>
 
+#include <Shared/Config.hh>
+
 using namespace Ui;
 
 Element *Ui::make_title_main_screen() {
@@ -20,7 +22,9 @@ Element *Ui::make_title_main_screen() {
             new Ui::VContainer({
                 new Ui::StaticText(20, "This pretty little flower is called..."),
                 new Ui::HContainer({
-                    new Ui::TextInput("t0", 350, 40, 16, { 
+                    new Ui::TextInput(Game::nickname, "t0", 400, 45, MAX_NAME_LENGTH, {
+                        .line_width = 5,
+                        .round_radius = 5,
                         .animate = [](Element *elt, Renderer &ctx) { 
                             ctx.translate(0, (elt->animation - 1) * ctx.height * 0.6);
                         },

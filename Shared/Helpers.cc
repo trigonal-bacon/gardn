@@ -105,3 +105,46 @@ RangeValue::RangeValue(double l) {
 float RangeValue::get_single(float a) const {
     return lower + (upper - lower) * fclamp(a, 0, 1);
 }
+
+UTF8Parser::UTF8Parser(char const *s) : str(s), at(s) {}
+
+std::string UTF8Parser::trunc_string(std::string const &str, uint32_t max) {
+    UTF8Parser parser(str.c_str());
+    uint32_t last = 0;
+    while (last <= max) {
+        if (parser.next_symbol() == 0) break;
+        uint32_t len = parser.offset();
+        if (len > max) break;
+        last = len;
+    }
+    return str.substr(0, last);
+}
+
+char UTF8Parser::next_char() {
+    if (*at == 0) return 0;
+    return *at++;
+}
+
+uint32_t UTF8Parser::next_symbol() {
+    uint32_t c = (uint8_t) next_char();
+    if (c & 0x80) {
+        if (c >= 0xf0) {
+            c &= 0x07;
+            for (uint32_t x = 0; x < 3; ++x)
+                c = (c << 6) | (next_char() & 0x3f);
+        } else if (c >= 0xe0) {
+            c &= 0x0f;
+            for (uint32_t x = 0; x < 2; ++x)
+                c = (c << 6) | (next_char() & 0x3f);
+        } else {
+            c &= 0x1f;
+            for (uint32_t x = 0; x < 1; ++x)
+                c = (c << 6) | (next_char() & 0x3f);
+        }
+    }
+    return c;
+}
+
+uint32_t UTF8Parser::offset() const {
+    return at - str;
+}

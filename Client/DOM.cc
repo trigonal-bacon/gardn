@@ -1,5 +1,7 @@
 #include <Client/DOM.hh>
 
+#include <Shared/Helpers.hh>
+
 #include <emscripten.h>
 
 void DOM::create_text_input(char const *name, uint32_t max_len) {
@@ -16,8 +18,9 @@ void DOM::create_text_input(char const *name, uint32_t max_len) {
         elem.style.background = "transparent";
         elem.style.border = "none";
         elem.style.outline = "none";
-        elem.style["padding-left"] = "2px";
+        elem.style["padding-left"] = "5px";
         elem.maxLength = ($1).toString();
+        elem.setAttribute("spellcheck", "false");
         document.body.appendChild(elem);
     },
     name, max_len);
@@ -53,9 +56,9 @@ void DOM::update_pos_and_dimension(char const *name, float x, float y, float w, 
             const elem = document.getElementById(name);
             elem.style.left = ($1 - $3 / 2) / devicePixelRatio + "px";
             elem.style.top = ($2 - $4 / 2) / devicePixelRatio + "px";
-            elem.style.width = $3 / devicePixelRatio + "px";
+            elem.style.width = ($3 / devicePixelRatio - 10) + "px";
             elem.style.height = $4 / devicePixelRatio + "px";
-            elem.style["font-size"] = $4 / devicePixelRatio * 0.8 + "px";
+            elem.style["font-size"] = $4 / devicePixelRatio * 0.66 + "px";
         },
         name, x, y, w, h);
 }
@@ -66,16 +69,16 @@ std::string DOM::retrieve_text(char const *name, uint32_t max_length) {
         const name = UTF8ToString($0);
         const elem = document.getElementById(name);
         let arr = new TextEncoder().encode(elem.value);
-        const len = $1 > arr.length ? arr.length : $1;
+        const len = arr.length;
         // remember off by one errors
-        arr = arr.slice(0, len);
         const ptr = Module["_malloc"](len + 1);
         HEAPU8.set(arr, ptr);
         HEAPU8[ptr + len] = 0;
         return ptr;
     },
-    name, max_length);
+    name);
     std::string out{ptr};
+    out = UTF8Parser::trunc_string(out, max_length);
     free(ptr);
     return out;
 }

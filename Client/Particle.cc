@@ -27,10 +27,14 @@ void Particle::tick_title(Renderer &ctx, double dt) {
         part.x += part.x_velocity * (dt / 1000);
         //part.y += dt / 10 * ;
         part.angle += dt / 1000;
-        ctx.translate(part.x, part.y + 10 * sin(Game::timestamp / 500 + part.sin_offset));
+        ctx.translate(part.x, part.y + 12.5 * sin(Game::timestamp / 500 + part.sin_offset));
         ctx.scale(Ui::scale * part.radius);
-        ctx.rotate(part.angle);
-        draw_static_petal(part.id, ctx);
+        if (PETAL_DATA[part.id].attributes.rotation_style == PetalAttributes::kPassiveRot)
+            ctx.rotate(part.angle);
+        if (part.id == PetalID::kPeas || part.id == PetalID::kPoisonPeas)
+            draw_static_petal(part.id, ctx);
+        else
+            draw_static_petal_single(part.id, ctx);
     }
     for (size_t i = 0; i < 4; ++i) {
         if (frand() > 0.02) continue;
@@ -48,9 +52,9 @@ void Particle::tick_title(Renderer &ctx, double dt) {
             npart.id = id;   
             npart.y = frand() * ctx.height;
             npart.angle = frand() * 2 * M_PI;
-            npart.x_velocity = frand() * 50 + 150;
+            npart.x_velocity = frand() * 100 + 100;
             npart.sin_offset = frand() * M_PI;
-            npart.radius = frand() * 0.5 + 1;
+            npart.radius = frand() + 0.5;
             title_particles.push_back(std::move(npart));
             break;
         }

@@ -7,8 +7,10 @@
 namespace Ui {
     class TextInput : public Element {
         char const *name;
+        std::string &ref;
+        uint32_t max;
     public:
-        TextInput(char const *, float, float, uint32_t, Style = {});
+        TextInput(std::string &, char const *, float, float, uint32_t, Style = {});
 
         virtual void on_render(Renderer &) override;
         virtual void on_render_skip(Renderer &) override;

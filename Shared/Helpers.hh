@@ -124,3 +124,15 @@ public:
     RangeValue(double);
     float get_single(float) const;
 };
+
+//DOES NOT PERFORM BOUND CHECKS
+class UTF8Parser {
+    char const *str;
+    char const *at;
+    char next_char();
+public:
+    UTF8Parser(char const *);
+    static std::string trunc_string(std::string const &, uint32_t);
+    uint32_t next_symbol();
+    uint32_t offset() const;
+};

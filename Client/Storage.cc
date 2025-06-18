@@ -1,8 +1,9 @@
 #include <Client/Storage.hh>
 
-#include <Client/DOM.hh>
 #include <Client/Game.hh>
 #include <Client/Input.hh>
+
+#include <Shared/Config.hh>
 
 #include <cstring>
 #include <string>
@@ -164,11 +165,10 @@ void Storage::retrieve() {
         }
     }
     {
-        uint32_t len = StorageProtocol::retrieve("nickname", 72);
-        if (len > 0 && len < 32) {
+        uint32_t len = StorageProtocol::retrieve("nickname", MAX_NAME_LENGTH + 4);
+        if (len > 0 && len <= MAX_NAME_LENGTH) {
             Decoder reader(&StorageProtocol::buffer[0]);
             Game::nickname = reader.read<std::string>();
-            DOM::update_text("t0", Game::nickname, 16);
         }
     }
     //for (MobID::T i = 0; i < MobID::kNumMobs; ++i) Game::seen_mobs[i] = 1;

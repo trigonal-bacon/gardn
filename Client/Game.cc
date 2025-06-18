@@ -1,7 +1,6 @@
 #include <Client/Game.hh>
 
 #include <Client/Debug.hh>
-#include <Client/DOM.hh>
 #include <Client/Particle.hh>
 #include <Client/Setup.hh>
 #include <Client/Storage.hh>
@@ -49,6 +48,7 @@ namespace Game {
 using namespace Game;
 
 void Game::init() {
+    Storage::retrieve();
     window.add_child(
         Ui::make_title_main_screen()
     );
@@ -100,7 +100,6 @@ void Game::init() {
     window.add_child(
         Ui::make_debug_stats()
     );
-    Storage::retrieve();
     socket.connect(
         std::format("ws{}://{}{}", "", HOST_NAME, (SERVER_PORT==0?"":":"+std::to_string(SERVER_PORT)))
     );
@@ -243,7 +242,6 @@ void Game::tick(double time) {
 
     //clearing operations
     simulation.post_tick();
-    Game::nickname = DOM::retrieve_text("t0", 16);
     Storage::set();
     Input::keys_pressed_this_tick.clear();
     Input::mouse_buttons_pressed = Input::mouse_buttons_released = 0;
