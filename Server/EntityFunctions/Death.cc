@@ -9,6 +9,7 @@
 #include <Shared/Vector.hh>
 
 #include <algorithm>
+#include <iostream>
 
 static void __alloc_drops(std::vector<PetalID::T> &success_drops, float x, float y) {
     #ifdef DEBUG
@@ -69,10 +70,9 @@ void entity_on_death(Simulation *sim, Entity const &ent) {
         if (!natural_despawn && !(BIT_AT(ent.flags, EntityFlags::kNoDrops))) {
             struct MobData const &mob_data = MOB_DATA[ent.mob_id];
             std::vector<PetalID::T> success_drops = {};
-            std::vector<float> const &drop_chances = MOB_DROP_CHANCES[ent.mob_id];
+            std::vector<float> const &drop_chances = GET_MOB_DROP_CHANCES(ent.mob_id);
             for (uint32_t i = 0; i < mob_data.drops.size(); ++i) 
                 if (frand() < drop_chances[i]) success_drops.push_back(mob_data.drops[i]);
-
             __alloc_drops(success_drops, ent.x, ent.y);
         }
         if (ent.mob_id == MobID::kAntHole && ent.team == NULL_ENTITY && frand() < 0.10) { 

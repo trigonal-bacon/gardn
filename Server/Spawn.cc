@@ -195,7 +195,7 @@ Entity &alloc_web(float radius, Entity const &parent) {
 void player_spawn(Simulation *sim, Entity &camera, Entity &player) {
     camera.set_player(player.id);
     uint32_t power = Map::difficulty_at_level(camera.respawn_level);
-    Map::ZoneDefinition const &zone = Map::MAP[power];
+    ZoneDefinition const &zone = MAP[power];
     float spawn_x = (frand() - 0.5) * zone.w + zone.x;
     float spawn_y = (frand() - 0.5) * zone.h + zone.y;
     camera.set_camera_x(spawn_x);

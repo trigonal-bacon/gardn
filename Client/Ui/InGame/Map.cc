@@ -8,15 +8,15 @@
 
 using namespace Ui;
 
-Minimap::Minimap(float w) : Element(w, w*Map::ARENA_HEIGHT/Map::ARENA_WIDTH, {}) {}
+Minimap::Minimap(float w) : Element(w, w*ARENA_HEIGHT/ARENA_WIDTH, {}) {}
 
 void Minimap::on_render(Renderer &ctx) {
     ctx.set_line_width(7);
     ctx.set_stroke(0xff444444);
     ctx.stroke_rect(-width/2,-height/2,width,height);
     ctx.translate(-width/2,-height/2);
-    ctx.scale(width/Map::ARENA_WIDTH);
-    for (Map::ZoneDefinition const &def : Map::MAP) {
+    ctx.scale(width/ARENA_WIDTH);
+    for (ZoneDefinition const &def : MAP) {
         ctx.set_fill(def.color);
         ctx.fill_rect(def.x-def.w/2,def.y-def.h/2,def.w,def.h);
         ctx.translate(def.x,def.y);
@@ -27,7 +27,7 @@ void Minimap::on_render(Renderer &ctx) {
         Entity const &camera = Game::simulation.get_ent(Game::camera_id);
         ctx.set_fill(0x80000000);
         ctx.begin_path();
-        ctx.arc(camera.camera_x, camera.camera_y, Map::ARENA_WIDTH / 40);
+        ctx.arc(camera.camera_x, camera.camera_y, ARENA_WIDTH / 40);
         ctx.fill();
     }
 }

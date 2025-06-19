@@ -376,7 +376,46 @@ char const *RARITY_NAMES[RarityID::kNumRarities] = {
     "Unique"
 };
 
-extern std::array<std::vector<float>, MobID::kNumMobs> const MOB_DROP_CHANCES = Map::get_auto_petal_drops();
+std::array<std::vector<float>, MobID::kNumMobs> const _get_auto_petal_drops() {
+    std::array<std::vector<float>, MobID::kNumMobs> ret;
+    double const RARITY_MULT[RarityID::kNumRarities] = {60000,20000,2500,100,5,2.5,1};
+    double MOB_SPAWN_RATES[MobID::kNumMobs] = {0};
+    double PETAL_AGGREGATE_DROPS[PetalID::kNumPetals] = {0};
+    for (struct ZoneDefinition const &zone : MAP) {
+        double total = 0;
+        for (SpawnChance const &s : zone.spawns) total += s.chance;
+        for (SpawnChance const &s : zone.spawns) {
+            double xx = (s.chance * zone.drop_multiplier / total);
+            MOB_SPAWN_RATES[s.id] += xx;
+            if (s.id == MobID::kAntHole) {
+                MOB_SPAWN_RATES[MobID::kQueenAnt] += xx;
+                MOB_SPAWN_RATES[MobID::kDigger] += 0.1 * xx;
+                MOB_SPAWN_RATES[MobID::kSoldierAnt] += 15 * xx;
+                MOB_SPAWN_RATES[MobID::kWorkerAnt] += 10 * xx;
+                MOB_SPAWN_RATES[MobID::kBabyAnt] += 5 * xx;
+            }
+        }
+    }
+
+    for (MobID::T id = 0; id < MobID::kNumMobs; ++id)
+        for (PetalID::T drop_id : MOB_DATA[id].drops) PETAL_AGGREGATE_DROPS[drop_id]++;
+
+    double BASE_NUM = MOB_SPAWN_RATES[MobID::kSquare];
+
+    for (MobID::T id = 0; id < MobID::kNumMobs; ++id) {
+        for (PetalID::T drop_id : MOB_DATA[id].drops) {
+            float chance = fclamp((BASE_NUM * RARITY_MULT[PETAL_DATA[drop_id].rarity]) / (PETAL_AGGREGATE_DROPS[drop_id] * MOB_SPAWN_RATES[id] * MOB_DATA[id].attributes.segments), 0, 1);
+            ret[id].push_back(chance);
+        }
+    }
+    return ret;
+}
+
+static std::array<std::vector<float>, MobID::kNumMobs> const _drop_chances = _get_auto_petal_drops();
+
+std::vector<float> const &GET_MOB_DROP_CHANCES(MobID::T id) {
+    return _drop_chances[id];
+}
 
 uint32_t score_to_pass_level(uint32_t level) {
     return (uint32_t)(pow(1.06, level - 1) * level) + 3;

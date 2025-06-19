@@ -10,7 +10,7 @@
 #include <Shared/StaticData.hh>
 #include <Shared/Vector.hh>
 
-#include <iostream>
+#include <cmath>
 
 void Game::render_game() {
     RenderContext context(&renderer);
@@ -37,7 +37,7 @@ void Game::render_game() {
     }
     {
         RenderContext context(&renderer);
-        for (Map::ZoneDefinition const &def : Map::MAP) {
+        for (ZoneDefinition const &def : MAP) {
             renderer.set_fill(def.color);
             renderer.fill_rect(def.x - def.w/2,def.y-def.h/2,def.w,def.h);
             if (Map::difficulty_at_level(score_to_level(Game::score)) > def.difficulty) {

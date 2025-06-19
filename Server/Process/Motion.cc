@@ -17,8 +17,8 @@ void tick_entity_motion(Simulation *sim, Entity &ent) {
     ent.collision_velocity *= 0.5;
     ent.velocity += ent.collision_velocity;
     if (!ent.has_component(kPetal) && !ent.has_component(kWeb)) {
-        ent.set_x(fclamp(ent.x, ent.radius, Map::ARENA_WIDTH - ent.radius));
-        ent.set_y(fclamp(ent.y, ent.radius, Map::ARENA_HEIGHT - ent.radius));
+        ent.set_x(fclamp(ent.x, ent.radius, ARENA_WIDTH - ent.radius));
+        ent.set_y(fclamp(ent.y, ent.radius, ARENA_HEIGHT - ent.radius));
     }
     if (ent.has_component(kFlower)) {
         if (ent.acceleration.x != 0 || ent.acceleration.y != 0)
