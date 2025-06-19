@@ -58,8 +58,7 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
                         return;
                     }
                     //if (player.has_component(kFlower)) 
-                    delta.normalize().set_magnitude(PLAYER_ACCELERATION * 5);
-                    //else delta.normalize().set_magnitude(PLAYER_ACCELERATION * 5);
+                    delta.set_magnitude(PLAYER_ACCELERATION * 4);
                     petal.acceleration = delta;
                     break;
                 }

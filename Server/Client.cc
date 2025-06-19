@@ -106,8 +106,8 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
                 if (std::abs(x) > 5e3 || std::abs(y) > 5e3) break;
                 Vector accel(x,y);
                 float m = accel.magnitude();
-                if (m > 200) accel.normalize().set_magnitude(PLAYER_ACCELERATION);
-                else accel.normalize().set_magnitude(m / 200 * PLAYER_ACCELERATION);
+                if (m > 200) accel.set_magnitude(PLAYER_ACCELERATION);
+                else accel.set_magnitude(m / 200 * PLAYER_ACCELERATION);
                 camera.acceleration = accel;
             }
             VALIDATE(validator.validate_uint8());

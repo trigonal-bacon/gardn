@@ -46,7 +46,7 @@ static void default_tick_returning(Simulation *sim, Entity &ent, float speed = 1
         ent.ai_state = AIState::kIdle;
         return;
     } 
-    delta.normalize().set_magnitude(PLAYER_ACCELERATION * speed);
+    delta.set_magnitude(PLAYER_ACCELERATION * speed);
     ent.acceleration = delta;
     ent.set_angle(delta.angle());
 }
