@@ -81,7 +81,7 @@ Element *Ui::make_loadout_backgrounds() {
                 }, 10, 15
             ))->set_z_to_one(),
             new Ui::InputFreeze(),
-            new Ui::Element(0,34,{ .should_render = [](){ return Input::keyboard_movement; }})
+            new Ui::Element(0,34,{ .should_render = [](){ return Input::keyboard_movement || Game::is_mobile; }})
         }, 0, 0, { .should_render = [](){ return Game::alive(); } }
     );
     base->style.v_justify = Style::Bottom;

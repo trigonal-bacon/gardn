@@ -39,6 +39,7 @@ namespace Game {
     extern uint8_t simulation_ready;
     extern uint8_t on_game_screen;
     extern uint8_t show_debug;
+    extern uint8_t is_mobile;
     
     void init();
     uint8_t alive();

@@ -122,10 +122,10 @@ Element *Ui::make_panel_buttons() {
                 if (Ui::panel_open != Panel::kSettings) {
                     Ui::panel_open = Panel::kSettings;
                     Element *pg = Ui::Panel::settings;
-                    pg->x = elt->screen_x - Ui::scale * pg->width / 2;
-                    pg->y = -Ui::scale * (elt->height + 15);
-                    if (pg->x < 10 * Ui::scale) 
-                        pg->x = 10 * Ui::scale;
+                    pg->x = elt->screen_x / Ui::scale - pg->width / 2;
+                    pg->y = -(elt->height + 20);
+                    if (pg->x < 10) 
+                        pg->x = 10;
                 }
                 else Ui::panel_open = Panel::kNone;
             } },
@@ -142,10 +142,10 @@ Element *Ui::make_panel_buttons() {
                 if (Ui::panel_open != Panel::kPetals) {
                     Ui::panel_open = Panel::kPetals;
                     Element *pg = Ui::Panel::petal_gallery;
-                    pg->x = elt->screen_x - Ui::scale * pg->width / 2;
-                    pg->y = -Ui::scale * (elt->height + 15);
-                    if (pg->x < 10 * Ui::scale) 
-                        pg->x = 10 * Ui::scale;
+                    pg->x = elt->screen_x / Ui::scale - pg->width / 2;
+                    pg->y = -(elt->height + 20);
+                    if (pg->x < 10) 
+                        pg->x = 10;
                 }
                 else Ui::panel_open = Panel::kNone;
             } },
@@ -158,10 +158,10 @@ Element *Ui::make_panel_buttons() {
                 if (Ui::panel_open != Panel::kMobs) {
                     Ui::panel_open = Panel::kMobs;
                     Element *pg = Ui::Panel::mob_gallery;
-                    pg->x = elt->screen_x - Ui::scale * pg->width / 2;
-                    pg->y = -Ui::scale * (elt->height + 15);
-                    if (pg->x < 10 * Ui::scale) 
-                        pg->x = 10 * Ui::scale;
+                    pg->x = elt->screen_x / Ui::scale - pg->width / 2;
+                    pg->y = -(elt->height + 20);
+                    if (pg->x < 10) 
+                        pg->x = 10;
                 }
                 else Ui::panel_open = Panel::kNone;
             } },
@@ -174,10 +174,10 @@ Element *Ui::make_panel_buttons() {
                 if (Ui::panel_open != Panel::kChangelog) {
                     Ui::panel_open = Panel::kChangelog;
                     Element *pg = Ui::Panel::changelog;
-                    pg->x = elt->screen_x - Ui::scale * pg->width / 2;
-                    pg->y = -Ui::scale * (elt->height + 15);
-                    if (pg->x < 10 * Ui::scale) 
-                        pg->x = 10 * Ui::scale;
+                    pg->x = elt->screen_x / Ui::scale - pg->width / 2;
+                    pg->y = -(elt->height + 20);
+                    if (pg->x < 10) 
+                        pg->x = 10;
                 }
                 else Ui::panel_open = Panel::kNone;
             } },

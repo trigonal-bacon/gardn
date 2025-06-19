@@ -43,6 +43,7 @@ namespace Game {
     uint8_t simulation_ready = 0;
     uint8_t on_game_screen = 0;
     uint8_t show_debug = 0;
+    uint8_t is_mobile = check_mobile();
 }
 
 using namespace Game;
@@ -54,7 +55,7 @@ void Game::init() {
             .fill = 0xffffffff,
             .animate = [](Ui::Element *elt, Renderer &ctx) {
                 elt->x = 0;
-                elt->y = -Ui::window_height / 4;
+                elt->y = -270;
             }
         })
     );
@@ -176,7 +177,9 @@ void Game::tick(double time) {
         transition_circle = fclamp(transition_circle / powf(1.05, Ui::dt * 60 / 1000) - Ui::dt / 5, 0, MAX_TRANSITION_CIRCLE);
 
     window.refactor();
-    window.poll_events();
+    if (Input::is_valid())
+        window.poll_events();
+    else Ui::focused = nullptr;
 
     if (should_render_title_ui()) {
         render_title_screen();

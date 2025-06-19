@@ -11,10 +11,12 @@ extern "C" {
         Input::mouse_x = x;
         Input::mouse_y = y;
         if (type == 0) {
+            ++Input::num_touches;
             Input::mouse_buttons_pressed |= 1 << button;
             Input::mouse_buttons_state |= 1 << button;
         }
         else if (type == 2) {
+            --Input::num_touches;
             Input::mouse_buttons_released |= 1 << button;
             Input::mouse_buttons_state &= ~(1 << button);
         }
@@ -58,6 +60,21 @@ int setup_inputs() {
             //e.preventDefault();
             _mouse_event(e.clientX * devicePixelRatio, e.clientY * devicePixelRatio, 2, +!!e.button);
         });
+        window.addEventListener("touchstart", (e) => {
+            //e.preventDefault();
+            const t = e.changedTouches[0];
+            _mouse_event(t.clientX * devicePixelRatio, t.clientY * devicePixelRatio, 0, 0);
+        });
+        window.addEventListener("touchmove", (e) => {
+            //e.preventDefault();
+            const t = e.changedTouches[0];
+            _mouse_event(t.clientX * devicePixelRatio, t.clientY * devicePixelRatio, 1, 0);
+        });
+        window.addEventListener("touchend", (e) => {
+            //e.preventDefault();
+            const t = e.changedTouches[0];
+            _mouse_event(t.clientX * devicePixelRatio, t.clientY * devicePixelRatio, 2, 0);
+        });
         window.addEventListener("wheel", (e) => {
             //e.preventDefault();
             _wheel_event(e.deltaY);
@@ -96,7 +113,8 @@ int setup_canvas() {
     return 0;
 }
 
-template<char const *c>
-char p(){
-    return *c;
-};
+uint8_t check_mobile() {
+    return EM_ASM_INT({
+        return /iPhone|iPad|iPod|Android|BlackBerry/i.test(navigator.userAgent);
+    });
+}
