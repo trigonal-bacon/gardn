@@ -79,7 +79,7 @@ void Simulation::pre_tick() {
 #define COMPONENT(name) \
 template<> \
 void Simulation::for_each<k##name>(std::function<void(Simulation *, Entity &)> cb) { \
-    for (EntityID::id_type i = 0; i < active_entities.length; ++i) { \
+    for (EntityID::id_type i = 0; i < active_entities.size(); ++i) { \
         Entity &ent = get_ent(active_entities[i]); \
         if (ent.pending_delete) continue; \
         if (ent.has_component(k##name)) cb(this, ent); \

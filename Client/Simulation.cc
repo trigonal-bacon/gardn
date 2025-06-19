@@ -11,7 +11,7 @@ void Simulation::tick() {
 
 void Simulation::tick_lerp(double dt) {
     double amt = 1 - (pow(1 - 0.25, dt * 60 / 1000));
-    for (uint32_t i = 0; i < active_entities.length; ++i) {
+    for (uint32_t i = 0; i < active_entities.size(); ++i) {
         Entity &ent = get_ent(active_entities[i]);
         if (ent.has_component(kPhysics)) {
             float prevx = ent.x;
@@ -65,14 +65,14 @@ void Simulation::tick_lerp(double dt) {
 }
 
 void Simulation::post_tick() {
-   for (uint32_t i = 0; i < active_entities.length; ++i) {
+   for (uint32_t i = 0; i < active_entities.size(); ++i) {
         assert(ent_exists(active_entities[i]));
         Entity &ent = get_ent(active_entities[i]);
         ent.reset_protocol();
     }
     /*
     MUST delete instantly in protocol, or it won't allow instant realloc
-    for (uint32_t i = 0; i < pending_delete.length; ++i) {
+    for (uint32_t i = 0; i < pending_delete.size(); ++i) {
         assert(ent_exists(pending_delete[i]));
         _delete_ent(pending_delete[i]);
     }

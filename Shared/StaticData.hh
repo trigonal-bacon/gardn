@@ -7,15 +7,6 @@
 #include <vector>
 
 extern const uint32_t MAX_LEVEL;
-const uint32_t ENTITY_CAP = 32768;
-const uint32_t MAX_SLOT_COUNT = 8;
-const uint32_t LEADERBOARD_SIZE = 10;
-const uint32_t MAX_PETALS_IN_CLUMP = 4;
-
-const uint32_t ARENA_WIDTH = 40000;
-const uint32_t ARENA_HEIGHT = 4000;
-uint32_t const MAX_DIFFICULTY = 3;
-
 extern const uint32_t TPS;
 extern const uint32_t DELETION_ANIMATION_TICKS;
 
@@ -128,7 +119,7 @@ std::array const MAP = std::to_array<struct ZoneDefinition>({
     }
 });
 
-extern std::vector<float> const &GET_MOB_DROP_CHANCES(MobID::T);
+extern StaticArray<float, MAX_DROPS_PER_MOB> const &GET_MOB_DROP_CHANCES(MobID::T);
 
 extern uint32_t score_to_pass_level(uint32_t);
 extern uint32_t score_to_level(uint32_t);

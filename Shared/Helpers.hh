@@ -67,13 +67,24 @@ std::string format_score(float);
 
 template<typename T, uint32_t capacity>
 class StaticArray {
-public:
     T values[capacity];
     uint32_t length;
+public:
     StaticArray() : length(0) {};
-    T &operator[](uint32_t at) { return values[at]; };
-    void push(T val) { DEBUG_ONLY(assert(length < capacity); ) values[length++] = val; };
-    void clear() { length = 0; }
+    constexpr StaticArray(std::initializer_list<T> elts) : length(0) {
+        //static_assert(elts.size() <= capacity);
+        for (T x : elts) values[length++] = x;
+    };
+    constexpr T &operator[](uint32_t at) { return values[at]; };
+    constexpr T const &operator[](uint32_t at) const { return values[at]; };
+    constexpr uint32_t size() const { return length; };
+    constexpr void push(T val) { DEBUG_ONLY(assert(length < capacity); ) values[length++] = val; };
+    constexpr T pop() { DEBUG_ONLY(assert(length > 0); ) return std::move(values[--length]); };
+    constexpr void clear() { length = 0; }
+    constexpr T *begin() { return &values[0]; };
+    constexpr T *end() { return &values[length]; };
+    constexpr T const *begin() const { return &values[0]; };
+    constexpr T const *end() const { return &values[length]; };
 };
 
 template<typename T, uint32_t capacity>
@@ -82,14 +93,14 @@ class CircularArray {
     uint32_t at;
     uint32_t length;
 public:
-    CircularArray() : at(0), length(0) {};
-    uint32_t size() const { return length; }
-    T operator[](uint32_t idx) const { return values[idx]; };
-    void push(T val) { 
+    constexpr CircularArray() : at(0), length(0) {};
+    constexpr uint32_t size() const { return length; }
+    constexpr T operator[](uint32_t idx) const { return values[idx]; };
+    constexpr void push(T val) { 
         values[at] = val; at = (at + 1) % capacity;
         if (length < capacity) ++length;
     };
-    void clear() { length = at = 0; };
+    constexpr void clear() { length = at = 0; };
 };
 
 class LerpFloat {

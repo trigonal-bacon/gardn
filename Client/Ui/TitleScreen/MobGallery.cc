@@ -41,7 +41,7 @@ void GalleryMob::on_render(Renderer &ctx) {
 static Element *make_mob_drops(MobID::T id) {
     Element *elt = new Ui::HContainer({}, 0, 6, { .h_justify = Style::Left });
     struct MobData const &data = MOB_DATA[id];
-    std::vector<float> const &drop_chances = GET_MOB_DROP_CHANCES(id);
+    StaticArray<float, MAX_DROPS_PER_MOB> const &drop_chances = GET_MOB_DROP_CHANCES(id);
     std::vector<uint8_t> order;
     for (uint32_t i = 0; i < data.drops.size(); ++i)
         order.push_back(i);

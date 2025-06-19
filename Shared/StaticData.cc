@@ -376,8 +376,8 @@ char const *RARITY_NAMES[RarityID::kNumRarities] = {
     "Unique"
 };
 
-std::array<std::vector<float>, MobID::kNumMobs> const _get_auto_petal_drops() {
-    std::array<std::vector<float>, MobID::kNumMobs> ret;
+std::array<StaticArray<float, MAX_DROPS_PER_MOB>, MobID::kNumMobs> const _get_auto_petal_drops() {
+    std::array<StaticArray<float, MAX_DROPS_PER_MOB>, MobID::kNumMobs> ret;
     double const RARITY_MULT[RarityID::kNumRarities] = {60000,20000,2500,100,5,2.5,1};
     double MOB_SPAWN_RATES[MobID::kNumMobs] = {0};
     double PETAL_AGGREGATE_DROPS[PetalID::kNumPetals] = {0};
@@ -398,22 +398,22 @@ std::array<std::vector<float>, MobID::kNumMobs> const _get_auto_petal_drops() {
     }
 
     for (MobID::T id = 0; id < MobID::kNumMobs; ++id)
-        for (PetalID::T drop_id : MOB_DATA[id].drops) PETAL_AGGREGATE_DROPS[drop_id]++;
+        for (PetalID::T const drop_id : MOB_DATA[id].drops) PETAL_AGGREGATE_DROPS[drop_id]++;
 
     double BASE_NUM = MOB_SPAWN_RATES[MobID::kSquare];
 
     for (MobID::T id = 0; id < MobID::kNumMobs; ++id) {
-        for (PetalID::T drop_id : MOB_DATA[id].drops) {
+        for (PetalID::T const drop_id : MOB_DATA[id].drops) {
             float chance = fclamp((BASE_NUM * RARITY_MULT[PETAL_DATA[drop_id].rarity]) / (PETAL_AGGREGATE_DROPS[drop_id] * MOB_SPAWN_RATES[id] * MOB_DATA[id].attributes.segments), 0, 1);
-            ret[id].push_back(chance);
+            ret[id].push(chance);
         }
     }
     return ret;
 }
 
-static std::array<std::vector<float>, MobID::kNumMobs> const _drop_chances = _get_auto_petal_drops();
+static std::array<StaticArray<float, MAX_DROPS_PER_MOB>, MobID::kNumMobs> const _drop_chances = _get_auto_petal_drops();
 
-std::vector<float> const &GET_MOB_DROP_CHANCES(MobID::T id) {
+StaticArray<float, MAX_DROPS_PER_MOB> const &GET_MOB_DROP_CHANCES(MobID::T id) {
     return _drop_chances[id];
 }
 

@@ -3,7 +3,16 @@
 #include <Shared/Helpers.hh>
 
 #include <cstdint>
-#include <vector>
+
+const uint32_t ENTITY_CAP = 32768;
+const uint32_t MAX_SLOT_COUNT = 8;
+const uint32_t LEADERBOARD_SIZE = 10;
+const uint32_t MAX_PETALS_IN_CLUMP = 4;
+
+const uint32_t ARENA_WIDTH = 40000;
+const uint32_t ARENA_HEIGHT = 4000;
+const uint32_t MAX_DIFFICULTY = 3;
+const uint32_t MAX_DROPS_PER_MOB = 6;
 
 namespace DamageType {
     enum : uint8_t {
@@ -201,24 +210,24 @@ struct MobData {
     float damage;
     RangeValue radius;
     uint32_t xp;
-    std::vector<PetalID::T> const drops;
+    StaticArray<PetalID::T, MAX_DROPS_PER_MOB> drops;
     struct MobAttributes attributes;
 };
 
 struct SpawnChance {
-    MobID::T const id;
-    float const chance;
+    MobID::T id;
+    float chance;
 };
 
 struct ZoneDefinition {
-    float const x;
-    float const y;
-    float const w;
-    float const h;
-    float const density;
-    float const drop_multiplier;
-    std::vector<struct SpawnChance> const spawns;
-    uint32_t const difficulty;
-    uint32_t const color;
+    float x;
+    float y;
+    float w;
+    float h;
+    float density;
+    float drop_multiplier;
+    StaticArray<struct SpawnChance, MobID::kNumMobs> spawns;
+    uint32_t difficulty;
+    uint32_t color;
     char const *name;
 };

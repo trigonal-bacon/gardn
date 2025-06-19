@@ -70,7 +70,7 @@ void Simulation::tick() {
     pre_tick();
     if (frand() < 0.01)
         for (uint32_t i = 0; i < 10; ++i) Map::spawn_random_mob();
-    for (uint32_t i = 0; i < active_entities.length; ++i) {
+    for (uint32_t i = 0; i < active_entities.size(); ++i) {
         Entity &ent = get_ent(active_entities[i]);
         if (ent.has_component(kPhysics)) {
             if (ent.deletion_tick > 0)
@@ -97,7 +97,7 @@ void Simulation::post_tick() {
     for (Client *client: Server::clients) update_client(this, client);
 
     arena_info.reset_protocol();
-    for (uint32_t i = 0; i < active_entities.length; ++i) {
+    for (uint32_t i = 0; i < active_entities.size(); ++i) {
         //no deletions mid tick
         DEBUG_ONLY(assert(ent_exists(active_entities[i]));)
         Entity &ent = get_ent(active_entities[i]);
@@ -111,7 +111,7 @@ void Simulation::post_tick() {
         }
     }
     
-    for (uint32_t i = 0; i < pending_delete.length; ++i) {
+    for (uint32_t i = 0; i < pending_delete.size(); ++i) {
         //guarantee entity exists
         DEBUG_ONLY(assert(ent_exists(pending_delete[i]));)
         Entity &ent = get_ent(pending_delete[i]);
