@@ -26,26 +26,6 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
     }
     if (BIT_AT(petal.flags, EntityFlags::kIsDespawning)) {
         switch (petal.petal_id) {
-            case PetalID::kRose:
-            case PetalID::kDahlia:
-            case PetalID::kAzalea: {
-                if (player.health == player.max_health) {
-                    BIT_UNSET(petal.flags, EntityFlags::kIsDespawning);
-                    return;
-                }
-                petal.despawn_tick = 10; //prevent despawn
-                Vector delta(player.x - petal.x, player.y - petal.y);
-                if (delta.magnitude() < petal.radius) {
-                    inflict_heal(sim, player, petal_data.attributes.burst_heal);
-                    sim->request_delete(petal.id);
-                    return;
-                }
-                //if (player.has_component(kFlower)) 
-                delta.normalize().set_magnitude(PLAYER_ACCELERATION * 5);
-                //else delta.normalize().set_magnitude(PLAYER_ACCELERATION * 5);
-                petal.acceleration = delta;
-                break;
-            }
             case PetalID::kMissile: {
                 petal.acceleration.unit_normal(petal.angle).set_magnitude(4 * PLAYER_ACCELERATION);
                 break;
@@ -67,10 +47,22 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
             switch (petal.petal_id) {
                 case PetalID::kDahlia:
                 case PetalID::kRose:
-                case PetalID::kAzalea:
-                    if (player.health != player.max_health && player.dandy_ticks == 0)
-                        entity_set_despawn_tick(petal, 10); //doesn't matter what it is
+                case PetalID::kAzalea: {
+                    if (player.health == player.max_health || player.dandy_ticks != 0)
+                        break;
+                    //petal.despawn_tick = 10; //prevent despawn
+                    Vector delta(player.x - petal.x, player.y - petal.y);
+                    if (delta.magnitude() < petal.radius) {
+                        inflict_heal(sim, player, petal_data.attributes.burst_heal);
+                        sim->request_delete(petal.id);
+                        return;
+                    }
+                    //if (player.has_component(kFlower)) 
+                    delta.normalize().set_magnitude(PLAYER_ACCELERATION * 5);
+                    //else delta.normalize().set_magnitude(PLAYER_ACCELERATION * 5);
+                    petal.acceleration = delta;
                     break;
+                }
                 case PetalID::kMissile:
                     if (BIT_AT(player.input, InputFlags::kAttacking)) {
                         petal.acceleration.unit_normal(petal.angle).set_magnitude(4 * PLAYER_ACCELERATION);
