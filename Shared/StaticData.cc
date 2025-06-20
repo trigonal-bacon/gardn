@@ -163,6 +163,7 @@ extern struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
     }},
     {"Heaviest", "This thing is so heavy that nothing can get in its way",
         200.0, 10.0, 12.0, 15.0, 1, RarityID::kEpic, {
+        .mass = 10,
         .rotation_style = PetalAttributes::kNoRot
     }},
     {"Third Eye", "Allows your flower to extend petals further out",
@@ -183,7 +184,8 @@ extern struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
     }},
     {"Moon", "Where did this come from?",
         10000.0, 1.0, 50.0, 10.0, 1, RarityID::kMythic, {
-        .secondary_reload = 0.5
+        .secondary_reload = 0.5,
+        .mass = 2000
     }},
     {"Lotus", "Absorbs some poison damage taken by the flower",
         5.0, 5.0, 12.0, 2.0, 1, RarityID::kEpic, {

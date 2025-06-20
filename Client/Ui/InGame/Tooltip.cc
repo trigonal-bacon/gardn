@@ -26,7 +26,10 @@ static void make_petal_tooltip(PetalID::T id) {
         new Ui::StaticText(20, PETAL_DATA[id].name, { .fill = 0xffffffff, .h_justify = Style::Left }),
         new Ui::StaticText(14, RARITY_NAMES[PETAL_DATA[id].rarity], { .fill = RARITY_COLORS[PETAL_DATA[id].rarity], .h_justify = Style::Left }),
         new Ui::Element(0,10),
-        new Ui::StaticText(12, PETAL_DATA[id].description, { .fill = 0xffffffff, .h_justify = Style::Left })
+        new Ui::StaticText(12, PETAL_DATA[id].description, { .fill = 0xffffffff, .h_justify = Style::Left }),
+        DEBUG_ONLY(PETAL_DATA[id].health == 0 ? nullptr : new Ui::StaticText(12, "Health: " + format_score(PETAL_DATA[id].health), { .fill = 0xff56ff45, .h_justify = Style::Left }),)
+        DEBUG_ONLY(PETAL_DATA[id].damage == 0 ? nullptr : new Ui::StaticText(12, "Damage: " + format_score(PETAL_DATA[id].damage), { .fill = 0xffff5645, .h_justify = Style::Left }),)
+        DEBUG_ONLY(PETAL_DATA[id].health == 0 ? nullptr : new Ui::StaticText(12, "Radius: " + format_score(PETAL_DATA[id].radius), { .fill = 0xff5645ff, .h_justify = Style::Left }),)
     }, 5, 2);
     tooltip->style.fill = 0x80000000;
     tooltip->style.round_radius = 6;

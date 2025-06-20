@@ -8,8 +8,10 @@ using namespace Ui;
 Container::Container(std::initializer_list<Element *> elts, float w, float h, Style s) :
     Element(w, h, s)
 {
-    children = elts;
-    for (Element *elt : children) elt->parent = this;
+    for (Element *elt : elts) 
+        if (elt != nullptr) children.push_back(elt); 
+    for (Element *elt : children)
+        elt->parent = this;
 }
 
 void Container::on_render(Renderer &ctx) {

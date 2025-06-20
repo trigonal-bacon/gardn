@@ -24,6 +24,7 @@ Element::Element(float w, float h, Style s) : width(w), height(h), style(s) {
 }
 
 void Element::add_child(Element *elt) {
+    if (elt == nullptr) return;
     children.push_back(elt);
     elt->parent = this;
     //parent/child?

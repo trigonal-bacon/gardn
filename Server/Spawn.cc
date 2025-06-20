@@ -153,9 +153,7 @@ Entity &alloc_petal(PetalID::T petal_id, Entity const &parent) {
     petal.set_x(parent.x);
     petal.set_y(parent.y);
     petal.set_radius(petal_data.radius * 2);
-    petal.mass = 0.5;
-    if (petal_id == PetalID::kHeaviest) petal.mass = 10;
-    else if (petal_id == PetalID::kMoon) petal.mass = 20000;
+    petal.mass = petal_data.attributes.mass;
     petal.friction = DEFAULT_FRICTION * 1.5;
     petal.add_component(kRelations);
     petal.set_parent(parent.id);

@@ -106,6 +106,11 @@ float RangeValue::get_single(float a) const {
     return lower + (upper - lower) * fclamp(a, 0, 1);
 }
 
+std::string RangeValue::to_string() const {
+    if (lower == upper) return format_score(lower);
+    return format_score(lower) + '~' + format_score(upper);
+}
+
 UTF8Parser::UTF8Parser(char const *s) : str(s), at(s) {}
 
 std::string UTF8Parser::trunc_string(std::string const &str, uint32_t max) {

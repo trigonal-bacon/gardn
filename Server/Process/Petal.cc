@@ -44,24 +44,17 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
     }
     else if (petal_data.attributes.secondary_reload > 0) {
         if (petal.secondary_reload > petal_data.attributes.secondary_reload * TPS) {
-            switch (petal.petal_id) {
-                case PetalID::kDahlia:
-                case PetalID::kRose:
-                case PetalID::kAzalea: {
-                    if (player.health == player.max_health || player.dandy_ticks != 0)
-                        break;
-                    //petal.despawn_tick = 10; //prevent despawn
-                    Vector delta(player.x - petal.x, player.y - petal.y);
-                    if (delta.magnitude() < petal.radius) {
-                        inflict_heal(sim, player, petal_data.attributes.burst_heal);
-                        sim->request_delete(petal.id);
-                        return;
-                    }
-                    //if (player.has_component(kFlower)) 
-                    delta.set_magnitude(PLAYER_ACCELERATION * 4);
-                    petal.acceleration = delta;
-                    break;
+            if (petal_data.attributes.burst_heal > 0 && player.health < player.max_health && player.dandy_ticks == 0) {
+                Vector delta(player.x - petal.x, player.y - petal.y);
+                if (delta.magnitude() < petal.radius) {
+                    inflict_heal(sim, player, petal_data.attributes.burst_heal);
+                    sim->request_delete(petal.id);
+                    return;
                 }
+                delta.set_magnitude(PLAYER_ACCELERATION * 4);
+                petal.acceleration = delta;
+            }
+            switch (petal.petal_id) {
                 case PetalID::kMissile:
                     if (BIT_AT(player.input, InputFlags::kAttacking)) {
                         petal.acceleration.unit_normal(petal.angle).set_magnitude(4 * PLAYER_ACCELERATION);
@@ -114,7 +107,6 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
                     break;
                 }
                 default:
-                    //petal.despawn_tick++;
                     break;
             }
         } else petal.secondary_reload++;

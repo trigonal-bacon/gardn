@@ -171,16 +171,17 @@ struct PetalAttributes {
         kNoRot,
         kFollowRot
     };
-    float clump_radius;
-    float secondary_reload;
-    float constant_heal;
-    float burst_heal;
-    uint8_t defend_only;
-    float icon_angle;
-    uint8_t rotation_style;
+    float clump_radius = 0;
+    float secondary_reload = 0;
+    float constant_heal = 0;
+    float burst_heal = 0;
+    float mass = 1;
+    uint8_t defend_only = 0;
+    float icon_angle = 0;
+    uint8_t rotation_style = kPassiveRot;
     struct PoisonDamage poison_damage;
     uint8_t spawns = MobID::kNumMobs;
-    uint8_t spawn_count;
+    uint8_t spawn_count = 0;
 };
 
 struct PetalData {

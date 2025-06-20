@@ -134,6 +134,7 @@ public:
     RangeValue(double, double);
     RangeValue(double);
     float get_single(float) const;
+    std::string to_string() const;
 };
 
 //DOES NOT PERFORM BOUND CHECKS
