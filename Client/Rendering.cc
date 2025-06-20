@@ -12,6 +12,15 @@
 
 #include <cmath>
 
+void _apply_damage_filter(Renderer &ctx, Entity const &ent) {
+    ctx.set_global_alpha(1 - ent.deletion_animation);
+    ctx.scale(1 + 0.5 * ent.deletion_animation);
+    if (ent.damage_flash > 0.66)
+        ctx.add_color_filter(0xffffffff, ent.damage_flash);
+    else if (ent.damage_flash > 0.1)
+        ctx.add_color_filter(0xffff1200, ent.damage_flash * 1.5);
+}
+
 void Game::render_game() {
     RenderContext context(&renderer);
     DEBUG_ONLY(assert(simulation.ent_exists(camera_id));)
@@ -123,6 +132,7 @@ void Game::render_game() {
         RenderContext context(&renderer);
         renderer.translate(ent.x, ent.y);
         renderer.rotate(ent.angle);
+        _apply_damage_filter(renderer, ent);
         render_petal(renderer, ent);
     });
     simulation.for_each<kMob>([](Simulation *sim, Entity const &ent){
@@ -130,6 +140,7 @@ void Game::render_game() {
         RenderContext context(&renderer);
         renderer.translate(ent.x, ent.y);
         renderer.rotate(ent.angle);
+        _apply_damage_filter(renderer, ent);
         render_mob(renderer, ent);
     });
     simulation.for_each<kMob>([](Simulation *sim, Entity const &ent){
@@ -137,12 +148,14 @@ void Game::render_game() {
         RenderContext context(&renderer);
         renderer.translate(ent.x, ent.y);
         renderer.rotate(ent.angle);
+        _apply_damage_filter(renderer, ent);
         render_mob(renderer, ent);
     });
     simulation.for_each<kFlower>([](Simulation *sim, Entity const &ent){
         RenderContext context(&renderer);
         renderer.translate(ent.x, ent.y);
         renderer.rotate(ent.angle);
+        _apply_damage_filter(renderer, ent);
         render_flower(renderer, ent);
     });
     simulation.for_each<kName>([](Simulation *sim, Entity const &ent){
