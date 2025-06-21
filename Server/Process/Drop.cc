@@ -7,8 +7,6 @@
 #include <Shared/Simulation.hh>
 
 void tick_drop_behavior(Simulation *sim, Entity &ent) {
-    if (ent.lifetime > 0)
-        ent.set_radius(20);
     if (ent.immunity_ticks > 0)
         --ent.immunity_ticks;
 }

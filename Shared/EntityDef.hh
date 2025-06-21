@@ -93,7 +93,6 @@ SINGLE(Name, nametag_visible, uint8_t)
     SINGLE(friction, float, =0) \
     SINGLE(mass, float, =1) \
     SINGLE(speed_ratio, float, =1) \
-    SINGLE(lifetime, uint32_t, =0) \
     \
     MULTIPLE(loadout, LoadoutSlot, MAX_SLOT_COUNT, .reset()) \
     SINGLE(heading_angle, float, =0) \

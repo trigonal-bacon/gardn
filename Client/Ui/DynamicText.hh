@@ -7,10 +7,10 @@
 
 namespace Ui {
     class DynamicText : public Element {
-        std::function<std::string(void)> generator;
+        std::function<std::string(void)> const generator;
         std::string text;
     public:
-        DynamicText(float, std::function<std::string(void)>, Style = { .fill = 0xffffffff });
+        DynamicText(float, std::function<std::string(void)> const &, Style = { .fill = 0xffffffff });
 
         virtual void on_render(Renderer &) override;
 

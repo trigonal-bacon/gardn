@@ -6,7 +6,7 @@
 
 using namespace Ui;
 
-StaticText::StaticText(float font_size, std::string str, Style s) : 
+StaticText::StaticText(float font_size, std::string const &str, Style s) : 
 Element(Renderer::get_ascii_text_size(str.c_str()) * font_size, font_size, s), text(std::move(str)) {}
 
 void StaticText::on_render(Renderer &ctx) {
@@ -40,13 +40,11 @@ StaticParagraph::StaticParagraph(float max_width, float text_height, std::string
         if (Renderer::get_ascii_text_size((line + " " + words[at]).c_str()) * text_height >= max_width) {
             add_child(new Ui::StaticText(text_height, line, { .fill = 0xffffffff, .h_justify = Style::Left, .v_justify = Style::Top }));
             line = words[at];
-        } else {
+        } else 
             line += ' ' + words[at];
-        }
         ++at;
     }
     if (line != "")
         add_child(new Ui::StaticText(text_height, line, { .fill = 0xffffffff, .h_justify = Style::Left, .v_justify = Style::Top }));
-
     refactor();
 }

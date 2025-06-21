@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-const uint32_t PROTOCOL_FLOAT_SCALE = 16;
+const uint32_t PROTOCOL_FLOAT_SCALE = 512;
 
 Writer::Writer(uint8_t *buf) : at(buf), packet(buf) {}
 

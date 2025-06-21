@@ -115,12 +115,14 @@ void Game::render_game() {
         RenderContext context(&renderer);
         renderer.translate(ent.x, ent.y);
         renderer.rotate(ent.angle);
+        renderer.scale(ent.animation);
         render_web(renderer, ent);
     });
     simulation.for_each<kDrop>([](Simulation *sim, Entity const &ent){
         RenderContext context(&renderer);
         renderer.translate(ent.x, ent.y);
-        renderer.rotate(ent.angle);
+        renderer.rotate(ent.angle + (ent.animation - 1) * 3 * M_PI);
+        renderer.scale(ent.animation);
         render_drop(renderer, ent);
     });
     simulation.for_each<kHealth>([](Simulation *sim, Entity const &ent){

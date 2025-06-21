@@ -9,6 +9,7 @@ Entity::Entity() {
 void Entity::init() {
     components = 0;
     pending_delete = 0;
+    lifetime = 0;
     #define SINGLE(component, name, type) name = {};
     #define MULTIPLE(component, name, type, amt) for (uint32_t n = 0; n < amt; ++n) { name[n] = {}; }
     PERFIELD
@@ -92,6 +93,7 @@ PERCOMPONENT
 }
 
 void Entity::write(Writer *writer, uint8_t create) {
+    writer->write<uint32_t>(lifetime);
     if (create) write<true>(writer);
     else write<false>(writer);
 }
@@ -143,6 +145,7 @@ void Entity::read<false>(Reader *reader) {
 }
 
 void Entity::read(Reader *reader, uint8_t create) {
+    reader->read<uint32_t>(lifetime);
     if (create) read<true>(reader);
     else read<false>(reader);
 }

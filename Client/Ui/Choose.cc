@@ -7,8 +7,8 @@ using namespace Ui;
 uint8_t no_show() { return 0; }
 uint8_t do_show() { return 1; }
 
-Choose::Choose(Element *l, Element *r, std::function<uint8_t(void)> c, Style s) : 
-    Container({l, r}, 0,0,s), chooser(c), choose_showing(0)
+Choose::Choose(Element *l, Element *r, std::function<uint8_t(void)> const &c, Style s) : 
+    Container({l, r},0,0,s), chooser(std::move(c)), choose_showing(0)
 {
     width = l->width;
     height = l->height;

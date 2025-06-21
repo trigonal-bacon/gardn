@@ -14,7 +14,7 @@ Entity &alloc_drop(PetalID::T drop_id) {
     PetalTracker::add_petal(drop_id);
     Entity &drop = Server::simulation.alloc_ent();
     drop.add_component(kPhysics);
-    drop.set_radius(0);
+    drop.set_radius(20);
     drop.set_angle(frand() * 0.2 - 0.1);
     drop.friction = 0.25;
 
@@ -85,7 +85,6 @@ Entity &alloc_mob(MobID::T mob_id, float x, float y, EntityID const team) {
             };
             for (MobID::T mob_id : spawns) {
                 Vector rand = Vector::rand(ent.radius * 2);
-                rand *= ent.radius * 2;
                 Entity &ant = __alloc_mob(mob_id, x + rand.x, y + rand.y, team);
                 ant.set_parent(ent.id);
             }
@@ -179,8 +178,8 @@ Entity &alloc_web(float radius, Entity const &parent) {
     web.set_x(parent.x);
     web.set_y(parent.y);
     web.set_angle(frand() * 2 * M_PI);
-    web.set_radius(0);
-    web.mass = radius;
+    web.set_radius(radius);
+    web.mass = 1.0;
     web.friction = 1.0;
     web.add_component(kRelations);
     web.set_team(parent.team);

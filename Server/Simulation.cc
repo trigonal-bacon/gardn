@@ -79,7 +79,6 @@ void Simulation::tick() {
         }
     }
 
-    for_each<kWeb>(tick_web_behavior);
     for_each<kFlower>(tick_player_behavior);
     for_each<kMob>(tick_ai_behavior);
     for_each<kPetal>(tick_petal_behavior);

@@ -18,8 +18,13 @@ void Simulation::tick_lerp(double dt) {
             float prevy = ent.y;
             ent.x.step(amt);
             ent.y.step(amt);
-            Vector vel(ent.x - prevx, ent.y - prevy);
-            ent.animation += (1 + 0.75 * vel.magnitude()) * 0.075;
+            if (ent.has_component(kDrop) || ent.has_component(kWeb)) {
+                if (ent.lifetime < TPS) LERP(ent.animation, 1, amt * 0.75)
+                else ent.animation = 1;
+            } else {
+                Vector vel(ent.x - prevx, ent.y - prevy);
+                ent.animation += (1 + 0.75 * vel.magnitude()) * 0.075;
+            }
             ent.radius.step(amt);
             ent.angle.step_angle(amt);
             if (ent.deleting)

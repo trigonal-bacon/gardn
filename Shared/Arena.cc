@@ -1,6 +1,5 @@
 #include <Shared/Arena.hh>
 
-
 Arena::Arena() {
     init();
 }

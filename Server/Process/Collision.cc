@@ -74,21 +74,20 @@ void on_collide(Simulation *sim, Entity &ent1, Entity &ent2) {
         _deal_push(ent2, separation, ratio - 1, dist);
     }
 
-    if (ent1.has_component(kHealth) && ent2.has_component(kHealth) && !(ent1.team == ent2.team)) {
+    if (BOTH(kHealth) && !(ent1.team == ent2.team)) {
         if (ent1.health > 0 && ent2.health > 0) {
             inflict_damage(sim, ent1.id, ent2.id, ent1.damage, DamageType::kContact);
             inflict_damage(sim, ent2.id, ent1.id, ent2.damage, DamageType::kContact);
         }
     }
 
-    if (ent1.has_component(kDrop) && ent2.has_component(kFlower)) {
+    if (ent1.has_component(kDrop) && ent2.has_component(kFlower)) 
         _pickup_drop(sim, ent2, ent1);
-    } else if (ent2.has_component(kDrop) && ent1.has_component(kFlower)) {
+    if (ent2.has_component(kDrop) && ent1.has_component(kFlower))
         _pickup_drop(sim, ent1, ent2);
-    }
 
     if (ent1.has_component(kWeb) && !ent2.has_component(kPetal) && !ent2.has_component(kDrop))
         ent2.speed_ratio = 0.5;
-    else if (ent2.has_component(kWeb) && !ent1.has_component(kPetal) && !ent1.has_component(kDrop))
+    if (ent2.has_component(kWeb) && !ent1.has_component(kPetal) && !ent1.has_component(kDrop))
         ent1.speed_ratio = 0.5;
 }

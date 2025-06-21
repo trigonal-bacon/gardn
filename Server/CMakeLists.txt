@@ -19,7 +19,6 @@ set(SOURCES
     Process/Motion.cc
     Process/Petal.cc
     Process/Segment.cc
-    Process/Web.cc
     Client.cc
     Main.cc
     Native.cc

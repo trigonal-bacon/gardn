@@ -7,9 +7,9 @@
 
 namespace Ui {
     class StaticText : public Element {
-        std::string text;
+        std::string const text;
     public:
-        StaticText(float, std::string, Style = { .fill = 0xffffffff });
+        StaticText(float, std::string const &, Style = { .fill = 0xffffffff });
         //StaticText(float, char const *, Style = { .fill = 0xffffffff });
 
         virtual void on_render(Renderer &) override;

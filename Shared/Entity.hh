@@ -36,6 +36,7 @@ public:
     Entity();
     void init();
     void reset_protocol();
+    uint32_t lifetime;
     EntityID id;
     uint8_t pending_delete;
 #define SINGLE(component, name, type) type name;

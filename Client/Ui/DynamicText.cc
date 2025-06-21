@@ -4,7 +4,7 @@
 
 using namespace Ui;
 
-DynamicText::DynamicText(float size, std::function<std::string(void)> genfunc, Style s)
+DynamicText::DynamicText(float size, std::function<std::string(void)> const &genfunc, Style s)
  : Element(0, size, s), generator(std::move(genfunc))
 {
 }
