@@ -63,6 +63,7 @@ PERFIELD
 template<>
 void Entity::write<true>(Writer *writer) {
     writer->write<uint32_t>(components);
+    writer->write<uint32_t>(lifetime);
 #define SINGLE(component, name, type) { writer->write<type>(name); }
 #define MULTIPLE(component, name, type, amt) { \
         for (uint32_t n = 0; n < amt; ++n) \
@@ -93,7 +94,6 @@ PERCOMPONENT
 }
 
 void Entity::write(Writer *writer, uint8_t create) {
-    writer->write<uint32_t>(lifetime);
     if (create) write<true>(writer);
     else write<false>(writer);
 }
@@ -102,6 +102,7 @@ void Entity::write(Writer *writer, uint8_t create) {
 template<>
 void Entity::read<true>(Reader *reader) {
     components = reader->read<uint32_t>();
+    lifetime = reader->read<uint32_t>();
     #define SINGLE(component, name, type) { reader->read<type>(name); BIT_SET_ARR(state, k##name); }
     #define MULTIPLE(component, name, type, amt) { \
         BIT_SET_ARR(state, k##name); \
@@ -119,6 +120,7 @@ void Entity::read<true>(Reader *reader) {
 
 template<>
 void Entity::read<false>(Reader *reader) {
+    ++lifetime;
     while(1) {
         switch(reader->read<uint8_t>()) {
             case kFieldCount: { return; }
@@ -145,7 +147,6 @@ void Entity::read<false>(Reader *reader) {
 }
 
 void Entity::read(Reader *reader, uint8_t create) {
-    reader->read<uint32_t>(lifetime);
     if (create) read<true>(reader);
     else read<false>(reader);
 }
