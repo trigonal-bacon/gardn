@@ -38,7 +38,9 @@ void LeaderboardSlot::on_render(Renderer &ctx) {
     ctx.move_to(-(width-height)/2,0);
     ctx.line_to(-(width-height)/2+(width-height)*((float) ratio),0);
     ctx.stroke();
-    std::string format_string = std::format("{} - {:.0f}", Game::simulation.arena_info.names[pos].size() == 0 ? "Unnamed" : Game::simulation.arena_info.names[pos], (float) Game::simulation.arena_info.scores[pos]);
+    std::string format_string = std::format("{} - {}", 
+        Game::simulation.arena_info.names[pos].size() == 0 ? "Unnamed" : Game::simulation.arena_info.names[pos],
+        format_score((float) Game::simulation.arena_info.scores[pos]));
     ctx.set_fill(0xffffffff);
     ctx.set_stroke(0xff222222);
     ctx.center_text_align();
@@ -61,18 +63,9 @@ Element *Ui::make_leaderboard() {
 
     Element *leaderboard = new Ui::VContainer({
         lb_header,
-        new Ui::VContainer({
-            new LeaderboardSlot(0),
-            new LeaderboardSlot(1),
-            new LeaderboardSlot(2),
-            new LeaderboardSlot(3),
-            new LeaderboardSlot(4),
-            new LeaderboardSlot(5),
-            new LeaderboardSlot(6),
-            new LeaderboardSlot(7),
-            new LeaderboardSlot(8),
-            new LeaderboardSlot(9),
-        }, 10, 4, {})
+        new Ui::VContainer(
+            Ui::make_range(0, LEADERBOARD_SIZE, [](uint32_t i){ return (Element *) (new Ui::LeaderboardSlot(i)); })
+        , 10, 4, {})
     }, 0, 0, { .fill = 0xff555555, .line_width = 6, .round_radius = 7, .should_render = [](){ return Game::should_render_game_ui(); } });
     leaderboard->style.h_justify = Style::Right;
     leaderboard->style.v_justify = Style::Top;

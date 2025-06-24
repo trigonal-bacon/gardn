@@ -55,8 +55,8 @@ std::array const MAP = std::to_array<struct ZoneDefinition>({
         .density = 2.5,
         .drop_multiplier = 0.15,
         .spawns = {
-            { MobID::kCactus, 500000 },
-            { MobID::kBeetle, 150000 },
+            { MobID::kCactus, 400000 },
+            { MobID::kBeetle, 100000 },
             { MobID::kSandstorm, 50000 },
             { MobID::kBee, 50000 },
             { MobID::kScorpion, 50000 },

@@ -30,7 +30,7 @@ namespace Game {
 
     double timestamp = 0;
 
-    float score = 0;
+    double score = 0;
     float overlevel_timer = 0;
     float slot_indicator_opacity = 0;
     float transition_circle = 0;

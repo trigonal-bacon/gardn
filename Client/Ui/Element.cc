@@ -149,3 +149,11 @@ void Element::poll_events() {
         Ui::focused = nullptr;
     }
 }
+
+std::vector<Element *> const Ui::make_range(uint32_t start, uint32_t end, Element *gen(uint32_t)) {
+    std::vector<Element *> elts;
+    elts.reserve(end - start);
+    for (uint32_t i = start; i < end; ++i)
+        elts.push_back(gen(i));
+    return elts; 
+}

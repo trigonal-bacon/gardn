@@ -7,7 +7,7 @@
 
 #include <cstdint>
 
-typedef CircularArray<PetalID::T, 8> circ_arr_t;
+typedef CircularArray<PetalID::T, MAX_SLOT_COUNT> circ_arr_t;
 
 enum Components {
     #define COMPONENT(name) k##name,

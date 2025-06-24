@@ -26,7 +26,7 @@ namespace Game {
     
     extern double timestamp;
     
-    extern float score;
+    extern double score;
     extern float overlevel_timer;
     extern float slot_indicator_opacity;
     extern float transition_circle;

@@ -72,4 +72,6 @@ namespace Ui {
         virtual void refactor();
         virtual void poll_events();
     };
+
+    std::vector<Element *> const make_range(uint32_t, uint32_t, Element *(uint32_t));
 }

@@ -5,7 +5,7 @@
 
 using namespace Ui;
 
-Container::Container(std::initializer_list<Element *> elts, float w, float h, Style s) :
+Container::Container(std::vector<Element *> const &elts, float w, float h, Style s) :
     Element(w, h, s)
 {
     for (Element *elt : elts) 
@@ -33,7 +33,7 @@ void Container::poll_events() {
         if (elt->visible) elt->poll_events();
 }
 
-HContainer::HContainer(std::initializer_list<Element *> elts, float opad, float ipad, Style s) :
+HContainer::HContainer(std::vector<Element *> const &elts, float opad, float ipad, Style s) :
     Container(elts, 0, 0, s), outer_pad(opad), inner_pad(ipad)
 {
     for (Element *elt : children)
@@ -60,7 +60,7 @@ void HContainer::refactor() {
     height = y;
 }
 
-VContainer::VContainer(std::initializer_list<Element *> elts, float opad, float ipad, Style s) :
+VContainer::VContainer(std::vector<Element *> const &elts, float opad, float ipad, Style s) :
     Container(elts, 0, 0, s), outer_pad(opad), inner_pad(ipad)
 {
     for (Element *elt : children)

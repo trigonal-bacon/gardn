@@ -75,7 +75,7 @@ Element *Ui::make_title_info_box() {
             new Ui::HContainer({
                 new Ui::DynamicText(16, [](){
                     return std::format("You will respawn at level {}", Game::respawn_level);
-                }),
+                }, { .fill = 0xffffffff, .no_animation = 1 }),
                 new Ui::StaticText(16, " with:", {
                     .fill = 0xffffffff,
                     .should_render = [](){
@@ -84,27 +84,13 @@ Element *Ui::make_title_info_box() {
                     }
                 })
             }, 0, 0),
+            new Ui::HContainer(
+                Ui::make_range(0, MAX_SLOT_COUNT, [](uint32_t i){ return (Element *) (new Ui::TitlePetalSlot(i)); })
+            , 0, 10),
             new Ui::HContainer({
-                new Ui::TitlePetalSlot(0),
-                new Ui::TitlePetalSlot(1),
-                new Ui::TitlePetalSlot(2),
-                new Ui::TitlePetalSlot(3),
-                new Ui::TitlePetalSlot(4),
-                new Ui::TitlePetalSlot(5),
-                new Ui::TitlePetalSlot(6),
-                new Ui::TitlePetalSlot(7),
-            }, 0, 10),
-            new Ui::HContainer({
-                new Ui::TitlePetalSlot(8),
-                new Ui::TitlePetalSlot(9),
-                new Ui::TitlePetalSlot(10),
-                new Ui::TitlePetalSlot(11),
-                new Ui::TitlePetalSlot(12),
-                new Ui::TitlePetalSlot(13),
-                new Ui::TitlePetalSlot(14),
-                new Ui::TitlePetalSlot(15),
+                Ui::make_range(MAX_SLOT_COUNT, 2*MAX_SLOT_COUNT, [](uint32_t i){ return (Element *) (new Ui::TitlePetalSlot(i)); })
             }, 0, 10)
-        }, 0, 10),
+        }, 0, 10, { .no_animation = 1 }),
         [](){
             return Game::respawn_level > 1 ? 1 : 0;
         }

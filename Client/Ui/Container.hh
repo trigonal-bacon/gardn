@@ -2,12 +2,12 @@
 
 #include <Client/Ui/Element.hh>
 
-#include <initializer_list>
+#include <vector>
 
 namespace Ui {
     class Container : public Element {
     public:
-        Container(std::initializer_list<Element *>, float = 0, float = 0, Style = {});
+        Container(std::vector<Element *> const &, float = 0, float = 0, Style = {});
 
         virtual void on_render(Renderer &) override;
 
@@ -19,7 +19,7 @@ namespace Ui {
         float outer_pad = 0;
         float inner_pad = 0;
     public:
-        HContainer(std::initializer_list<Element *>, float = 0, float = 0, Style = {});
+        HContainer(std::vector<Element *> const &, float = 0, float = 0, Style = {});
 
         virtual void refactor() override;
     };
@@ -29,7 +29,7 @@ namespace Ui {
         float outer_pad = 0;
         float inner_pad = 0;
     public:
-        VContainer(std::initializer_list<Element *>, float = 0, float = 0, Style = {});
+        VContainer(std::vector<Element *> const &, float = 0, float = 0, Style = {});
 
         virtual void refactor() override;
     };

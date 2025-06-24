@@ -11,7 +11,7 @@
 
 using namespace Ui;
 
-StatPetalSlot::StatPetalSlot(uint8_t p) : Element(60,60,{}), pos(p) {
+StatPetalSlot::StatPetalSlot(uint8_t p) : Element(60,60,{ .no_animation = 1 }), pos(p) {
     //style.v_justify = Style::Bottom;
     style.should_render = [=](){
         return p < Game::loadout_count + MAX_SLOT_COUNT && Game::cached_loadout[p] != PetalID::kNone;
@@ -83,7 +83,7 @@ Element *Ui::make_stat_screen() {
     Element *elt = new Ui::VContainer({
         new Ui::StaticText(25, "Stats", { .fill = 0xffffffff, .h_justify = Style::Left }),
         new Ui::DynamicText(16, [](){
-            return std::format("Score: {:.0f}", Game::score);
+            return std::format("Score: {}", format_score(Game::score));
         }, { .fill = 0xffffffff, .h_justify = Style::Left }),
         new Ui::DynamicText(16, [](){
             return std::format("Level: {}", score_to_level(Game::score));

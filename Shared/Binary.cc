@@ -55,8 +55,17 @@ void Writer::write<int32_t>(int32_t const &val) {
 }
 
 template<>
+void Writer::write<int64_t>(int64_t const &val) {
+    int64_t v = val;
+    uint32_t sign = v < 0;
+    if (sign) v *= -1;
+    v = (v << 1) | sign;
+    write<uint64_t>(v);
+}
+
+template<>
 void Writer::write<float>(float const &v) {
-    write<int32_t>(v * 1024);
+    write<int64_t>(v * PROTOCOL_FLOAT_SCALE);
 }
 
 template<>
@@ -124,8 +133,17 @@ int32_t Reader::read<int32_t>() {
 }
 
 template<>
+int64_t Reader::read<int64_t>() {
+    uint64_t r = read<uint64_t>();
+    uint32_t s = r & 1;
+    int64_t ret = r >> 1;
+    if (s) ret *= -1;
+    return ret;
+}
+
+template<>
 float Reader::read<float>() {
-    return read<int32_t>() / 1024.0f;
+    return read<int64_t>() / (float) PROTOCOL_FLOAT_SCALE;
 }
 
 template<>
@@ -159,6 +177,12 @@ template<>
 void Reader::read<int32_t>(int32_t &ref) {
     ref = read<int32_t>();
 }
+
+template<>
+void Reader::read<int64_t>(int64_t &ref) {
+    ref = read<int64_t>();
+}
+
 
 template<>
 void Reader::read<float>(float &ref) {

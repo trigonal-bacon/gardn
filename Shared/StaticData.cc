@@ -65,7 +65,7 @@ extern struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
     {"Faster", "It's so light it makes your other petals spin faster",
         5.0, 7.0, 7.0, 0.5, 1, RarityID::kRare, {}},
     {"Rock", "Even more durable, but slower to recharge",
-        100.0, 10.0, 12.0, 5.0, 1, RarityID::kRare, {}},
+        100.0, 10.0, 12.0, 7.5, 1, RarityID::kRare, {}},
     {"Cactus", "Not very strong, but somehow increases your maximum health",
         15.0, 5.0, 10.0, 1.0, 1, RarityID::kRare, {}},
     {"Web", "It's very sticky",
@@ -442,9 +442,9 @@ uint32_t level_to_score(uint32_t level) {
 }
 
 uint32_t loadout_slots_at_level(uint32_t level) {
-    if (level >= 45)
-        return MAX_SLOT_COUNT;
-    return 5 + level / 15;
+    uint32_t ret =  5 + level / 15;
+    if (ret > MAX_SLOT_COUNT) return MAX_SLOT_COUNT;
+    return ret;
 }
 
 float hp_at_level(uint32_t level) {

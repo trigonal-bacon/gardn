@@ -29,9 +29,9 @@ void UiLoadoutSlot::on_render(Renderer &ctx) {
         ctx.draw_text(&str[0], { .size = 16 });
     } else if (position == 2 * MAX_SLOT_COUNT) {
         ctx.set_global_alpha(Game::slot_indicator_opacity);
-        ctx.translate(0, -height / 2 - 15);
+        ctx.translate(width / 2 + 16, 0);
         ctx.draw_text("[T]", { .size = 16 });
-        ctx.translate(0, height / 2 + 15);
+        ctx.translate(-width / 2 - 16, 0);
     }
 }
 
@@ -56,29 +56,16 @@ Element *Ui::make_loadout_backgrounds() {
     Element *base = new Ui::VContainer(
         {
             (new Ui::HContainer(
-                {
-                    new Ui::UiLoadoutSlot(0),
-                    new Ui::UiLoadoutSlot(1),
-                    new Ui::UiLoadoutSlot(2),
-                    new Ui::UiLoadoutSlot(3),
-                    new Ui::UiLoadoutSlot(4),
-                    new Ui::UiLoadoutSlot(5),
-                    new Ui::UiLoadoutSlot(6),
-                    new Ui::UiLoadoutSlot(7),
-                }, 5, 20
+                Ui::make_range(0, MAX_SLOT_COUNT, [](uint32_t i){ return (Element *) (new Ui::UiLoadoutSlot(i)); })
+            , 5, 20
             ))->set_z_to_one(),
             (new Ui::HContainer(
-                {
-                    new Ui::UiLoadoutSlot(8),
-                    new Ui::UiLoadoutSlot(9),
-                    new Ui::UiLoadoutSlot(10),
-                    new Ui::UiLoadoutSlot(11),
-                    new Ui::UiLoadoutSlot(12),
-                    new Ui::UiLoadoutSlot(13),
-                    new Ui::UiLoadoutSlot(14),
-                    new Ui::UiLoadoutSlot(15),
-                    new Ui::UiDeleteSlot()
-                }, 10, 15
+                Ui::make_range(MAX_SLOT_COUNT, 2*MAX_SLOT_COUNT+1, 
+                    [](uint32_t i){ 
+                        if (i == 2*MAX_SLOT_COUNT) return (Element *) new Ui::UiDeleteSlot();
+                        else return (Element *) (new Ui::UiLoadoutSlot(i)); 
+                    })
+                , 10, 15
             ))->set_z_to_one(),
             new Ui::InputFreeze(),
             new Ui::Element(0,34,{ .should_render = [](){ return Input::keyboard_movement || Game::is_mobile; }})
