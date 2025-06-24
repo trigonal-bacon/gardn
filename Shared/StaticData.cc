@@ -178,7 +178,7 @@ extern struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
         10.0, 10.0, 10.0, 2.5, 1, RarityID::kRare, {}},
     {"Basic", "Something extremely rare and useless",
         10.0, 10.0, 10.0, 2.5, 1, RarityID::kUnique, {}},
-    {"Square", "Wrong game^2",
+    {"Square", "This shape seems familiar...",
         10.0, 10.0, 15.0, 2.5, 1, RarityID::kUnique, {
         .icon_angle = M_PI / 4 + 1
     }},
@@ -310,7 +310,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
         "Desert Centipede",
         "It doesn't like it when you interrupt its run.",
         RarityID::kRare, {50.0}, 10.0, {35.0}, 4, {
-        PetalID::kSand, PetalID::kFaster, PetalID::kSalt
+        PetalID::kSand, PetalID::kFaster, PetalID::kSalt, PetalID::kStick
     }, { .segments = 6 }},
     {
         "Sandstorm",
@@ -380,7 +380,7 @@ char const *RARITY_NAMES[RarityID::kNumRarities] = {
 
 std::array<StaticArray<float, MAX_DROPS_PER_MOB>, MobID::kNumMobs> const _get_auto_petal_drops() {
     std::array<StaticArray<float, MAX_DROPS_PER_MOB>, MobID::kNumMobs> ret;
-    double const RARITY_MULT[RarityID::kNumRarities] = {60000,20000,2500,100,5,2.5,1};
+    double const RARITY_MULT[RarityID::kNumRarities] = {60000,20000,2500,100,10,2.5,1};
     double MOB_SPAWN_RATES[MobID::kNumMobs] = {0};
     double PETAL_AGGREGATE_DROPS[PetalID::kNumPetals] = {0};
     for (struct ZoneDefinition const &zone : MAP) {

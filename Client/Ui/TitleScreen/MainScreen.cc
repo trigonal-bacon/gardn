@@ -52,6 +52,7 @@ Element *Ui::make_title_input_box() {
 
 Element *Ui::make_title_info_box() {
     Element *elt = new Ui::Choose(
+        /*
         new Ui::Container({
             new Ui::VContainer({
                 new Ui::StaticText(30, "How to play"),
@@ -61,13 +62,33 @@ Element *Ui::make_title_info_box() {
                 new Ui::StaticText(16, "Left click to defend")
             }, 0, 5, { .should_render = [](){ return !Input::keyboard_movement; }, .no_animation = 1 }),
             new Ui::VContainer({
-                new Ui::StaticText(26, "How to play"),
+                new Ui::StaticText(30, "How to play"),
                 new Ui::Element(0,5),
                 new Ui::StaticText(16, "Use WASD or arrow keys to move"),
                 new Ui::StaticText(16, "SPACE to attack"),
                 new Ui::StaticText(16, "SHIFT to defend")
             }, 0, 5, { .should_render = [](){ return Input::keyboard_movement; }, .no_animation = 1 }),
         }, 200, 110),
+        */
+        new Ui::Choose(
+            new Ui::VContainer({
+                new Ui::StaticText(30, "How to play"),
+                new Ui::Element(0,5),
+                new Ui::StaticText(16, "Use mouse to move"),
+                new Ui::StaticText(16, "Right click to attack"),
+                new Ui::StaticText(16, "Left click to defend")
+            }, 0, 5, { .no_animation = 1 }),
+            new Ui::VContainer({
+                new Ui::StaticText(30, "How to play"),
+                new Ui::Element(0,5),
+                new Ui::StaticText(16, "Use WASD or arrow keys to move"),
+                new Ui::StaticText(16, "SPACE to attack"),
+                new Ui::StaticText(16, "SHIFT to defend")
+            }, 0, 5, { .no_animation = 1 }),
+            [](){
+                return !Input::keyboard_movement;
+            }, {}
+        ),
         new Ui::VContainer({
             new Ui::HContainer({
                 new Ui::DynamicText(16, [](){

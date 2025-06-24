@@ -21,7 +21,6 @@ Choose::Choose(Element *l, Element *r, std::function<uint8_t(void)> const &c, St
     r->animation.set(0);
     r->visible = 0;
     l->visible = 1;
-    
 }
 
 void Choose::on_render(Renderer &ctx) {
@@ -37,7 +36,8 @@ void Choose::on_render(Renderer &ctx) {
             rendering = second;
             second->render(ctx);
             first->on_render_skip(ctx);
-        } else {
+        }
+        if (!second->visible) {
             rendering = first;
             first->render(ctx);
             second->on_render_skip(ctx);
@@ -49,7 +49,8 @@ void Choose::on_render(Renderer &ctx) {
             rendering = first;
             first->render(ctx);
             second->on_render_skip(ctx);
-        } else {
+        }
+        if (!first->visible) {
             rendering = second;
             second->render(ctx);
             first->on_render_skip(ctx);

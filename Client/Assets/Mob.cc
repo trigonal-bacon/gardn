@@ -174,7 +174,7 @@ void draw_static_mob(MobID::T mob_id, Renderer &ctx, MobRenderAttributes attr) {
             ctx.qcurve_to(19.241104125976562,-23.185302734375,21.213199615478516,-21.213205337524414);
             ctx.qcurve_to(23.1852970123291,-19.241111755371094,24.76006507873535,-16.939281463623047);
             ctx.qcurve_to(10,0,24.760068893432617,16.939273834228516);
-            ctx.fill();
+            ctx.fill(1);
             {
                 RenderContext context(&ctx);
                 ctx.clip();
@@ -217,7 +217,7 @@ void draw_static_mob(MobID::T mob_id, Renderer &ctx, MobRenderAttributes attr) {
             ctx.qcurve_to(-24.022449493408203,15.673511505126953,-14.96302318572998,21.871395111083984);
             ctx.qcurve_to(-5.903592586517334,28.06928253173828,4.884955406188965,26.045866012573242);
             ctx.qcurve_to(15.673511505126953,24.022449493408203,21.871395111083984,14.963025093078613);
-            ctx.fill();
+            ctx.fill(1);
             break;
         case MobID::kBeetle:
         case MobID::kMassiveBeetle:
