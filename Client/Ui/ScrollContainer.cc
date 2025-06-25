@@ -5,8 +5,6 @@
 
 #include <Shared/Helpers.hh>
 
-#include <iostream>
-
 using namespace Ui;
 
 ScrollBar::ScrollBar() : Element(8, 100, { .fill = 0x40000000, .round_radius = 4 }) {

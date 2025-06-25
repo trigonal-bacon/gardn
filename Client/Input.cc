@@ -26,3 +26,11 @@ namespace Input {
 uint8_t Input::is_valid() {
     return Input::num_touches > 0 || BIT_AT(Input::mouse_buttons_released, Input::LeftMouse) || !Game::is_mobile;
 }
+
+void Input::reset() {
+    Input::keys_pressed_this_tick.clear();
+    Input::mouse_buttons_pressed = Input::mouse_buttons_released = 0;
+    Input::prev_mouse_x = Input::mouse_x;
+    Input::prev_mouse_y = Input::mouse_y;
+    Input::wheel_delta = 0;
+}

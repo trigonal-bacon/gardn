@@ -28,5 +28,6 @@ namespace Input {
     extern uint8_t input_flags;
 
     extern uint8_t is_valid();
+    extern void reset();
 };
 

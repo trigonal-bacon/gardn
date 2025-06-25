@@ -8,60 +8,34 @@ uint8_t no_show() { return 0; }
 uint8_t do_show() { return 1; }
 
 Choose::Choose(Element *l, Element *r, std::function<uint8_t(void)> const &c, Style s) : 
-    Container({l, r},0,0,s), chooser(std::move(c)), choose_showing(0)
+    Container({l, r},0,0,s), chooser(std::move(c)), choose_showing(c())
 {
-    width = l->width;
-    height = l->height;
+    l->showed = 1;
+    r->showed = 1;
     l->refactor();
     r->refactor();
-    l->style.should_render = do_show;
-    r->style.should_render = no_show;
-    r->showed = 1;
-    r->animation = 0;
     r->animation.set(0);
-    r->visible = 0;
-    l->visible = 1;
+    refactor();
 }
 
 void Choose::on_render(Renderer &ctx) {
-    Element *first = children[0];
-    Element *second = children[1];
-    Element::on_render(ctx);
-    choose_showing = chooser();
-    Element *rendering;
-    if (choose_showing == 0) {
-        first->style.should_render = do_show;
-        second->style.should_render = no_show;
-        if (second->visible) {
-            rendering = second;
-            second->render(ctx);
-            first->on_render_skip(ctx);
-        }
-        if (!second->visible) {
-            rendering = first;
-            first->render(ctx);
-            second->on_render_skip(ctx);
-        }
-    } else {
-        second->style.should_render = do_show;
-        first->style.should_render = no_show;
-        if (first->visible) {
-            rendering = first;
-            first->render(ctx);
-            second->on_render_skip(ctx);
-        }
-        if (!first->visible) {
-            rendering = second;
-            second->render(ctx);
-            first->on_render_skip(ctx);
-        }
-    }
-    width = rendering->width;
-    height = rendering->height;
+    DEBUG_ONLY(assert(choose_showing < children.size());)
+    Element *rendering = children[choose_showing];
+    rendering->render(ctx);
+    if (!rendering->visible)
+        children[1 - choose_showing]->render(ctx);
 }
 
 void Choose::refactor() {
-    children[choose_showing]->refactor();
+    uint8_t to_show = chooser();
+    children[to_show]->style.should_render = do_show;
+    children[1 - to_show]->style.should_render = no_show;
+    if (!children[choose_showing]->visible || !showed)
+        choose_showing = to_show;
+    Element *rendering = children[choose_showing];
+    rendering->refactor();
+    width = rendering->width;
+    height = rendering->height;
 }
 
 void Choose::poll_events() {

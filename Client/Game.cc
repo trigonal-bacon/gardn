@@ -258,11 +258,7 @@ void Game::tick(double time) {
     //clearing operations
     simulation.post_tick();
     Storage::set();
-    Input::keys_pressed_this_tick.clear();
-    Input::mouse_buttons_pressed = Input::mouse_buttons_released = 0;
-    Input::prev_mouse_x = Input::mouse_x;
-    Input::prev_mouse_y = Input::mouse_y;
-    Input::wheel_delta = 0;
+    Input::reset();
     Debug::frame_times.push(Ui::dt);
     Debug::tick_times.push(Debug::get_timestamp() - tick_start);
 }
