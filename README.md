@@ -47,7 +47,7 @@ make
 ```
 Then move the outputted ``wasm`` and ``js`` files into Client/public (or optionally ``Server/build`` if you're running the wasm server; make sure to move the ``html`` file as well).
 
-The server is served by default at ``localhost:9001``. You may change this by modifying ``Shared/Config.cc``
+The server is served by default at ``localhost:9001``. You may change the port by modifying ``Shared/Config.cc``
 
 # Hosting 
 The client may be hosted with any http server (eg. ``nginx``, ``http-server``). The wasm server automatically hosts content at ``localhost:9001`` as well.
