@@ -41,7 +41,10 @@ Then move the outputted ``wasm`` and ``js`` files into Client/public (or optiona
 
 The server is served by default at ``localhost:9001``. You may change this by modifying ``Shared/Config.cc``
 
-If hosting somewhere other than ``localhost``, the ``HOSTNAME`` flag can be passed into CMake (ex. ``cmake .. -DHOSTNAME="myhost"``).
+# Hosting 
+The client may be hosted with any http server (eg. ``nginx``, ``http-server``). The wasm server automatically hosts content at ``localhost:9001`` as well.
+
+If hosting somewhere other than ``localhost``, the ``HOSTNAME`` flag can be passed into CMake (ex. ``cmake .. -DHOSTNAME="myhost"``) to automatically configure protocol.
 
 # License
 [LICENSE](./LICENSE)
