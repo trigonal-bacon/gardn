@@ -2,13 +2,21 @@
 Open source self-hostable, multiplayer version of pvp [florr.io](https://static.florr.io/old/) written in C++.
 
 # Requirements
-Please download the latest version of [Emscripten](https://emscripten.org/docs/getting_started/downloads.html) and [CMake](https://cmake.org/download/)
+Please download the latest version of [Emscripten](https://emscripten.org/docs/getting_started/downloads.html) and [CMake](https://cmake.org/download/).
 
 # Installation
 
-Native server (more performant):
+## Native server (more performant):
 ```
 > git clone --recurse-submodules https://github.com/trigonal-bacon/gardn.git
+```
+You will need to compile uWebSockets first. For in-depth complation options please visit the [uWebSockets installation page](https://github.com/uNetworking/uWebSockets/tree/master).
+```
+> cd gardn/Server/uWebSockets
+> make
+```
+Then,
+```
 > cd gardn/Server
 > mkdir build
 > cd build
@@ -17,7 +25,7 @@ Native server (more performant):
 > ./gardn-server
 ```
 
-WebAssembly Server (doesn't require uWebSockets)
+## WebAssembly Server (doesn't require uWebSockets, but requires [Node.js](https://nodejs.org/en/download))
 ```
 > git clone https://github.com/trigonal-bacon/gardn.git
 > cd gardn/Server
