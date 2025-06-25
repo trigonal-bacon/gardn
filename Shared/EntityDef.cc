@@ -4,8 +4,6 @@
 
 #include <iostream>
 
-EntityID NULL_ENTITY;
-
 EntityID::EntityID() {
     id = hash = 0;
 }

@@ -7,7 +7,7 @@
 
 #include <cmath>
 
-static std::vector<std::vector<MobID::T>> anthole_spawns = {
+static std::vector<std::vector<MobID::T>> const anthole_spawns = {
     {MobID::kBabyAnt},
     {MobID::kWorkerAnt,MobID::kBabyAnt},
     {MobID::kWorkerAnt,MobID::kWorkerAnt},

@@ -4,15 +4,15 @@
 
 #include <cstdint>
 
-const uint32_t ENTITY_CAP = 32768;
-const uint32_t MAX_SLOT_COUNT = 8;
-const uint32_t LEADERBOARD_SIZE = 10;
-const uint32_t MAX_PETALS_IN_CLUMP = 4;
+inline uint32_t const ENTITY_CAP = 32768;
+inline uint32_t const MAX_SLOT_COUNT = 8;
+inline uint32_t const LEADERBOARD_SIZE = 10;
+inline uint32_t const MAX_PETALS_IN_CLUMP = 4;
 
-const uint32_t ARENA_WIDTH = 40000;
-const uint32_t ARENA_HEIGHT = 4000;
-const uint32_t MAX_DIFFICULTY = 3;
-const uint32_t MAX_DROPS_PER_MOB = 6;
+inline uint32_t const ARENA_WIDTH = 40000;
+inline uint32_t const ARENA_HEIGHT = 4000;
+inline uint32_t const MAX_DIFFICULTY = 3;
+inline uint32_t const MAX_DROPS_PER_MOB = 6;
 
 namespace DamageType {
     enum : uint8_t {

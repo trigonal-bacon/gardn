@@ -159,19 +159,19 @@ public:
 bool operator<(const EntityID &, const EntityID &);
 bool operator==(const EntityID &, const EntityID &);
 
-extern EntityID NULL_ENTITY;
+inline EntityID const NULL_ENTITY;
 
 #ifdef SERVER_ONLY
 struct LoadoutPetal {
-    game_tick_t reload;
     EntityID ent_id;
+    game_tick_t reload;
 };
 
 class LoadoutSlot {
 public:
+    LoadoutPetal petals[MAX_PETALS_IN_CLUMP];
     PetalID::T id;
     uint8_t already_spawned;
-    LoadoutPetal petals[MAX_PETALS_IN_CLUMP];
     LoadoutSlot();
     void reset();
 };

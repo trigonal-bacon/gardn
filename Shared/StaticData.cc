@@ -16,6 +16,7 @@ extern const float SUMMON_RETREAT_RADIUS = 600.0f;
 
 extern const float BASE_FOV = 0.9f;
 extern const float BASE_HEALTH = 100.0f;
+extern const float BASE_BODY_DAMAGE = 15.0f;
 
 extern struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
     {"None", "How can you see this?",
@@ -415,7 +416,7 @@ std::array<StaticArray<float, MAX_DROPS_PER_MOB>, MobID::kNumMobs> const _get_au
 
 static std::array<StaticArray<float, MAX_DROPS_PER_MOB>, MobID::kNumMobs> const _drop_chances = _get_auto_petal_drops();
 
-StaticArray<float, MAX_DROPS_PER_MOB> const &GET_MOB_DROP_CHANCES(MobID::T id) {
+StaticArray<float, MAX_DROPS_PER_MOB> const &get_mob_drop_chances(MobID::T id) {
     return _drop_chances[id];
 }
 

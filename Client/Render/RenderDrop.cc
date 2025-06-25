@@ -4,13 +4,15 @@
 
 #include <Client/Assets/Assets.hh>
 
+#include <Client/Game.hh>
+
 #include <Shared/Entity.hh>
 #include <Shared/StaticData.hh>
 
 #include <cmath>
 
 void render_drop(Renderer &ctx, Entity const &ent) {
-    float animation_value = sinf(ent.animation);
+    float animation_value = sinf(Game::timestamp / 100);
     ctx.set_global_alpha(1 - ent.deletion_animation);
     ctx.scale(1 - ent.deletion_animation);
     ctx.scale(1 + animation_value * 0.03);

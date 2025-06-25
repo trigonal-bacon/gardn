@@ -18,6 +18,7 @@ extern const float SUMMON_RETREAT_RADIUS;
 
 extern const float BASE_FOV;
 extern const float BASE_HEALTH;
+extern const float BASE_BODY_DAMAGE;
 
 extern struct PetalData const PETAL_DATA[PetalID::kNumPetals];
 extern struct MobData const MOB_DATA[MobID::kNumMobs];
@@ -119,7 +120,7 @@ std::array const MAP = std::to_array<struct ZoneDefinition>({
     }
 });
 
-extern StaticArray<float, MAX_DROPS_PER_MOB> const &GET_MOB_DROP_CHANCES(MobID::T);
+extern StaticArray<float, MAX_DROPS_PER_MOB> const &get_mob_drop_chances(MobID::T);
 
 extern uint32_t score_to_pass_level(uint32_t);
 extern uint32_t score_to_level(uint32_t);

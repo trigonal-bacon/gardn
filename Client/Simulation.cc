@@ -19,7 +19,8 @@ void Simulation::tick_lerp(double dt) {
             ent.x.step(amt);
             ent.y.step(amt);
             if (ent.has_component(kDrop) || ent.has_component(kWeb)) {
-                if (ent.lifetime < TPS) LERP(ent.animation, 1, amt * 0.75)
+                if (ent.lifetime < TPS)
+                    LERP(ent.animation, 1, amt * 0.75)
                 else ent.animation = 1;
             } else {
                 Vector vel(ent.x - prevx, ent.y - prevy);
@@ -76,12 +77,4 @@ void Simulation::post_tick() {
         Entity &ent = get_ent(active_entities[i]);
         ent.reset_protocol();
     }
-    /*
-    MUST delete instantly in protocol, or it won't allow instant realloc
-    for (uint32_t i = 0; i < pending_delete.size(); ++i) {
-        assert(ent_exists(pending_delete[i]));
-        _delete_ent(pending_delete[i]);
-    }
-    pending_delete.clear();
-    */
 }
