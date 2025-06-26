@@ -184,9 +184,9 @@ extern struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
         .icon_angle = M_PI / 4 + 1
     }},
     {"Moon", "Where did this come from?",
-        10000.0, 1.0, 50.0, 10.0, 1, RarityID::kMythic, {
+        1000.0, 1.0, 50.0, 10.0, 1, RarityID::kMythic, {
         .secondary_reload = 0.5,
-        .mass = 2000
+        .mass = 200
     }},
     {"Lotus", "Absorbs some poison damage taken by the flower",
         5.0, 5.0, 12.0, 2.0, 1, RarityID::kEpic, {
