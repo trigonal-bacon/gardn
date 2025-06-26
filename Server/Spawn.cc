@@ -41,7 +41,7 @@ static Entity &__alloc_mob(MobID::T mob_id, float x, float y, EntityID const tea
     mob.set_x(x);
     mob.set_y(y);
     mob.friction = DEFAULT_FRICTION;
-    mob.mass = 1 + mob.radius * mob.radius / 100;
+    mob.mass = 1 + mob.radius / 25;
     if (data.attributes.stationary) mob.mass *= 10000;
     if (mob_id == MobID::kAntHole)
         BIT_SET(mob.flags, EntityFlags::kNoFriendlyCollision);
@@ -132,7 +132,7 @@ Entity &alloc_player(EntityID const camera_id) {
     player.set_health_ratio(1);
     player.damage = 25;
     player.immunity_ticks = 2.5 * TPS;
-    player.mass = 0.1;
+    player.mass = 1;
 
     player.add_component(kScore);
 

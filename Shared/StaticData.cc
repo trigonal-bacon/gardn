@@ -75,13 +75,13 @@ extern struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
         .defend_only = 1,
     }},
     {"Wing", "It comes and goes",
-        15.0, 20.0, 10.0, 2.5, 1, RarityID::kRare, {
+        15.0, 15.0, 10.0, 2.5, 1, RarityID::kRare, {
         .icon_angle = 1,
     }},
     {"Peas", "4 in 1 deal",
         5.0, 8.0, 7.0, 2.0, 4, RarityID::kRare, {
         .clump_radius = 8,
-        .secondary_reload = 1.0,
+        .secondary_reload = 0.1,
         .defend_only = 1
     }},
     {"Sand", "It's coarse, rough, and gets everywhere",
@@ -121,7 +121,7 @@ extern struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
     {"Peas", "4 in 1, not with a secret ingredient: poison",
         5.0, 2.0, 7.0, 2.0, 4, RarityID::kEpic, {
         .clump_radius = 8,
-        .secondary_reload = 0.5,
+        .secondary_reload = 0.1,
         .defend_only = 1,
         .poison_damage = { 20.0, 0.5 }
     }},
@@ -226,7 +226,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
     {
         "Worker Ant",
         "It's temperamental, probably from working all the time.",
-        RarityID::kCommon, {20.0}, 10.0, {14.0}, 3, {
+        RarityID::kCommon, {25.0}, 10.0, {14.0}, 3, {
         PetalID::kLight, PetalID::kLeaf, PetalID::kTwin, PetalID::kTriplet, PetalID::kBone
     }, {}},
     {
@@ -238,7 +238,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
     {
         "Bee",
         "It stings. Don't touch it.",
-        RarityID::kCommon, {20.0}, 50.0, {20.0}, 4, {
+        RarityID::kCommon, {15.0}, 50.0, {20.0}, 4, {
         PetalID::kLight, PetalID::kStinger, PetalID::kTwin, PetalID::kWing
     }, {}},
     {
@@ -274,8 +274,8 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
     {
         "Hornet",
         "These aren't quite as nice as the little bees.",
-        RarityID::kUnusual, {40.0}, 40.0, {35.0}, 12, {
-        PetalID::kDandelion, PetalID::kMissile, PetalID::kWing, PetalID::kAntennae
+        RarityID::kUnusual, {40.0}, 40.0, {40.0}, 12, {
+        PetalID::kDandelion, PetalID::kMissile, PetalID::kWing, PetalID::kBubble, PetalID::kAntennae
     }, { .aggro_radius = 750 }},
     {
         "Cactus",
@@ -292,7 +292,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
     {
         "Boulder",
         "A bigger rock. It also doesn't do much.",
-        RarityID::kUnusual, {40.0, 60.0}, 10.0, {40.0, 60.0}, 1, {
+        RarityID::kUnusual, {40.0, 60.0}, 10.0, {50.0, 75.0}, 1, {
         PetalID::kHeavy, PetalID::kRock, PetalID::kHeaviest, PetalID::kMoon
     }, { .stationary = 1 }},
     {

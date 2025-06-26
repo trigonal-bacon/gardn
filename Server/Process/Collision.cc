@@ -66,9 +66,15 @@ void on_collide(Simulation *sim, Entity &ent1, Entity &ent2) {
         else
             separation.normalize();
         float ratio = ent2.mass / (ent1.mass + ent2.mass);
-        if (!(ent1.team == ent2.team) && EITHER(kFlower)) {
-            _deal_knockback(ent1, separation, ratio);
-            _deal_knockback(ent2, separation, ratio - 1);
+        if (!(ent1.team == ent2.team)) {
+            if (ent1.has_component(kFlower) && !ent2.has_component(kPetal))
+                _deal_knockback(ent1, separation, 1);
+            else
+                _deal_knockback(ent1, separation, ratio);
+            if (ent2.has_component(kFlower) && !ent1.has_component(kPetal))
+                _deal_knockback(ent2, separation, -1);
+            else
+                _deal_knockback(ent2, separation, ratio - 1);
         }
         _deal_push(ent1, separation, ratio, dist);
         _deal_push(ent2, separation, ratio - 1, dist);

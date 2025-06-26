@@ -5,12 +5,12 @@
 #include <cstdint>
 
 inline uint32_t const ENTITY_CAP = 32768;
+inline uint32_t const ARENA_WIDTH = 40000;
+inline uint32_t const ARENA_HEIGHT = 4000;
+
 inline uint32_t const MAX_SLOT_COUNT = 8;
 inline uint32_t const LEADERBOARD_SIZE = 10;
 inline uint32_t const MAX_PETALS_IN_CLUMP = 4;
-
-inline uint32_t const ARENA_WIDTH = 40000;
-inline uint32_t const ARENA_HEIGHT = 4000;
 inline uint32_t const MAX_DIFFICULTY = 3;
 inline uint32_t const MAX_DROPS_PER_MOB = 6;
 
@@ -175,7 +175,7 @@ struct PetalAttributes {
     float secondary_reload = 0;
     float constant_heal = 0;
     float burst_heal = 0;
-    float mass = 1;
+    float mass = 0.1;
     uint8_t defend_only = 0;
     float icon_angle = 0;
     uint8_t rotation_style = kPassiveRot;
