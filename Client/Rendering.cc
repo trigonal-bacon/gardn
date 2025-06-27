@@ -30,8 +30,8 @@ void Game::render_game() {
     renderer.translate(-camera.camera_x, -camera.camera_y);
     if (alive()) {
         Entity const &player = simulation.get_ent(player_id);
-        if (player.damaged) {
-            Vector rand = Vector::rand(3);
+        if (Game::timestamp - player.last_damaged_time < 100) {
+            Vector rand = Vector::rand(3.5);
             renderer.translate(rand.x, rand.y);
         }
     }

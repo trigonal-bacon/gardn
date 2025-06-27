@@ -16,21 +16,21 @@ void render_health(Renderer &ctx, Entity const &ent) {
     ctx.translate(-w, ent.radius * 1.25 + 10);
     ctx.round_line_cap();
     ctx.set_stroke(0xff222222);
-    ctx.set_line_width(10);
+    ctx.set_line_width(8);
     ctx.begin_path();
     ctx.move_to(0, 0);
     ctx.line_to(2 * w, 0);
     ctx.stroke();
     if (ent.healthbar_lag > ent.health_ratio) {
         ctx.set_stroke(0xffed2f31);
-        ctx.set_line_width(7);
+        ctx.set_line_width(6);
         ctx.begin_path();
         ctx.move_to(2 * w * ent.health_ratio, 0);
         ctx.line_to(2 * w * ent.healthbar_lag, 0);
         ctx.stroke();
     }
     ctx.set_stroke(0xff75dd34);
-    ctx.set_line_width(7);
+    ctx.set_line_width(6);
     ctx.begin_path();
     ctx.move_to(0, 0);
     ctx.line_to(2 * w * ent.health_ratio, 0);

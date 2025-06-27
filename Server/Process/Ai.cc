@@ -123,7 +123,6 @@ static void tick_bee_passive(Simulation *sim, Entity &ent) {
             v *= 1.5;
             if (ent.lifetime % (TPS * 3 / 2) < TPS / 2)
                 v *= 0.5;
-    
             ent.acceleration.set(v.x, v.y);
             break;
         }
@@ -182,13 +181,13 @@ static void tick_hornet_aggro(Simulation *sim, Entity &ent) {
 static void tick_centipede_passive(Simulation *sim, Entity &ent) {
     switch(ent.ai_state) {
         case AIState::kIdle: {
-            ent.set_angle(ent.angle + 0.005);
-            if (frand() < 0.0025) ent.ai_state = AIState::kIdleMoving;
+            ent.set_angle(ent.angle + 0.02);
+            if (frand() < 0.005) ent.ai_state = AIState::kIdleMoving;
             break;
         }
         case AIState::kIdleMoving: {
-            ent.set_angle(ent.angle - 0.005);
-            if (frand() < 0.0025) ent.ai_state = AIState::kIdle;
+            ent.set_angle(ent.angle - 0.02);
+            if (frand() < 0.005) ent.ai_state = AIState::kIdle;
             break;
         }
         case AIState::kReturning: {
@@ -359,7 +358,7 @@ void tick_ai_behavior(Simulation *sim, Entity &ent) {
         if (!sim->ent_alive(ent.parent)) {
             if (BIT_AT(ent.flags, EntityFlags::kDieOnParentDeath))
                 sim->request_delete(ent.id);
-            ent.parent = NULL_ENTITY;
+            ent.set_parent(NULL_ENTITY);
         } else {
             Entity &parent = sim->get_ent(ent.parent);
             Vector delta(parent.x - ent.x, parent.y - ent.y);

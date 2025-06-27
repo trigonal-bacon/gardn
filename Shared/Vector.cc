@@ -20,13 +20,19 @@ void Vector::set(float _x, float _y) {
 }
 
 
-Vector &Vector::operator=(Vector const o) {
+Vector &Vector::operator=(Vector const &o) {
     x = o.x;
     y = o.y;
     return *this;
 }
 
-Vector &Vector::operator+=(Vector const o) {
+Vector &Vector::operator+=(Vector const &o) {
+    x += o.x;
+    y += o.y;
+    return *this;
+}
+
+Vector &Vector::operator-=(Vector const &o) {
     x += o.x;
     y += o.y;
     return *this;
@@ -36,6 +42,14 @@ Vector &Vector::operator*=(float v) {
     x *= v;
     y *= v;
     return *this;
+}
+
+Vector Vector::operator+(Vector const &v) {
+    return Vector{ x + v.x, y + v.y };
+}
+
+Vector Vector::operator-(Vector const &v) {
+    return Vector{ x - v.x, y - v.y };
 }
 
 Vector Vector::operator*(float v) {

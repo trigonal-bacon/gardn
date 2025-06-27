@@ -139,8 +139,7 @@ SINGLE(Name, nametag_visible, uint8_t)
     SINGLE(eye_y, float, =0) \
     SINGLE(mouth, float, =15) \
     SINGLE(animation, float, =0) \
-    SINGLE(damage_flash, float, =0) \
-    SINGLE(deleting, uint8_t, =0)
+    SINGLE(damage_flash, float, =0)
 #endif
 
 class EntityID {
@@ -152,12 +151,12 @@ public:
     EntityID();
     EntityID(id_type, hash_type);
     bool null() const;
-    void operator=(EntityID const &);
+    void operator=(EntityID const);
     void print() const;
 };
 
-bool operator<(const EntityID &, const EntityID &);
-bool operator==(const EntityID &, const EntityID &);
+bool operator<(const EntityID, const EntityID);
+bool operator==(const EntityID, const EntityID);
 
 inline EntityID const NULL_ENTITY;
 

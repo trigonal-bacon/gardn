@@ -108,7 +108,7 @@ Element *Ui::make_stat_screen() {
         }, 0, 10)
     }, 20, 7);
     elt->style.animate = [](Element *elt, Renderer &ctx) {
-        ctx.translate(0, (1 - elt->animation) * 30 * elt->height);
+        ctx.translate(0, (1 - elt->animation) * elt->height);
     };
     elt->style.should_render = [](){
         return !Game::alive() && Game::should_render_game_ui();

@@ -48,9 +48,8 @@ uint8_t Simulation::ent_exists(EntityID const &id) const {
 }
 
 uint8_t Simulation::ent_alive(EntityID const &id) const {
-    return ent_exists(id) && entities[id.id].pending_delete == 0 && 
-    SERVER_ONLY(entities[id.id].deletion_tick == 0;)
-    CLIENT_ONLY(entities[id.id].deleting == 0;)
+    return ent_exists(id) && entities[id.id].pending_delete == 0
+    SERVER_ONLY(&& entities[id.id].deletion_tick == 0);
 }
 
 void Simulation::request_delete(EntityID const &id) {
@@ -81,7 +80,7 @@ template<> \
 void Simulation::for_each<k##name>(std::function<void(Simulation *, Entity &)> cb) { \
     for (EntityID::id_type i = 0; i < active_entities.size(); ++i) { \
         Entity &ent = get_ent(active_entities[i]); \
-        if (ent.pending_delete) continue; \
+        SERVER_ONLY(if (ent.pending_delete) continue;) \
         if (ent.has_component(k##name)) cb(this, ent); \
     } \
 }

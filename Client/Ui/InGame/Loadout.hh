@@ -59,7 +59,8 @@ namespace Ui {
     Element *make_loadout_backgrounds();
     void make_petal_tooltips();
 
-    void advance_key_select();
+    void forward_secondary_select();
+    void backward_secondary_select();
     void ui_delete_petal(uint8_t);
     void ui_swap_petals(uint8_t, uint8_t);
 }

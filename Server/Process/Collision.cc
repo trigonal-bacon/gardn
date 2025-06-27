@@ -4,6 +4,7 @@
 #include <Shared/Entity.hh>
 
 #include <cmath>
+#include <iostream>
 
 static bool _should_interact(Entity const &ent1, Entity const &ent2) {
     //if (ent1.has_component(kFlower) || ent2.has_component(kFlower)) return false;
@@ -36,18 +37,26 @@ static void _pickup_drop(Simulation *sim, Entity &player, Entity &drop) {
 #define BOTH(component) (ent1.has_component(component) && ent2.has_component(component))
 #define EITHER(component) (ent1.has_component(component) || ent2.has_component(component))
 
-void _deal_push(Entity &ent, Vector knockback, float mass_ratio, float scale) {
+static void _deal_push(Entity &ent, Vector knockback, float mass_ratio, float scale) {
     if (fabsf(mass_ratio) < 0.01) return;
     knockback *= scale * mass_ratio;
     ent.collision_velocity += knockback;
 }
 
-void _deal_knockback(Entity &ent, Vector knockback, float mass_ratio) {
+static void _deal_knockback(Entity &ent, Vector knockback, float mass_ratio) {
     if (fabsf(mass_ratio) < 0.01) return;
     float scale = PLAYER_ACCELERATION * 2;
     knockback *= scale * mass_ratio;
     ent.collision_velocity += knockback;
     ent.velocity += knockback * 2;
+}
+
+static void _cancel_movement(Entity &ent, Vector dir, Vector add) {
+    Vector push = dir;
+    push.normalize();
+    float dot = fclamp(push.x * add.x + push.y * add.y, PLAYER_ACCELERATION * 0.5, PLAYER_ACCELERATION * 25);
+    ent.velocity += push * (PLAYER_ACCELERATION + dot * 2);
+    ent.collision_velocity += push * (0.5 * PLAYER_ACCELERATION);
 }
 
 void on_collide(Simulation *sim, Entity &ent1, Entity &ent2) {
@@ -68,16 +77,16 @@ void on_collide(Simulation *sim, Entity &ent1, Entity &ent2) {
         float ratio = ent2.mass / (ent1.mass + ent2.mass);
         if (!(ent1.team == ent2.team)) {
             if (ent1.has_component(kFlower) && !ent2.has_component(kPetal))
-                _deal_knockback(ent1, separation, 1);
+                _cancel_movement(ent1, separation, ent2.velocity - ent1.velocity);
             else
                 _deal_knockback(ent1, separation, ratio);
             if (ent2.has_component(kFlower) && !ent1.has_component(kPetal))
-                _deal_knockback(ent2, separation, -1);
+                _cancel_movement(ent2, separation*-1, ent1.velocity - ent2.velocity);
             else
-                _deal_knockback(ent2, separation, ratio - 1);
+                _deal_knockback(ent2, separation*-1, 1 - ratio);
         }
         _deal_push(ent1, separation, ratio, dist);
-        _deal_push(ent2, separation, ratio - 1, dist);
+        _deal_push(ent2, separation*-1, 1 - ratio, dist);
     }
 
     if (BOTH(kHealth) && !(ent1.team == ent2.team)) {

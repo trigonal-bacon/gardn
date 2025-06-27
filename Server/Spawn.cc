@@ -131,7 +131,7 @@ Entity &alloc_player(EntityID const camera_id) {
     player.max_health = 100;
     player.set_health_ratio(1);
     player.damage = 25;
-    player.immunity_ticks = 2.5 * TPS;
+    player.immunity_ticks = 1.0 * TPS;
     player.mass = 1;
 
     player.add_component(kScore);

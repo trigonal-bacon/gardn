@@ -103,7 +103,7 @@ extern struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
     {"Triplet", "How about THREE?!",
         5.0, 8.0, 7.0, 1.0, 3, RarityID::kEpic, {}},
     {"Egg", "Something interesting mught pop out of this",
-        15.0, 1.0, 12.5, 1.0, 2, RarityID::kEpic, { 
+        50.0, 1.0, 12.5, 1.0, 2, RarityID::kEpic, { 
         .secondary_reload = 3.5,
         .defend_only = 1,
         .rotation_style = PetalAttributes::kNoRot,
@@ -126,7 +126,7 @@ extern struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
         .poison_damage = { 20.0, 0.5 }
     }},
     {"Egg", "Something interesting might pop out of this",
-        15.0, 1.0, 15.0, 1.0, 1, RarityID::kEpic, { 
+        50.0, 1.0, 15.0, 1.0, 1, RarityID::kEpic, { 
         .secondary_reload = 3.5,
         .defend_only = 1,
         .rotation_style = PetalAttributes::kNoRot,
@@ -250,7 +250,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
     {
         "Beetle",
         "It's hungry and flowers are its favorite meal.",
-        RarityID::kUnusual, {40.0}, 25.0, {35.0}, 10, {
+        RarityID::kUnusual, {40.0}, 35.0, {35.0}, 10, {
         PetalID::kIris, PetalID::kSalt, PetalID::kWing, PetalID::kTriplet
     }, {}},
     {
@@ -262,7 +262,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
     {
         "Massive Beetle",
         "Someone overfed this one, you might be next.",
-        RarityID::kRare, {600.0}, 30.0, {75.0}, 50, {
+        RarityID::kRare, {600.0}, 35.0, {75.0}, 50, {
         PetalID::kIris, PetalID::kWing, PetalID::kBlueIris, PetalID::kTriplet, PetalID::kBeetleEgg, PetalID::kThirdEye
     }, { .aggro_radius = 1000 }},
     {
@@ -323,7 +323,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
         "Scorpion",
         "This one stings, now with poison.",
         RarityID::kUnusual, {35.0}, 15.0, {35.0}, 10, {
-        PetalID::kIris, PetalID::kPincer, PetalID::kTriplet
+        PetalID::kIris, PetalID::kPincer, PetalID::kTriplet, PetalID::kLotus
     }, { .aggro_radius = 750, .poison_damage = { 5.0, 1.0 } }},
     {
         "Spider",
@@ -392,7 +392,7 @@ std::array<StaticArray<float, MAX_DROPS_PER_MOB>, MobID::kNumMobs> const _get_au
             MOB_SPAWN_RATES[s.id] += xx;
             if (s.id == MobID::kAntHole) {
                 MOB_SPAWN_RATES[MobID::kQueenAnt] += xx;
-                MOB_SPAWN_RATES[MobID::kDigger] += 0.1 * xx;
+                MOB_SPAWN_RATES[MobID::kDigger] += 0.25 * xx;
                 MOB_SPAWN_RATES[MobID::kSoldierAnt] += 15 * xx;
                 MOB_SPAWN_RATES[MobID::kWorkerAnt] += 10 * xx;
                 MOB_SPAWN_RATES[MobID::kBabyAnt] += 5 * xx;

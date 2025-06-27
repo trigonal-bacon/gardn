@@ -8,9 +8,12 @@ public:
     Vector(Vector &);
     Vector(float, float);
     static Vector rand(float);
-    Vector &operator=(Vector const);
-    Vector &operator+=(Vector const);
+    Vector &operator=(Vector const &);
+    Vector &operator+=(Vector const &);
+    Vector &operator-=(Vector const &);
     Vector &operator*=(float);
+    Vector operator+(Vector const &);
+    Vector operator-(Vector const &);
     Vector operator*(float);
     void set(float, float);
     float magnitude();

@@ -210,26 +210,29 @@ void Game::tick(double time) {
         renderer.draw_image(game_ui_renderer);
         //process keybind petal switches
         if (Input::keys_pressed_this_tick.contains('E')) 
-            Ui::advance_key_select();
+            Ui::forward_secondary_select();
+        else if (Input::keys_pressed_this_tick.contains('Q')) 
+            Ui::backward_secondary_select();
         else if (Ui::UiLoadout::selected_with_keys == MAX_SLOT_COUNT) {
             for (uint8_t i = 0; i < Game::loadout_count; ++i) {
                 if (Input::keys_pressed_this_tick.contains('1' + i)) {
-                    Ui::advance_key_select();
+                    Ui::forward_secondary_select();
                     break;
                 }
             }
-        }
+        } else if (Game::cached_loadout[Game::loadout_count + Ui::UiLoadout::selected_with_keys] == PetalID::kNone)
+            Ui::UiLoadout::selected_with_keys = MAX_SLOT_COUNT;
         if (Ui::UiLoadout::selected_with_keys < MAX_SLOT_COUNT 
             && Game::cached_loadout[Game::loadout_count + Ui::UiLoadout::selected_with_keys] != PetalID::kNone) {
             if (Input::keys_pressed_this_tick.contains('T')) {
                 Ui::ui_delete_petal(Ui::UiLoadout::selected_with_keys + Game::loadout_count);
-                Ui::advance_key_select();
+                Ui::forward_secondary_select();
             } else {
                 for (uint8_t i = 0; i < Game::loadout_count; ++i) {
                     if (Input::keys_pressed_this_tick.contains('1' + i)) {
                         Ui::ui_swap_petals(i, Ui::UiLoadout::selected_with_keys + Game::loadout_count);
                         if (Game::cached_loadout[Game::loadout_count + Ui::UiLoadout::selected_with_keys] == PetalID::kNone)
-                            Ui::advance_key_select();
+                            Ui::forward_secondary_select();
                         break;
                     }
                 }

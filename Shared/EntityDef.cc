@@ -15,16 +15,16 @@ bool EntityID::null() const {
     return id == 0;
 }
 
-void EntityID::operator=(const EntityID &o) {
+void EntityID::operator=(const EntityID o) {
     id = o.id;
     hash = o.hash;
 }
 
-bool operator<(const EntityID &a, const EntityID &b) {
+bool operator<(const EntityID a, const EntityID b) {
     return (a.id * 65536 + a.hash) < (b.id * 65536 + b.hash);
 }
 
-bool operator==(const EntityID &a, const EntityID &b) {
+bool operator==(const EntityID a, const EntityID b) {
     return a.id == b.id && a.hash == b.hash;
 }
 

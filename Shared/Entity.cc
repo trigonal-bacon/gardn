@@ -34,10 +34,10 @@ void Entity::reset_protocol() {
 
 void Entity::add_component(uint32_t comp) {
     DEBUG_ONLY(assert(!has_component(comp));)
-    components |= 1 << comp;
+    BIT_SET(components, comp);
 }
 uint8_t Entity::has_component(uint32_t comp) const {
-    return (components >> comp) & 1;
+    return BIT_AT(components, comp);
 }
 
 #ifdef SERVERSIDE

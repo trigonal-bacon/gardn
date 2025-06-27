@@ -55,7 +55,7 @@ void Socket::connect(std::string const url) {
             socket.onmessage = function(event)
             {
                 HEAPU8.set(new Uint8Array(event.data), $0);
-                _on_message(1, event.data.length);
+                _on_message(1, event.data.byteLength);
             };
         }
         setTimeout(connect, 1000);

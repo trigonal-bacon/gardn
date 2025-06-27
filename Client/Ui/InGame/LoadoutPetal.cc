@@ -14,7 +14,7 @@ UiLoadoutPetal *Ui::UiLoadout::petal_slots[2 * MAX_SLOT_COUNT] = {nullptr};
 uint8_t Ui::UiLoadout::selected_with_keys = MAX_SLOT_COUNT;
 double Ui::UiLoadout::last_key_select = 0;
 
-void Ui::advance_key_select() {
+void Ui::forward_secondary_select() {
     Ui::UiLoadout::last_key_select = Game::timestamp;
     if (Ui::UiLoadout::selected_with_keys == MAX_SLOT_COUNT)
         Ui::UiLoadout::selected_with_keys = 0;
@@ -24,6 +24,17 @@ void Ui::advance_key_select() {
         Ui::UiLoadout::selected_with_keys = Ui::UiLoadout::selected_with_keys % MAX_SLOT_COUNT;
         if (Game::cached_loadout[Game::loadout_count + Ui::UiLoadout::selected_with_keys] != PetalID::kNone) return;
         ++Ui::UiLoadout::selected_with_keys;
+    }
+    Ui::UiLoadout::selected_with_keys = MAX_SLOT_COUNT;
+}
+
+void Ui::backward_secondary_select() {
+    Ui::UiLoadout::last_key_select = Game::timestamp;
+    if (Ui::UiLoadout::selected_with_keys == MAX_SLOT_COUNT)
+        return Ui::forward_secondary_select();
+    for (uint8_t i = 0; i < MAX_SLOT_COUNT; ++i) {
+        Ui::UiLoadout::selected_with_keys = (Ui::UiLoadout::selected_with_keys - 1) % MAX_SLOT_COUNT;
+        if (Game::cached_loadout[Game::loadout_count + Ui::UiLoadout::selected_with_keys] != PetalID::kNone) return;
     }
     Ui::UiLoadout::selected_with_keys = MAX_SLOT_COUNT;
 }
@@ -107,7 +118,7 @@ UiLoadoutPetal::UiLoadoutPetal(uint8_t pos) : Element(60, 60),
         return true;
     };
     style.animate = [&](Element *elt, Renderer &ctx){
-        float lerp_amt = Ui::lerp_amount;
+        float lerp_amt = Ui::lerp_amount * 0.75;
         reload.step(lerp_amt);
         if (curr_pos != 2 * MAX_SLOT_COUNT) 
             curr_pos = static_to_dynamic(static_pos);
