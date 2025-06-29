@@ -153,7 +153,7 @@ static void tick_hornet_aggro(Simulation *sim, Entity &ent) {
         if (ent.ai_tick >= 1.5 * TPS && dist < 800) {
             ent.ai_tick = 0;
             //spawn missile;
-            Entity &missile = alloc_petal(PetalID::kMissile, ent);
+            Entity &missile = alloc_petal(sim, PetalID::kMissile, ent);
             missile.damage = 10;
             missile.health = missile.max_health = 10;
             //missile.health = missile.max_health = 20;
@@ -402,7 +402,7 @@ void tick_ai_behavior(Simulation *sim, Entity &ent) {
             break;
         case MobID::kSpider:
             if (ent.lifetime % (TPS) == 0) 
-                alloc_web(25, ent);
+                alloc_web(sim, 25, ent);
             tick_default_aggro(sim, ent, 1.25);
             break;
         case MobID::kQueenAnt:
@@ -410,7 +410,7 @@ void tick_ai_behavior(Simulation *sim, Entity &ent) {
                 Vector behind;
                 behind.unit_normal(ent.angle + M_PI);
                 behind *= ent.radius;
-                Entity &spawned = alloc_mob(MobID::kSoldierAnt, ent.x + behind.x, ent.y + behind.y, ent.team);
+                Entity &spawned = alloc_mob(sim, MobID::kSoldierAnt, ent.x + behind.x, ent.y + behind.y, ent.team);
                 BIT_SET(spawned.flags, EntityFlags::kIsDespawning);
                 spawned.despawn_tick = 10 * TPS;
                 spawned.set_parent(ent.parent);

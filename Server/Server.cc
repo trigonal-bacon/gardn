@@ -26,6 +26,6 @@ void Server::tick() {
 
 void Server::init() {
     for (uint32_t i = 0; i < 10000; ++i)
-        Map::spawn_random_mob();
+        Map::spawn_random_mob(&Server::simulation);
     Server::run();
 }

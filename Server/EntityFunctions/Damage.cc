@@ -45,7 +45,7 @@ void inflict_damage(Simulation *sim, EntityID const atk_id, EntityID const def_i
         uint32_t end = ceilf((defender.health / defender.max_health) * num_spawn_waves);
         for (uint32_t i = start; i + 1 > end; --i) {
             for (MobID::T mob_id : anthole_spawns[num_spawn_waves - i]) {
-                Entity &child = alloc_mob(mob_id, defender.x, defender.y, defender.team);
+                Entity &child = alloc_mob(sim, mob_id, defender.x, defender.y, defender.team);
                 child.set_parent(defender.id);
                 child.target = defender.target;
             }

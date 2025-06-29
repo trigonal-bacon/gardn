@@ -5,14 +5,15 @@
 #include <Server/Server.hh>
 #include <Shared/Helpers.hh>
 #include <Shared/Map.hh>
+#include <Shared/Simulation.hh>
 #include <Shared/StaticData.hh>
 
 #include <cmath>
 
-Entity &alloc_drop(PetalID::T drop_id) {
+Entity &alloc_drop(Simulation *sim, PetalID::T drop_id) {
     DEBUG_ONLY(assert(drop_id < PetalID::kNumPetals);)
     PetalTracker::add_petal(drop_id);
-    Entity &drop = Server::simulation.alloc_ent();
+    Entity &drop = sim->alloc_ent();
     drop.add_component(kPhysics);
     drop.set_radius(20);
     drop.set_angle(frand() * 0.2 - 0.1);
@@ -29,11 +30,11 @@ Entity &alloc_drop(PetalID::T drop_id) {
     return drop;
 }
 
-static Entity &__alloc_mob(MobID::T mob_id, float x, float y, EntityID const team = NULL_ENTITY) {
+static Entity &__alloc_mob(Simulation *sim, MobID::T mob_id, float x, float y, EntityID const team = NULL_ENTITY) {
     DEBUG_ONLY(assert(mob_id < MobID::kNumMobs);)
     struct MobData const &data = MOB_DATA[mob_id];
     float seed = frand();
-    Entity &mob = Server::simulation.alloc_ent();
+    Entity &mob = sim->alloc_ent();
 
     mob.add_component(kPhysics);
     mob.set_radius(data.radius.get_single(seed));
@@ -74,10 +75,10 @@ static Entity &__alloc_mob(MobID::T mob_id, float x, float y, EntityID const tea
     return mob;
 }
 
-Entity &alloc_mob(MobID::T mob_id, float x, float y, EntityID const team) {
+Entity &alloc_mob(Simulation *sim, MobID::T mob_id, float x, float y, EntityID const team) {
     struct MobData const &data = MOB_DATA[mob_id];
     if (data.attributes.segments <= 1) {
-        Entity &ent = __alloc_mob(mob_id, x, y, team);
+        Entity &ent = __alloc_mob(sim, mob_id, x, y, team);
         if (mob_id == MobID::kAntHole) {
             std::vector<MobID::T> const spawns = { 
                 MobID::kBabyAnt, MobID::kBabyAnt, MobID::kBabyAnt, 
@@ -85,19 +86,19 @@ Entity &alloc_mob(MobID::T mob_id, float x, float y, EntityID const team) {
             };
             for (MobID::T mob_id : spawns) {
                 Vector rand = Vector::rand(ent.radius * 2);
-                Entity &ant = __alloc_mob(mob_id, x + rand.x, y + rand.y, team);
+                Entity &ant = __alloc_mob(sim, mob_id, x + rand.x, y + rand.y, team);
                 ant.set_parent(ent.id);
             }
         }
         return ent;
     }
     else {
-        Entity &head = __alloc_mob(mob_id, x, y, team);
+        Entity &head = __alloc_mob(sim, mob_id, x, y, team);
         head.add_component(kSegmented);
         head.set_is_tail(0);
         Entity *curr = &head;
         for (uint32_t i = 1; i < data.attributes.segments; ++i) {
-            Entity &seg = __alloc_mob(mob_id, x, y, team);
+            Entity &seg = __alloc_mob(sim, mob_id, x, y, team);
             seg.add_component(kSegmented);
             seg.set_is_tail(1);
             seg.seg_head = curr->id;
@@ -110,8 +111,8 @@ Entity &alloc_mob(MobID::T mob_id, float x, float y, EntityID const team) {
     }
 }
 
-Entity &alloc_player(EntityID const camera_id) {
-    Entity &player = Server::simulation.alloc_ent();
+Entity &alloc_player(Simulation *sim, EntityID const camera_id) {
+    Entity &player = sim->alloc_ent();
 
     player.add_component(kPhysics);
     //player.set_x(camera.camera_x);
@@ -137,17 +138,16 @@ Entity &alloc_player(EntityID const camera_id) {
     player.add_component(kScore);
 
     player.add_component(kName);
-    //player.set_name("TestName.com");
     player.set_nametag_visible(1);
 
     player.base_entity = player.id;
     return player;
 }
 
-Entity &alloc_petal(PetalID::T petal_id, Entity const &parent) {
+Entity &alloc_petal(Simulation *sim, PetalID::T petal_id, Entity const &parent) {
     DEBUG_ONLY(assert(petal_id < PetalID::kNumPetals);)
     struct PetalData const &petal_data = PETAL_DATA[petal_id];
-    Entity &petal = Server::simulation.alloc_ent();
+    Entity &petal = sim->alloc_ent();
     petal.add_component(kPhysics);
     petal.set_x(parent.x);
     petal.set_y(parent.y);
@@ -172,8 +172,8 @@ Entity &alloc_petal(PetalID::T petal_id, Entity const &parent) {
     return petal;
 }
 
-Entity &alloc_web(float radius, Entity const &parent) {
-    Entity &web = Server::simulation.alloc_ent();
+Entity &alloc_web(Simulation *sim, float radius, Entity const &parent) {
+    Entity &web = sim->alloc_ent();
     web.add_component(kPhysics);
     web.set_x(parent.x);
     web.set_y(parent.y);

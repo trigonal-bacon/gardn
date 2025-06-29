@@ -129,7 +129,7 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
                 float this_reload = reload_time == 0 ? 1 : (float) petal_slot.reload / reload_time;
                 if (this_reload < min_reload) min_reload = this_reload;
                 if (petal_slot.reload >= reload_time) {
-                    Entity &petal = alloc_petal(slot.id, player);
+                    Entity &petal = alloc_petal(sim, slot.id, player);
                     petal_slot.ent_id = petal.id;
                     petal_slot.reload = 0;
                     slot.already_spawned = 1;
@@ -172,7 +172,7 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
                     if (petal_data.attributes.spawns != MobID::kNumMobs &&
                         petal.secondary_reload > sec_reload_ticks) {
                         uint8_t spawn_id = petal_data.attributes.spawns;
-                        Entity &mob = alloc_mob(spawn_id, petal.x, petal.y, petal.team);
+                        Entity &mob = alloc_mob(sim, spawn_id, petal.x, petal.y, petal.team);
                         mob.set_parent(player.id);
                         mob.base_entity = player.id;
                         mob.set_score(0);

@@ -118,7 +118,7 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
         case kServerbound::kClientSpawn: {
             if (client->alive()) break;
             Entity &camera = Server::simulation.get_ent(client->camera);
-            Entity &player = alloc_player(camera.id);
+            Entity &player = alloc_player(&Server::simulation, camera.id);
             player_spawn(&Server::simulation, camera, player);
             std::string name;
             //check string length;

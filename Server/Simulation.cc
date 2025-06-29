@@ -69,7 +69,7 @@ static void calculate_leaderboard(Simulation *sim) {
 void Simulation::tick() {
     pre_tick();
     if (frand() < 0.01)
-        for (uint32_t i = 0; i < 10; ++i) Map::spawn_random_mob();
+        for (uint32_t i = 0; i < 10; ++i) Map::spawn_random_mob(this);
     for (uint32_t i = 0; i < active_entities.size(); ++i) {
         Entity &ent = get_ent(active_entities[i]);
         if (ent.has_component(kPhysics)) {

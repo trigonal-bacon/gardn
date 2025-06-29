@@ -6,12 +6,13 @@
 #include <Shared/Entity.hh>
 #include <Shared/Helpers.hh>
 #include <Shared/Map.hh>
+#include <Shared/Simulation.hh>
 #include <Shared/Vector.hh>
 
 #include <algorithm>
 #include <iostream>
 
-static void __alloc_drops(std::vector<PetalID::T> &success_drops, float x, float y) {
+static void __alloc_drops(Simulation *sim, std::vector<PetalID::T> &success_drops, float x, float y) {
     #ifdef DEBUG
     for (PetalID::T id : success_drops)
         assert(id != PetalID::kNone && id < PetalID::kNumPetals);
@@ -28,13 +29,13 @@ static void __alloc_drops(std::vector<PetalID::T> &success_drops, float x, float
     DEBUG_ONLY(assert(success_drops.size() == count);)
     if (count > 1) {
         for (size_t i = 0; i < count; ++i) {
-            Entity &drop = alloc_drop(success_drops[i]);
+            Entity &drop = alloc_drop(sim, success_drops[i]);
             drop.set_x(x);
             drop.set_y(y);
             drop.velocity.unit_normal(i * 2 * M_PI / count).set_magnitude(25);
         }
     } else if (count == 1) {
-        Entity &drop = alloc_drop(success_drops[0]);
+        Entity &drop = alloc_drop(sim, success_drops[0]);
         drop.set_x(x);
         drop.set_y(y);
     }
@@ -73,18 +74,18 @@ void entity_on_death(Simulation *sim, Entity const &ent) {
             StaticArray<float, MAX_DROPS_PER_MOB> const &drop_chances = get_mob_drop_chances(ent.mob_id);
             for (uint32_t i = 0; i < mob_data.drops.size(); ++i) 
                 if (frand() < drop_chances[i]) success_drops.push_back(mob_data.drops[i]);
-            __alloc_drops(success_drops, ent.x, ent.y);
+            __alloc_drops(sim, success_drops, ent.x, ent.y);
         }
         if (ent.mob_id == MobID::kAntHole && ent.team == NULL_ENTITY && frand() < 0.25) { 
             EntityID team = NULL_ENTITY;
             if (sim->ent_exists(ent.last_damaged_by))
                 team = sim->get_ent(ent.last_damaged_by).team;
-            alloc_mob(MobID::kDigger, ent.x, ent.y, team);
+            alloc_mob(sim, MobID::kDigger, ent.x, ent.y, team);
         }
 
     } else if (ent.has_component(kPetal)) {
         if (ent.petal_id == PetalID::kWeb || ent.petal_id == PetalID::kTriweb)
-            alloc_web(100, ent);
+            alloc_web(sim, 100, ent);
     } else if (ent.has_component(kFlower)) {
         std::vector<PetalID::T> potential = {};
         for (uint32_t i = 0; i < ent.loadout_count + MAX_SLOT_COUNT; ++i) {
@@ -114,7 +115,7 @@ void entity_on_death(Simulation *sim, Entity const &ent) {
             success_drops.push_back(p_id);
             potential.pop_back();
         }
-        __alloc_drops(success_drops, ent.x, ent.y);
+        __alloc_drops(sim, success_drops, ent.x, ent.y);
         //if the camera is the one that disconnects
         //no need to re-add the petals to the petal tracker
         if (!sim->ent_alive(ent.parent))

@@ -29,12 +29,13 @@ uint32_t Map::get_zone_from_pos(float x, float y) {
 }
 
 #ifdef SERVERSIDE
+#include <Shared/Simulation.hh>
 void Map::remove_mob(uint32_t zone) {
     DEBUG_ONLY(assert(zone < MAP.size());)
     --ZONE_MOB_COUNTS[zone];
 }
 
-void Map::spawn_random_mob() {
+void Map::spawn_random_mob(Simulation *sim) {
     float x = frand() * ARENA_WIDTH;
     float y = frand() * ARENA_HEIGHT;
     uint32_t zone_id = Map::get_zone_from_pos(x, y);
@@ -48,7 +49,7 @@ void Map::spawn_random_mob() {
         sum -= s.chance;
         if (sum <= 0) {
             MobID::T spawn_id = s.id;
-            Entity &ent = alloc_mob(spawn_id, x, y, NULL_ENTITY);
+            Entity &ent = alloc_mob(sim, spawn_id, x, y, NULL_ENTITY);
             ent.zone = zone_id;
             BIT_SET(ent.flags, EntityFlags::kSpawnedFromZone);
             ZONE_MOB_COUNTS[zone_id]++;
