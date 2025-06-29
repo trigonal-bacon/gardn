@@ -117,7 +117,7 @@ void Simulation::post_tick() {
         if (!ent.has_component(kPhysics)) 
             _delete_ent(pending_delete[i]);
         else {
-            if (ent.deletion_tick >= DELETION_ANIMATION_TICKS) 
+            if (ent.deletion_tick >= TPS / 5) 
                 _delete_ent(pending_delete[i]);
             else {
                 if (ent.deletion_tick == 0)

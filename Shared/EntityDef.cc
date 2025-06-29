@@ -2,8 +2,6 @@
 
 #include <Shared/StaticData.hh>
 
-#include <iostream>
-
 EntityID::EntityID() {
     id = hash = 0;
 }
@@ -26,10 +24,6 @@ bool operator<(const EntityID a, const EntityID b) {
 
 bool operator==(const EntityID a, const EntityID b) {
     return a.id == b.id && a.hash == b.hash;
-}
-
-void EntityID::print() const {
-    std::cout << '<' << hash << ',' << id << '>';
 }
 
 LoadoutSlot::LoadoutSlot() {

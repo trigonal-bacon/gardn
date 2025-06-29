@@ -4,11 +4,9 @@
 
 #include <array>
 #include <cstdint>
-#include <vector>
 
 extern const uint32_t MAX_LEVEL;
 extern const uint32_t TPS;
-extern const uint32_t DELETION_ANIMATION_TICKS;
 
 extern const float PETAL_DISABLE_DELAY;
 extern const float PLAYER_ACCELERATION;
