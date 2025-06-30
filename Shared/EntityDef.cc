@@ -2,12 +2,9 @@
 
 #include <Shared/StaticData.hh>
 
-EntityID::EntityID() {
-    id = hash = 0;
-}
+EntityID::EntityID() : id(0), hash(0) {}
 
-EntityID::EntityID(uint16_t id, uint16_t hash) : id(id), hash(hash) {
-}
+EntityID::EntityID(id_type id, hash_type hash) : id(id), hash(hash) {}
 
 bool EntityID::null() const {
     return id == 0;

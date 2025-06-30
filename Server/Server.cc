@@ -2,6 +2,8 @@
 
 #include <Server/Client.hh>
 
+#include <Shared/Map.hh>
+
 #include <chrono>
 
 namespace Server {

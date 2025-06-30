@@ -3,9 +3,10 @@
 #include <Shared/Simulation.hh>
 #include <Shared/Entity.hh>
 
-SpatialHash::SpatialHash(Simulation *sim) : simulation(sim) { clear(); }
+SpatialHash::SpatialHash(Simulation *sim) : simulation(sim) {}
 
-void SpatialHash::clear() {
+void SpatialHash::refresh(uint32_t width, uint32_t height) {
+    DEBUG_ONLY(assert(width <= ARENA_WIDTH && height < ARENA_HEIGHT));
     for (uint32_t x = 0; x < MAX_GRID_X; ++x)
         for (uint32_t y = 0; y < MAX_GRID_Y; ++y)
             cells[x][y].clear();

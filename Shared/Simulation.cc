@@ -1,7 +1,7 @@
 #include <Shared/Simulation.hh>
 #include <Shared/Helpers.hh>
 
-#include <iostream>
+DEBUG_ONLY(#include <iostream>)
 
 Simulation::Simulation() SERVER_ONLY(: spatial_hash(this)) {}
 
@@ -68,6 +68,7 @@ void Simulation::_delete_ent(EntityID const &id) {
 }
 
 void Simulation::pre_tick() {
+    pending_delete.clear();
     active_entities.clear();
     for (EntityID::id_type i = 0; i < ENTITY_CAP; ++i) {
         if (!entity_tracker[i]) continue;

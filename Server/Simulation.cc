@@ -54,12 +54,16 @@ static void update_client(Simulation *sim, Client *client) {
 }
 
 static void calculate_leaderboard(Simulation *sim) {
-    std::vector<Entity *> players;
-    sim->for_each<kFlower>([&](Simulation *s, Entity &ent) { if (!ent.has_component(kMob)) players.push_back(&ent); });
-    std::stable_sort(players.begin(), players.end(), [](Entity *a, Entity *b){ return a->score > b->score; });
+    std::vector<Entity const *> players;
+    sim->for_each<kCamera>([&](Simulation *sim, Entity &ent) { 
+        if (sim->ent_alive(ent.player)) players.push_back(&sim->get_ent(ent.player));
+    });
+    std::stable_sort(players.begin(), players.end(), [](Entity const *a, Entity const *b){
+        return a->score > b->score;
+    });
     uint32_t num = players.size();
     sim->arena_info.set_player_count(num);
-    if (num > 10) num = 10;
+    if (num > LEADERBOARD_SIZE) num = LEADERBOARD_SIZE;
     for (uint32_t i = 0; i < num; ++i) {
         sim->arena_info.set_names(i, players[i]->name);
         sim->arena_info.set_scores(i, players[i]->score);
@@ -68,6 +72,7 @@ static void calculate_leaderboard(Simulation *sim) {
 
 void Simulation::tick() {
     pre_tick();
+    spatial_hash.refresh(ARENA_WIDTH, ARENA_HEIGHT);
     if (frand() < 0.01)
         for (uint32_t i = 0; i < 10; ++i) Map::spawn_random_mob(this);
     for (uint32_t i = 0; i < active_entities.size(); ++i) {
@@ -127,8 +132,4 @@ void Simulation::post_tick() {
             }
         }
     }
-
-    pending_delete.clear();
-    active_entities.clear();
-    spatial_hash.clear();
 }
