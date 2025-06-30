@@ -8,10 +8,11 @@
 #include <Shared/Config.hh>
 #include <Shared/Simulation.hh>
 
-Client::Client() {}
+Client::Client() : simulation(nullptr) {}
 
 void Client::init() {
-    Entity &ent = Server::simulation.alloc_ent();
+    DEBUG_ONLY(assert(simulation != nullptr);)
+    Entity &ent = simulation->alloc_ent();
     ent.add_component(kCamera);
     ent.set_fov(BASE_FOV);
     ent.set_respawn_level(1); 
@@ -85,6 +86,7 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
             return;
         }
         client->verified = 1;
+        client->simulation = &Server::simulation;
         client->init();
         return;
     }
@@ -118,8 +120,8 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
         case kServerbound::kClientSpawn: {
             if (client->alive()) break;
             Entity &camera = Server::simulation.get_ent(client->camera);
-            Entity &player = alloc_player(&Server::simulation, camera.id);
-            player_spawn(&Server::simulation, camera, player);
+            Entity &player = alloc_player(client->simulation, camera.id);
+            player_spawn(client->simulation, camera, player);
             std::string name;
             //check string length;
             VALIDATE(validator.validate_string(MAX_NAME_LENGTH));
