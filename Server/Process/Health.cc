@@ -17,7 +17,6 @@ void tick_health_behavior(Simulation *sim, Entity &ent) {
         ent.poison_inflicted = 0;
         ent.poison_dealer = NULL_ENTITY;
     }
-    if (ent.immunity_ticks > 0) --ent.immunity_ticks;
     if (ent.dandy_ticks > 0) --ent.dandy_ticks;
     if (ent.health <= 0) sim->request_delete(ent.id);
     if (ent.max_health == 0) return;

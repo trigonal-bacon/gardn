@@ -42,6 +42,7 @@ static Entity &__alloc_mob(Simulation *sim, MobID::T mob_id, float x, float y, E
     mob.set_x(x);
     mob.set_y(y);
     mob.friction = DEFAULT_FRICTION;
+    mob.immunity_ticks = 2 * TPS;
     mob.mass = 1 + mob.radius / 25;
     if (data.attributes.stationary) mob.mass *= 10000;
     if (mob_id == MobID::kAntHole)
@@ -49,7 +50,6 @@ static Entity &__alloc_mob(Simulation *sim, MobID::T mob_id, float x, float y, E
     
     mob.add_component(kRelations);
     mob.set_team(team);
-    //entity_set_owner(mob, NULL_ENTITY);
 
     mob.add_component(kMob);
     mob.set_mob_id(mob_id);
@@ -111,7 +111,7 @@ Entity &alloc_mob(Simulation *sim, MobID::T mob_id, float x, float y, EntityID c
     }
 }
 
-Entity &alloc_player(Simulation *sim, EntityID const camera_id) {
+Entity &alloc_player(Simulation *sim, EntityID const team) {
     Entity &player = sim->alloc_ent();
 
     player.add_component(kPhysics);
@@ -123,9 +123,9 @@ Entity &alloc_player(Simulation *sim, EntityID const camera_id) {
     player.add_component(kFlower);
 
     player.add_component(kRelations);
-    player.set_parent(camera_id);
-    player.owner = player.id;
-    player.set_team(camera_id);
+    player.set_team(team);
+    //player.owner = player.id;
+    //player.set_team(camera_id);
 
     player.add_component(kHealth);
     player.health = 100;
@@ -191,6 +191,8 @@ Entity &alloc_web(Simulation *sim, float radius, Entity const &parent) {
 
 void player_spawn(Simulation *sim, Entity &camera, Entity &player) {
     camera.set_player(player.id);
+    player.set_parent(camera.id);
+    player.owner = camera.id;
     uint32_t power = Map::difficulty_at_level(camera.respawn_level);
     ZoneDefinition const &zone = MAP[power];
     float spawn_x = (frand() - 0.5) * zone.w + zone.x;

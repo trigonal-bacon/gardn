@@ -50,7 +50,7 @@ void Simulation::tick() {
     spatial_hash.collide(on_collide);
     for_each<kPhysics>(tick_entity_motion);
     for_each<kSegmented>(tick_segment_behavior);
-    for_each<kDrop>(tick_drop_behavior);
+    //for_each<kDrop>(tick_drop_behavior);
     for_each<kCamera>(tick_camera_behavior);
     calculate_leaderboard(this);
 }
@@ -69,6 +69,7 @@ void Simulation::post_tick() {
             else
                 --ent.despawn_tick;
         }
+        if (ent.immunity_ticks > 0) --ent.immunity_ticks;
     }
     
     for (uint32_t i = 0; i < pending_delete.size(); ++i) {

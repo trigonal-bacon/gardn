@@ -14,6 +14,8 @@ void Client::init() {
     DEBUG_ONLY(assert(simulation != nullptr);)
     Entity &ent = simulation->alloc_ent();
     ent.add_component(kCamera);
+    ent.add_component(kRelations);
+    ent.set_team(ent.id);
     ent.set_fov(BASE_FOV);
     ent.set_respawn_level(1); 
     for (uint32_t i = 0; i < loadout_slots_at_level(ent.respawn_level); ++i) {

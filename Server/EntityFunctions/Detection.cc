@@ -6,6 +6,7 @@
 
 EntityID find_nearest_enemy(Simulation *simulation, Entity const &entity, float radius) {
     if ((entity.id.id - entity.lifetime) % (TPS / 5) != 0) return NULL_ENTITY;
+    if (entity.immunity_ticks > 0) return NULL_ENTITY;
     EntityID ret;
     float min_dist = radius;
     simulation->spatial_hash.query(entity.x, entity.y, radius, radius, [&](Simulation *sim, Entity &ent){
