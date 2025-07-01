@@ -68,11 +68,11 @@ void Server::tick() {
 
     double mss = ts.tv_sec * 1000 + ts.tv_nsec / 1000000.0;
     double mse = te.tv_sec * 1000 + te.tv_nsec / 1000000.0;
-    if (mse - mss > 10) std::cout << "tick took " << (mse - mss) << "ms\n";
+    if (mse - mss > 2) std::cout << "tick took " << (mse - mss) << "ms\n";
 }
 
 void Server::init() {
-    for (uint32_t i = 0; i < 10000; ++i)
+    for (uint32_t i = 0; i < 20000; ++i)
         Map::spawn_random_mob(&Server::simulation);
     Server::run();
 }

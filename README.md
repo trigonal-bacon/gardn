@@ -1,58 +1,23 @@
 # the gardn project
 Open source self-hostable, multiplayer version of pvp [florr.io](https://static.florr.io/old/) written in C++.
 
-# Requirements
-Please download the latest version of [Emscripten](https://emscripten.org/docs/getting_started/downloads.html) and [CMake](https://cmake.org/download/).
+See [INSTALLATION.md](./INSTALLATION.md) for how to set up and run the game.
 
-# Installation
+# About
+Although this game is heavily inspired from florr.io, all lines of code were personally written by me. As direct source code of the original game is not accessible, all game logic is also custom-made to fit the original as closely as possible, while allowing for some creativity.
 
-## Native server (more performant):
-```
-> git clone --recurse-submodules https://github.com/trigonal-bacon/gardn.git
-```
-You will need to compile uWebSockets first. For in-depth complation options please visit the [uWebSockets installation page](https://github.com/uNetworking/uWebSockets/tree/master).
-```
-> cd gardn/Server/uWebSockets
-> make
-```
-Then,
-```
-> cd gardn/Server
-> mkdir build
-> cd build
-> cmake ..
-> make
-> ./gardn-server
-```
+## ECS
+This game uses a self-made [entity component system](https://en.wikipedia.org/wiki/Entity_component_system) engine for the simulation and entities. Entity property macros are defined in [Shared/EntityDef.hh](./Shared/EntityDef.hh), and the entity's structure is built in [Shared/Entity.hh](./Shared/EntityDef.hh). The simulation also defines functions to run systems/processes, a crucial component of ECS.
 
-## WebAssembly Server (doesn't require uWebSockets, but requires [Node.js](https://nodejs.org/en/download))
-```
-> git clone https://github.com/trigonal-bacon/gardn.git
-> cd gardn/Server
-> mkdir build
-> cd build
-> cmake .. -DWASM_SERVER=1
-> make
-> npm install ws fs http
-> node ./gardn-server
-```
+## Server
+The server can be run either natively using uWebSockets or through Node.js and WebAssembly. This allows for an alternate installation process in case uWebSockets configuration fails.
 
-Client:
-```
-cd gardn/Client
-mkdir build
-cd build
-cmake ..
-make
-```
-Then move the outputted ``wasm`` and ``js`` files into Client/public (or optionally ``Server/build`` if you're running the wasm server; make sure to move the ``html`` file as well).
+Collision detection is managed using a uniform grid, which capitalizes on the relatively uniform entity sizes to provide fast broadphase collision detection and querying.
 
-The server is served by default at ``localhost:9001``. You may change the port by modifying ``Shared/Config.cc``
+## Client
 
-# Hosting 
-The client may be hosted with any http server (eg. ``nginx``, ``http-server``). The wasm server automatically hosts content at ``localhost:9001`` as well.
+The client is written in C++, which compiles to WASM/JS using emscripten. Apart from a text input box, all rendering is done using a bootstrap of the [Canvas2D API](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D) (see [Client/Render/Renderer.cc](./Client/Render/Renderer.cc)).
 
-If hosting somewhere other than ``localhost``, the ``HOSTNAME`` flag can be passed into CMake (ex. ``cmake .. -DHOSTNAME="myhost"``) to automatically configure protocol.
+For performance, none of the UI is written in HTML or JS. I have written a separate UI layout/rendering/event firing engine in [Client/Ui](./Client/Ui/) that handles all UI logic and simulates common HTML elements. It supports all animations seen in the original game, and some extras.
 
-# License
-[LICENSE](./LICENSE)
+Assets are directly copied from the game using several userscripts (see [Scripts](./Scripts/)). Several mobs have animations, which were reversed directly from the WASM.

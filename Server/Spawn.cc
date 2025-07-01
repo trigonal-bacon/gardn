@@ -42,7 +42,7 @@ static Entity &__alloc_mob(Simulation *sim, MobID::T mob_id, float x, float y, E
     mob.set_x(x);
     mob.set_y(y);
     mob.friction = DEFAULT_FRICTION;
-    mob.immunity_ticks = 2 * TPS;
+    mob.immunity_ticks = TPS;
     mob.mass = 1 + mob.radius / 25;
     if (data.attributes.stationary) mob.mass *= 10000;
     if (mob_id == MobID::kAntHole)
