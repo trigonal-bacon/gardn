@@ -14,7 +14,7 @@ namespace Server {
 
 using namespace Server;
 
-static void update_client(Simulation *sim, Client *client) {
+static void _update_client(Simulation *sim, Client *client) {
     if (client == nullptr) return;
     if (!client->verified) return;
     if (sim == nullptr) return;
@@ -62,7 +62,7 @@ void Server::tick() {
     timespec_get(&ts, TIME_UTC);
     Server::simulation.tick();
     for (Client *client: Server::clients)
-        update_client(client->simulation, client);
+        _update_client(client->simulation, client);
     Server::simulation.post_tick();
     timespec_get(&te, TIME_UTC);
 

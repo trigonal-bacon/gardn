@@ -263,7 +263,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
         "Someone overfed this one, you might be next.",
         RarityID::kRare, {600.0}, 35.0, {75.0}, 50, {
         PetalID::kIris, PetalID::kWing, PetalID::kBlueIris, PetalID::kTriplet, PetalID::kBeetleEgg, PetalID::kThirdEye
-    }, { .aggro_radius = 1000 }},
+    }, { .aggro_radius = 750 }},
     {
         "Ladybug",
         "Cute and harmless... if left unprovoked.",
@@ -323,7 +323,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
         "This one stings, now with poison.",
         RarityID::kUnusual, {35.0}, 15.0, {35.0}, 10, {
         PetalID::kIris, PetalID::kPincer, PetalID::kTriplet, PetalID::kLotus
-    }, { .aggro_radius = 750, .poison_damage = { 5.0, 1.0 } }},
+    }, { .poison_damage = { 5.0, 1.0 } }},
     {
         "Spider",
         "Spooky.",

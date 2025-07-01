@@ -10,13 +10,13 @@ uWS::App Server::server = uWS::App({
     .passphrase = "1234"
 }).ws<Client>("/*", {
     /* Settings */
-    .compression = uWS::CompressOptions(uWS::DEDICATED_COMPRESSOR_4KB | uWS::DEDICATED_DECOMPRESSOR),
-    .maxPayloadLength = 1024 * 1024,
-    .idleTimeout = 16,
-    .maxBackpressure = 100 * 1024 * 1024,
-    .closeOnBackpressureLimit = false,
+    .compression = uWS::DISABLED,
+    .maxPayloadLength = 128,
+    .idleTimeout = 15,
+    .maxBackpressure = 1024 * 1024,
+    .closeOnBackpressureLimit = true,
     .resetIdleTimeoutOnSend = false,
-    .sendPingsAutomatically = true,
+    .sendPingsAutomatically = false,
     /* Handlers */
     .upgrade = nullptr,
     .open = [](WebSocket *ws) {

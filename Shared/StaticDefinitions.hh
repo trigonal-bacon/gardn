@@ -4,7 +4,7 @@
 
 #include <cstdint>
 
-inline uint32_t const ENTITY_CAP = 32768;
+inline uint32_t const ENTITY_CAP = 8192;
 inline uint32_t const ARENA_WIDTH = 40000;
 inline uint32_t const ARENA_HEIGHT = 4000;
 
@@ -197,7 +197,7 @@ struct PetalData {
 };
 
 struct MobAttributes {
-    float aggro_radius = 600;
+    float aggro_radius = 500;
     uint8_t segments = 1;
     uint8_t stationary;
     struct PoisonDamage poison_damage;
