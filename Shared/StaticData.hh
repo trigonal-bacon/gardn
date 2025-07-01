@@ -30,7 +30,7 @@ std::array const MAP = std::to_array<struct ZoneDefinition>({
         .y = 2000,
         .w = 10000,
         .h = 4000,
-        .density = 2.5,
+        .density = 1,
         .drop_multiplier = 0.3,
         .spawns = {
             { MobID::kRock, 500000 },
@@ -51,7 +51,7 @@ std::array const MAP = std::to_array<struct ZoneDefinition>({
         .y = 2000,
         .w = 10000,
         .h = 4000,
-        .density = 2.5,
+        .density = 1,
         .drop_multiplier = 0.15,
         .spawns = {
             { MobID::kCactus, 400000 },
@@ -74,7 +74,7 @@ std::array const MAP = std::to_array<struct ZoneDefinition>({
         .y = 2000,
         .w = 10000,
         .h = 4000,
-        .density = 2.5,
+        .density = 1,
         .drop_multiplier = 0.1,
         .spawns = {
             { MobID::kSpider, 100000 },
@@ -98,7 +98,7 @@ std::array const MAP = std::to_array<struct ZoneDefinition>({
         .y = 2000,
         .w = 10000,
         .h = 4000,
-        .density = 2.5,
+        .density = 1,
         .drop_multiplier = 0.025,
         .spawns = {
             { MobID::kDarkLadybug, 150000 },

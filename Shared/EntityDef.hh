@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Shared/StaticData.hh>
+#include <Shared/StaticDefinitions.hh>
 
 #include <cstdint>
 
@@ -150,12 +150,14 @@ public:
     id_type id;
     EntityID();
     EntityID(id_type, hash_type);
+    static uint32_t make_hash(EntityID const);
+    static bool equal_to(EntityID const, EntityID const);
     bool null() const;
     void operator=(EntityID const);
 };
 
-bool operator<(const EntityID, const EntityID);
-bool operator==(const EntityID, const EntityID);
+bool operator<(EntityID const, EntityID const);
+bool operator==(EntityID const, EntityID const);
 
 inline EntityID const NULL_ENTITY;
 

@@ -10,17 +10,25 @@ bool EntityID::null() const {
     return id == 0;
 }
 
+uint32_t EntityID::make_hash(EntityID const o) {
+    return o.id * 65536 + o.hash;
+}
+
+bool EntityID::equal_to(EntityID const a, EntityID const b) {
+    return a.id == b.id && a.hash == b.hash;
+}
+
 void EntityID::operator=(const EntityID o) {
     id = o.id;
     hash = o.hash;
 }
 
-bool operator<(const EntityID a, const EntityID b) {
-    return (a.id * 65536 + a.hash) < (b.id * 65536 + b.hash);
+bool operator<(EntityID const a, EntityID const b) {
+    return EntityID::make_hash(a) < EntityID::make_hash(b);
 }
 
-bool operator==(const EntityID a, const EntityID b) {
-    return a.id == b.id && a.hash == b.hash;
+bool operator==(EntityID const a, EntityID const b) {
+    return EntityID::equal_to(a, b);
 }
 
 LoadoutSlot::LoadoutSlot() {

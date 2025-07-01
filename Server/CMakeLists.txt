@@ -25,7 +25,7 @@ set(SOURCES
     PetalTracker.cc
     Server.cc
     Simulation.cc
-    SpatialHash.cc
+    SpatialHashUniform.cc
     Spawn.cc
     Wasm.cc
     ../Shared/Arena.cc
