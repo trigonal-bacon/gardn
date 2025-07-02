@@ -12,14 +12,13 @@
 #include <string>
 
 class Simulation {
-public:
-    SERVER_ONLY(SpatialHash spatial_hash;)
-    Arena arena_info;
     uint8_t entity_tracker[ENTITY_CAP] = {0};
     EntityID::hash_type hash_tracker[ENTITY_CAP] = {0};
     Entity entities[ENTITY_CAP];
-    StaticArray<EntityID, ENTITY_CAP> active_entities;
-    StaticArray<EntityID, ENTITY_CAP> pending_delete;
+    StaticArray<EntityID::id_type, ENTITY_CAP> active_entities;
+public:
+    SERVER_ONLY(SpatialHash spatial_hash;)
+    Arena arena_info;
     Simulation();
     void reset();
     Entity &alloc_ent();
@@ -33,7 +32,10 @@ public:
     void tick();
     void post_tick();
 
-    template <uint8_t T>
+    void for_each_entity(std::function<void (Simulation *, Entity &)>);
+    void for_each_pending_delete(std::function<void (Simulation *, Entity &)>);
+
+    template <uint8_t>
     void for_each(std::function<void (Simulation *, Entity &)>);
 #ifdef SERVERSIDE
     //Entity &alloc_mob(uint8_t);

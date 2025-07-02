@@ -7,7 +7,6 @@ Simulation::Simulation() SERVER_ONLY(: spatial_hash(this)) {}
 
 void Simulation::reset() {
     active_entities.clear();
-    pending_delete.clear();
     for (EntityID::id_type i = 0; i < ENTITY_CAP; ++i) { 
         hash_tracker[i] = entity_tracker[i] = 0;
         entities[i].init();
@@ -55,9 +54,7 @@ uint8_t Simulation::ent_alive(EntityID const &id) const {
 void Simulation::request_delete(EntityID const &id) {
     //DEBUG_ONLY(std::cout << "ent_request_delete <" << id.hash << ',' << id.id << ">\n";)
     DEBUG_ONLY(assert(ent_exists(id)));
-    if (entities[id.id].pending_delete) return;
     entities[id.id].pending_delete = 1;
-    pending_delete.push(id);
 }
 
 void Simulation::_delete_ent(EntityID const &id) {
@@ -68,24 +65,28 @@ void Simulation::_delete_ent(EntityID const &id) {
 }
 
 void Simulation::pre_tick() {
-    pending_delete.clear();
     active_entities.clear();
     for (EntityID::id_type i = 0; i < ENTITY_CAP; ++i) {
         if (!entity_tracker[i]) continue;
-        active_entities.push(entities[i].id);
+        active_entities.push(entities[i].id.id);
     }
+}
+
+void Simulation::for_each_entity(std::function<void(Simulation *, Entity &)> cb) { \
+    for (EntityID::id_type i = 0; i < active_entities.size(); ++i) { \
+        Entity &ent = entities[active_entities[i]]; \
+        cb(this, ent); \
+    } \
 }
 
 #define COMPONENT(name) \
 template<> \
 void Simulation::for_each<k##name>(std::function<void(Simulation *, Entity &)> cb) { \
     for (EntityID::id_type i = 0; i < active_entities.size(); ++i) { \
-        Entity &ent = get_ent(active_entities[i]); \
+        Entity &ent = entities[active_entities[i]]; \
         SERVER_ONLY(if (ent.pending_delete) continue;) \
         if (ent.has_component(k##name)) cb(this, ent); \
     } \
 }
-
 PERCOMPONENT
-
 #undef COMPONENT

@@ -2,6 +2,8 @@
 
 #include <Client/Game.hh>
 
+#include <Client/Ui/Extern.hh>
+
 #include <cmath>
 #include <iostream>
 
@@ -10,9 +12,8 @@ void Simulation::tick() {
 }
 
 void Simulation::tick_lerp(double dt) {
-    double amt = 1 - (pow(1 - 0.25, dt * 60 / 1000));
-    for (uint32_t i = 0; i < active_entities.size(); ++i) {
-        Entity &ent = get_ent(active_entities[i]);
+    double const amt = Ui::lerp_amount;
+    for_each_entity([=](Simulation *sim, Entity &ent) {
         if (ent.has_component(kPhysics)) {
             float prevx = ent.x;
             float prevy = ent.y;
@@ -57,13 +58,14 @@ void Simulation::tick_lerp(double dt) {
         if (ent.has_component(kFlower)) {
             LERP(ent.eye_x, cosf(ent.eye_angle) * 3, amt);
             LERP(ent.eye_y, sinf(ent.eye_angle) * 3, amt);
-            if (BIT_AT(ent.face_flags, 0) 
-               || BIT_AT(ent.face_flags, 2) 
-               || BIT_AT(ent.face_flags, 3)) LERP(ent.mouth, 5, amt)
-            else if (BIT_AT(ent.face_flags, 1)) LERP(ent.mouth, 8, amt)
+            if (BIT_AT(ent.face_flags, FaceFlags::kAttacking)
+                || BIT_AT(ent.face_flags, FaceFlags::kPoisoned) 
+                || BIT_AT(ent.face_flags, FaceFlags::kDandelioned)
+                || ent.pending_delete) LERP(ent.mouth, 5, amt)
+            else if (BIT_AT(ent.face_flags, FaceFlags::kDefending)) LERP(ent.mouth, 8, amt)
             else LERP(ent.mouth, 15, amt)
         }
-    }
+    });
     for (uint32_t i = 0; i < arena_info.player_count; ++i)
         arena_info.scores[i].step(amt);
 
@@ -72,9 +74,7 @@ void Simulation::tick_lerp(double dt) {
 }
 
 void Simulation::post_tick() {
-   for (uint32_t i = 0; i < active_entities.size(); ++i) {
-        assert(ent_exists(active_entities[i]));
-        Entity &ent = get_ent(active_entities[i]);
+    for_each_entity([](Simulation *sim, Entity &ent) {
         ent.reset_protocol();
-    }
+    });
 }

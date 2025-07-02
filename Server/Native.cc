@@ -16,7 +16,7 @@ uWS::App Server::server = uWS::App({
     .maxBackpressure = 1024 * 1024,
     .closeOnBackpressureLimit = true,
     .resetIdleTimeoutOnSend = false,
-    .sendPingsAutomatically = false,
+    .sendPingsAutomatically = true,
     /* Handlers */
     .upgrade = nullptr,
     .open = [](WebSocket *ws) {

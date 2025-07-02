@@ -14,6 +14,7 @@
 
 static void calculate_leaderboard(Simulation *sim) {
     std::vector<Entity const *> players;
+    players.clear();
     sim->for_each<kCamera>([&](Simulation *sim, Entity &ent) { 
         if (sim->ent_alive(ent.player)) players.push_back(&sim->get_ent(ent.player));
     });
@@ -34,14 +35,13 @@ void Simulation::tick() {
     spatial_hash.refresh(ARENA_WIDTH, ARENA_HEIGHT);
     if (frand() < 0.01)
         for (uint32_t i = 0; i < 10; ++i) Map::spawn_random_mob(this);
-    for (uint32_t i = 0; i < active_entities.size(); ++i) {
-        Entity &ent = get_ent(active_entities[i]);
+    for_each_entity([](Simulation *sim, Entity &ent) {
         if (ent.has_component(kPhysics)) {
-            if (ent.deletion_tick > 0)
-                request_delete(ent.id);
-            spatial_hash.insert(ent);
+            //if (ent.deletion_tick > 0)
+                //sim->request_delete(ent.id); //no need, pending_delete is sticky
+            sim->spatial_hash.insert(ent);
         }
-    }
+    });
 
     for_each<kFlower>(tick_player_behavior);
     for_each<kMob>(tick_ai_behavior);
@@ -57,36 +57,30 @@ void Simulation::tick() {
 
 void Simulation::post_tick() {
     arena_info.reset_protocol();
-    for (uint32_t i = 0; i < active_entities.size(); ++i) {
+    for_each_entity([](Simulation *sim, Entity &ent) {
         //no deletions mid tick
-        DEBUG_ONLY(assert(ent_exists(active_entities[i]));)
-        Entity &ent = get_ent(active_entities[i]);
         ent.reset_protocol();
         ++ent.lifetime;
         if (BIT_AT(ent.flags, EntityFlags::kIsDespawning)) {
             if (ent.despawn_tick == 0)
-                request_delete(ent.id);
+                sim->request_delete(ent.id);
             else
                 --ent.despawn_tick;
         }
         if (ent.immunity_ticks > 0) --ent.immunity_ticks;
-    }
-    
-    for (uint32_t i = 0; i < pending_delete.size(); ++i) {
-        //guarantee entity exists
-        DEBUG_ONLY(assert(ent_exists(pending_delete[i]));)
-        Entity &ent = get_ent(pending_delete[i]);
+    });
+    for_each_entity([](Simulation *sim, Entity &ent) {
+        if (!ent.pending_delete) return;
         if (!ent.has_component(kPhysics)) 
-            _delete_ent(pending_delete[i]);
+            sim->_delete_ent(ent.id);
         else {
             if (ent.deletion_tick >= TPS / 5) 
-                _delete_ent(pending_delete[i]);
+                sim->_delete_ent(ent.id);
             else {
                 if (ent.deletion_tick == 0)
-                    entity_on_death(this, ent);
+                    entity_on_death(sim, ent);
                 ent.deletion_tick += 1;
-                ent.pending_delete = 0;
             }
         }
-    }
+    });
 }
