@@ -36,6 +36,7 @@ void Entity::add_component(uint32_t comp) {
     DEBUG_ONLY(assert(!has_component(comp));)
     BIT_SET(components, comp);
 }
+
 uint8_t Entity::has_component(uint32_t comp) const {
     return BIT_AT(components, comp);
 }

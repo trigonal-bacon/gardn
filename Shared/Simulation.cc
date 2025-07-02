@@ -27,7 +27,7 @@ Entity &Simulation::alloc_ent() {
 }
 
 Entity &Simulation::get_ent(EntityID const &id) {
-    assert(ent_exists(id));
+    DEBUG_ONLY(assert(ent_exists(id));)
     return entities[id.id];
 }
 
@@ -42,7 +42,7 @@ void Simulation::force_alloc_ent(EntityID const &id) {
 }
 
 uint8_t Simulation::ent_exists(EntityID const &id) const {
-    assert(id.id < ENTITY_CAP);
+    DEBUG_ONLY(assert(id.id < ENTITY_CAP);)
     return entity_tracker[id.id] && hash_tracker[id.id] == id.hash;
 }
 

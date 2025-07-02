@@ -148,8 +148,8 @@ float Reader::read<float>() {
 
 template<>
 EntityID Reader::read<EntityID>() {
-    uint16_t id = read<EntityID::id_type>();
-    uint16_t hash = id ? read<EntityID::hash_type>() : 0;
+    EntityID::id_type id = read<EntityID::id_type>();
+    EntityID::hash_type hash = id ? read<EntityID::hash_type>() : 0;
     return {id, hash};
 }
 

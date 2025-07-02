@@ -25,10 +25,13 @@ void Minimap::on_render(Renderer &ctx) {
     }
     if (Game::in_game()) {
         Entity const &camera = Game::simulation.get_ent(Game::camera_id);
-        ctx.set_fill(0x80000000);
+        ctx.set_fill(0xffffe763);
+        ctx.set_stroke(Renderer::HSV(0xffffe763, 0.8));
+        ctx.set_line_width(ARENA_WIDTH / 120);
         ctx.begin_path();
         ctx.arc(camera.camera_x, camera.camera_y, ARENA_WIDTH / 40);
         ctx.fill();
+        ctx.stroke();
     }
 }
 

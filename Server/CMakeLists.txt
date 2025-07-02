@@ -13,7 +13,6 @@ set(SOURCES
     Process/Ai.cc
     Process/Camera.cc
     Process/Collision.cc
-    Process/Drop.cc
     Process/Flower.cc
     Process/Health.cc
     Process/Motion.cc

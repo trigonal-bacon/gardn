@@ -144,7 +144,7 @@ SINGLE(Name, nametag_visible, uint8_t)
 
 class EntityID {
 public:
-    typedef uint16_t hash_type;
+    typedef uint8_t hash_type;
     typedef uint16_t id_type;
     hash_type hash;
     id_type id;

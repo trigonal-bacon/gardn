@@ -14,7 +14,6 @@
 
 static void calculate_leaderboard(Simulation *sim) {
     std::vector<Entity const *> players;
-    players.clear();
     sim->for_each<kCamera>([&](Simulation *sim, Entity &ent) { 
         if (sim->ent_alive(ent.player)) players.push_back(&sim->get_ent(ent.player));
     });
@@ -50,7 +49,6 @@ void Simulation::tick() {
     spatial_hash.collide(on_collide);
     for_each<kPhysics>(tick_entity_motion);
     for_each<kSegmented>(tick_segment_behavior);
-    //for_each<kDrop>(tick_drop_behavior);
     for_each<kCamera>(tick_camera_behavior);
     calculate_leaderboard(this);
 }
