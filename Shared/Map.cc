@@ -39,13 +39,13 @@ void Map::spawn_random_mob(Simulation *sim) {
     float x = frand() * ARENA_WIDTH;
     float y = frand() * ARENA_HEIGHT;
     uint32_t zone_id = Map::get_zone_from_pos(x, y);
-    struct ZoneDefinition const &try_zone = MAP[zone_id];
-    if (try_zone.density * try_zone.w * try_zone.h / (500 * 500) < ZONE_MOB_COUNTS[zone_id]) return;
+    struct ZoneDefinition const &zone = MAP[zone_id];
+    if (zone.density * zone.w * zone.h / (500 * 500) < ZONE_MOB_COUNTS[zone_id]) return;
     float sum = 0;
-    for (SpawnChance const &s : try_zone.spawns)
+    for (SpawnChance const &s : zone.spawns)
         sum += s.chance;
     sum *= frand();
-    for (SpawnChance const &s : try_zone.spawns) {
+    for (SpawnChance const &s : zone.spawns) {
         sum -= s.chance;
         if (sum <= 0) {
             MobID::T spawn_id = s.id;

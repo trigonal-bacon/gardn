@@ -67,7 +67,7 @@ extern struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
     {"Rock", "Even more durable, but slower to recharge",
         100.0, 10.0, 12.0, 7.5, 1, RarityID::kRare, {}},
     {"Cactus", "Not very strong, but somehow increases your maximum health",
-        15.0, 5.0, 10.0, 1.0, 1, RarityID::kRare, {}},
+        15.0, 5.0, 15.0, 1.0, 1, RarityID::kRare, {}},
     {"Web", "It's very sticky",
         10.0, 5.0, 10.0, 3.0, 1, RarityID::kRare, {
         .secondary_reload = 0.5,

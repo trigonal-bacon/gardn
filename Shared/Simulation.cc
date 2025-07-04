@@ -1,7 +1,9 @@
 #include <Shared/Simulation.hh>
 #include <Shared/Helpers.hh>
 
-DEBUG_ONLY(#include <iostream>)
+#ifdef DEBUG
+#include <iostream>
+#endif
 
 Simulation::Simulation() SERVER_ONLY(: spatial_hash(this)) {}
 

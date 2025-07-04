@@ -74,9 +74,9 @@ static Element *make_mob_card(MobID::T id) {
             10, 10
         ),
         new Ui::Element(0,10),
-        DEBUG_ONLY(new Ui::StaticText(14, "Health: " + MOB_DATA[id].health.to_string(), { .fill = 0xff56ff45, .h_justify = Style::Left }),)
-        DEBUG_ONLY(new Ui::StaticText(14, "Damage: " + format_score(MOB_DATA[id].damage), { .fill = 0xffff5645, .h_justify = Style::Left }),)
-        DEBUG_ONLY(new Ui::StaticText(14, "Radius: " + MOB_DATA[id].radius.to_string(), { .fill = 0xff5645ff, .h_justify = Style::Left }),)
+        DEBUG_ONLY(new Ui::StaticText(14, "Health: " + MOB_DATA[id].health.to_string(), { .fill = 0xffffff90, .h_justify = Style::Left }),)
+        DEBUG_ONLY(new Ui::StaticText(14, "Damage: " + format_score(MOB_DATA[id].damage), { .fill = 0xffffff90, .h_justify = Style::Left }),)
+        DEBUG_ONLY(new Ui::StaticText(14, "Radius: " + MOB_DATA[id].radius.to_string(), { .fill = 0xffffff90, .h_justify = Style::Left }),)
         new Ui::Element(0,10),
         make_mob_drops(id)
     }, 10, 0, { .fill = 0x33000000, .stroke_hsv = 1, .line_width = 3, .round_radius = 6, .v_justify = Style::Top, .no_animation = 1 });
