@@ -18,7 +18,6 @@ extern "C" {
     void on_connect(int ws_id) {
         std::cout << "client connection\n";
         WebSocket *ws = new WebSocket(ws_id);
-        Server::clients.insert(&ws->client);
     }
 
     void on_disconnect(int ws_id, int reason) {

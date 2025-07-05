@@ -23,7 +23,6 @@ uWS::App Server::server = uWS::App({
         std::cout << "client connection\n";
         Client *client = ws->getUserData();
         client->ws = ws;
-        Server::clients.insert(client);
     },
     .message = [](WebSocket *ws, std::string_view message, uWS::OpCode opCode) {
         Client::on_message(ws, message, opCode);

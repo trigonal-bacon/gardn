@@ -8,10 +8,13 @@
 #include <Shared/Config.hh>
 #include <Shared/Simulation.hh>
 
+#include <iostream>
+
 Client::Client() : simulation(nullptr) {}
 
 void Client::init() {
-    DEBUG_ONLY(assert(simulation != nullptr);)
+    DEBUG_ONLY(assert(simulation == nullptr);)
+    simulation = &Server::simulation;
     Entity &ent = simulation->alloc_ent();
     ent.add_component(kCamera);
     ent.add_component(kRelations);
@@ -33,13 +36,14 @@ void Client::init() {
 }
 
 void Client::remove() {
-    if (Server::simulation.ent_exists(camera)) {
-        Entity &c = Server::simulation.get_ent(camera);
-        if (Server::simulation.ent_exists(c.player))
-            Server::simulation.request_delete(c.player);
+    if (simulation == nullptr) return;
+    if (simulation->ent_exists(camera)) {
+        Entity &c = simulation->get_ent(camera);
+        if (simulation->ent_exists(c.player))
+            simulation->request_delete(c.player);
         for (uint32_t i = 0; i < 2 * MAX_SLOT_COUNT; ++i)
             PetalTracker::remove_petal(c.inventory[i]);
-        Server::simulation.request_delete(camera);
+        simulation->request_delete(camera);
         //std::cout << "deleting camera from " << this << "\n";
     }
 }
@@ -55,9 +59,9 @@ void Client::disconnect() {
 }
 
 uint8_t Client::alive() {
-    Simulation &simulation = Server::simulation;
-    return simulation.ent_exists(camera) 
-    && simulation.ent_exists(simulation.get_ent(camera).player);
+    if (simulation == nullptr) return false;
+    return simulation->ent_exists(camera) 
+    && simulation->ent_exists(simulation->get_ent(camera).player);
 }
 
 #define VALIDATE(expr) if (!expr) { std::cout << #expr << '\n'; client->disconnect(); }
@@ -74,6 +78,7 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
     }
     if (!client->verified) {
         VALIDATE(validator.validate_uint8());
+        Server::clients.insert(client);
         if (reader.read<uint8_t>() != kServerbound::kVerify) {
             //disconnect
             client->disconnect();
@@ -88,8 +93,11 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
             return;
         }
         client->verified = 1;
-        client->simulation = &Server::simulation;
         client->init();
+        return;
+    }
+    if (client->simulation == nullptr) {
+        client->disconnect();
         return;
     }
     VALIDATE(validator.validate_uint8());
@@ -99,8 +107,8 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
             return;
         case kServerbound::kClientInput: {
             if (!client->alive()) break;
-            Entity &camera = Server::simulation.get_ent(client->camera);
-            Entity &player = Server::simulation.get_ent(camera.player);
+            Entity &camera = client->simulation->get_ent(client->camera);
+            Entity &player = client->simulation->get_ent(camera.player);
             VALIDATE(validator.validate_float());
             VALIDATE(validator.validate_float());
             float x = reader.read<float>();
@@ -121,7 +129,7 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
         }
         case kServerbound::kClientSpawn: {
             if (client->alive()) break;
-            Entity &camera = Server::simulation.get_ent(client->camera);
+            Entity &camera = client->simulation->get_ent(client->camera);
             Entity &player = alloc_player(client->simulation, camera.id);
             player_spawn(client->simulation, camera, player);
             std::string name;
@@ -134,8 +142,8 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
         }
         case kServerbound::kPetalDelete: {
             if (!client->alive()) break;
-            Entity &camera = Server::simulation.get_ent(client->camera);
-            Entity &player = Server::simulation.get_ent(camera.player);
+            Entity &camera = client->simulation->get_ent(client->camera);
+            Entity &player = client->simulation->get_ent(camera.player);
             VALIDATE(validator.validate_uint8());
             uint8_t pos = reader.read<uint8_t>();
             if (pos >= MAX_SLOT_COUNT + player.loadout_count) break;
@@ -152,8 +160,8 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
         }
         case kServerbound::kPetalSwap: {
             if (!client->alive()) break;
-            Entity &camera = Server::simulation.get_ent(client->camera);
-            Entity &player = Server::simulation.get_ent(camera.player);
+            Entity &camera = client->simulation->get_ent(client->camera);
+            Entity &player = client->simulation->get_ent(camera.player);
             VALIDATE(validator.validate_uint8());
             uint8_t pos1 = reader.read<uint8_t>();
             if (pos1 >= MAX_SLOT_COUNT + player.loadout_count) break;

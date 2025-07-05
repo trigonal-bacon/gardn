@@ -6,7 +6,7 @@
 SpatialHash::SpatialHash(Simulation *sim) : simulation(sim), width(1), height(1) {}
 
 void SpatialHash::refresh(uint32_t _width, uint32_t _height) {
-    DEBUG_ONLY(assert(_width <= ARENA_WIDTH && _height < ARENA_HEIGHT));
+    DEBUG_ONLY(assert(_width <= ARENA_WIDTH && _height <= ARENA_HEIGHT));
     width = div_round_up(_width, GRID_SIZE);
     height = div_round_up(_height, GRID_SIZE);
     for (uint32_t x = 0; x < MAX_GRID_X; ++x)
