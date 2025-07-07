@@ -6,6 +6,7 @@
 #include <Shared/Map.hh>
 
 #include <chrono>
+#include <cmath>
 
 namespace Server {
     uint8_t OUTGOING_PACKET[max_buffer_size] = {0};
@@ -29,6 +30,8 @@ static void _update_client(Simulation *sim, Client *client) {
     writer.write<uint8_t>(kClientbound::kClientUpdate);
     writer.write<EntityID>(client->camera);
     sim->spatial_hash.query(camera.camera_x, camera.camera_y, 960 / camera.fov + 50, 540 / camera.fov + 50, [&](Simulation *, Entity &ent){
+        if (fabsf(camera.camera_x - ent.x) >= 960 / camera.fov + ent.radius || fabsf(camera.camera_y - ent.y) >= 540 / camera.fov + ent.radius)
+            return;
         in_view.insert(ent.id);
     });
 
