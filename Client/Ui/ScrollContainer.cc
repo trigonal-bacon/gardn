@@ -30,14 +30,14 @@ void ScrollContainer::on_render(Renderer &ctx) {
     Element *content = children[0];
     if (height < content->height) {
         scroll->height = height * height / content->height;
+        float ratio = height == scroll->height ? 1 : (content->height - height) / (height - scroll->height);
         if (std::abs(Input::mouse_x - screen_x) < width * Ui::scale / 2
         && std::abs(Input::mouse_y - screen_y) < height * Ui::scale / 2)
-            lerp_scroll += Input::wheel_delta / 10;
+            lerp_scroll += Input::wheel_delta / ratio;
         if (scroll->layer) lerp_scroll += Input::mouse_y - Input::prev_mouse_y;
         lerp_scroll = fclamp(lerp_scroll, 0, height - scroll->height);
         LERP(scroll->y, lerp_scroll, Ui::lerp_amount)
-        float ratio = height == scroll->height ? 0 : lerp_scroll / (height - scroll->height);
-        LERP(content->y, (-ratio * (content->height - height)), Ui::lerp_amount);
+        LERP(content->y, -ratio * lerp_scroll, Ui::lerp_amount);
     } else 
         content->y = scroll->y = 0;
     RenderContext c(&ctx);

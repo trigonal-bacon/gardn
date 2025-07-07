@@ -2,9 +2,8 @@
 
 #include <Client/Ui/Ui.hh>
 
+#include <Shared/Binary.hh>
 #include <Shared/Config.hh>
-
-#include <iostream>
 
 using namespace Game;
 

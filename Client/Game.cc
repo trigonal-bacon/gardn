@@ -23,7 +23,6 @@ namespace Game {
     Ui::Window window;
     EntityID camera_id;
     EntityID player_id;
-    Vector screen_shake;
     std::string nickname;
     std::array<uint8_t, PetalID::kNumPetals> seen_petals;
     std::array<uint8_t, MobID::kNumMobs> seen_mobs;

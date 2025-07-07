@@ -1,5 +1,7 @@
 #include <Shared/Arena.hh>
 
+#include <Shared/Binary.hh>
+
 Arena::Arena() {
     init();
 }

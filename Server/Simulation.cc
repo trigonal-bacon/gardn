@@ -35,11 +35,8 @@ void Simulation::tick() {
     if (frand() < 0.01)
         for (uint32_t i = 0; i < 10; ++i) Map::spawn_random_mob(this);
     for_each_entity([](Simulation *sim, Entity &ent) {
-        if (ent.has_component(kPhysics)) {
-            //if (ent.deletion_tick > 0)
-                //sim->request_delete(ent.id); //no need, pending_delete is sticky
+        if (ent.has_component(kPhysics))
             sim->spatial_hash.insert(ent);
-        }
     });
 
     for_each<kFlower>(tick_player_behavior);

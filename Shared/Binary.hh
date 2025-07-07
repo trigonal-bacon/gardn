@@ -3,8 +3,7 @@
 #include <Shared/EntityDef.hh>
 #include <Shared/Helpers.hh>
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <string>
 
 enum kClientbound {

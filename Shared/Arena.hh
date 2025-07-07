@@ -1,11 +1,13 @@
 #pragma once
 
-#include <Shared/Binary.hh>
 #include <Shared/Helpers.hh>
 #include <Shared/StaticData.hh>
 
 #include <string>
 #include <stdint.h>
+
+SERVER_ONLY(class Writer;)
+CLIENT_ONLY(class Reader;)
 
 #define FIELDS_Arena \
     SINGLE(player_count, uint32_t) \

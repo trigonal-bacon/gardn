@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Shared/Binary.hh>
 #include <Shared/EntityDef.hh>
 #include <Shared/Helpers.hh>
 #include <Shared/Vector.hh>
@@ -8,6 +7,9 @@
 #include <cstdint>
 
 typedef CircularArray<PetalID::T, MAX_SLOT_COUNT> circ_arr_t;
+
+SERVER_ONLY(class Writer;)
+CLIENT_ONLY(class Reader;)
 
 enum Components {
     #define COMPONENT(name) k##name,

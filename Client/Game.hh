@@ -7,7 +7,6 @@
 
 #include <Shared/Simulation.hh>
 #include <Shared/StaticData.hh>
-#include <Shared/Vector.hh>
 
 #include <array>
 
@@ -19,7 +18,6 @@ namespace Game {
     extern Ui::Window window;
     extern EntityID camera_id;
     extern EntityID player_id;
-    extern Vector screen_shake;
     extern std::string nickname;
     extern std::array<uint8_t, PetalID::kNumPetals> seen_petals;
     extern std::array<uint8_t, MobID::kNumMobs> seen_mobs;

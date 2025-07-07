@@ -1,5 +1,6 @@
 #include <Shared/Entity.hh>
 
+#include <Shared/Binary.hh>
 #include <Shared/StaticData.hh>
 
 Entity::Entity() {

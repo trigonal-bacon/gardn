@@ -2,6 +2,7 @@
 
 #include <Server/Client.hh>
 
+#include <Shared/Binary.hh>
 #include <Shared/Map.hh>
 
 #include <chrono>
@@ -61,8 +62,7 @@ void Server::tick() {
     struct timespec te;
     timespec_get(&ts, TIME_UTC);
     Server::simulation.tick();
-    for (Client *client: Server::clients)
-        _update_client(client->simulation, client);
+    for (Client *client: Server::clients) _update_client(client->simulation, client);
     Server::simulation.post_tick();
     timespec_get(&te, TIME_UTC);
 
