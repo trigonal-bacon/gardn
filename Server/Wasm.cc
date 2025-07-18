@@ -4,14 +4,14 @@
 
 #include <Shared/Config.hh>
 
-#include <map>
+#include <unordered_map>
 #include <string>
 
 #include <emscripten.h>
 
-std::map<int, WebSocket *> WS_MAP;
+std::unordered_map<int, WebSocket *> WS_MAP;
 
-uint32_t const MAX_BUFFER_LEN = 8 * 1024;
+size_t const MAX_BUFFER_LEN = 1024;
 static uint8_t INCOMING_BUFFER[MAX_BUFFER_LEN] = {0};
 
 extern "C" {
@@ -74,23 +74,23 @@ WebSocketServer::WebSocketServer() {
             console.log("Server running at http://localhost:"+$0);
         });
         
-        const wss = new WSS.Server({server});
+        const wss = new WSS.Server({ "server": server });
         Module.ws_connections = {};
         let curr_id = 0;
         wss.on("connection", function(ws, req){
             const ws_id = curr_id;
             Module.ws_connections[ws_id] = ws;
-            Module._on_connect(ws_id);
+            _on_connect(ws_id);
             curr_id = (curr_id + 1) | 0;
             ws.on("message", function(message){
                 let data = new Uint8Array(message);
                 const len = data.length > $2 ? $2 : data.length;
                 data = data.subarray(0, len);
-                Module.HEAPU8.set(data, $1);
-                Module._on_message(ws_id, len);
+                HEAPU8.set(data, $1);
+                _on_message(ws_id, len);
             });
             ws.on("close", function(reason){
-                Module._on_disconnect(ws_id, reason);
+                _on_disconnect(ws_id, reason);
                 delete Module.ws_connections[ws_id];
             });
         })
@@ -99,7 +99,7 @@ WebSocketServer::WebSocketServer() {
 
 void Server::run() {
     EM_ASM({
-        setInterval(Module._tick, $0);
+        setInterval(_tick, $0);
     }, 1000 / TPS);
 }
 
@@ -118,7 +118,7 @@ void WebSocket::send(uint8_t const *packet, size_t size) {
     EM_ASM({
         if (!Module.ws_connections || !Module.ws_connections[$0]) return;
         const ws = Module.ws_connections[$0];
-        ws.send(Module.HEAPU8.subarray($1,$1+$2));
+        ws.send(HEAPU8.subarray($1,$1+$2));
     }, ws_id, packet, size);
 }
 

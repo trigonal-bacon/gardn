@@ -25,7 +25,6 @@ void Particle::tick_title(Renderer &ctx, double dt) {
         }
         RenderContext c(&ctx);
         part.x += part.x_velocity * (dt / 1000);
-        //part.y += dt / 10 * ;
         part.angle += dt / 1000;
         ctx.translate(part.x, part.y + 12.5 * sin(Game::timestamp / 500 + part.sin_offset));
         ctx.scale(Ui::scale * part.radius);

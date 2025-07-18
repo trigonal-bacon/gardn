@@ -48,7 +48,6 @@
 #define BIT_SET_ARR(val, bit) (val[(bit) >> 3]) |= (1 << ((bit) & 7));
 #define BIT_UNSET_ARR(val, bit) (val[(bit) >> 3]) &= ~(1 << ((bit) & 7));
 
-
 constexpr uint32_t bit_count(uint32_t v) {return 32 - __builtin_clz(v - 1); };
 constexpr uint32_t bit_fill(uint32_t v) { return (1 << v) - 1; }; 
 constexpr uint32_t div_round_up(uint32_t a, uint32_t b) { return (a + b - 1) / b; }
@@ -62,7 +61,6 @@ float lerp(float, float, float);
 float angle_lerp(float, float, float);
 
 std::string format_pct(float);
-
 std::string format_score(float);
 
 template<typename T, uint32_t capacity>

@@ -44,18 +44,13 @@ void Client::remove() {
         for (uint32_t i = 0; i < 2 * MAX_SLOT_COUNT; ++i)
             PetalTracker::remove_petal(c.inventory[i]);
         simulation->request_delete(camera);
-        //std::cout << "deleting camera from " << this << "\n";
     }
 }
 
 void Client::disconnect() {
     if (ws == nullptr) return;
     remove();
-    //Writer writer(Server::OUTGOING_PACKET);
-    //writer.write<uint8_t>(kClientbound::kDisconnect);
-    //send_packet(writer.packet, writer.at - writer.packet);
     ws->end();
-    //std::cout << "deleting client " << this << "\n";
 }
 
 uint8_t Client::alive() {
@@ -64,7 +59,7 @@ uint8_t Client::alive() {
     && simulation->ent_exists(simulation->get_ent(camera).player);
 }
 
-#define VALIDATE(expr) if (!expr) { std::cout << #expr << '\n'; client->disconnect(); }
+#define VALIDATE(expr) if (!expr) { client->disconnect(); }
 
 void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) {
     if (ws == nullptr) return;
