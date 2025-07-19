@@ -35,7 +35,7 @@ Then,
 > node ./gardn-server
 ```
 
-Client:
+## Client:
 ```
 cd gardn/Client
 mkdir build
