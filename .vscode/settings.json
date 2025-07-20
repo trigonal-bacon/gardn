@@ -1,0 +1,6 @@
+{
+    "git.detectSubmodules": false,
+    "search.exclude": {
+        "Server/uWebSockets": true
+    }
+}

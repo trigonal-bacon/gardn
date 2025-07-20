@@ -79,4 +79,8 @@ add_link_options(-sEXPORTED_FUNCTIONS=_main,_malloc,_free,_key_event,_mouse_even
 
 add_executable(gardn-client ${SRCS})
 
+if (SERVER_URL)
+    target_compile_definitions(gardn-client PRIVATE SERVER_URL="${SERVER_URL}")
+endif()
+
 target_link_libraries(gardn-client m)

@@ -21,7 +21,7 @@ Entity &Simulation::alloc_ent() {
         if (entity_tracker[i]) continue;
         entity_tracker[i] = 1;
         entities[i].init();
-        DEBUG_ONLY(std::cout << "ent_create <" << hash_tracker[i] << ',' << i << ">\n";)
+        // DEBUG_ONLY(std::cout << "ent_create <" << hash_tracker[i] << ',' << i << ">\n";)
         entities[i].id = EntityID(i, hash_tracker[i]);
         return entities[i];
     }
@@ -60,7 +60,7 @@ void Simulation::request_delete(EntityID const &id) {
 }
 
 void Simulation::_delete_ent(EntityID const &id) {
-    DEBUG_ONLY(std::cout << "ent_delete <" << id.hash << ',' << id.id << ">\n";)
+    // DEBUG_ONLY(std::cout << "ent_delete <" << id.hash << ',' << id.id << ">\n";)
     DEBUG_ONLY(assert(ent_exists(id)));
     entity_tracker[id.id] = 0;
     hash_tracker[id.id]++;

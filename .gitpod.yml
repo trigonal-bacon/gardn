@@ -1,0 +1,42 @@
+tasks:
+  - name: HTTP Server
+    command: |
+      cd Client/public && \
+      npx --yes http-server -c-1
+
+  - name: Client Build
+    init: |
+      git clone https://github.com/emscripten-core/emsdk.git ../emsdk && \
+      ../emsdk/emsdk install latest && \
+      ../emsdk/emsdk activate latest && \
+      cmake -S Client -B Client/build -DDEBUG=1 \
+          -DSERVER_URL="${GITPOD_WORKSPACE_URL/'https://'/'wss://9001-'}"
+    command: |
+      source ../emsdk/emsdk_env.sh && \
+      cd Client/build && \
+      make -j$(nproc) && cp gardn-client* ../public
+
+  - name: Game Server
+    before: |
+      sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test && \
+      sudo apt-get update && \
+      sudo apt-get install --assume-yes g++-13 libuv1-dev && \
+      sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100 \
+          --slave /usr/bin/g++ g++ /usr/bin/g++-13
+    init: |
+      make -C Server/uWebSockets -j$(nproc) && \
+      cmake -S Server -B Server/build -DDEBUG=1
+    command: |
+      cd Server/build && \
+      make -j$(nproc) && ./gardn-server
+
+ports:
+  - port: 8080
+    name: HTTP Server
+    onOpen: open-browser
+    visibility: public
+
+  - port: 9001
+    name: Game Server
+    onOpen: ignore
+    visibility: public
