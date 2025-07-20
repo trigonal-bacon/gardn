@@ -37,11 +37,4 @@ public:
 
     template <uint8_t>
     void for_each(std::function<void (Simulation *, Entity &)>);
-#ifdef SERVERSIDE
-    //Entity &alloc_mob(uint8_t);
-    //Entity &alloc_player(Entity &);
-    //Entity &alloc_petal(uint8_t);
-#else
-    void tick_lerp(double);
-#endif
 };

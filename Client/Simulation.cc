@@ -9,9 +9,6 @@
 
 void Simulation::tick() {
     pre_tick();
-}
-
-void Simulation::tick_lerp(double dt) {
     double const amt = Ui::lerp_amount;
     for_each_entity([=](Simulation *sim, Entity &ent) {
         if (ent.has_component(kPhysics)) {

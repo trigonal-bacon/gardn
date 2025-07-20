@@ -380,7 +380,7 @@ char const *RARITY_NAMES[RarityID::kNumRarities] = {
 
 std::array<StaticArray<float, MAX_DROPS_PER_MOB>, MobID::kNumMobs> const _get_auto_petal_drops() {
     std::array<StaticArray<float, MAX_DROPS_PER_MOB>, MobID::kNumMobs> ret;
-    double const RARITY_MULT[RarityID::kNumRarities] = {60000,20000,2500,100,10,2.5,1};
+    double const RARITY_MULT[RarityID::kNumRarities] = {50000,15000,2500,100,10,2.5,1};
     double MOB_SPAWN_RATES[MobID::kNumMobs] = {0};
     double PETAL_AGGREGATE_DROPS[PetalID::kNumPetals] = {0};
     for (struct ZoneDefinition const &zone : MAP) {
@@ -402,7 +402,7 @@ std::array<StaticArray<float, MAX_DROPS_PER_MOB>, MobID::kNumMobs> const _get_au
     for (MobID::T id = 0; id < MobID::kNumMobs; ++id)
         for (PetalID::T const drop_id : MOB_DATA[id].drops) PETAL_AGGREGATE_DROPS[drop_id]++;
 
-    double BASE_NUM = MOB_SPAWN_RATES[MobID::kSquare];
+    double const BASE_NUM = MOB_SPAWN_RATES[MobID::kSquare];
 
     for (MobID::T id = 0; id < MobID::kNumMobs; ++id) {
         for (PetalID::T const drop_id : MOB_DATA[id].drops) {
@@ -442,7 +442,7 @@ uint32_t level_to_score(uint32_t level) {
 }
 
 uint32_t loadout_slots_at_level(uint32_t level) {
-    uint32_t ret =  5 + level / 15;
+    uint32_t ret = 5 + level / 15;
     if (ret > MAX_SLOT_COUNT) return MAX_SLOT_COUNT;
     return ret;
 }

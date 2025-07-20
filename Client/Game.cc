@@ -136,12 +136,11 @@ uint8_t Game::should_render_game_ui() {
 
 void Game::tick(double time) {
     double tick_start = Debug::get_timestamp();
-    simulation.tick();
-    simulation.tick_lerp(time - g_last_time);
     Game::timestamp = time;
     Ui::dt = time - g_last_time;
     Ui::lerp_amount = 1 - pow(1 - 0.2, Ui::dt * 60 / 1000);
     g_last_time = time;
+    simulation.tick();
     
     renderer.reset();
     game_ui_renderer.set_dimensions(renderer.width, renderer.height);
