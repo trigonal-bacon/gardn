@@ -17,6 +17,7 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
     Entity &player = sim->get_ent(petal.parent);
     struct PetalData const &petal_data = PETAL_DATA[petal.petal_id];
     if (petal_data.attributes.rotation_style == PetalAttributes::kPassiveRot) {
+        //simulate on clientside
         float rot_amt = petal.petal_id == PetalID::kWing ? 10.0 : 1.0;
         if (petal.id.id % 2) petal.set_angle(petal.angle + rot_amt / TPS);
         else petal.set_angle(petal.angle - rot_amt / TPS);

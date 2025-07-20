@@ -1,10 +1,8 @@
 #pragma once
 
-#include <assert.h>
-
-#include <chrono>
+#include <cassert>
 #include <cstdint>
-#include <iostream>
+#include <format>
 #include <string>
 
 #ifndef M_PI
@@ -28,17 +26,6 @@
 #else
 #define DEBUG_ONLY(...)
 #endif
-
-#define TIME_FN(fn_body) { \
-    struct timespec ts; \
-    struct timespec te; \
-    timespec_get(&ts, TIME_UTC); \
-    fn_body; \
-    timespec_get(&te, TIME_UTC); \
-    double mss = ts.tv_sec * 1000 + ts.tv_nsec / 1000000.0; \
-    double mse = te.tv_sec * 1000 + te.tv_nsec / 1000000.0; \
-    std::printf("[%s]: %.4f\n", #fn_body, mse - mss); \
-}
 
 #define BIT_AT(val, bit) (((val) >> (bit)) & 1)
 #define BIT_SET(val, bit) (val |= (1 << (bit)));
@@ -94,6 +81,7 @@ public:
     constexpr CircularArray() : at(0), length(0) {};
     constexpr uint32_t size() const { return length; }
     constexpr T operator[](uint32_t idx) const { return values[idx]; };
+    constexpr T curr() const { return values[at]; };
     constexpr void push(T val) { 
         values[at] = val; at = (at + 1) % capacity;
         if (length < capacity) ++length;

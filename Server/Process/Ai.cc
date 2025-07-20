@@ -25,7 +25,8 @@ static void default_tick_idle_moving(Simulation *sim, Entity &ent) {
         ent.ai_state = AIState::kIdle;
         return;
     }
-    float r = ent.ai_tick / (2.5f * TPS);
+    if (ent.ai_tick < 0.5 * TPS) return;
+    float r = (ent.ai_tick - 0.5 * TPS) / (2 * TPS);
     ent.acceleration
         .unit_normal(ent.angle)
         .set_magnitude(2 * PLAYER_ACCELERATION * (r - r * r));

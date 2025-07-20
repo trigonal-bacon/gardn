@@ -4,6 +4,8 @@
 #include <Shared/Binary.hh>
 #include <Shared/Config.hh>
 
+#include <iostream>
+
 #include <emscripten.h>
 
 uint8_t INCOMING_PACKET[1024 * 1024] = {0};

@@ -112,9 +112,7 @@ void Game::init() {
     window.add_child(
         Ui::make_debug_stats()
     );
-    socket.connect(
-        std::format("ws{}://{}{}", "", HOST_NAME, (SERVER_PORT==0?"":":"+std::to_string(SERVER_PORT)))
-    );
+    socket.connect(WS_URL);
 }
 
 uint8_t Game::alive() {

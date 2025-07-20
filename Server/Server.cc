@@ -5,13 +5,14 @@
 #include <Shared/Binary.hh>
 #include <Shared/Map.hh>
 
-#include <chrono>
 #include <cmath>
+#include <iostream>
 
 namespace Server {
     uint8_t OUTGOING_PACKET[max_buffer_size] = {0};
     Simulation simulation;
     std::set<Client *> clients;
+    double timestamp;
 }
 
 using namespace Server;
@@ -65,13 +66,13 @@ void Server::tick() {
     struct timespec te;
     timespec_get(&ts, TIME_UTC);
     Server::simulation.tick();
-    for (Client *client: Server::clients) _update_client(client->simulation, client);
+    for (Client *client : Server::clients) _update_client(client->simulation, client);
     Server::simulation.post_tick();
     timespec_get(&te, TIME_UTC);
 
-    double mss = ts.tv_sec * 1000 + ts.tv_nsec / 1000000.0;
-    double mse = te.tv_sec * 1000 + te.tv_nsec / 1000000.0;
-    if (mse - mss > 10) std::cout << "tick took " << (mse - mss) << "ms\n";
+    double ms_start = ts.tv_sec * 1.0e3 + ts.tv_nsec / 1.0e9;
+    double ms_end = te.tv_sec * 1.0e3 + te.tv_nsec / 1.0e9;
+    if (ms_end - ms_start > 10) std::cout << "tick took " << (ms_end - ms_start) << "ms\n";
 }
 
 void Server::init() {

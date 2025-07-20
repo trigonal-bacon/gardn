@@ -69,6 +69,11 @@ void Writer::write<float>(float const &v) {
 }
 
 template<>
+void Writer::write<double>(double const &v) {
+    write<int64_t>(v * PROTOCOL_FLOAT_SCALE);
+}
+
+template<>
 void Writer::write<EntityID>(EntityID const &id) {
     write<EntityID::id_type>(id.id);
     if (id.id) write<EntityID::hash_type>(id.hash);
@@ -147,6 +152,11 @@ float Reader::read<float>() {
 }
 
 template<>
+double Reader::read<double>() {
+    return read<int64_t>() / (double) PROTOCOL_FLOAT_SCALE;
+}
+
+template<>
 EntityID Reader::read<EntityID>() {
     EntityID::id_type id = read<EntityID::id_type>();
     EntityID::hash_type hash = id ? read<EntityID::hash_type>() : 0;
@@ -187,6 +197,11 @@ void Reader::read<int64_t>(int64_t &ref) {
 template<>
 void Reader::read<float>(float &ref) {
     ref = read<float>();
+}
+
+template<>
+void Reader::read<double>(double &ref) {
+    ref = read<double>();
 }
 
 template<>

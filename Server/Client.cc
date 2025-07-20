@@ -21,16 +21,13 @@ void Client::init() {
     ent.set_team(ent.id);
     ent.set_fov(BASE_FOV);
     ent.set_respawn_level(1); 
-    for (uint32_t i = 0; i < loadout_slots_at_level(ent.respawn_level); ++i) {
-        PetalTracker::add_petal(PetalID::kBasic);
+    for (uint32_t i = 0; i < loadout_slots_at_level(ent.respawn_level); ++i)
         ent.set_inventory(i, PetalID::kBasic);
-    }
-    if (frand() < 0.0001 && PetalTracker::get_count(PetalID::kUniqueBasic) == 0) {
-        PetalTracker::remove_petal(PetalID::kBasic);
-        PetalTracker::add_petal(PetalID::kUniqueBasic);
+    if (frand() < 0.001 && PetalTracker::get_count(PetalID::kUniqueBasic) == 0)
         ent.set_inventory(0, PetalID::kUniqueBasic);
-    } 
-    //no need to track PetalID::kNone
+
+    for (uint32_t i = 0; i < loadout_slots_at_level(ent.respawn_level); ++i)
+        PetalTracker::add_petal(ent.inventory[i]);
     camera = ent.id;
     seen_arena = 0;
 }
@@ -145,9 +142,12 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
             PetalID::T old_id = player.loadout_ids[pos];
             if (old_id != PetalID::kNone && old_id != PetalID::kBasic) {
                 uint8_t rarity = PETAL_DATA[old_id].rarity;
-                uint32_t rarity_to_xp[RarityID::kNumRarities] = { 2, 10, 50, 200, 1000, 5000, 0 };
+                uint32_t const rarity_to_xp[RarityID::kNumRarities] = { 2, 10, 50, 200, 1000, 5000, 0 };
                 player.set_score(player.score + rarity_to_xp[rarity]);
                 //need to delete if over cap
+                if (player.deleted_petals.size() == MAX_SLOT_COUNT)
+                    //removes old trashed old petal
+                    PetalTracker::remove_petal(player.deleted_petals.curr());
                 player.deleted_petals.push(old_id);
             }
             player.set_loadout_ids(pos, PetalID::kNone);

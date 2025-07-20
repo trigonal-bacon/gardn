@@ -25,12 +25,3 @@ uint32_t PetalTracker::get_count(PetalID::T id) {
     if (id == PetalID::kNone) return 0;
     return COUNT_TRACKER[id];
 }
-
-void PetalTracker::print_count() {
-    std::cout << "{";
-    for (PetalID::T i = PetalID::kBasic; i < PetalID::kNumPetals; ++i) {
-        if (i != PetalID::kAntennae) continue;
-        std::cout << (int) i << ':' << COUNT_TRACKER[i] << ",";
-    }
-    std::cout << "}\n";
-}

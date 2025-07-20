@@ -1,6 +1,7 @@
 #include <Shared/Vector.hh>
 
 #include <Shared/Helpers.hh>
+
 #include <cmath>
 
 Vector::Vector() {}
