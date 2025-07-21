@@ -37,8 +37,11 @@ void Simulation::tick() {
     for_each_entity([](Simulation *sim, Entity &ent) {
         if (ent.has_component(kPhysics))
             sim->spatial_hash.insert(ent);
+        if (BIT_AT(ent.flags, EntityFlags::kHasCulling))
+            BIT_SET(ent.flags, EntityFlags::kIsCulled);
     });
 
+    for_each<kCamera>(tick_culling_behavior);
     for_each<kFlower>(tick_player_behavior);
     for_each<kMob>(tick_ai_behavior);
     for_each<kPetal>(tick_petal_behavior);

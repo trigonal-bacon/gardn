@@ -136,7 +136,9 @@ namespace EntityFlags {
         kNoFriendlyCollision,
         kDieOnParentDeath,
         kSpawnedFromZone,
-        kNoDrops
+        kNoDrops,
+        kHasCulling,
+        kIsCulled
     };
 };
 

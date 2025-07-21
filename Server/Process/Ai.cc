@@ -366,9 +366,14 @@ void tick_ai_behavior(Simulation *sim, Entity &ent) {
             if (delta.magnitude() > SUMMON_RETREAT_RADIUS) {
                 ent.target = NULL_ENTITY;
                 ent.ai_state = AIState::kReturning;
-                ent.ai_tick = 3; //prevent subtraction errors
             }
         }
+    }
+    if (BIT_AT(ent.flags, EntityFlags::kIsCulled)) {
+        ent.acceleration.set(0,0);
+        ent.target = NULL_ENTITY;
+        ent.ai_tick = 0;
+        return;
     }
     switch(ent.mob_id) {
         case MobID::kBabyAnt:            

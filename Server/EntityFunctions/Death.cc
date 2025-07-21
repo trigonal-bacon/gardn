@@ -17,8 +17,6 @@ static void __alloc_drops(Simulation *sim, std::vector<PetalID::T> &success_drop
     for (PetalID::T id : success_drops)
         assert(id != PetalID::kNone && id < PetalID::kNumPetals);
     #endif
-    for (size_t i = 0; i < 10; ++i)
-        success_drops.push_back(frand() * 10 + 2);
     size_t count = success_drops.size();
     for (size_t i = count; i > 0; --i) {
         PetalID::T drop_id = success_drops[i - 1];
