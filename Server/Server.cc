@@ -60,13 +60,14 @@ static void _update_client(Simulation *sim, Client *client) {
 }
 
 void Server::tick() {
+    using namespace std::chrono_literals;
     auto start = std::chrono::steady_clock::now();
     Server::simulation.tick();
     for (Client *client : Server::clients) _update_client(client->simulation, client);
     Server::simulation.post_tick();
     auto end = std::chrono::steady_clock::now();
     std::chrono::duration<double, std::milli> tick_time = end - start;
-    std::cout << "tick took " << tick_time << '\n';
+    if (tick_time > 2ms) std::cout << "tick took " << tick_time << '\n';
 }
 
 void Server::init() {
