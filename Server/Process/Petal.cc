@@ -40,6 +40,7 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
                 break;
             }
             default:
+                petal.acceleration.set(0,0);
                 break;
         }
     }
