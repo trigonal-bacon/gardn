@@ -182,13 +182,13 @@ static void tick_hornet_aggro(Simulation *sim, Entity &ent) {
 static void tick_centipede_passive(Simulation *sim, Entity &ent) {
     switch(ent.ai_state) {
         case AIState::kIdle: {
-            ent.set_angle(ent.angle + 0.02);
-            if (frand() < 0.005) ent.ai_state = AIState::kIdleMoving;
+            ent.set_angle(ent.angle + 0.25 / TPS);
+            if (frand() < 1 / (5.0 * TPS)) ent.ai_state = AIState::kIdleMoving;
             break;
         }
         case AIState::kIdleMoving: {
-            ent.set_angle(ent.angle - 0.02);
-            if (frand() < 0.005) ent.ai_state = AIState::kIdle;
+            ent.set_angle(ent.angle - 0.25 / TPS);
+            if (frand() < 1 / (5.0 * TPS)) ent.ai_state = AIState::kIdle;
             break;
         }
         case AIState::kReturning: {
@@ -215,14 +215,14 @@ static void tick_centipede_neutral(Simulation *sim, Entity &ent, float speed) {
         //ent.target = find_nearest_enemy(sim, ent, ent.detection_radius + ent.radius);
         switch(ent.ai_state) {
             case AIState::kIdle: {
-                ent.set_angle(ent.angle + 0.005);
-                if (frand() < 0.0025) ent.ai_state = AIState::kIdleMoving;
+                ent.set_angle(ent.angle + 0.25 / TPS);
+                if (frand() < 1 / (5.0 * TPS)) ent.ai_state = AIState::kIdleMoving;
                 ent.acceleration.unit_normal(ent.angle).set_magnitude(PLAYER_ACCELERATION * speed);
                 break;
             }
             case AIState::kIdleMoving: {
-                ent.set_angle(ent.angle - 0.005);
-                if (frand() < 0.0025) ent.ai_state = AIState::kIdle;
+                ent.set_angle(ent.angle - 0.25 / TPS);
+                if (frand() < 1 / (5.0 * TPS)) ent.ai_state = AIState::kIdle;
                 ent.acceleration.unit_normal(ent.angle).set_magnitude(PLAYER_ACCELERATION * speed);
                 break;
             }
@@ -251,14 +251,14 @@ static void tick_centipede_aggro(Simulation *sim, Entity &ent) {
         ent.target = find_nearest_enemy(sim, ent, ent.detection_radius + ent.radius);
         switch(ent.ai_state) {
             case AIState::kIdle: {
-                ent.set_angle(ent.angle + 0.005);
-                if (frand() < 0.0025) ent.ai_state = AIState::kIdleMoving;
+                ent.set_angle(ent.angle + 0.25 / TPS);
+                if (frand() < 1 / (5.0 * TPS)) ent.ai_state = AIState::kIdleMoving;
                 ent.acceleration.unit_normal(ent.angle).set_magnitude(PLAYER_ACCELERATION / 10);
                 break;
             }
             case AIState::kIdleMoving: {
-                ent.set_angle(ent.angle - 0.005);
-                if (frand() < 0.0025) ent.ai_state = AIState::kIdle;
+                ent.set_angle(ent.angle - 0.25 / TPS);
+                if (frand() < 1 / (5.0 * TPS)) ent.ai_state = AIState::kIdle;
                 ent.acceleration.unit_normal(ent.angle).set_magnitude(PLAYER_ACCELERATION / 10);
                 break;
             }
@@ -321,9 +321,14 @@ static void tick_digger(Simulation *sim, Entity &ent) {
         Vector v(target.x - ent.x, target.y - ent.y);
         FOCUS_LOSE_CLAUSE
         v.set_magnitude(PLAYER_ACCELERATION * 0.95);
+        if (ent.health / ent.max_health > 0.1) {
+            BIT_SET(ent.input, InputFlags::kAttacking);
+        } else {
+            BIT_SET(ent.input, InputFlags::kDefending);
+            v *= -1;
+        }
         ent.acceleration = v;
         ent.set_eye_angle(v.angle());
-        BIT_SET(ent.input, InputFlags::kAttacking);
         return;
     } else {
         if (!(ent.target == NULL_ENTITY)) {
