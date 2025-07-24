@@ -117,10 +117,10 @@ class RangeValue {
 public:
     float lower;
     float upper;
-    RangeValue(double, double);
-    RangeValue(double);
+    RangeValue(float, float);
+    RangeValue(float);
     float get_single(float) const;
-    std::string to_string() const;
+    std::string const to_string() const;
 };
 
 //DOES NOT PERFORM BOUND CHECKS

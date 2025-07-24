@@ -4,12 +4,13 @@
 
 #include <Shared/Config.hh>
 
-#include <unordered_map>
+#include <iostream>
+#include <map>
 #include <string>
 
 #include <emscripten.h>
 
-std::unordered_map<int, WebSocket *> WS_MAP;
+std::map<int, WebSocket *> WS_MAP;
 
 size_t const MAX_BUFFER_LEN = 1024;
 static uint8_t INCOMING_BUFFER[MAX_BUFFER_LEN] = {0};

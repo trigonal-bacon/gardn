@@ -94,20 +94,16 @@ float SeedGenerator::binext() {
     return next() * 2 - 1;
 }
 
-RangeValue::RangeValue(double l, double u) {
-    upper = u;
-    lower = l;
-}
+RangeValue::RangeValue(float l, float u) : lower(l), upper(u) {}
 
-RangeValue::RangeValue(double l) {
-    lower = upper = l;
-}
+RangeValue::RangeValue(float l) : lower(l), upper(l) {}
 
 float RangeValue::get_single(float a) const {
+    if (lower == upper) return lower;
     return lower + (upper - lower) * fclamp(a, 0, 1);
 }
 
-std::string RangeValue::to_string() const {
+std::string const RangeValue::to_string() const {
     if (lower == upper) return format_score(lower);
     return format_score(lower) + '~' + format_score(upper);
 }
