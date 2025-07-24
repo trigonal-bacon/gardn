@@ -20,7 +20,9 @@ namespace Game {
     Renderer renderer;
     Renderer game_ui_renderer;
     Socket socket;
-    Ui::Window window;
+    Ui::Window title_ui_window;
+    Ui::Window game_ui_window;
+    Ui::Window other_ui_window;
     EntityID camera_id;
     EntityID player_id;
     std::string nickname;
@@ -49,7 +51,7 @@ using namespace Game;
 
 void Game::init() {
     Storage::retrieve();
-    window.add_child(
+    title_ui_window.add_child(
         new Ui::StaticText(60, "the gardn project", {
             .fill = 0xffffffff,
             .animate = [](Ui::Element *elt, Renderer &ctx) {
@@ -58,58 +60,56 @@ void Game::init() {
             }
         })
     );
-    window.add_child(
+    title_ui_window.add_child(
         Ui::make_title_input_box()
     );
-    window.add_child(
+    title_ui_window.add_child(
         Ui::make_title_info_box()
     );
-    window.add_child(
+    title_ui_window.add_child(
         Ui::make_panel_buttons()
     );
-    window.add_child(
+    title_ui_window.add_child(
         Ui::make_settings_panel()
     );
-    window.add_child(
+    title_ui_window.add_child(
         Ui::make_petal_gallery()
     );
-    window.add_child(
+    title_ui_window.add_child(
         Ui::make_mob_gallery()
     );
-    window.add_child(
+    title_ui_window.add_child(
         Ui::make_changelog()
     );
-    window.set_title_divider();
-    window.add_child(
+    game_ui_window.add_child(
         Ui::make_death_main_screen()
     );
-    window.add_child(
+    game_ui_window.add_child(
         Ui::make_level_bar()
     );
-    window.add_child(
+    game_ui_window.add_child(
         Ui::make_minimap()
     );
-    window.add_child(
+    game_ui_window.add_child(
         Ui::make_loadout_backgrounds()
     );
-    for (uint8_t i = 0; i < MAX_SLOT_COUNT * 2; ++i) window.add_child(new Ui::UiLoadoutPetal(i));
-    window.add_child(
+    for (uint8_t i = 0; i < MAX_SLOT_COUNT * 2; ++i) game_ui_window.add_child(new Ui::UiLoadoutPetal(i));
+    game_ui_window.add_child(
         Ui::make_leaderboard()
     );
-    window.add_child(
+    game_ui_window.add_child(
         Ui::make_overlevel_indicator()
     );
-    window.add_child(
+    game_ui_window.add_child(
         Ui::make_stat_screen()
     );
-    window.add_child(
+    game_ui_window.add_child(
         new Ui::HContainer({
             new Ui::StaticText(20, "the gardn project")
         }, 20, 0, { .h_justify = Ui::Style::Left, .v_justify = Ui::Style::Top })
     );
     Ui::make_petal_tooltips();
-    window.set_game_divider();
-    window.add_child(
+    other_ui_window.add_child(
         Ui::make_debug_stats()
     );
     socket.connect(WS_URL);
@@ -172,15 +172,19 @@ void Game::tick(double time) {
     else 
         transition_circle = fclamp(transition_circle / powf(1.05, Ui::dt * 60 / 1000) - Ui::dt / 5, 0, MAX_TRANSITION_CIRCLE);
 
-    window.refactor();
-    if (Input::is_valid())
-        window.poll_events();
+    if (Input::is_valid()) {
+        if (Game::should_render_title_ui())
+            title_ui_window.poll_events();
+        if (Game::should_render_game_ui())
+            game_ui_window.poll_events();
+        other_ui_window.poll_events();
+    }
     else Ui::focused = nullptr;
 
     if (should_render_title_ui()) {
         render_title_screen();
         Particle::tick_title(renderer, Ui::dt);
-        window.render_title_screen(renderer);
+        title_ui_window.render(renderer);
     }
 
     if (should_render_game_ui()) {
@@ -200,7 +204,7 @@ void Game::tick(double time) {
             renderer.set_fill(0x20000000);
             renderer.fill_rect(0,0,renderer.width,renderer.height);
         }
-        window.render_game_screen(game_ui_renderer);
+        game_ui_window.render(game_ui_renderer);
         renderer.set_global_alpha(0.85);
         renderer.translate(renderer.width/2,renderer.height/2);
         renderer.draw_image(game_ui_renderer);
@@ -241,9 +245,9 @@ void Game::tick(double time) {
         Ui::UiLoadout::selected_with_keys = MAX_SLOT_COUNT;
     LERP(slot_indicator_opacity, Ui::UiLoadout::selected_with_keys != MAX_SLOT_COUNT, Ui::lerp_amount);
 
-    window.render_others(renderer);
-    window.on_render_tooltip(renderer);
-    window.tick_render_skip(renderer);
+    other_ui_window.render(renderer);
+    //window.on_render_tooltip(renderer);
+    //window.tick_render_skip(renderer);
 
     //no rendering past this point
 

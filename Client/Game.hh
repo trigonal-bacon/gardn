@@ -15,7 +15,9 @@ namespace Game {
     extern Renderer renderer;
     extern Renderer game_ui_renderer;
     extern Socket socket;
-    extern Ui::Window window;
+    extern Ui::Window title_ui_window;
+    extern Ui::Window game_ui_window;
+    extern Ui::Window other_ui_window;
     extern EntityID camera_id;
     extern EntityID player_id;
     extern std::string nickname;
@@ -47,7 +49,6 @@ namespace Game {
     void tick(double);
     void render_game();
     void render_title_screen();
-    void process_ui();
     void send_inputs();
     void spawn_in();
     void delete_petal(uint8_t);
