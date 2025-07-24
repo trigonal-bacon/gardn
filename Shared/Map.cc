@@ -40,7 +40,7 @@ void Map::spawn_random_mob(Simulation *sim) {
     float y = frand() * ARENA_HEIGHT;
     uint32_t zone_id = Map::get_zone_from_pos(x, y);
     struct ZoneDefinition const &zone = MAP[zone_id];
-    if (zone.density * zone.w * zone.h / (100 * 100) < ZONE_MOB_COUNTS[zone_id]) return;
+    if (zone.density * zone.w * zone.h / (500 * 500) < ZONE_MOB_COUNTS[zone_id]) return;
     float sum = 0;
     for (SpawnChance const &s : zone.spawns)
         sum += s.chance;
