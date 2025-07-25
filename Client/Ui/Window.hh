@@ -8,7 +8,10 @@ namespace Ui {
         Window();
 
         void render(Renderer &);
+        virtual void on_render(Renderer &) override;
 
-        void refactor();
+        virtual void refactor() override;
+        virtual void poll_events() override;
+        virtual void on_event(uint8_t) override;
     };
 }

@@ -201,7 +201,7 @@ extern struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
         .icon_angle = M_PI
     }},
     {"Rice", "Spawns instantly, but not very strong",
-        1.0, 4.0, 13.0, 0, 1, RarityID::kEpic, {
+        1.0, 4.0, 13.0, 0.1, 1, RarityID::kEpic, {
         .icon_angle = 0.7
     }},
     {"Bone", "Sturdy",

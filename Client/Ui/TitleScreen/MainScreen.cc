@@ -68,7 +68,7 @@ Element *Ui::make_title_info_box() {
                 new Ui::StaticText(16, "SHIFT to defend")
             }, 0, 5, { .no_animation = 1 }),
             [](){
-                return !Input::keyboard_movement;
+                return Input::keyboard_movement;
             }, {}
         ),
         new Ui::VContainer({
