@@ -69,7 +69,7 @@ Element *Ui::make_title_info_box() {
             }, 0, 5, { .no_animation = 1 }),
             [](){
                 return Input::keyboard_movement;
-            }, {}
+            }, { .no_polling = 1 }
         ),
         new Ui::VContainer({
             new Ui::HContainer({

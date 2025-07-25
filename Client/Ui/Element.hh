@@ -27,6 +27,7 @@ namespace Ui {
         int8_t h_justify = Center;
         int8_t v_justify = Middle;
         uint8_t no_animation = 0;
+        uint8_t no_polling = 0;
     };
 
     enum UiEvent {

@@ -66,7 +66,13 @@ Element *Ui::make_leaderboard() {
         new Ui::VContainer(
             Ui::make_range(0, LEADERBOARD_SIZE, [](uint32_t i){ return (Element *) (new Ui::LeaderboardSlot(i)); })
         , 10, 4, {})
-    }, 0, 0, { .fill = 0xff555555, .line_width = 6, .round_radius = 7, .should_render = [](){ return Game::should_render_game_ui(); } });
+    }, 0, 0, { 
+        .fill = 0xff555555,
+        .line_width = 6,
+        .round_radius = 7,
+        .should_render = [](){ return Game::should_render_game_ui(); },
+        .no_polling = 1
+    });
     leaderboard->style.h_justify = Style::Right;
     leaderboard->style.v_justify = Style::Top;
     leaderboard->x = -20;

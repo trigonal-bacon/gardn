@@ -42,6 +42,7 @@ void Window::refactor() {
 }
 
 void Window::poll_events() {
+    if (style.no_polling) return;
     for (Element *elt : children)
         if (elt->visible) elt->poll_events();
     if (Ui::focused == nullptr)

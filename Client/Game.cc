@@ -112,6 +112,7 @@ void Game::init() {
     other_ui_window.add_child(
         Ui::make_debug_stats()
     );
+    other_ui_window.style.no_polling = 1;
     socket.connect(WS_URL);
 }
 
