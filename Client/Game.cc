@@ -10,7 +10,7 @@
 #include <cmath>
 
 static double g_last_time = 0;
-const float MAX_TRANSITION_CIRCLE = 2500;
+float const MAX_TRANSITION_CIRCLE = 2500;
 
 static int _c = setup_canvas();
 static int _i = setup_inputs();
@@ -117,7 +117,7 @@ void Game::init() {
 }
 
 uint8_t Game::alive() {
-    return simulation_ready
+    return socket.ready && simulation_ready
     && simulation.ent_exists(camera_id)
     && simulation.ent_alive(simulation.get_ent(camera_id).player);
 }

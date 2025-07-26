@@ -6,13 +6,13 @@
 #include <cstdint>
 #include <string>
 
-enum kClientbound {
+enum Clientbound {
     kDisconnect,
     kClientUpdate,
     kOutdated
 };
 
-enum kServerbound {
+enum Serverbound {
     kVerify,
     kClientInput,
     kClientSpawn,

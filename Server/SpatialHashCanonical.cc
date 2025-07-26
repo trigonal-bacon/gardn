@@ -21,7 +21,7 @@ void SpatialHash::refresh(uint32_t _width, uint32_t _height) {
             cells[x][y].clear();
 }
 
-void SpatialHash::insert(Entity &ent) {
+void SpatialHash::insert(Entity const &ent) {
     DEBUG_ONLY(assert(ent.has_component(kPhysics));)
     uint32_t sx = fclamp(ent.x - ent.radius, 0, ARENA_WIDTH - 1) / GRID_SIZE;
     uint32_t sy = fclamp(ent.y - ent.radius, 0, ARENA_HEIGHT - 1) / GRID_SIZE;

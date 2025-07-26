@@ -28,7 +28,7 @@ static void _update_client(Simulation *sim, Client *client) {
     if (sim->ent_exists(camera.player)) 
         in_view.insert(camera.player);
     Writer writer(Server::OUTGOING_PACKET);
-    writer.write<uint8_t>(kClientbound::kClientUpdate);
+    writer.write<uint8_t>(Clientbound::kClientUpdate);
     writer.write<EntityID>(client->camera);
     sim->spatial_hash.query(camera.camera_x, camera.camera_y, 960 / camera.fov + 50, 540 / camera.fov + 50, [&](Simulation *, Entity &ent){
         in_view.insert(ent.id);

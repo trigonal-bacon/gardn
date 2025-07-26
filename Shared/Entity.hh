@@ -38,6 +38,8 @@ public:
     Entity();
     void init();
     void reset_protocol();
+    Entity(Entity const &) = delete;
+    Entity &operator=(Entity const &) = delete;
     uint32_t lifetime;
     EntityID id;
     uint8_t pending_delete;

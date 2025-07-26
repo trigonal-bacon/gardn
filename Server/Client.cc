@@ -71,7 +71,7 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
     if (!client->verified) {
         VALIDATE(validator.validate_uint8());
         Server::clients.insert(client);
-        if (reader.read<uint8_t>() != kServerbound::kVerify) {
+        if (reader.read<uint8_t>() != Serverbound::kVerify) {
             //disconnect
             client->disconnect();
             return;
@@ -79,7 +79,7 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
         VALIDATE(validator.validate_uint64());
         if (reader.read<uint64_t>() != VERSION_HASH) {
             Writer writer(Server::OUTGOING_PACKET);
-            writer.write<uint8_t>(kClientbound::kOutdated);
+            writer.write<uint8_t>(Clientbound::kOutdated);
             client->send_packet(writer.packet, writer.at - writer.packet);
             client->disconnect();
             return;
@@ -94,10 +94,10 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
     }
     VALIDATE(validator.validate_uint8());
     switch (reader.read<uint8_t>()) {
-        case kServerbound::kVerify:
+        case Serverbound::kVerify:
             client->disconnect();
             return;
-        case kServerbound::kClientInput: {
+        case Serverbound::kClientInput: {
             if (!client->alive()) break;
             Entity &camera = client->simulation->get_ent(client->camera);
             Entity &player = client->simulation->get_ent(camera.player);
@@ -119,7 +119,7 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
             //store player's acceleration and input in camera (do not reset ever)
             break;
         }
-        case kServerbound::kClientSpawn: {
+        case Serverbound::kClientSpawn: {
             if (client->alive()) break;
             Entity &camera = client->simulation->get_ent(client->camera);
             Entity &player = alloc_player(client->simulation, camera.id);
@@ -132,7 +132,7 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
             player.set_name(name);
             break;
         }
-        case kServerbound::kPetalDelete: {
+        case Serverbound::kPetalDelete: {
             if (!client->alive()) break;
             Entity &camera = client->simulation->get_ent(client->camera);
             Entity &player = client->simulation->get_ent(camera.player);
@@ -153,7 +153,7 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
             player.set_loadout_ids(pos, PetalID::kNone);
             break;
         }
-        case kServerbound::kPetalSwap: {
+        case Serverbound::kPetalSwap: {
             if (!client->alive()) break;
             Entity &camera = client->simulation->get_ent(client->camera);
             Entity &player = client->simulation->get_ent(camera.player);
