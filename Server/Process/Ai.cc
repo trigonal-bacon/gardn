@@ -124,7 +124,7 @@ static void tick_bee_passive(Simulation *sim, Entity &ent) {
             v *= 1.5;
             if (ent.lifetime % (TPS * 3 / 2) < TPS / 2)
                 v *= 0.5;
-            ent.acceleration.set(v.x, v.y);
+            ent.acceleration = v;
             break;
         }
         case AIState::kIdleMoving: {
@@ -165,7 +165,7 @@ static void tick_hornet_aggro(Simulation *sim, Entity &ent) {
             missile.acceleration.unit_normal(ent.angle).set_magnitude(40 * PLAYER_ACCELERATION);
             Vector kb;
             kb.unit_normal(ent.angle - M_PI).set_magnitude(2.5 * PLAYER_ACCELERATION);
-            ent.acceleration += kb;            
+            ent.velocity += kb;            
         }
         return;
     } else {
@@ -375,7 +375,6 @@ void tick_ai_behavior(Simulation *sim, Entity &ent) {
         }
     }
     if (BIT_AT(ent.flags, EntityFlags::kIsCulled)) {
-        ent.acceleration.set(0,0);
         ent.target = NULL_ENTITY;
         ent.ai_tick = 0;
         return;

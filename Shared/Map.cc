@@ -48,8 +48,7 @@ void Map::spawn_random_mob(Simulation *sim) {
     for (SpawnChance const &s : zone.spawns) {
         sum -= s.chance;
         if (sum <= 0) {
-            MobID::T spawn_id = s.id;
-            Entity &ent = alloc_mob(sim, spawn_id, x, y, NULL_ENTITY);
+            Entity &ent = alloc_mob(sim, s.id, x, y, NULL_ENTITY);
             ent.zone = zone_id;
             BIT_SET(ent.flags, EntityFlags::kSpawnedFromZone);
             ZONE_MOB_COUNTS[zone_id]++;

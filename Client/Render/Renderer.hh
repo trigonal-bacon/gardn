@@ -15,6 +15,7 @@ public:
     float clip_y;
     float clip_w;
     float clip_h;
+    RenderContext();
     RenderContext(Renderer *);
     void reset();
     ~RenderContext();

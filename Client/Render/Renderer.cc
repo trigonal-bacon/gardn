@@ -8,11 +8,17 @@
 
 std::vector<Renderer *> Renderer::renderers;
 
-RenderContext::RenderContext(Renderer *r) : renderer(r) {
+RenderContext::RenderContext() {
+    reset();
+}
+
+RenderContext::RenderContext(Renderer *r) {
     *this = r->context;
+    renderer = r;
 EM_ASM({
     Module.ctxs[$0].save();
 }, r->id);
+    reset();
 }
 
 void RenderContext::reset() {
@@ -31,20 +37,20 @@ RenderContext::~RenderContext() {
     }, renderer->id);
 }
 
-Renderer::Renderer() : context(this) {
+Renderer::Renderer() : context() {
     id = EM_ASM_INT({
-        if (Module.availableCtxs.length)
-        {
-            const index = Module.availableCtxs.shift();
-            if (index == 0)
-                return 0; // used for the main ctx, because that has special behavior
-            const ocanvas = new OffscreenCanvas(100, 100);
-            Module.ctxs[index] = ocanvas.getContext('2d');
-            return index;
+        let idx;
+        if (Module.availableCtxs.length > 0)
+            idx = Module.availableCtxs.pop();
+        else
+            idx = Module.ctxs.length;
+        if (idx === 0) {
+            Module.ctxs[idx] = document.getElementById('canvas').getContext('2d');
+        } else {
+            const canvas = new OffscreenCanvas(1,1);
+            Module.ctxs[idx] = canvas.getContext('2d');
         }
-        throw new Error(
-            'Out of Contexts: Can be fixed by allowing more contexts');
-        return -1;
+        return idx;
     });
     DEBUG_ONLY(std::cout << "created canvas " << id << '\n';)
     Renderer::renderers.push_back(this);
