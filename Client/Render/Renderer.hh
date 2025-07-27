@@ -6,6 +6,8 @@
 class Renderer;
 
 class RenderContext {
+protected:
+    friend class Renderer;
     Renderer *renderer;
 public:
     float transform_matrix[6];

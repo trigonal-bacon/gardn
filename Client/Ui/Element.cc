@@ -45,8 +45,11 @@ void Element::render(Renderer &ctx) {
     #ifdef DEBUG
     if (visible) {
         RenderContext context(&ctx);
-        ctx.set_stroke(0x40000000);
-        ctx.set_line_width(1);
+        if (focus_state != kFocusLost)
+            ctx.set_stroke(0x80ff0000);
+        else
+            ctx.set_stroke(0x80000000);
+        ctx.set_line_width(1.5);
         ctx.begin_path();
         ctx.round_rect(-width / 2, -height / 2, width, height, 6);
         ctx.stroke();

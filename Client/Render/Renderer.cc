@@ -8,9 +8,7 @@
 
 std::vector<Renderer *> Renderer::renderers;
 
-RenderContext::RenderContext() {
-    reset();
-}
+RenderContext::RenderContext() {}
 
 RenderContext::RenderContext(Renderer *r) {
     *this = r->context;
@@ -54,6 +52,8 @@ Renderer::Renderer() : context() {
     });
     DEBUG_ONLY(std::cout << "created canvas " << id << '\n';)
     Renderer::renderers.push_back(this);
+    context.renderer = this;
+    context.reset();
 }
 
 Renderer::~Renderer() {
@@ -80,11 +80,11 @@ uint32_t Renderer::MIX(uint32_t base, uint32_t mix, float v) {
 
 void Renderer::reset() {
     reset_transform();
-    context.reset();
     round_line_cap();
     round_line_join();
     center_text_align();
     center_text_baseline();
+    context.reset();
 }
 
 void Renderer::set_dimensions(float w, float h) {

@@ -11,6 +11,9 @@ using namespace Ui;
 Window::Window() : Container({}) {}
 
 void Window::render(Renderer &ctx) {
+    width = Ui::window_width;
+    height = Ui::window_height;
+    refactor();
     RenderContext context(&ctx);
     ctx.reset_transform();
     ctx.translate(width / 2, height / 2);
@@ -18,7 +21,6 @@ void Window::render(Renderer &ctx) {
 }
 
 void Window::on_render(Renderer &ctx) {
-    refactor();
     RenderContext context(&ctx);
     for (uint32_t layer = 0; layer < 2; ++layer) {
         for (uint32_t i = 0; i < children.size(); ++i) {
@@ -33,12 +35,6 @@ void Window::on_render(Renderer &ctx) {
         }
     }
     on_render_tooltip(ctx);
-}
-
-void Window::refactor() {
-    width = Ui::window_width;
-    height = Ui::window_height;
-    Container::refactor();
 }
 
 void Window::poll_events() {

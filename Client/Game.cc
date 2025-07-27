@@ -52,13 +52,12 @@ using namespace Game;
 void Game::init() {
     Storage::retrieve();
     title_ui_window.add_child(
-        new Ui::StaticText(60, "the gardn project", {
-            .fill = 0xffffffff,
-            .animate = [](Ui::Element *elt, Renderer &ctx) {
-                elt->x = 0;
-                elt->y = -270;
-            }
-        })
+        [](){ 
+            Ui::Element *elt = new Ui::StaticText(60, "the gardn project");
+            elt->x = 0;
+            elt->y = -270;
+            return elt;
+        }()
     );
     title_ui_window.add_child(
         Ui::make_title_input_box()
@@ -152,7 +151,7 @@ void Game::tick(double time) {
     Ui::focused = nullptr;
     double a = Ui::window_width / 1920;
     double b = Ui::window_height / 1080;
-    Ui::scale = a > b ? a : b;
+    Ui::scale = std::max({a, b});
     if (alive()) {
         on_game_screen = 1;
         player_id = simulation.get_ent(camera_id).player;

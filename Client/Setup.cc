@@ -92,7 +92,7 @@ void main_loop() {
         {
             Module.canvas.width = innerWidth * devicePixelRatio;
             Module.canvas.height = innerHeight * devicePixelRatio;
-            _loop(time, Module.canvas.width, Module.canvas.height);
+            _loop(time, innerWidth * devicePixelRatio, innerHeight * devicePixelRatio);
             requestAnimationFrame(loop);
         };
         requestAnimationFrame(loop);
