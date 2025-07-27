@@ -142,7 +142,10 @@ void Element::refactor() {
 }
 
 void Element::poll_events() {
-    if (style.no_polling) return;
+    if (style.no_polling) {
+        DEBUG_ONLY(assert(Ui::focused != this);)
+        return;
+    }
     if (std::abs(Input::mouse_x - screen_x) < width * Ui::scale / 2
     && std::abs(Input::mouse_y - screen_y) < height * Ui::scale / 2)
         Ui::focused = this;

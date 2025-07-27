@@ -149,6 +149,7 @@ void Game::tick(double time) {
 
     Ui::window_width = renderer.width;
     Ui::window_height = renderer.height;
+    Ui::focused = nullptr;
     double a = Ui::window_width / 1920;
     double b = Ui::window_height / 1080;
     Ui::scale = a > b ? a : b;
