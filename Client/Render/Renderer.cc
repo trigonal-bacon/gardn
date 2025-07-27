@@ -18,7 +18,7 @@ RenderContext::RenderContext(Renderer *r) {
 EM_ASM({
     Module.ctxs[$0].save();
 }, r->id);
-    reset();
+    //reset();
 }
 
 void RenderContext::reset() {
