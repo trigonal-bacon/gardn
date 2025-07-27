@@ -59,13 +59,10 @@ void Element::render(Renderer &ctx) {
         screen_y = ctx.context.transform_matrix[5];
         float eff_w = ctx.context.transform_matrix[0] * width;
         float eff_h = ctx.context.transform_matrix[4] * height;
-        if (std::abs(screen_x - ctx.context.clip_x) <= eff_w + ctx.context.clip_w / 2 &&
-            std::abs(screen_y - ctx.context.clip_y) <= eff_h + ctx.context.clip_h / 2)
+        if (std::abs(screen_x - ctx.context.clip_x) <= (eff_w + ctx.context.clip_w) / 2 &&
+            std::abs(screen_y - ctx.context.clip_y) <= (eff_h + ctx.context.clip_h) / 2)
             on_render(ctx);
-        else
-            on_render_skip(ctx);
         showed = 1;
-        //possibly poll events?
     } else 
         on_render_skip(ctx);
     //event emitter

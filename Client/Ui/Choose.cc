@@ -1,6 +1,6 @@
 #include <Client/Ui/Choose.hh>
 
-#include <iostream>
+#include <Client/Ui/Extern.hh>
 
 using namespace Ui;
 
@@ -39,6 +39,10 @@ void Choose::refactor() {
 }
 
 void Choose::poll_events() {
+    if (style.no_polling) return;
     Element::poll_events();
-    children[choose_showing]->poll_events();
+    if (Ui::focused != this)
+        return;
+    if (children[0]->visible) children[0]->poll_events();
+    if (children[1]->visible) children[1]->poll_events();
 }

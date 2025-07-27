@@ -1,5 +1,7 @@
 #include <Client/Ui/Container.hh>
 
+#include <Client/Ui/Extern.hh>
+
 #include <cmath>
 #include <iostream>
 
@@ -30,6 +32,8 @@ void Container::on_render(Renderer &ctx) {
 void Container::poll_events() {
     if (style.no_polling) return;
     Element::poll_events();
+    if (Ui::focused != this)
+        return;
     for (Element *elt : children)
         if (elt->visible) elt->poll_events();
 }
