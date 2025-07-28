@@ -20,7 +20,7 @@ void Container::on_render(Renderer &ctx) {
     Element::on_render(ctx);
     for (uint32_t layer = 0; layer < 2; ++layer) {
         for (Element *elt : children) {
-            if (elt->layer != layer) continue;
+            if (elt->style.layer != layer) continue;
             RenderContext context(&ctx);
             ctx.translate(elt->x, elt->y);
             ctx.translate(elt->style.h_justify * (width - elt->width) / 2, elt->style.v_justify * (height - elt->height) / 2);

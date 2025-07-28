@@ -44,14 +44,14 @@ uint8_t Entity::has_component(uint32_t comp) const {
 
 #ifdef SERVERSIDE
 #define SINGLE(component, name, type) \
-void Entity::set_##name(type const v) { \
+void Entity::set_##name(type const &v) { \
     DEBUG_ONLY(assert(has_component(k##component));) \
     if (name == v) return; \
     name = v; \
     BIT_SET_ARR(state, k##name); \
 }
 #define MULTIPLE(component, name, type, amt) \
-void Entity::set_##name(uint32_t i, type const v) { \
+void Entity::set_##name(uint32_t i, type const &v) { \
     DEBUG_ONLY(assert(has_component(k##component));) \
     if (name[i] == v) return; \
     name[i] = v; \
@@ -158,13 +158,13 @@ void Entity::read(Reader *reader, uint8_t create) {
 }
 
 #define SINGLE(component, name, type) \
-uint8_t Entity::get_state_##name() { \
+uint8_t Entity::get_state_##name() const { \
     DEBUG_ONLY(assert(has_component(k##component));) \
     return BIT_AT_ARR(state, k##name); \
 }
 
 #define MULTIPLE(component, name, type, amt) \
-uint8_t Entity::get_state_##name(uint32_t i) { \
+uint8_t Entity::get_state_##name(uint32_t i) const { \
     DEBUG_ONLY(assert(has_component(k##component));) \
     return BIT_AT_ARR(state_per_##name, i); \
 }

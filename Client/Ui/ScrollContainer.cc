@@ -9,14 +9,14 @@ using namespace Ui;
 
 ScrollBar::ScrollBar() : Element(8, 100, { .fill = 0x40000000, .round_radius = 4 }) {
     style.animate = [&](Element *elt, Renderer &ctx){
-        if (elt->layer && BIT_AT(Input::mouse_buttons_released, Input::LeftMouse))
-            elt->layer = 0;
+        if (elt->style.layer && BIT_AT(Input::mouse_buttons_released, Input::LeftMouse))
+            elt->style.layer = 0;
     };
 }
 
 void ScrollBar::on_event(uint8_t event) {
     if (event == kMouseDown)
-        layer = 1;
+        style.layer = 1;
 }
 
 ScrollContainer::ScrollContainer(Element *content, float max_height) : HContainer({content, new ScrollBar()}, 0, 10, {}) {
@@ -34,7 +34,7 @@ void ScrollContainer::on_render(Renderer &ctx) {
         if (std::abs(Input::mouse_x - screen_x) < width * Ui::scale / 2
         && std::abs(Input::mouse_y - screen_y) < height * Ui::scale / 2)
             lerp_scroll += Input::wheel_delta / ratio;
-        if (scroll->layer) lerp_scroll += (Input::mouse_y - Input::prev_mouse_y);
+        if (scroll->style.layer) lerp_scroll += (Input::mouse_y - Input::prev_mouse_y);
         lerp_scroll = fclamp(lerp_scroll, 0, height - scroll->height);
         LERP(scroll->y, lerp_scroll, Ui::lerp_amount)
         LERP(content->y, -ratio * lerp_scroll, Ui::lerp_amount);

@@ -19,7 +19,7 @@ InputFreeze::InputFreeze() : Container({
             .animate = opacity_animate,
             .should_render = [](){ return !Input::freeze_input; }
         }),
-        new Ui::VContainer({new Ui::StaticText(14, "You can also use [E] to cycle secondaries")}, 10, 0, { 
+        new Ui::VContainer({new Ui::StaticText(14, "You can also use [Q] and [E] to cycle secondaries")}, 10, 0, { 
             .animate = opacity_animate,
             .should_render = [](){ return Input::freeze_input; }
         }),

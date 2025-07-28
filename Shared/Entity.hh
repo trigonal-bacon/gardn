@@ -60,8 +60,8 @@ PER_EXTRA_FIELD
 
     template<bool>
     void write(Writer *);
-    #define SINGLE(component, name, type) void set_##name(type const);
-    #define MULTIPLE(component, name, type, amt) void set_##name(uint32_t, type const);
+    #define SINGLE(component, name, type) void set_##name(type const &);
+    #define MULTIPLE(component, name, type, amt) void set_##name(uint32_t, type const &);
     PERFIELD
     #undef SINGLE
     #undef MULTIPLE
@@ -71,8 +71,8 @@ PER_EXTRA_FIELD
     template<bool>
     void read(Reader *);
 
-    #define SINGLE(component, name, type) uint8_t get_state_##name();
-    #define MULTIPLE(component, name, type, amt) uint8_t get_state_##name(uint32_t);
+    #define SINGLE(component, name, type) uint8_t get_state_##name() const;
+    #define MULTIPLE(component, name, type, amt) uint8_t get_state_##name(uint32_t) const;
     PERFIELD
     #undef SINGLE
     #undef MULTIPLE

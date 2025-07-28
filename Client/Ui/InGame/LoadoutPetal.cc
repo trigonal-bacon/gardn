@@ -96,7 +96,7 @@ UiLoadoutPetal::UiLoadoutPetal(uint8_t pos) : Element(60, 60),
         if (static_pos >= MAX_SLOT_COUNT + Game::loadout_count) return false;
         if (curr_pos == 2 * MAX_SLOT_COUNT) return false;
         if (Game::alive()) {
-            Entity &player = Game::simulation.get_ent(Game::player_id);
+            Entity const &player = Game::simulation.get_ent(Game::player_id);
             if (no_change_ticks == 0 || player.get_state_loadout_ids(static_pos)) {
                 no_change_ticks = 0;
                 petal_id = Game::cached_loadout[static_pos];
@@ -105,7 +105,7 @@ UiLoadoutPetal::UiLoadoutPetal(uint8_t pos) : Element(60, 60),
             } else --no_change_ticks;
         }
         if (static_pos < Game::loadout_count && Game::alive()) {
-            Entity &player = Game::simulation.get_ent(Game::player_id);
+            Entity const &player = Game::simulation.get_ent(Game::player_id);
             if (player.get_state_loadout_reloads(static_pos)) {
                 float old = player.loadout_reloads[static_pos] / 255.0f;
                 if (old > reload) reload.set(old);
@@ -125,7 +125,7 @@ UiLoadoutPetal::UiLoadoutPetal(uint8_t pos) : Element(60, 60),
 
         UiLoadoutSlot *parent_slot = Ui::UiLoadout::petal_backgrounds[curr_pos];
         if (Ui::UiLoadout::petal_selected == this && Game::alive()) {
-            layer = 1;
+            style.layer = 1;
             uint8_t potential_swap = find_viable_target();
             if (potential_swap != ((uint8_t)-1) && potential_swap != static_to_dynamic(static_pos)) {
                 if (BIT_AT(Input::mouse_buttons_released, Input::LeftMouse)) {
@@ -160,7 +160,7 @@ UiLoadoutPetal::UiLoadoutPetal(uint8_t pos) : Element(60, 60),
             LERP(height, parent_slot->height + 20, lerp_amt);
             ctx.rotate(sin(Game::timestamp / 150) * 0.1);
         } else {
-            layer = 0;
+            style.layer = 0;
             if (!showed) lerp_amt = 1;
             LERP(x, (parent_slot->screen_x - Ui::window_width / 2) / Ui::scale, lerp_amt);
             LERP(y, (parent_slot->screen_y - Ui::window_height / 2) / Ui::scale, lerp_amt);

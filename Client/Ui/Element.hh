@@ -26,6 +26,7 @@ namespace Ui {
         std::function<bool(void)> should_render = nullptr;
         int8_t h_justify = Center;
         int8_t v_justify = Middle;
+        uint8_t layer = 0;
         uint8_t no_animation = 0;
         uint8_t no_polling = 0;
     };
@@ -54,16 +55,14 @@ namespace Ui {
         LerpFloat animation;
         LerpFloat tooltip_animation;
         Ui::Style style;
-        
-        uint8_t focus_state = 0;
-        uint8_t layer = 0;
+
+        uint8_t focus_state : 4 = 0;
         uint8_t visible : 1 = 1;
         uint8_t showed : 1 = 0;
         uint8_t rendering_tooltip : 1 = 0;
 
         Element(float = 0, float = 0, Style = {});
         void add_child(Element *);
-        Element *set_z_to_one();
         void render(Renderer &);
         virtual void on_render(Renderer &);
         virtual void on_render_tooltip(Renderer &);

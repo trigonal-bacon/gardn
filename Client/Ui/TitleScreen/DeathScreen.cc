@@ -15,7 +15,7 @@ Element *Ui::make_death_main_screen() {
         new Ui::StaticText(28, "Continue"),
         [](Element *elt, uint8_t e){ if (e == Ui::kClick && Game::on_game_screen) Game::on_game_screen = 0; },
         [](){ return !Game::in_game(); },
-        {.fill = 0xff94e873, .line_width = 5, .round_radius = 3 }
+        {.fill = 0xff1dd129, .line_width = 5, .round_radius = 3 }
     );
     Ui::Element *container = new Ui::VContainer({
         new Ui::StaticText(25, "You were killed by"),

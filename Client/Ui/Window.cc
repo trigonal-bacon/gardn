@@ -25,7 +25,7 @@ void Window::on_render(Renderer &ctx) {
     for (uint32_t layer = 0; layer < 2; ++layer) {
         for (uint32_t i = 0; i < children.size(); ++i) {
             Element *elt = children[i];
-            if (elt->layer != layer) continue;
+            if (elt->style.layer != layer) continue;
             RenderContext context(&ctx);
             ctx.translate(elt->style.h_justify * width / 2, elt->style.v_justify * height / 2);
             ctx.scale(Ui::scale);

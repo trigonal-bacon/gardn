@@ -57,16 +57,16 @@ Element *Ui::make_loadout_backgrounds() {
         {
             (new Ui::HContainer(
                 Ui::make_range(0, MAX_SLOT_COUNT, [](uint32_t i){ return (Element *) (new Ui::UiLoadoutSlot(i)); })
-            , 5, 20
-            ))->set_z_to_one(),
+            , 5, 20, { .layer = 1 }
+            )),
             (new Ui::HContainer(
                 Ui::make_range(MAX_SLOT_COUNT, 2*MAX_SLOT_COUNT+1, 
                     [](uint32_t i){ 
                         if (i == 2*MAX_SLOT_COUNT) return (Element *) new Ui::UiDeleteSlot();
                         else return (Element *) (new Ui::UiLoadoutSlot(i)); 
                     })
-                , 10, 15
-            ))->set_z_to_one(),
+                , 10, 15, { .layer = 1 }
+            )),
             new Ui::InputFreeze(),
             new Ui::Element(0,34,{ .should_render = [](){ return Input::keyboard_movement || Game::is_mobile; }})
         }, 0, 0, { .should_render = [](){ return Game::alive(); } }

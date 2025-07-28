@@ -35,7 +35,7 @@ Element *Ui::make_title_input_box() {
                         new Ui::StaticText(25, "Spawn"), 
                         [](Element *elt, uint8_t e){ if (e == Ui::kClick) Game::spawn_in(); },
                         [](){ return Game::in_game() != 0; },
-                        { .fill = 0xff94e873, .line_width = 5, .round_radius = 3 }
+                        { .fill = 0xff1dd129, .line_width = 5, .round_radius = 3 }
                     )
                 }, 0, 10,{}),
                 new Ui::StaticText(14, "(or press ENTER to spawn)")

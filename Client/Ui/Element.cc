@@ -30,16 +30,10 @@ void Element::add_child(Element *elt) {
     //parent/child?
 }
 
-Element *Element::set_z_to_one() {
-    layer = 1;
-    return this;
-}
-
 void Element::render(Renderer &ctx) {
     animation.set(style.should_render());
     if (style.no_animation) animation.step(1);
     else animation.step(Ui::lerp_amount);
-    //else animation.step(1);
     float curr_animation = (float) animation;
     visible = curr_animation > 0.01;
     #ifdef DEBUG
@@ -65,6 +59,8 @@ void Element::render(Renderer &ctx) {
         if (std::abs(screen_x - ctx.context.clip_x) <= (eff_w + ctx.context.clip_w) / 2 &&
             std::abs(screen_y - ctx.context.clip_y) <= (eff_h + ctx.context.clip_h) / 2)
             on_render(ctx);
+        else
+            on_render_skip(ctx);
         showed = 1;
     } else 
         on_render_skip(ctx);
