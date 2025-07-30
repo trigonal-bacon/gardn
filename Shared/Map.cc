@@ -14,8 +14,8 @@ using namespace Map;
 SERVER_ONLY(uint32_t ZONE_MOB_COUNTS[MAP.size()] = {0};)
 
 uint32_t Map::difficulty_at_level(uint32_t level) {
-    if (level / 15 > MAX_DIFFICULTY) return MAX_DIFFICULTY;
-    return level / 15;
+    if (level / LEVELS_PER_EXTRA_SLOT > MAX_DIFFICULTY) return MAX_DIFFICULTY;
+    return level / LEVELS_PER_EXTRA_SLOT;
 }
 
 uint32_t Map::get_zone_from_pos(float x, float y) {

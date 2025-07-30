@@ -429,7 +429,7 @@ uint32_t score_to_pass_level(uint32_t level) {
 
 uint32_t score_to_level(uint32_t score) {
     uint32_t level = 1;
-    while (1) {
+    while (level < MAX_LEVEL) {
         uint32_t level_score = score_to_pass_level(level);
         if (score < level_score) break;
         score -= level_score;
@@ -446,11 +446,13 @@ uint32_t level_to_score(uint32_t level) {
 }
 
 uint32_t loadout_slots_at_level(uint32_t level) {
-    uint32_t ret = 5 + level / 15;
+    if (level > MAX_LEVEL) level = MAX_LEVEL;
+    uint32_t ret = 5 + level / LEVELS_PER_EXTRA_SLOT;
     if (ret > MAX_SLOT_COUNT) return MAX_SLOT_COUNT;
     return ret;
 }
 
 float hp_at_level(uint32_t level) {
+    if (level > MAX_LEVEL) level = MAX_LEVEL;
     return BASE_HEALTH + level;
 }

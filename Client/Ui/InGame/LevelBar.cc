@@ -55,8 +55,8 @@ Element *Ui::make_level_bar() {
             if (Game::alive()) {
                 Entity &player = Game::simulation.get_ent(Game::player_id);
                 uint32_t level = score_to_level(player.score);
-                if (level < 45)
-                    format_string = std::format("Extra petal slot at level {}", div_round_up(level + 1, 15) * 15);
+                if (loadout_slots_at_level(level) < MAX_SLOT_COUNT)
+                    format_string = std::format("Extra petal slot at level {}", div_round_up(level + 1, LEVELS_PER_EXTRA_SLOT) * LEVELS_PER_EXTRA_SLOT);
             }
             return format_string;
         }),
