@@ -65,7 +65,7 @@ SINGLE(Petal, petal_id, PetalID::T)
 
 #define FIELDS_Health \
 SINGLE(Health, health_ratio, Float) \
-SINGLE(Health, damaged, uint8_t)
+SINGLE(Health, damaged, StickyFlag)
 
 #define FIELDS_Mob \
 SINGLE(Mob, mob_id, MobID::T)

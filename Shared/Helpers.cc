@@ -80,6 +80,21 @@ void LerpFloat::step_angle(float amt) {
     lerp_value = angle_lerp(lerp_value, value, amt);
 }
 
+PersistentFlag::PersistentFlag() : value(0), preserved(0) {}
+
+void PersistentFlag::operator=(uint8_t v) {
+    value = v;
+    preserved |= v;
+}
+
+PersistentFlag::operator uint8_t() const {
+    return preserved;
+}
+
+void PersistentFlag::clear() {
+    preserved = value;
+}
+
 SeedGenerator::SeedGenerator(uint32_t s) : seed(s) {}
 
 float SeedGenerator::next() {

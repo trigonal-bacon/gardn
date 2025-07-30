@@ -73,6 +73,7 @@ namespace PetalID {
         kRice,
         kBone,
         kYucca,
+        kCorn,
         kNumPetals
     };
 };

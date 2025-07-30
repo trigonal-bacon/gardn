@@ -213,6 +213,10 @@ extern struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
         .constant_heal = 1.5,
         .icon_angle = -1
     }},
+    {"Corn", "Takes a long time to spawn. but has a lot of health",
+        500.0, 2.5, 16.0, 10.0, 1, RarityID::kEpic, {
+        .icon_angle = 0.5
+    }},
 };
 
 extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
@@ -226,7 +230,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
         "Worker Ant",
         "It's temperamental, probably from working all the time.",
         RarityID::kCommon, {25.0}, 10.0, {14.0}, 3, {
-        PetalID::kLight, PetalID::kLeaf, PetalID::kTwin, PetalID::kTriplet, PetalID::kBone
+        PetalID::kLight, PetalID::kLeaf, PetalID::kTwin, PetalID::kCorn, PetalID::kBone
     }, {}},
     {
         "Soldier Ant",

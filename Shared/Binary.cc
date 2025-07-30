@@ -86,7 +86,6 @@ void Writer::write<std::string>(std::string const &str) {
     for (uint32_t i = 0; i < len; ++i) write<uint8_t>(str[i]);
 }
 
-
 Reader::Reader(uint8_t const *buf) : at(buf), packet(buf) {}
 
 template<>
@@ -193,7 +192,6 @@ void Reader::read<int64_t>(int64_t &ref) {
     ref = read<int64_t>();
 }
 
-
 template<>
 void Reader::read<float>(float &ref) {
     ref = read<float>();
@@ -220,6 +218,11 @@ void Reader::read<std::string>(std::string &ref) {
     ref.clear();
     ref.reserve(len);
     for (uint32_t i = 0; i < len; ++i) ref.push_back(read<uint8_t>());
+}
+
+template<>
+void Reader::read<PersistentFlag>(PersistentFlag &ref) {
+    ref = read<uint8_t>();
 }
 
 Validator::Validator(uint8_t const *start, uint8_t const *end) : at(start), end(end) {}
