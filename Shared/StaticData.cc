@@ -9,7 +9,7 @@ extern const uint32_t TPS = 20;
 
 extern const float PETAL_DISABLE_DELAY = 45.0f; //seconds
 extern const float PLAYER_ACCELERATION = 5.0f;
-extern const float DEFAULT_FRICTION = 0.333f;
+extern const float DEFAULT_FRICTION = 1.0f/3.0f;
 
 extern const float SUMMON_RETREAT_RADIUS = 600.0f;
 
@@ -213,7 +213,7 @@ extern struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
         .constant_heal = 1.5,
         .icon_angle = -1
     }},
-    {"Corn", "Takes a long time to spawn. but has a lot of health",
+    {"Corn", "Takes a long time to spawn, but has a lot of health",
         500.0, 2.5, 16.0, 10.0, 1, RarityID::kEpic, {
         .icon_angle = 0.5
     }},

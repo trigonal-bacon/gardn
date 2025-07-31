@@ -160,7 +160,6 @@ static void tick_hornet_aggro(Simulation *sim, Entity &ent) {
             //missile.health = missile.max_health = 20;
             //missile.despawn_tick = 1;
             entity_set_despawn_tick(missile, 3 * TPS);
-            missile.set_radius(20);
             missile.set_angle(ent.angle);
             missile.acceleration.unit_normal(ent.angle).set_magnitude(40 * PLAYER_ACCELERATION);
             Vector kb;

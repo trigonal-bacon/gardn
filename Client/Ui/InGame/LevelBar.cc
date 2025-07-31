@@ -17,7 +17,7 @@ LevelBar::LevelBar() : Element(300,40) {
             float xp = player.score;
             level = score_to_level(xp);
             xp -= level_to_score(level);
-            xp /= score_to_pass_level(level);
+            xp = fclamp(xp / score_to_pass_level(level), 0, 1);
             progress.set(xp);
         }
         progress.step(Ui::lerp_amount);
