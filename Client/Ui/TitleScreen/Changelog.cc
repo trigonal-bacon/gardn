@@ -34,7 +34,8 @@ static Element *make_changelog_contents() {
     Element *elt = new Ui::VContainer({
         make_date("July 31st 2025"),
         make_entries({
-            "Added 1 new petal"
+            "Added 1 new petal",
+            "Changed initial spawn delay from 2.5s to 1s"
         }),
         make_date("June 15th 2025"),
         make_entries({

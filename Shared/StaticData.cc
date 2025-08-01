@@ -15,7 +15,7 @@ extern const float SUMMON_RETREAT_RADIUS = 600.0f;
 
 extern const float BASE_FOV = 0.9f;
 extern const float BASE_HEALTH = 100.0f;
-extern const float BASE_BODY_DAMAGE = 15.0f;
+extern const float BASE_BODY_DAMAGE = 25.0f;
 
 extern struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
     {"None", "How can you see this?",
@@ -155,7 +155,7 @@ extern struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
         .secondary_reload = 0.5,
         .defend_only = 1,
     }},
-    {"Antennae", "Lets your flower see foes rom farther away",
+    {"Antennae", "Lets your flower see foes from farther away",
         0.0, 0.0, 12.5, 0.0, 0, RarityID::kLegendary, {}},
     {"Cactus", "Not very strong, but somehow increases your maximum health",
         15.0, 5.0, 10.0, 1.0, 3, RarityID::kLegendary, {
