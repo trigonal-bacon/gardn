@@ -11,6 +11,8 @@
 
 static double g_last_time = 0;
 float const MAX_TRANSITION_CIRCLE = 2500;
+static uint8_t const SLOT_KEYBINDS[MAX_SLOT_COUNT] = 
+    {'1','2','3','4','5','6','7','8'};
 
 static int _c = setup_canvas();
 static int _i = setup_inputs();
@@ -216,7 +218,7 @@ void Game::tick(double time) {
             Ui::backward_secondary_select();
         else if (Ui::UiLoadout::selected_with_keys == MAX_SLOT_COUNT) {
             for (uint8_t i = 0; i < Game::loadout_count; ++i) {
-                if (Input::keys_pressed_this_tick.contains('1' + i)) {
+                if (Input::keys_pressed_this_tick.contains(SLOT_KEYBINDS[i])) {
                     Ui::forward_secondary_select();
                     break;
                 }
@@ -230,7 +232,7 @@ void Game::tick(double time) {
                 Ui::forward_secondary_select();
             } else {
                 for (uint8_t i = 0; i < Game::loadout_count; ++i) {
-                    if (Input::keys_pressed_this_tick.contains('1' + i)) {
+                    if (Input::keys_pressed_this_tick.contains(SLOT_KEYBINDS[i])) {
                         Ui::ui_swap_petals(i, Ui::UiLoadout::selected_with_keys + Game::loadout_count);
                         if (Game::cached_loadout[Game::loadout_count + Ui::UiLoadout::selected_with_keys] == PetalID::kNone)
                             Ui::forward_secondary_select();
@@ -247,8 +249,6 @@ void Game::tick(double time) {
     LERP(slot_indicator_opacity, Ui::UiLoadout::selected_with_keys != MAX_SLOT_COUNT, Ui::lerp_amount);
 
     other_ui_window.render(renderer);
-    //window.on_render_tooltip(renderer);
-    //window.tick_render_skip(renderer);
 
     //no rendering past this point
 
