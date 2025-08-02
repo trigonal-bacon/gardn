@@ -4,7 +4,6 @@
 
 #include <cstdint>
 
-inline uint32_t const ENTITY_CAP = 8192;
 inline uint32_t const ARENA_WIDTH = 40000;
 inline uint32_t const ARENA_HEIGHT = 4000;
 

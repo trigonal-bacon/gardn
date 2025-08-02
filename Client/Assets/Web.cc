@@ -1,7 +1,5 @@
 #include <Client/Assets/Assets.hh>
 
-#include <Shared/Helpers.hh>
-
 #include <cmath>
 
 void draw_web(Renderer &ctx) {

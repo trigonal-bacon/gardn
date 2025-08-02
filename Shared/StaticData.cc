@@ -4,20 +4,19 @@
 
 #include <cmath>
 
-extern const uint32_t MAX_LEVEL = 99;
-extern const uint32_t TPS = 20;
+uint32_t const MAX_LEVEL = 99;
+uint32_t const TPS = 20;
 
-extern const float PETAL_DISABLE_DELAY = 45.0f; //seconds
-extern const float PLAYER_ACCELERATION = 5.0f;
-extern const float DEFAULT_FRICTION = 1.0f/3.0f;
+float const PETAL_DISABLE_DELAY = 45.0f; //seconds
+float const PLAYER_ACCELERATION = 5.0f;
+float const DEFAULT_FRICTION = 1.0f/3.0f;
+float const SUMMON_RETREAT_RADIUS = 600;
 
-extern const float SUMMON_RETREAT_RADIUS = 600.0f;
+float const BASE_FOV = 0.9f;
+float const BASE_HEALTH = 100.0f;
+float const BASE_BODY_DAMAGE = 25.0f;
 
-extern const float BASE_FOV = 0.9f;
-extern const float BASE_HEALTH = 100.0f;
-extern const float BASE_BODY_DAMAGE = 25.0f;
-
-extern struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
+struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
     {"None", "How can you see this?",
         0.0, 0.0, 0.0, 1.0, 0, RarityID::kCommon, {}},
     {"Basic", "A nice petal, not too strong but not too weak",
@@ -219,7 +218,7 @@ extern struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
     }},
 };
 
-extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
+struct MobData const MOB_DATA[MobID::kNumMobs] = {
     {
         "Baby Ant",
         "Weak and defenseless, but big dreams.",
@@ -279,7 +278,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
         "These aren't quite as nice as the little bees.",
         RarityID::kUnusual, {40.0}, 40.0, {40.0}, 12, {
         PetalID::kDandelion, PetalID::kMissile, PetalID::kWing, PetalID::kBubble, PetalID::kAntennae
-    }, { .aggro_radius = 750 }},
+    }, { .aggro_radius = 600 }},
     {
         "Cactus",
         "This one's prickly, don't touch it either.",
@@ -345,7 +344,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
         "You must have done something really bad if she's chasing you.",
         RarityID::kRare, {350.0}, 10.0, {25.0}, 15, {
         PetalID::kTwin, PetalID::kIris, PetalID::kWing, PetalID::kAntEgg, PetalID::kTringer
-    }, { . aggro_radius = 750 }},
+    }, { .aggro_radius = 750 }},
     {
         "Ladybug",
         "This one is shiny... I wonder what it could mean...",
@@ -364,22 +363,6 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
         RarityID::kEpic, {250.0}, 25.0, {40.0}, 1, {
         PetalID::kCutter
     }, {}},
-};
-
-extern uint32_t const RARITY_COLORS[RarityID::kNumRarities] = { 
-    0xff7eef6d, 0xffffe65d, 0xff4d52e3, 
-    0xff861fde, 0xffde1f1f, 0xff1fdbde,
-    0xffde1f65
- }; // 0xffff2b75, 0xfff70fb6};
-
-char const *RARITY_NAMES[RarityID::kNumRarities] = {
-    "Common",
-    "Unusual",
-    "Rare",
-    "Epic",
-    "Legendary",
-    "Mythic",
-    "Unique"
 };
 
 std::array<StaticArray<float, MAX_DROPS_PER_MOB>, MobID::kNumMobs> const _get_auto_petal_drops() {

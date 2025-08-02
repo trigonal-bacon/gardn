@@ -6,9 +6,9 @@
 
 #include <Client/Assets/Assets.hh>
 #include <Client/Game.hh>
+#include <Client/StaticData.hh>
 
 #include <Shared/Helpers.hh>
-#include <Shared/StaticData.hh>
 
 #include <algorithm>
 #include <cstring>

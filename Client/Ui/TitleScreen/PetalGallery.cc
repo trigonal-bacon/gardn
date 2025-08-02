@@ -5,6 +5,7 @@
 #include <Client/Ui/StaticText.hh>
 
 #include <Client/Game.hh>
+#include <Client/StaticData.hh>
 #include <Client/Assets/Assets.hh>
 
 #include <algorithm>

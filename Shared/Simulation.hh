@@ -11,6 +11,8 @@
 #include <functional>
 #include <string>
 
+inline uint32_t const ENTITY_CAP = 8192;
+
 class Simulation {
     uint8_t entity_tracker[ENTITY_CAP] = {0};
     EntityID::hash_type hash_tracker[ENTITY_CAP] = {0};

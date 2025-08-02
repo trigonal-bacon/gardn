@@ -1,6 +1,6 @@
 #include <Shared/EntityDef.hh>
 
-#include <Shared/StaticData.hh>
+#include <Shared/StaticDefinitions.hh>
 
 EntityID::EntityID() : id(0), hash(0) {}
 

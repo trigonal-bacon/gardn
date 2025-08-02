@@ -4,9 +4,9 @@
 #include <Client/Input.hh>
 #include <Client/Socket.hh>
 #include <Client/Ui/Ui.hh>
+#include <Client/StaticData.hh>
 
 #include <Shared/Simulation.hh>
-#include <Shared/StaticData.hh>
 
 #include <array>
 

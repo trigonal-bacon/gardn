@@ -1,9 +1,9 @@
 #include <Client/Assets/Assets.hh>
 
-#include <Shared/Helpers.hh>
-#include <Shared/StaticData.hh>
+#include <Client/StaticData.hh>
 
-#include <iostream>
+#include <Shared/Helpers.hh>
+
 #include <cmath>
 
 void draw_static_petal_single(PetalID::T id, Renderer &ctx) {
@@ -900,7 +900,6 @@ void draw_static_petal_single(PetalID::T id, Renderer &ctx) {
             ctx.stroke();
             break;
         default:
-            std::cout << (int) id << '\n';
             assert(id < PetalID::kNumPetals);
             assert(!"didn't cover petal render");
             break;

@@ -45,23 +45,23 @@ Vector &Vector::operator*=(float v) {
     return *this;
 }
 
-Vector Vector::operator+(Vector const &v) {
+Vector Vector::operator+(Vector const &v) const {
     return Vector{ x + v.x, y + v.y };
 }
 
-Vector Vector::operator-(Vector const &v) {
+Vector Vector::operator-(Vector const &v) const {
     return Vector{ x - v.x, y - v.y };
 }
 
-Vector Vector::operator*(float v) {
+Vector Vector::operator*(float v) const {
     return Vector{ x * v, y * v };
 }
 
-float Vector::magnitude() {
+float Vector::magnitude() const {
     return sqrtf(x * x + y * y);
 }
 
-float Vector::angle() {
+float Vector::angle() const {
     if (x == 0 && y == 0) return 0;
     return atan2f(y, x);
 }

@@ -5,7 +5,6 @@
 #include <Client/Input.hh>
 
 #include <cmath>
-#include <iostream>
 
 using namespace Ui;
 

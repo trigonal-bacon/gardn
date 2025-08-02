@@ -25,7 +25,7 @@ void UiLoadoutSlot::on_render(Renderer &ctx) {
     if (position < Game::loadout_count) {
         ctx.set_global_alpha(Game::slot_indicator_opacity);
         ctx.translate(0, -height / 2 - 15);
-        char str[4] = {'[', static_cast<char>('1' + position), ']', '\0'};
+        char str[4] = {'[', SLOT_KEYBINDS[position], ']', '\0'};
         ctx.draw_text(&str[0], { .size = 16 });
     } else if (position == 2 * MAX_SLOT_COUNT) {
         ctx.set_global_alpha(Game::slot_indicator_opacity);

@@ -8,8 +8,9 @@
 
 #include <cmath>
 
-#define FOCUS_LOSE_CLAUSE \
+static void _focus_lose_clause(Entity &ent, Vector const &v) {
     if (v.magnitude() > 1.5 * MOB_DATA[ent.mob_id].attributes.aggro_radius) ent.target = NULL_ENTITY;
+}
 
 static void default_tick_idle(Simulation *sim, Entity &ent) {
     if (ent.ai_tick >= 1 * TPS) {
@@ -95,7 +96,7 @@ static void tick_default_aggro(Simulation *sim, Entity &ent, float speed) {
     if (sim->ent_alive(ent.target)) {
         Entity &target = sim->get_ent(ent.target);
         Vector v(target.x - ent.x, target.y - ent.y);
-        FOCUS_LOSE_CLAUSE
+        _focus_lose_clause(ent, v);
         v.set_magnitude(PLAYER_ACCELERATION * speed);
         ent.acceleration = v;
         ent.set_angle(v.angle());
@@ -144,7 +145,7 @@ static void tick_hornet_aggro(Simulation *sim, Entity &ent) {
     if (sim->ent_alive(ent.target)) {
         Entity &target = sim->get_ent(ent.target);
         Vector v(target.x - ent.x, target.y - ent.y);
-        FOCUS_LOSE_CLAUSE
+        _focus_lose_clause(ent, v);
         float dist = v.magnitude();
         if (dist > 300) {
             v.set_magnitude(PLAYER_ACCELERATION * 0.975);
@@ -237,7 +238,7 @@ static void tick_centipede_aggro(Simulation *sim, Entity &ent) {
     if (sim->ent_alive(ent.target)) {
         Entity &target = sim->get_ent(ent.target);
         Vector v(target.x - ent.x, target.y - ent.y);
-        FOCUS_LOSE_CLAUSE
+        _focus_lose_clause(ent, v);
         v.set_magnitude(PLAYER_ACCELERATION * 0.95);
         ent.acceleration = v;
         ent.set_angle(v.angle());
@@ -318,7 +319,7 @@ static void tick_digger(Simulation *sim, Entity &ent) {
     if (sim->ent_alive(ent.target)) {
         Entity &target = sim->get_ent(ent.target);
         Vector v(target.x - ent.x, target.y - ent.y);
-        FOCUS_LOSE_CLAUSE
+        _focus_lose_clause(ent, v);
         v.set_magnitude(PLAYER_ACCELERATION * 0.95);
         if (ent.health / ent.max_health > 0.1) {
             BIT_SET(ent.input, InputFlags::kAttacking);

@@ -3,7 +3,7 @@
 #include <Client/Ui/Choose.hh>
 #include <Client/Ui/Element.hh>
 
-#include <Shared/StaticData.hh>
+#include <Client/StaticData.hh>
 
 namespace Ui {
     class UiLoadoutSlot : public Element {

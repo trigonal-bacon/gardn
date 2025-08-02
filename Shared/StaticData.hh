@@ -5,24 +5,20 @@
 #include <array>
 #include <cstdint>
 
-extern const uint32_t MAX_LEVEL;
-extern const uint32_t TPS;
+extern uint32_t const MAX_LEVEL;
+extern uint32_t const TPS;
 
-extern const float PETAL_DISABLE_DELAY;
-extern const float PLAYER_ACCELERATION;
-extern const float DEFAULT_FRICTION;
+extern float const PETAL_DISABLE_DELAY;
+extern float const PLAYER_ACCELERATION;
+extern float const DEFAULT_FRICTION;
+extern float const SUMMON_RETREAT_RADIUS;
 
-extern const float SUMMON_RETREAT_RADIUS;
-
-extern const float BASE_FOV;
-extern const float BASE_HEALTH;
-extern const float BASE_BODY_DAMAGE;
+extern float const BASE_FOV;
+extern float const BASE_HEALTH;
+extern float const BASE_BODY_DAMAGE;
 
 extern struct PetalData const PETAL_DATA[PetalID::kNumPetals];
 extern struct MobData const MOB_DATA[MobID::kNumMobs];
-
-extern uint32_t const RARITY_COLORS[RarityID::kNumRarities];
-extern char const *RARITY_NAMES[RarityID::kNumRarities];
 
 std::array const MAP = std::to_array<struct ZoneDefinition>({
     {

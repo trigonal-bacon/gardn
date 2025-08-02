@@ -3,8 +3,7 @@
 #include <Client/Ui/Container.hh>
 #include <Client/Ui/StaticText.hh>
 
-#include <iostream>
-#include <string>
+#include <Client/StaticData.hh>
 
 using namespace Ui;
 
