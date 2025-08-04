@@ -9,14 +9,11 @@
 
 void Simulation::tick() {
     pre_tick();
-}
-
-void Simulation::tick_lerp(double dt) {
     double const amt = Ui::lerp_amount;
     for_each_entity([=](Simulation *sim, Entity &ent) {
         if (ent.has_component(kPhysics)) {
-            float prevx = ent.x;
-            float prevy = ent.y;
+            float prev_x = ent.x;
+            float prev_y = ent.y;
             ent.x.step(amt);
             ent.y.step(amt);
             if (ent.has_component(kDrop) || ent.has_component(kWeb)) {
@@ -24,7 +21,7 @@ void Simulation::tick_lerp(double dt) {
                     LERP(ent.animation, 1, amt * 0.75)
                 else ent.animation = 1;
             } else {
-                Vector vel(ent.x - prevx, ent.y - prevy);
+                Vector vel(ent.x - prev_x, ent.y - prev_y);
                 ent.animation += (1 + 0.75 * vel.magnitude()) * 0.075;
             }
             ent.radius.step(amt);
@@ -46,6 +43,7 @@ void Simulation::tick_lerp(double dt) {
                 LERP(ent.damage_flash, 0, amt)
             if (ent.damaged)
                 ent.last_damaged_time = Game::timestamp;
+            ent.damaged.clear();
             if ((float) ent.health_ratio > 0.999)
                 LERP(ent.healthbar_opacity, 0, amt)
             else

@@ -14,22 +14,23 @@ extern "C" {
     void on_message(uint8_t type, uint32_t len) {
         if (type == 0) {
             Writer w(INCOMING_PACKET);
-            w.write<uint8_t>(kServerbound::kVerify);
+            w.write<uint8_t>(Serverbound::kVerify);
             w.write<uint64_t>(VERSION_HASH);
-            Game::socket.ready = 1;
+            Game::simulation_ready = 0;
             Game::on_game_screen = 0;
-            Game::socket.send(&INCOMING_PACKET[0], w.at - w.packet);
+            Game::simulation.reset();
+            Game::camera_id = NULL_ENTITY;
+            Game::socket.ready = 1; //force send;
+            Game::socket.send(w.packet, w.at - w.packet);
             Game::socket.ready = 0;
         } 
-        else if (type == 2) { 
+        else if (type == 2) {
             Game::on_game_screen = 0;
-            Game::socket.ready = Game::simulation_ready = 0;
-            Game::camera_id = NULL_ENTITY;
-            Game::simulation.reset();
+            Game::socket.ready = 0;
         }
         else if (type == 1) {
             Game::socket.ready = 1;
-            Game::on_message(static_cast<uint8_t *>(INCOMING_PACKET), len);
+            Game::on_message(INCOMING_PACKET, len);
         }
     }
 }

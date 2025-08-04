@@ -35,7 +35,7 @@ Element *Ui::make_title_input_box() {
                         new Ui::StaticText(25, "Spawn"), 
                         [](Element *elt, uint8_t e){ if (e == Ui::kClick) Game::spawn_in(); },
                         [](){ return Game::in_game() != 0; },
-                        { .fill = 0xff94e873, .line_width = 5, .round_radius = 3 }
+                        { .fill = 0xff1dd129, .line_width = 5, .round_radius = 3 }
                     )
                 }, 0, 10,{}),
                 new Ui::StaticText(14, "(or press ENTER to spawn)")
@@ -54,22 +54,22 @@ Element *Ui::make_title_info_box() {
     Element *elt = new Ui::Choose(
         new Ui::Choose(
             new Ui::VContainer({
-                new Ui::StaticText(30, "How to play"),
+                new Ui::StaticText(35, "How to play"),
                 new Ui::Element(0,5),
                 new Ui::StaticText(16, "Use mouse to move"),
                 new Ui::StaticText(16, "Right click to attack"),
                 new Ui::StaticText(16, "Left click to defend")
             }, 0, 5, { .no_animation = 1 }),
             new Ui::VContainer({
-                new Ui::StaticText(30, "How to play"),
+                new Ui::StaticText(35, "How to play"),
                 new Ui::Element(0,5),
                 new Ui::StaticText(16, "Use WASD or arrow keys to move"),
                 new Ui::StaticText(16, "SPACE to attack"),
                 new Ui::StaticText(16, "SHIFT to defend")
             }, 0, 5, { .no_animation = 1 }),
             [](){
-                return !Input::keyboard_movement;
-            }, {}
+                return Input::keyboard_movement;
+            }, { .no_polling = 1 }
         ),
         new Ui::VContainer({
             new Ui::HContainer({
@@ -95,10 +95,8 @@ Element *Ui::make_title_info_box() {
             return Game::respawn_level > 1 ? 1 : 0;
         }
     );
-    elt->style.animate = [](Element *elt, Renderer &ctx) {
-        elt->x = 0;
-        elt->y = 200;
-    };
+    elt->x = 0;
+    elt->y = 270;
     return elt;
 }
 

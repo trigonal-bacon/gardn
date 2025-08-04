@@ -6,6 +6,8 @@
 class Renderer;
 
 class RenderContext {
+protected:
+    friend class Renderer;
     Renderer *renderer;
 public:
     float transform_matrix[6];
@@ -15,6 +17,7 @@ public:
     float clip_y;
     float clip_w;
     float clip_h;
+    RenderContext();
     RenderContext(Renderer *);
     void reset();
     ~RenderContext();

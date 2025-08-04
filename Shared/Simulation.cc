@@ -3,9 +3,15 @@
 
 #ifdef DEBUG
 #include <iostream>
+
+std::ostream &operator<<(std::ostream &out, EntityID const &id) { 
+    return out << '<' << (uint32_t) id.hash << ',' << (uint32_t) id.id << '>';
+}
 #endif
 
-Simulation::Simulation() SERVER_ONLY(: spatial_hash(this)) {}
+Simulation::Simulation() SERVER_ONLY(: spatial_hash(this)) {
+    reset();
+}
 
 void Simulation::reset() {
     active_entities.clear();
@@ -21,7 +27,7 @@ Entity &Simulation::alloc_ent() {
         if (entity_tracker[i]) continue;
         entity_tracker[i] = 1;
         entities[i].init();
-        // DEBUG_ONLY(std::cout << "ent_create <" << hash_tracker[i] << ',' << i << ">\n";)
+        DEBUG_ONLY(std::cout << "ent_create " << EntityID(i, hash_tracker[i]) << "\n";)
         entities[i].id = EntityID(i, hash_tracker[i]);
         return entities[i];
     }
@@ -35,7 +41,7 @@ Entity &Simulation::get_ent(EntityID const &id) {
 
 void Simulation::force_alloc_ent(EntityID const &id) {
     assert(id.id < ENTITY_CAP);
-    DEBUG_ONLY(std::cout << "ent_create <" << id.hash << ',' << id.id << ">\n";)
+    DEBUG_ONLY(std::cout << "ent_create " << id << "\n";)
     assert(!entity_tracker[id.id]);
     entities[id.id].init();
     entity_tracker[id.id] = 1;
@@ -54,13 +60,12 @@ uint8_t Simulation::ent_alive(EntityID const &id) const {
 }
 
 void Simulation::request_delete(EntityID const &id) {
-    //DEBUG_ONLY(std::cout << "ent_request_delete <" << id.hash << ',' << id.id << ">\n";)
     DEBUG_ONLY(assert(ent_exists(id)));
     entities[id.id].pending_delete = 1;
 }
 
 void Simulation::_delete_ent(EntityID const &id) {
-    // DEBUG_ONLY(std::cout << "ent_delete <" << id.hash << ',' << id.id << ">\n";)
+    DEBUG_ONLY(std::cout << "ent_delete " << id << "\n";)
     DEBUG_ONLY(assert(ent_exists(id)));
     entity_tracker[id.id] = 0;
     hash_tracker[id.id]++;
@@ -68,7 +73,7 @@ void Simulation::_delete_ent(EntityID const &id) {
 
 void Simulation::pre_tick() {
     active_entities.clear();
-    for (EntityID::id_type i = 0; i < ENTITY_CAP; ++i) {
+    for (EntityID::id_type i = 1; i < ENTITY_CAP; ++i) {
         if (!entity_tracker[i]) continue;
         active_entities.push(entities[i].id.id);
     }

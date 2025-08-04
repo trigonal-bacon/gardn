@@ -8,7 +8,7 @@
 
 #include <cmath>
 
-struct _PlayerBuffs {
+struct PlayerBuffs {
     float extra_rot;
     float extra_range;
     float heal;
@@ -21,9 +21,8 @@ struct _PlayerBuffs {
     uint8_t has_cutter : 1;
 };
 
-//maybe reconsider
-static struct _PlayerBuffs petal_passive_buffs(Simulation *sim, Entity &player) {
-    struct _PlayerBuffs buffs = {0};
+static struct PlayerBuffs petal_passive_buffs(Simulation *sim, Entity &player) {
+    struct PlayerBuffs buffs = {0};
     if (player.has_component(kMob)) return buffs;
     int count = 0;
     player.damage_reflection = 0;
@@ -71,7 +70,7 @@ static struct _PlayerBuffs petal_passive_buffs(Simulation *sim, Entity &player) 
 void tick_player_behavior(Simulation *sim, Entity &player) {
     if (player.pending_delete) return;
     DEBUG_ONLY(assert(player.max_health > 0);)
-    struct _PlayerBuffs buffs = petal_passive_buffs(sim, player);
+    PlayerBuffs const buffs = petal_passive_buffs(sim, player);
     float health_ratio = player.health / player.max_health;
     if (!player.has_component(kMob)) {
         player.max_health = hp_at_level(score_to_level(player.score)) + buffs.extra_health;
@@ -125,7 +124,7 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
             if (!sim->ent_alive(petal_slot.ent_id)) {
                 petal_slot.ent_id = NULL_ENTITY;
                 uint32_t reload_time = (petal_data.reload * TPS);
-                if (!slot.already_spawned) reload_time += (TPS * 5 / 2);
+                if (!slot.already_spawned) reload_time += TPS;
                 float this_reload = reload_time == 0 ? 1 : (float) petal_slot.reload / reload_time;
                 if (this_reload < min_reload) min_reload = this_reload;
                 if (petal_slot.reload >= reload_time) {

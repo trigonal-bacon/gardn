@@ -32,13 +32,16 @@ static void calculate_leaderboard(Simulation *sim) {
 void Simulation::tick() {
     pre_tick();
     spatial_hash.refresh(ARENA_WIDTH, ARENA_HEIGHT);
-    if (frand() < 0.01)
-        for (uint32_t i = 0; i < 10; ++i) Map::spawn_random_mob(this);
+    if (frand() < 1.0f / TPS)
+        Map::spawn_random_mob(this);
     for_each_entity([](Simulation *sim, Entity &ent) {
         if (ent.has_component(kPhysics))
             sim->spatial_hash.insert(ent);
+        if (BIT_AT(ent.flags, EntityFlags::kHasCulling))
+            BIT_SET(ent.flags, EntityFlags::kIsCulled);
     });
 
+    for_each<kCamera>(tick_culling_behavior);
     for_each<kFlower>(tick_player_behavior);
     for_each<kMob>(tick_ai_behavior);
     for_each<kPetal>(tick_petal_behavior);

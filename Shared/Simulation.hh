@@ -11,6 +11,8 @@
 #include <functional>
 #include <string>
 
+inline uint32_t const ENTITY_CAP = 8192;
+
 class Simulation {
     uint8_t entity_tracker[ENTITY_CAP] = {0};
     EntityID::hash_type hash_tracker[ENTITY_CAP] = {0};
@@ -37,11 +39,4 @@ public:
 
     template <uint8_t>
     void for_each(std::function<void (Simulation *, Entity &)>);
-#ifdef SERVERSIDE
-    //Entity &alloc_mob(uint8_t);
-    //Entity &alloc_player(Entity &);
-    //Entity &alloc_petal(uint8_t);
-#else
-    void tick_lerp(double);
-#endif
 };

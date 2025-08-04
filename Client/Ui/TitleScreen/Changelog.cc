@@ -32,6 +32,12 @@ static Element *make_entries(std::initializer_list<std::string const> contents) 
 
 static Element *make_changelog_contents() {
     Element *elt = new Ui::VContainer({
+        make_date("July 31st 2025"),
+        make_entries({
+            "Added 1 new petal",
+            "Changed initial spawn delay from 2.5s to 1s"
+        }),
+        make_divider(),
         make_date("June 15th 2025"),
         make_entries({
             "Finished base game",
@@ -61,7 +67,7 @@ static Element *make_changelog_contents() {
             "Added 1 new mob",
         }),
         make_divider(),
-        make_date("March 23 2025"),
+        make_date("March 23rd 2025"),
         make_entries({
             "Game is now playable",
             "Added spawner petals"

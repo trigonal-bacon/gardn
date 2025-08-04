@@ -4,11 +4,11 @@
 
 #include <cstdint>
 
-inline uint32_t const ENTITY_CAP = 8192;
 inline uint32_t const ARENA_WIDTH = 40000;
 inline uint32_t const ARENA_HEIGHT = 4000;
 
 inline uint32_t const MAX_SLOT_COUNT = 8;
+inline uint32_t const LEVELS_PER_EXTRA_SLOT = 15;
 inline uint32_t const LEADERBOARD_SIZE = 10;
 inline uint32_t const MAX_PETALS_IN_CLUMP = 4;
 inline uint32_t const MAX_DIFFICULTY = 3;
@@ -73,6 +73,7 @@ namespace PetalID {
         kRice,
         kBone,
         kYucca,
+        kCorn,
         kNumPetals
     };
 };
@@ -136,7 +137,9 @@ namespace EntityFlags {
         kNoFriendlyCollision,
         kDieOnParentDeath,
         kSpawnedFromZone,
-        kNoDrops
+        kNoDrops,
+        kHasCulling,
+        kIsCulled
     };
 };
 

@@ -92,7 +92,7 @@ void main_loop() {
         {
             Module.canvas.width = innerWidth * devicePixelRatio;
             Module.canvas.height = innerHeight * devicePixelRatio;
-            _loop(time, Module.canvas.width, Module.canvas.height);
+            _loop(time, innerWidth * devicePixelRatio, innerHeight * devicePixelRatio);
             requestAnimationFrame(loop);
         };
         requestAnimationFrame(loop);
@@ -106,9 +106,8 @@ int setup_canvas() {
         Module.canvas.height = innerHeight * devicePixelRatio;
         Module.canvas.oncontextmenu = function() { return false; };
         window.onbeforeunload = function(e) { return "Are you sure?"; };
-        Module.ctxs = [Module.canvas.getContext('2d')];
-        Module.availableCtxs =
-            new Array(256).fill(0).map(function(_, i) { return i; });
+        Module.ctxs = [];
+        Module.availableCtxs = [];
         Module.TextDecoder = new TextDecoder('utf8');
     });
     return 0;

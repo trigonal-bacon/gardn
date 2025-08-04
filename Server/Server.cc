@@ -5,7 +5,7 @@
 #include <Shared/Binary.hh>
 #include <Shared/Map.hh>
 
-#include <cmath>
+#include <chrono>
 #include <iostream>
 
 namespace Server {
@@ -28,11 +28,9 @@ static void _update_client(Simulation *sim, Client *client) {
     if (sim->ent_exists(camera.player)) 
         in_view.insert(camera.player);
     Writer writer(Server::OUTGOING_PACKET);
-    writer.write<uint8_t>(kClientbound::kClientUpdate);
+    writer.write<uint8_t>(Clientbound::kClientUpdate);
     writer.write<EntityID>(client->camera);
     sim->spatial_hash.query(camera.camera_x, camera.camera_y, 960 / camera.fov + 50, 540 / camera.fov + 50, [&](Simulation *, Entity &ent){
-        if (fabsf(camera.camera_x - ent.x) >= 960 / camera.fov + ent.radius || fabsf(camera.camera_y - ent.y) >= 540 / camera.fov + ent.radius)
-            return;
         in_view.insert(ent.id);
     });
 
@@ -62,21 +60,18 @@ static void _update_client(Simulation *sim, Client *client) {
 }
 
 void Server::tick() {
-    struct timespec ts;
-    struct timespec te;
-    timespec_get(&ts, TIME_UTC);
+    using namespace std::chrono_literals;
+    auto start = std::chrono::steady_clock::now();
     Server::simulation.tick();
     for (Client *client : Server::clients) _update_client(client->simulation, client);
     Server::simulation.post_tick();
-    timespec_get(&te, TIME_UTC);
-
-    double ms_start = ts.tv_sec * 1.0e3 + ts.tv_nsec / 1.0e9;
-    double ms_end = te.tv_sec * 1.0e3 + te.tv_nsec / 1.0e9;
-    if (ms_end - ms_start > 10) std::cout << "tick took " << (ms_end - ms_start) << "ms\n";
+    auto end = std::chrono::steady_clock::now();
+    std::chrono::duration<double, std::milli> tick_time = end - start;
+    if (tick_time > 2ms) std::cout << "tick took " << tick_time << '\n';
 }
 
 void Server::init() {
-    for (uint32_t i = 0; i < 20000; ++i)
+    for (uint32_t i = 0; i < ENTITY_CAP / 2; ++i)
         Map::spawn_random_mob(&Server::simulation);
     Server::run();
 }

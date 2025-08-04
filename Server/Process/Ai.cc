@@ -8,8 +8,9 @@
 
 #include <cmath>
 
-#define FOCUS_LOSE_CLAUSE \
+static void _focus_lose_clause(Entity &ent, Vector const &v) {
     if (v.magnitude() > 1.5 * MOB_DATA[ent.mob_id].attributes.aggro_radius) ent.target = NULL_ENTITY;
+}
 
 static void default_tick_idle(Simulation *sim, Entity &ent) {
     if (ent.ai_tick >= 1 * TPS) {
@@ -95,7 +96,7 @@ static void tick_default_aggro(Simulation *sim, Entity &ent, float speed) {
     if (sim->ent_alive(ent.target)) {
         Entity &target = sim->get_ent(ent.target);
         Vector v(target.x - ent.x, target.y - ent.y);
-        FOCUS_LOSE_CLAUSE
+        _focus_lose_clause(ent, v);
         v.set_magnitude(PLAYER_ACCELERATION * speed);
         ent.acceleration = v;
         ent.set_angle(v.angle());
@@ -124,7 +125,7 @@ static void tick_bee_passive(Simulation *sim, Entity &ent) {
             v *= 1.5;
             if (ent.lifetime % (TPS * 3 / 2) < TPS / 2)
                 v *= 0.5;
-            ent.acceleration.set(v.x, v.y);
+            ent.acceleration = v;
             break;
         }
         case AIState::kIdleMoving: {
@@ -144,7 +145,7 @@ static void tick_hornet_aggro(Simulation *sim, Entity &ent) {
     if (sim->ent_alive(ent.target)) {
         Entity &target = sim->get_ent(ent.target);
         Vector v(target.x - ent.x, target.y - ent.y);
-        FOCUS_LOSE_CLAUSE
+        _focus_lose_clause(ent, v);
         float dist = v.magnitude();
         if (dist > 300) {
             v.set_magnitude(PLAYER_ACCELERATION * 0.975);
@@ -160,12 +161,11 @@ static void tick_hornet_aggro(Simulation *sim, Entity &ent) {
             //missile.health = missile.max_health = 20;
             //missile.despawn_tick = 1;
             entity_set_despawn_tick(missile, 3 * TPS);
-            missile.set_radius(20);
             missile.set_angle(ent.angle);
             missile.acceleration.unit_normal(ent.angle).set_magnitude(40 * PLAYER_ACCELERATION);
             Vector kb;
             kb.unit_normal(ent.angle - M_PI).set_magnitude(2.5 * PLAYER_ACCELERATION);
-            ent.acceleration += kb;            
+            ent.velocity += kb;            
         }
         return;
     } else {
@@ -182,13 +182,13 @@ static void tick_hornet_aggro(Simulation *sim, Entity &ent) {
 static void tick_centipede_passive(Simulation *sim, Entity &ent) {
     switch(ent.ai_state) {
         case AIState::kIdle: {
-            ent.set_angle(ent.angle + 0.02);
-            if (frand() < 0.005) ent.ai_state = AIState::kIdleMoving;
+            ent.set_angle(ent.angle + 0.25 / TPS);
+            if (frand() < 1 / (5.0 * TPS)) ent.ai_state = AIState::kIdleMoving;
             break;
         }
         case AIState::kIdleMoving: {
-            ent.set_angle(ent.angle - 0.02);
-            if (frand() < 0.005) ent.ai_state = AIState::kIdle;
+            ent.set_angle(ent.angle - 0.25 / TPS);
+            if (frand() < 1 / (5.0 * TPS)) ent.ai_state = AIState::kIdle;
             break;
         }
         case AIState::kReturning: {
@@ -215,14 +215,14 @@ static void tick_centipede_neutral(Simulation *sim, Entity &ent, float speed) {
         //ent.target = find_nearest_enemy(sim, ent, ent.detection_radius + ent.radius);
         switch(ent.ai_state) {
             case AIState::kIdle: {
-                ent.set_angle(ent.angle + 0.005);
-                if (frand() < 0.0025) ent.ai_state = AIState::kIdleMoving;
+                ent.set_angle(ent.angle + 0.25 / TPS);
+                if (frand() < 1 / (5.0 * TPS)) ent.ai_state = AIState::kIdleMoving;
                 ent.acceleration.unit_normal(ent.angle).set_magnitude(PLAYER_ACCELERATION * speed);
                 break;
             }
             case AIState::kIdleMoving: {
-                ent.set_angle(ent.angle - 0.005);
-                if (frand() < 0.0025) ent.ai_state = AIState::kIdle;
+                ent.set_angle(ent.angle - 0.25 / TPS);
+                if (frand() < 1 / (5.0 * TPS)) ent.ai_state = AIState::kIdle;
                 ent.acceleration.unit_normal(ent.angle).set_magnitude(PLAYER_ACCELERATION * speed);
                 break;
             }
@@ -238,7 +238,7 @@ static void tick_centipede_aggro(Simulation *sim, Entity &ent) {
     if (sim->ent_alive(ent.target)) {
         Entity &target = sim->get_ent(ent.target);
         Vector v(target.x - ent.x, target.y - ent.y);
-        FOCUS_LOSE_CLAUSE
+        _focus_lose_clause(ent, v);
         v.set_magnitude(PLAYER_ACCELERATION * 0.95);
         ent.acceleration = v;
         ent.set_angle(v.angle());
@@ -251,14 +251,14 @@ static void tick_centipede_aggro(Simulation *sim, Entity &ent) {
         ent.target = find_nearest_enemy(sim, ent, ent.detection_radius + ent.radius);
         switch(ent.ai_state) {
             case AIState::kIdle: {
-                ent.set_angle(ent.angle + 0.005);
-                if (frand() < 0.0025) ent.ai_state = AIState::kIdleMoving;
+                ent.set_angle(ent.angle + 0.25 / TPS);
+                if (frand() < 1 / (5.0 * TPS)) ent.ai_state = AIState::kIdleMoving;
                 ent.acceleration.unit_normal(ent.angle).set_magnitude(PLAYER_ACCELERATION / 10);
                 break;
             }
             case AIState::kIdleMoving: {
-                ent.set_angle(ent.angle - 0.005);
-                if (frand() < 0.0025) ent.ai_state = AIState::kIdle;
+                ent.set_angle(ent.angle - 0.25 / TPS);
+                if (frand() < 1 / (5.0 * TPS)) ent.ai_state = AIState::kIdle;
                 ent.acceleration.unit_normal(ent.angle).set_magnitude(PLAYER_ACCELERATION / 10);
                 break;
             }
@@ -319,11 +319,16 @@ static void tick_digger(Simulation *sim, Entity &ent) {
     if (sim->ent_alive(ent.target)) {
         Entity &target = sim->get_ent(ent.target);
         Vector v(target.x - ent.x, target.y - ent.y);
-        FOCUS_LOSE_CLAUSE
+        _focus_lose_clause(ent, v);
         v.set_magnitude(PLAYER_ACCELERATION * 0.95);
+        if (ent.health / ent.max_health > 0.1) {
+            BIT_SET(ent.input, InputFlags::kAttacking);
+        } else {
+            BIT_SET(ent.input, InputFlags::kDefending);
+            v *= -1;
+        }
         ent.acceleration = v;
         ent.set_eye_angle(v.angle());
-        BIT_SET(ent.input, InputFlags::kAttacking);
         return;
     } else {
         if (!(ent.target == NULL_ENTITY)) {
@@ -366,9 +371,13 @@ void tick_ai_behavior(Simulation *sim, Entity &ent) {
             if (delta.magnitude() > SUMMON_RETREAT_RADIUS) {
                 ent.target = NULL_ENTITY;
                 ent.ai_state = AIState::kReturning;
-                ent.ai_tick = 3; //prevent subtraction errors
             }
         }
+    }
+    if (BIT_AT(ent.flags, EntityFlags::kIsCulled)) {
+        ent.target = NULL_ENTITY;
+        ent.ai_tick = 0;
+        return;
     }
     switch(ent.mob_id) {
         case MobID::kBabyAnt:            

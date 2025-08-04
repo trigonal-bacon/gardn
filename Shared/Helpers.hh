@@ -105,6 +105,19 @@ public:
 SERVER_ONLY(typedef float Float;)
 CLIENT_ONLY(typedef LerpFloat Float;)
 
+class PersistentFlag {
+    uint8_t value : 1;
+    uint8_t preserved : 1;
+public:
+    PersistentFlag();
+    void operator=(uint8_t);
+    operator uint8_t() const;
+    void clear();
+};
+
+SERVER_ONLY(typedef uint8_t StickyFlag;)
+CLIENT_ONLY(typedef PersistentFlag StickyFlag;)
+
 class SeedGenerator {
     uint32_t seed;
 public:
@@ -117,10 +130,10 @@ class RangeValue {
 public:
     float lower;
     float upper;
-    RangeValue(double, double);
-    RangeValue(double);
+    RangeValue(float, float);
+    RangeValue(float);
     float get_single(float) const;
-    std::string to_string() const;
+    std::string const to_string() const;
 };
 
 //DOES NOT PERFORM BOUND CHECKS

@@ -29,6 +29,7 @@ set(SRCS
     Setup.cc
     Simulation.cc
     Socket.cc
+    StaticData.cc
     Storage.cc
     Ui/InGame/InputFreeze.cc
     Ui/InGame/Leaderboard.cc

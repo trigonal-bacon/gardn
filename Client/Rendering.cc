@@ -173,10 +173,3 @@ void Game::render_title_screen() {
     renderer.set_fill(0xff1ea761);
     renderer.fill_rect(0,0,renderer.width,renderer.height);
 }
-
-void Game::process_ui() {
-    renderer.reset_transform();
-    window.refactor();
-    window.render(renderer);
-    window.poll_events();
-}

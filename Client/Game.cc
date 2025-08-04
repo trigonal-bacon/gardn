@@ -10,7 +10,7 @@
 #include <cmath>
 
 static double g_last_time = 0;
-const float MAX_TRANSITION_CIRCLE = 2500;
+float const MAX_TRANSITION_CIRCLE = 2500;
 
 static int _c = setup_canvas();
 static int _i = setup_inputs();
@@ -20,7 +20,9 @@ namespace Game {
     Renderer renderer;
     Renderer game_ui_renderer;
     Socket socket;
-    Ui::Window window;
+    Ui::Window title_ui_window;
+    Ui::Window game_ui_window;
+    Ui::Window other_ui_window;
     EntityID camera_id;
     EntityID player_id;
     std::string nickname;
@@ -49,74 +51,72 @@ using namespace Game;
 
 void Game::init() {
     Storage::retrieve();
-    window.add_child(
-        new Ui::StaticText(60, "the gardn project", {
-            .fill = 0xffffffff,
-            .animate = [](Ui::Element *elt, Renderer &ctx) {
-                elt->x = 0;
-                elt->y = -270;
-            }
-        })
+    title_ui_window.add_child(
+        [](){ 
+            Ui::Element *elt = new Ui::StaticText(60, "the gardn project");
+            elt->x = 0;
+            elt->y = -270;
+            return elt;
+        }()
     );
-    window.add_child(
+    title_ui_window.add_child(
         Ui::make_title_input_box()
     );
-    window.add_child(
+    title_ui_window.add_child(
         Ui::make_title_info_box()
     );
-    window.add_child(
+    title_ui_window.add_child(
         Ui::make_panel_buttons()
     );
-    window.add_child(
+    title_ui_window.add_child(
         Ui::make_settings_panel()
     );
-    window.add_child(
+    title_ui_window.add_child(
         Ui::make_petal_gallery()
     );
-    window.add_child(
+    title_ui_window.add_child(
         Ui::make_mob_gallery()
     );
-    window.add_child(
+    title_ui_window.add_child(
         Ui::make_changelog()
     );
-    window.set_title_divider();
-    window.add_child(
+    game_ui_window.add_child(
         Ui::make_death_main_screen()
     );
-    window.add_child(
+    game_ui_window.add_child(
         Ui::make_level_bar()
     );
-    window.add_child(
+    game_ui_window.add_child(
         Ui::make_minimap()
     );
-    window.add_child(
+    game_ui_window.add_child(
         Ui::make_loadout_backgrounds()
     );
-    for (uint8_t i = 0; i < MAX_SLOT_COUNT * 2; ++i) window.add_child(new Ui::UiLoadoutPetal(i));
-    window.add_child(
+    for (uint8_t i = 0; i < MAX_SLOT_COUNT * 2; ++i) game_ui_window.add_child(new Ui::UiLoadoutPetal(i));
+    game_ui_window.add_child(
         Ui::make_leaderboard()
     );
-    window.add_child(
+    game_ui_window.add_child(
         Ui::make_overlevel_indicator()
     );
-    window.add_child(
+    game_ui_window.add_child(
         Ui::make_stat_screen()
     );
-    window.add_child(
+    game_ui_window.add_child(
         new Ui::HContainer({
             new Ui::StaticText(20, "the gardn project")
         }, 20, 0, { .h_justify = Ui::Style::Left, .v_justify = Ui::Style::Top })
     );
     Ui::make_petal_tooltips();
-    window.set_game_divider();
-    window.add_child(
+    other_ui_window.add_child(
         Ui::make_debug_stats()
     );
+    other_ui_window.style.no_polling = 1;
     socket.connect(WS_URL);
 }
 
 uint8_t Game::alive() {
-    return simulation_ready
+    return socket.ready && simulation_ready
     && simulation.ent_exists(camera_id)
     && simulation.ent_alive(simulation.get_ent(camera_id).player);
 }
@@ -136,12 +136,11 @@ uint8_t Game::should_render_game_ui() {
 
 void Game::tick(double time) {
     double tick_start = Debug::get_timestamp();
-    simulation.tick();
-    simulation.tick_lerp(time - g_last_time);
     Game::timestamp = time;
     Ui::dt = time - g_last_time;
     Ui::lerp_amount = 1 - pow(1 - 0.2, Ui::dt * 60 / 1000);
     g_last_time = time;
+    simulation.tick();
     
     renderer.reset();
     game_ui_renderer.set_dimensions(renderer.width, renderer.height);
@@ -149,9 +148,10 @@ void Game::tick(double time) {
 
     Ui::window_width = renderer.width;
     Ui::window_height = renderer.height;
+    Ui::focused = nullptr;
     double a = Ui::window_width / 1920;
     double b = Ui::window_height / 1080;
-    Ui::scale = a > b ? a : b;
+    Ui::scale = std::max({a, b});
     if (alive()) {
         on_game_screen = 1;
         player_id = simulation.get_ent(camera_id).player;
@@ -173,15 +173,19 @@ void Game::tick(double time) {
     else 
         transition_circle = fclamp(transition_circle / powf(1.05, Ui::dt * 60 / 1000) - Ui::dt / 5, 0, MAX_TRANSITION_CIRCLE);
 
-    window.refactor();
-    if (Input::is_valid())
-        window.poll_events();
+    if (Input::is_valid()) {
+        if (Game::should_render_title_ui())
+            title_ui_window.poll_events();
+        if (Game::should_render_game_ui())
+            game_ui_window.poll_events();
+        other_ui_window.poll_events();
+    }
     else Ui::focused = nullptr;
 
     if (should_render_title_ui()) {
         render_title_screen();
         Particle::tick_title(renderer, Ui::dt);
-        window.render_title_screen(renderer);
+        title_ui_window.render(renderer);
     }
 
     if (should_render_game_ui()) {
@@ -201,7 +205,7 @@ void Game::tick(double time) {
             renderer.set_fill(0x20000000);
             renderer.fill_rect(0,0,renderer.width,renderer.height);
         }
-        window.render_game_screen(game_ui_renderer);
+        game_ui_window.render(game_ui_renderer);
         renderer.set_global_alpha(0.85);
         renderer.translate(renderer.width/2,renderer.height/2);
         renderer.draw_image(game_ui_renderer);
@@ -212,7 +216,7 @@ void Game::tick(double time) {
             Ui::backward_secondary_select();
         else if (Ui::UiLoadout::selected_with_keys == MAX_SLOT_COUNT) {
             for (uint8_t i = 0; i < Game::loadout_count; ++i) {
-                if (Input::keys_pressed_this_tick.contains('1' + i)) {
+                if (Input::keys_pressed_this_tick.contains(SLOT_KEYBINDS[i])) {
                     Ui::forward_secondary_select();
                     break;
                 }
@@ -226,7 +230,7 @@ void Game::tick(double time) {
                 Ui::forward_secondary_select();
             } else {
                 for (uint8_t i = 0; i < Game::loadout_count; ++i) {
-                    if (Input::keys_pressed_this_tick.contains('1' + i)) {
+                    if (Input::keys_pressed_this_tick.contains(SLOT_KEYBINDS[i])) {
                         Ui::ui_swap_petals(i, Ui::UiLoadout::selected_with_keys + Game::loadout_count);
                         if (Game::cached_loadout[Game::loadout_count + Ui::UiLoadout::selected_with_keys] == PetalID::kNone)
                             Ui::forward_secondary_select();
@@ -242,9 +246,7 @@ void Game::tick(double time) {
         Ui::UiLoadout::selected_with_keys = MAX_SLOT_COUNT;
     LERP(slot_indicator_opacity, Ui::UiLoadout::selected_with_keys != MAX_SLOT_COUNT, Ui::lerp_amount);
 
-    window.render_others(renderer);
-    window.on_render_tooltip(renderer);
-    window.tick_render_skip(renderer);
+    other_ui_window.render(renderer);
 
     //no rendering past this point
 

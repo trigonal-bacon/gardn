@@ -30,23 +30,20 @@ void Element::add_child(Element *elt) {
     //parent/child?
 }
 
-Element *Element::set_z_to_one() {
-    layer = 1;
-    return this;
-}
-
 void Element::render(Renderer &ctx) {
     animation.set(style.should_render());
     if (style.no_animation) animation.step(1);
     else animation.step(Ui::lerp_amount);
-    //else animation.step(1);
     float curr_animation = (float) animation;
     visible = curr_animation > 0.01;
     #ifdef DEBUG
     if (visible) {
         RenderContext context(&ctx);
-        ctx.set_stroke(0x40000000);
-        ctx.set_line_width(1);
+        if (focus_state != kFocusLost)
+            ctx.set_stroke(0x80ff0000);
+        else
+            ctx.set_stroke(0x80000000);
+        ctx.set_line_width(1.5);
         ctx.begin_path();
         ctx.round_rect(-width / 2, -height / 2, width, height, 6);
         ctx.stroke();
@@ -59,13 +56,12 @@ void Element::render(Renderer &ctx) {
         screen_y = ctx.context.transform_matrix[5];
         float eff_w = ctx.context.transform_matrix[0] * width;
         float eff_h = ctx.context.transform_matrix[4] * height;
-        if (std::abs(screen_x - ctx.context.clip_x) <= eff_w + ctx.context.clip_w / 2 &&
-            std::abs(screen_y - ctx.context.clip_y) <= eff_h + ctx.context.clip_h / 2)
+        if (std::abs(screen_x - ctx.context.clip_x) <= (eff_w + ctx.context.clip_w) / 2 &&
+            std::abs(screen_y - ctx.context.clip_y) <= (eff_h + ctx.context.clip_h) / 2)
             on_render(ctx);
         else
             on_render_skip(ctx);
         showed = 1;
-        //possibly poll events?
     } else 
         on_render_skip(ctx);
     //event emitter
@@ -142,6 +138,10 @@ void Element::refactor() {
 }
 
 void Element::poll_events() {
+    if (style.no_polling) {
+        DEBUG_ONLY(assert(Ui::focused != this);)
+        return;
+    }
     if (std::abs(Input::mouse_x - screen_x) < width * Ui::scale / 2
     && std::abs(Input::mouse_y - screen_y) < height * Ui::scale / 2)
         Ui::focused = this;

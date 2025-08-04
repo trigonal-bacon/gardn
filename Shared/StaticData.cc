@@ -4,20 +4,19 @@
 
 #include <cmath>
 
-extern const uint32_t MAX_LEVEL = 99;
-extern const uint32_t TPS = 20;
+uint32_t const MAX_LEVEL = 99;
+uint32_t const TPS = 20;
 
-extern const float PETAL_DISABLE_DELAY = 45.0f; //seconds
-extern const float PLAYER_ACCELERATION = 5.0f;
-extern const float DEFAULT_FRICTION = 0.333f;
+float const PETAL_DISABLE_DELAY = 45.0f; //seconds
+float const PLAYER_ACCELERATION = 5.0f;
+float const DEFAULT_FRICTION = 1.0f/3.0f;
+float const SUMMON_RETREAT_RADIUS = 600;
 
-extern const float SUMMON_RETREAT_RADIUS = 600.0f;
+float const BASE_FOV = 0.9f;
+float const BASE_HEALTH = 100.0f;
+float const BASE_BODY_DAMAGE = 25.0f;
 
-extern const float BASE_FOV = 0.9f;
-extern const float BASE_HEALTH = 100.0f;
-extern const float BASE_BODY_DAMAGE = 15.0f;
-
-extern struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
+struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
     {"None", "How can you see this?",
         0.0, 0.0, 0.0, 1.0, 0, RarityID::kCommon, {}},
     {"Basic", "A nice petal, not too strong but not too weak",
@@ -155,7 +154,7 @@ extern struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
         .secondary_reload = 0.5,
         .defend_only = 1,
     }},
-    {"Antennae", "Lets your flower see foes rom farther away",
+    {"Antennae", "Lets your flower see foes from farther away",
         0.0, 0.0, 12.5, 0.0, 0, RarityID::kLegendary, {}},
     {"Cactus", "Not very strong, but somehow increases your maximum health",
         15.0, 5.0, 10.0, 1.0, 3, RarityID::kLegendary, {
@@ -201,7 +200,7 @@ extern struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
         .icon_angle = M_PI
     }},
     {"Rice", "Spawns instantly, but not very strong",
-        1.0, 4.0, 13.0, 0, 1, RarityID::kEpic, {
+        1.0, 4.0, 13.0, 0.1, 1, RarityID::kEpic, {
         .icon_angle = 0.7
     }},
     {"Bone", "Sturdy",
@@ -213,9 +212,13 @@ extern struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
         .constant_heal = 1.5,
         .icon_angle = -1
     }},
+    {"Corn", "Takes a long time to spawn, but has a lot of health",
+        500.0, 2.5, 16.0, 10.0, 1, RarityID::kEpic, {
+        .icon_angle = 0.5
+    }},
 };
 
-extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
+struct MobData const MOB_DATA[MobID::kNumMobs] = {
     {
         "Baby Ant",
         "Weak and defenseless, but big dreams.",
@@ -226,7 +229,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
         "Worker Ant",
         "It's temperamental, probably from working all the time.",
         RarityID::kCommon, {25.0}, 10.0, {14.0}, 3, {
-        PetalID::kLight, PetalID::kLeaf, PetalID::kTwin, PetalID::kTriplet, PetalID::kBone
+        PetalID::kLight, PetalID::kLeaf, PetalID::kTwin, PetalID::kCorn, PetalID::kBone
     }, {}},
     {
         "Soldier Ant",
@@ -275,7 +278,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
         "These aren't quite as nice as the little bees.",
         RarityID::kUnusual, {40.0}, 40.0, {40.0}, 12, {
         PetalID::kDandelion, PetalID::kMissile, PetalID::kWing, PetalID::kBubble, PetalID::kAntennae
-    }, { .aggro_radius = 750 }},
+    }, { .aggro_radius = 600 }},
     {
         "Cactus",
         "This one's prickly, don't touch it either.",
@@ -341,7 +344,7 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
         "You must have done something really bad if she's chasing you.",
         RarityID::kRare, {350.0}, 10.0, {25.0}, 15, {
         PetalID::kTwin, PetalID::kIris, PetalID::kWing, PetalID::kAntEgg, PetalID::kTringer
-    }, { . aggro_radius = 750 }},
+    }, { .aggro_radius = 750 }},
     {
         "Ladybug",
         "This one is shiny... I wonder what it could mean...",
@@ -362,25 +365,9 @@ extern struct MobData const MOB_DATA[MobID::kNumMobs] = {
     }, {}},
 };
 
-extern uint32_t const RARITY_COLORS[RarityID::kNumRarities] = { 
-    0xff7eef6d, 0xffffe65d, 0xff4d52e3, 
-    0xff861fde, 0xffde1f1f, 0xff1fdbde,
-    0xffde1f65
- }; // 0xffff2b75, 0xfff70fb6};
-
-char const *RARITY_NAMES[RarityID::kNumRarities] = {
-    "Common",
-    "Unusual",
-    "Rare",
-    "Epic",
-    "Legendary",
-    "Mythic",
-    "Unique"
-};
-
 std::array<StaticArray<float, MAX_DROPS_PER_MOB>, MobID::kNumMobs> const _get_auto_petal_drops() {
     std::array<StaticArray<float, MAX_DROPS_PER_MOB>, MobID::kNumMobs> ret;
-    double const RARITY_MULT[RarityID::kNumRarities] = {60000,20000,2500,100,10,2.5,1};
+    double const RARITY_MULT[RarityID::kNumRarities] = {50000,15000,2500,100,10,2.5,1};
     double MOB_SPAWN_RATES[MobID::kNumMobs] = {0};
     double PETAL_AGGREGATE_DROPS[PetalID::kNumPetals] = {0};
     for (struct ZoneDefinition const &zone : MAP) {
@@ -402,7 +389,7 @@ std::array<StaticArray<float, MAX_DROPS_PER_MOB>, MobID::kNumMobs> const _get_au
     for (MobID::T id = 0; id < MobID::kNumMobs; ++id)
         for (PetalID::T const drop_id : MOB_DATA[id].drops) PETAL_AGGREGATE_DROPS[drop_id]++;
 
-    double BASE_NUM = MOB_SPAWN_RATES[MobID::kSquare];
+    double const BASE_NUM = MOB_SPAWN_RATES[MobID::kSquare];
 
     for (MobID::T id = 0; id < MobID::kNumMobs; ++id) {
         for (PetalID::T const drop_id : MOB_DATA[id].drops) {
@@ -425,7 +412,7 @@ uint32_t score_to_pass_level(uint32_t level) {
 
 uint32_t score_to_level(uint32_t score) {
     uint32_t level = 1;
-    while (1) {
+    while (level < MAX_LEVEL) {
         uint32_t level_score = score_to_pass_level(level);
         if (score < level_score) break;
         score -= level_score;
@@ -442,11 +429,13 @@ uint32_t level_to_score(uint32_t level) {
 }
 
 uint32_t loadout_slots_at_level(uint32_t level) {
-    uint32_t ret =  5 + level / 15;
+    if (level > MAX_LEVEL) level = MAX_LEVEL;
+    uint32_t ret = 5 + level / LEVELS_PER_EXTRA_SLOT;
     if (ret > MAX_SLOT_COUNT) return MAX_SLOT_COUNT;
     return ret;
 }
 
 float hp_at_level(uint32_t level) {
+    if (level > MAX_LEVEL) level = MAX_LEVEL;
     return BASE_HEALTH + level;
 }

@@ -5,8 +5,6 @@
 #include <Shared/Simulation.hh>
 #include <Shared/StaticData.hh>
 
-#include <iostream>
-
 void tick_camera_behavior(Simulation *sim, Entity &ent) {
     if (sim->ent_exists(ent.player)) {
         Entity &player = sim->get_ent(ent.player);

@@ -1,9 +1,9 @@
 #include <Client/Assets/Assets.hh>
 
-#include <Shared/Helpers.hh>
-#include <Shared/StaticData.hh>
+#include <Client/StaticData.hh>
 
-#include <iostream>
+#include <Shared/Helpers.hh>
+
 #include <cmath>
 
 void draw_static_petal_single(PetalID::T id, Renderer &ctx) {
@@ -886,8 +886,20 @@ void draw_static_petal_single(PetalID::T id, Renderer &ctx) {
             ctx.qcurve_to(0,-3,-14,0);
             ctx.stroke();
             break;
+        case PetalID::kCorn:
+            ctx.scale(r / 10);
+            ctx.set_fill(0xffffe419);
+            ctx.set_stroke(0xffcfb914);
+            ctx.set_line_width(2);
+            ctx.begin_path();
+            ctx.move_to(-5,8);
+            ctx.qcurve_to(-15,-8,0,-8);
+            ctx.qcurve_to(15,-8,5,8);
+            ctx.qcurve_to(0,2,-5,8);
+            ctx.fill();
+            ctx.stroke();
+            break;
         default:
-            std::cout << (int) id << '\n';
             assert(id < PetalID::kNumPetals);
             assert(!"didn't cover petal render");
             break;

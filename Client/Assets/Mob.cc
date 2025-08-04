@@ -1,7 +1,8 @@
 #include <Client/Assets/Assets.hh>
 
+#include <Client/StaticData.hh>
+
 #include <Shared/Helpers.hh>
-#include <Shared/StaticData.hh>
 
 #include <cmath>
 
@@ -370,7 +371,7 @@ void draw_static_mob(MobID::T mob_id, Renderer &ctx, MobRenderAttributes attr) {
         case MobID::kRock:
         case MobID::kBoulder: {
             SET_BASE_COLOR(0xff777777)
-            SeedGenerator gen(radius * 284 + 476);
+            SeedGenerator gen(std::floor(radius) * 1957264 + 295726);
             ctx.set_fill(base_color);
             ctx.set_stroke(Renderer::HSV(base_color, 0.8));
             ctx.set_line_width(5);

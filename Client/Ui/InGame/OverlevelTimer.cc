@@ -41,7 +41,7 @@ Element *Ui::make_overlevel_indicator() {
         },
         .should_render = [](){
             if (!Game::alive()) return false;
-            Entity &player = Game::simulation.get_ent(Game::player_id);
+            Entity const &player = Game::simulation.get_ent(Game::player_id);
             return MAP[Map::get_zone_from_pos(player.x, player.y)].difficulty < Map::difficulty_at_level(score_to_level(player.score))
             && Game::overlevel_timer > 0;
         }

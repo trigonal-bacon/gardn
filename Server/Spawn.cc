@@ -47,7 +47,9 @@ static Entity &__alloc_mob(Simulation *sim, MobID::T mob_id, float x, float y, E
     if (data.attributes.stationary) mob.mass *= 10000;
     if (mob_id == MobID::kAntHole)
         BIT_SET(mob.flags, EntityFlags::kNoFriendlyCollision);
-    
+    if (team == NULL_ENTITY)
+        BIT_SET(mob.flags, EntityFlags::kHasCulling);
+        
     mob.add_component(kRelations);
     mob.set_team(team);
 
@@ -151,8 +153,9 @@ Entity &alloc_petal(Simulation *sim, PetalID::T petal_id, Entity const &parent) 
     petal.add_component(kPhysics);
     petal.set_x(parent.x);
     petal.set_y(parent.y);
-    petal.set_radius(petal_data.radius * 2);
-    petal.set_angle(frand() * 2 * M_PI);
+    petal.set_radius(petal_data.radius);
+    if (petal_data.attributes.rotation_style == PetalAttributes::kPassiveRot)
+        petal.set_angle(frand() * 2 * M_PI);
     petal.mass = petal_data.attributes.mass;
     petal.friction = DEFAULT_FRICTION * 1.5;
     petal.add_component(kRelations);
