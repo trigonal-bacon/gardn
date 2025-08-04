@@ -212,7 +212,7 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
     if (buffs.has_antennae) player.set_face_flags(player.face_flags | (1 << FaceFlags::kAntennae));
     if (buffs.has_observer) player.set_face_flags(player.face_flags | (1 << FaceFlags::kObserver));
     if (buffs.has_cutter) player.set_face_flags(player.face_flags | (1 << FaceFlags::kCutter));
-    if (buffs.yinyang_count != MAX_SLOT_COUNT) {
+    if (buffs.yinyang_count < 8) {
         switch (buffs.yinyang_count % 3) {
             case 0:
                 player.heading_angle += (2.5 + buffs.extra_rot) / TPS;

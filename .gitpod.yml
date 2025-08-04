@@ -27,6 +27,7 @@ tasks:
       make -C Server/uWebSockets -j$(nproc) && \
       cmake -S Server -B Server/build -DDEBUG=1
     command: |
+      source ../emsdk/emsdk_env.sh && \
       cd Server/build && \
       make -j$(nproc) && ./gardn-server
 

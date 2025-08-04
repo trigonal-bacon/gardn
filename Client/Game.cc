@@ -216,7 +216,7 @@ void Game::tick(double time) {
             Ui::backward_secondary_select();
         else if (Ui::UiLoadout::selected_with_keys == MAX_SLOT_COUNT) {
             for (uint8_t i = 0; i < Game::loadout_count; ++i) {
-                if (Input::keys_pressed_this_tick.contains(SLOT_KEYBINDS[i])) {
+                if (Input::keys_pressed_this_tick.contains(SLOT_KEYCODES[i])) {
                     Ui::forward_secondary_select();
                     break;
                 }
@@ -230,7 +230,7 @@ void Game::tick(double time) {
                 Ui::forward_secondary_select();
             } else {
                 for (uint8_t i = 0; i < Game::loadout_count; ++i) {
-                    if (Input::keys_pressed_this_tick.contains(SLOT_KEYBINDS[i])) {
+                    if (Input::keys_pressed_this_tick.contains(SLOT_KEYCODES[i])) {
                         Ui::ui_swap_petals(i, Ui::UiLoadout::selected_with_keys + Game::loadout_count);
                         if (Game::cached_loadout[Game::loadout_count + Ui::UiLoadout::selected_with_keys] == PetalID::kNone)
                             Ui::forward_secondary_select();

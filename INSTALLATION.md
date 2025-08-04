@@ -50,7 +50,7 @@ The server is served by default at ``localhost:9001``. You may change the port b
 # Hosting 
 The client may be hosted with any http server (eg. ``nginx``, ``http-server``). The wasm server automatically hosts content at ``localhost:9001`` as well.
 
-If hosting somewhere other than ``localhost``, use the  ``WS_URL`` constant in ``Shared/Config.cc`` to specify a websocket url.
+If hosting somewhere other than ``localhost``, the ``SERVER_URL`` flag can be passed into CMake (ex. ``cmake .. -DSERVER_URL="ws://myhost:9001"``) to automatically configure protocol.
 
 # License
 [LICENSE](./LICENSE)

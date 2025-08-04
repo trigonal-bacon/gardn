@@ -32,6 +32,11 @@ static Element *make_entries(std::initializer_list<std::string const> contents) 
 
 static Element *make_changelog_contents() {
     Element *elt = new Ui::VContainer({
+        make_date("August 4th 2025"),
+        make_entries({
+            "Max slot number increased to 12"
+        }),
+        make_divider(),
         make_date("July 31st 2025"),
         make_entries({
             "Added 1 new petal",
