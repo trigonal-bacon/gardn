@@ -17,7 +17,7 @@ static uint8_t INCOMING_BUFFER[MAX_BUFFER_LEN] = {0};
 
 extern "C" {
     void on_connect(int ws_id) {
-        std::cout << "client connection\n";
+        std::printf("client connection with id %d\n", ws_id);
         WebSocket *ws = new WebSocket(ws_id);
     }
 
@@ -50,9 +50,9 @@ WebSocketServer::WebSocketServer() {
             switch (req.url) {
                 case "/":
                     break;
-                case "/gardn-client":
+                case "/gardn-client.js":
                     encodeType = "application/javascript";
-                    file = "gardn-client";
+                    file = "gardn-client.js";
                     break;
                 case "/gardn-client.wasm":
                     encodeType = "application/wasm";
