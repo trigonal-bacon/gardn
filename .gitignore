@@ -3,5 +3,5 @@ wasm_build/
 node_modules/
 .vs/
 .vscode/
-gardn-client
+gardn-client.js
 gardn-client.wasm
