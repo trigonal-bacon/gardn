@@ -20,6 +20,7 @@ set(SOURCES
     Process/Petal.cc
     Process/Segment.cc
     Client.cc
+    Game.cc
     Main.cc
     Native.cc
     PetalTracker.cc
@@ -27,6 +28,7 @@ set(SOURCES
     Simulation.cc
     SpatialHashUniform.cc
     Spawn.cc
+    TeamManager.cc
     Wasm.cc
     ../Shared/Arena.cc
     ../Shared/Binary.cc

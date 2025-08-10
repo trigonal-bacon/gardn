@@ -26,6 +26,7 @@ static void calculate_leaderboard(Simulation *sim) {
     for (uint32_t i = 0; i < num; ++i) {
         sim->arena_info.set_names(i, players[i]->name);
         sim->arena_info.set_scores(i, players[i]->score);
+        sim->arena_info.set_colors(i, players[i]->color);
     }
 }
 

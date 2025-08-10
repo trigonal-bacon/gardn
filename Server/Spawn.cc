@@ -197,7 +197,7 @@ Entity &alloc_web(Simulation *sim, float radius, Entity const &parent) {
 void player_spawn(Simulation *sim, Entity &camera, Entity &player) {
     camera.set_player(player.id);
     player.set_parent(camera.id);
-    player.set_color(ColorID::kYellow);
+    player.set_color(camera.color);
     player.owner = camera.id;
     uint32_t power = Map::difficulty_at_level(camera.respawn_level);
     ZoneDefinition const &zone = MAP[power];

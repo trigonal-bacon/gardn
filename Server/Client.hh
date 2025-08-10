@@ -14,11 +14,11 @@ class Client;
 typedef uWS::WebSocket<false, true, Client> WebSocket;
 #endif
 
-class Simulation;
+class GameInstance;
 
 class Client {
 public:
-    Simulation *simulation;
+    GameInstance *game;
     EntityID camera;
     std::set<EntityID> in_view;
     WebSocket *ws;
