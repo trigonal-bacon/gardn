@@ -12,7 +12,7 @@
 #include <algorithm>
 #include <iostream>
 
-static void __alloc_drops(Simulation *sim, std::vector<PetalID::T> &success_drops, float x, float y) {
+static void _alloc_drops(Simulation *sim, std::vector<PetalID::T> &success_drops, float x, float y) {
     #ifdef DEBUG
     for (PetalID::T id : success_drops)
         assert(id != PetalID::kNone && id < PetalID::kNumPetals);
@@ -41,7 +41,7 @@ static void __alloc_drops(Simulation *sim, std::vector<PetalID::T> &success_drop
     }
 }
 
-static void __add_score(Simulation *sim, EntityID const killer_id, Entity const &target) {
+static void _add_score(Simulation *sim, EntityID const killer_id, Entity const &target) {
     if (!sim->ent_exists(killer_id)) return;
     Entity &killer = sim->get_ent(killer_id);
     if (killer.has_component(kFlower)) {
@@ -62,7 +62,7 @@ void entity_on_death(Simulation *sim, Entity const &ent) {
     uint8_t natural_despawn = BIT_AT(ent.flags, EntityFlags::kIsDespawning) && ent.despawn_tick == 0;
     if (ent.has_component(kScore) && sim->ent_exists(ent.last_damaged_by) && !natural_despawn) {
         EntityID killer_id = sim->get_ent(ent.last_damaged_by).base_entity;
-        __add_score(sim, killer_id, ent);
+        _add_score(sim, killer_id, ent);
     }
     if (ent.has_component(kMob)) {
         //if (!(ent.team == NULL_ENTITY)) return;
@@ -74,7 +74,7 @@ void entity_on_death(Simulation *sim, Entity const &ent) {
             StaticArray<float, MAX_DROPS_PER_MOB> const &drop_chances = get_mob_drop_chances(ent.mob_id);
             for (uint32_t i = 0; i < mob_data.drops.size(); ++i) 
                 if (frand() < drop_chances[i]) success_drops.push_back(mob_data.drops[i]);
-            __alloc_drops(sim, success_drops, ent.x, ent.y);
+            _alloc_drops(sim, success_drops, ent.x, ent.y);
         }
         if (ent.mob_id == MobID::kAntHole && ent.team == NULL_ENTITY && frand() < 0.25) { 
             EntityID team = NULL_ENTITY;
@@ -115,7 +115,7 @@ void entity_on_death(Simulation *sim, Entity const &ent) {
             success_drops.push_back(p_id);
             potential.pop_back();
         }
-        __alloc_drops(sim, success_drops, ent.x, ent.y);
+        _alloc_drops(sim, success_drops, ent.x, ent.y);
         //if the camera is the one that disconnects
         //no need to re-add the petals to the petal tracker
         if (!sim->ent_alive(ent.parent))

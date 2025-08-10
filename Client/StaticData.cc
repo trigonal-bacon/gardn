@@ -6,6 +6,10 @@ uint32_t const RARITY_COLORS[RarityID::kNumRarities] = {
     0xffde1f65
  }; // 0xffff2b75, 0xfff70fb6};
 
+uint32_t const FLOWER_COLORS[ColorID::kNumColors] = {
+    0xffffe763, 0xff999999, 0, 0
+};
+
 char const *RARITY_NAMES[RarityID::kNumRarities] = {
     "Common",
     "Unusual",
