@@ -5,3 +5,13 @@ node_modules/
 .vscode/
 gardn-client
 gardn-client.wasm
+rebuild_and_start.sh
+restart_server.sh
+serve_client.py
+.env
+Server/Stats.cc
+Server/Stats.hh
+.gitignore
+Server/.env.example
+Client/public/gardn-client.js
+Client/public/index.html

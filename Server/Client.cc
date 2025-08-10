@@ -132,6 +132,22 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
             player.set_name(name);
             break;
         }
+        case Serverbound::kSendChat: {
+            std::string msg;
+            VALIDATE(validator.validate_string(MAX_CHAT_LENGTH));
+            reader.read<std::string>(msg);
+            msg = UTF8Parser::trunc_string(msg, MAX_CHAT_LENGTH);
+            for (Client *c : Server::clients) {
+                Writer w(Server::OUTGOING_PACKET);
+                w.write<uint8_t>(Clientbound::kChatMessage);
+                Entity &cam = client->simulation->get_ent(client->camera);
+                EntityID sender_id = client->alive() ? cam.player : cam.id; // Use camera if not alive
+                w.write<EntityID>(sender_id);
+                w.write<std::string>(msg);
+                c->send_packet(w.packet, w.at - w.packet);
+            }
+            break;
+        }
         case Serverbound::kPetalDelete: {
             if (!client->alive()) break;
             Entity &camera = client->simulation->get_ent(client->camera);

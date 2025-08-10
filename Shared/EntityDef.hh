@@ -139,7 +139,9 @@ SINGLE(Name, nametag_visible, uint8_t)
     SINGLE(eye_y, float, =0) \
     SINGLE(mouth, float, =15) \
     SINGLE(animation, float, =0) \
-    SINGLE(damage_flash, float, =0)
+    SINGLE(damage_flash, float, =0) \
+    SINGLE(chat_timer, float, =0) \
+    SINGLE(chat_message, std::string, ={})
 #endif
 
 class EntityID {

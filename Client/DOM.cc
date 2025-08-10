@@ -21,9 +21,34 @@ void DOM::create_text_input(char const *name, uint32_t max_len) {
         elem.style["padding-left"] = "5px";
         elem.maxLength = ($1).toString();
         elem.setAttribute("spellcheck", "false");
+        elem.setAttribute("autocomplete", "off");
         document.body.appendChild(elem);
     },
     name, max_len);
+}
+
+void DOM::set_placeholder(char const *name, char const *placeholder) {
+    EM_ASM({
+        const name = UTF8ToString($0);
+        const elem = document.getElementById(name);
+        elem.placeholder = UTF8ToString($1);
+    }, name, placeholder);
+}
+
+void DOM::focus(char const *name) {
+    EM_ASM({
+        const name = UTF8ToString($0);
+        const elem = document.getElementById(name);
+        elem.focus();
+    }, name);
+}
+
+void DOM::blur(char const *name) {
+    EM_ASM({
+        const name = UTF8ToString($0);
+        const elem = document.getElementById(name);
+        elem.blur();
+    }, name);
 }
 
 void DOM::element_show(char const *name)

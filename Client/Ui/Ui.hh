@@ -2,6 +2,7 @@
 
 #include <Client/Ui/InGame/GameInfo.hh>
 #include <Client/Ui/InGame/Loadout.hh>
+#include <Client/Ui/InGame/Chat.hh>
 #include <Client/Ui/TitleScreen/TitleScreen.hh>
 #include <Client/Ui/Button.hh>
 #include <Client/Ui/Choose.hh>

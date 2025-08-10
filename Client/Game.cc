@@ -4,8 +4,10 @@
 #include <Client/Particle.hh>
 #include <Client/Setup.hh>
 #include <Client/Storage.hh>
+#include <Client/Ui/InGame/Chat.hh>
 
 #include <Shared/Config.hh>
+#include <Shared/Binary.hh>
 
 #include <cmath>
 
@@ -45,6 +47,7 @@ namespace Game {
     uint8_t on_game_screen = 0;
     uint8_t show_debug = 0;
     uint8_t is_mobile = check_mobile();
+    uint8_t chat_open = 0;
 }
 
 using namespace Game;
@@ -101,6 +104,9 @@ void Game::init() {
     );
     game_ui_window.add_child(
         Ui::make_stat_screen()
+    );
+    game_ui_window.add_child(
+        Ui::make_chat_input()
     );
     game_ui_window.add_child(
         new Ui::HContainer({
@@ -254,8 +260,34 @@ void Game::tick(double time) {
 
     if (Input::keys_pressed_this_tick.contains((char) 186)) //';'
         show_debug = !show_debug;
-    if (Input::keys_pressed_this_tick.contains('\x0d') && !Game::alive())
+    if (Input::keys_pressed_this_tick.contains('\x0d') && !Game::alive() && !Game::chat_open)
         Game::spawn_in();
+
+    // chat handling
+    if (Input::keys_pressed_this_tick.contains('\x0d') && Game::chat_open) {
+        std::string chat_text = Ui::get_chat_input_text();
+        while (!chat_text.empty() && (chat_text.back()==' '||chat_text.back()=='\n'||chat_text.back()=='\r'||chat_text.back()=='\t')) chat_text.pop_back();
+        while (!chat_text.empty() && (chat_text.front()==' '||chat_text.front()=='\n'||chat_text.front()=='\r'||chat_text.front()=='\t')) chat_text.erase(chat_text.begin());
+
+        if (!chat_text.empty()) {
+            uint8_t packet[256];
+            Writer w(packet);
+            w.write<uint8_t>(Serverbound::kSendChat);
+            w.write<std::string>(chat_text);
+            Game::socket.send(w.packet, w.at - w.packet);
+        }
+
+        Game::chat_open = 0;
+        Input::freeze_input = 0;
+    } else if (Input::keys_pressed_this_tick.contains('\x0d') && Game::in_game() && !Game::chat_open && !Input::freeze_input) {
+        Game::chat_open = 1;
+        Input::freeze_input = 1;
+    }
+
+    if (Input::keys_pressed_this_tick.contains('\x1b') && Game::chat_open) {
+        Game::chat_open = 0;
+        Input::freeze_input = 0;
+    }
 
     //clearing operations
     simulation.post_tick();

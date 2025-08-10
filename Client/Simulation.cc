@@ -29,6 +29,9 @@ void Simulation::tick() {
             if (ent.pending_delete)
                 LERP(ent.deletion_animation, 1, amt);
         }
+        if (ent.chat_timer > 0) {
+            ent.chat_timer = std::max(0.0f, ent.chat_timer - (float)(Ui::dt/1000.0));
+        }
         if (ent.has_component(kCamera)) {
             ent.camera_x.step(amt);
             ent.camera_y.step(amt);

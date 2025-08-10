@@ -34,6 +34,16 @@ void Game::on_message(uint8_t *ptr, uint32_t len) {
             simulation.arena_info.read(&reader, reader.read<uint8_t>());
             break;
         }
+        case Clientbound::kChatMessage: {
+            EntityID eid = reader.read<EntityID>();
+            std::string msg; reader.read<std::string>(msg);
+            if (simulation.ent_exists(eid)) {
+                Entity &e = simulation.get_ent(eid);
+                e.chat_message = UTF8Parser::trunc_string(msg, MAX_CHAT_LENGTH);
+                e.chat_timer = 4.0f; // 3s visible + 1s fade
+            }
+            break;
+        }
         default:
             break;
     }

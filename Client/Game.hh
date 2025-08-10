@@ -40,7 +40,8 @@ namespace Game {
     extern uint8_t on_game_screen;
     extern uint8_t show_debug;
     extern uint8_t is_mobile;
-    
+    extern uint8_t chat_open;
+
     void init();
     uint8_t alive();
     uint8_t in_game();

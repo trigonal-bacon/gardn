@@ -2,6 +2,7 @@
 
 #include <Client/Ui/Extern.hh>
 #include <Client/DOM.hh>
+#include <emscripten.h>
 
 #include <iostream>
 using namespace Ui;
@@ -14,6 +15,14 @@ TextInput::TextInput(std::string &r, float w, float h, uint32_t m, Style s) : El
     style.fill = 0xffeeeeee;
     style.stroke_hsv = 0;
     DOM::create_text_input(name.c_str(), max);
+    EM_ASM({
+        const id = UTF8ToString($0);
+        const elem = document.getElementById(id);
+        if (elem) {
+            elem.style.color = '#000000';
+            elem.style.caretColor = '#000000';
+        }
+    }, name.c_str());
     DOM::update_text(name.c_str(), r, max);
 }
 

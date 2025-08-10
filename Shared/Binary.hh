@@ -9,7 +9,8 @@
 enum Clientbound {
     kDisconnect,
     kClientUpdate,
-    kOutdated
+    kOutdated,
+    kChatMessage
 };
 
 enum Serverbound {
@@ -17,7 +18,8 @@ enum Serverbound {
     kClientInput,
     kClientSpawn,
     kPetalSwap,
-    kPetalDelete
+    kPetalDelete,
+    kSendChat
 };
 
 class Writer {

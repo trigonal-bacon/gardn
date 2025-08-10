@@ -2,6 +2,7 @@
 #include <Server/Server.hh>
 
 #include <Server/Client.hh>
+#include <Server/Stats.hh>
 #include <Shared/Config.hh>
 
 uWS::App Server::server = uWS::App({
@@ -23,6 +24,7 @@ uWS::App Server::server = uWS::App({
         std::cout << "client connection\n";
         Client *client = ws->getUserData();
         client->ws = ws;
+        Stats::request_post();
     },
     .message = [](WebSocket *ws, std::string_view message, uWS::OpCode opCode) {
         Client::on_message(ws, message, opCode);
@@ -45,9 +47,9 @@ uWS::App Server::server = uWS::App({
     .close = [](WebSocket *ws, int code, std::string_view message) {
         Client::on_disconnect(ws, code, message);
     }
-}).listen(SERVER_PORT, [](auto *listen_socket) {
+}).listen("0.0.0.0", SERVER_PORT, [](auto *listen_socket) {
     if (listen_socket) {
-        std::cout << "Listening on port " << SERVER_PORT << std::endl;
+        std::cout << "Listening on 0.0.0.0:" << SERVER_PORT << std::endl;
     }
 });
 
