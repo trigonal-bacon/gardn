@@ -395,7 +395,7 @@ void tick_ai_behavior(Simulation *sim, Entity &ent) {
             tick_centipede_aggro(sim, ent);
             break;
         case MobID::kDesertCentipede:
-            tick_centipede_neutral(sim, ent, 1.5);
+            tick_centipede_neutral(sim, ent, 1.33);
             break;
         case MobID::kWorkerAnt:
         case MobID::kDarkLadybug:
@@ -408,12 +408,12 @@ void tick_ai_behavior(Simulation *sim, Entity &ent) {
             tick_default_aggro(sim, ent, 0.95);
             break;
         case MobID::kScorpion:
-            tick_default_aggro(sim, ent, 1.25);
+            tick_default_aggro(sim, ent, 1.20);
             break;
         case MobID::kSpider:
             if (ent.lifetime % (TPS) == 0) 
                 alloc_web(sim, 25, ent);
-            tick_default_aggro(sim, ent, 1.25);
+            tick_default_aggro(sim, ent, 1.20);
             break;
         case MobID::kQueenAnt:
             if (ent.lifetime % (2 * TPS) == 0) {

@@ -10,6 +10,9 @@
 
 #include <iostream>
 
+static uint32_t const RARITY_TO_XP[RarityID::kNumRarities] = { 2, 10, 50, 200, 1000, 5000, 0 };
+
+
 Client::Client() : simulation(nullptr) {}
 
 void Client::init() {
@@ -142,8 +145,7 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
             PetalID::T old_id = player.loadout_ids[pos];
             if (old_id != PetalID::kNone && old_id != PetalID::kBasic) {
                 uint8_t rarity = PETAL_DATA[old_id].rarity;
-                uint32_t const rarity_to_xp[RarityID::kNumRarities] = { 2, 10, 50, 200, 1000, 5000, 0 };
-                player.set_score(player.score + rarity_to_xp[rarity]);
+                player.set_score(player.score + RARITY_TO_XP[rarity]);
                 //need to delete if over cap
                 if (player.deleted_petals.size() == MAX_SLOT_COUNT)
                     //removes old trashed old petal
@@ -174,6 +176,7 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
 void Client::on_disconnect(WebSocket *ws, int code, std::string_view message) {
     std::cout << "client disconnection\n";
     Client *client = ws->getUserData();
+    if (client == nullptr) return;
     client->remove();
     Server::clients.erase(client);
     //delete player in systems
