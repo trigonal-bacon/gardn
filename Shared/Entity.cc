@@ -80,17 +80,22 @@ void Entity::write<true>(Writer *writer) {
 
 template<>
 void Entity::write<false>(Writer *writer) {
-    #define SINGLE(component, name, type) if(BIT_AT_ARR(state, k##name)) { writer->write<uint8_t>(k##name); writer->write<type>(name); }
-    #define MULTIPLE(component, name, type, amt) if(BIT_AT_ARR(state, k##name)) { \
-        writer->write<uint8_t>(k##name); \
-        for (uint32_t n = 0; n < amt; ++n) { \
-            if (BIT_AT_ARR(state_per_##name, n)) { \
-                writer->write<uint8_t>(n); \
-                writer->write<type>(name[n]); \
-            } \
-        } \
-        writer->write<uint8_t>(amt); \
+    #define SINGLE(component, name, type) \
+        if(BIT_AT_ARR(state, k##name)) { \
+            writer->write<uint8_t>(k##name); \
+            writer->write<type>(name); \
     }
+    #define MULTIPLE(component, name, type, amt) \
+        if(BIT_AT_ARR(state, k##name)) { \
+            writer->write<uint8_t>(k##name); \
+            for (uint32_t n = 0; n < amt; ++n) { \
+                if (BIT_AT_ARR(state_per_##name, n)) { \
+                    writer->write<uint8_t>(n); \
+                    writer->write<type>(name[n]); \
+                } \
+            } \
+            writer->write<uint8_t>(amt); \
+        }
     #define COMPONENT(name) if (has_component(k##name)) { FIELDS_##name }
     PERCOMPONENT
     #undef SINGLE

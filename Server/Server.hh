@@ -6,7 +6,7 @@
 
 class Client;
 
-size_t const max_buffer_size = 1024 * 1024;
+size_t const MAX_PACKET_LEN = 64 * 1024;
 
 #ifdef WASM_SERVER
 class WebSocketServer {
@@ -19,7 +19,7 @@ typedef uWS::App WebSocketServer;
 #endif
 
 namespace Server {
-    extern uint8_t OUTGOING_PACKET[max_buffer_size];
+    extern uint8_t OUTGOING_PACKET[MAX_PACKET_LEN];
     extern Simulation simulation;
     extern WebSocketServer server;
     extern std::set<Client *> clients;

@@ -79,6 +79,7 @@ endif()
 add_link_options(-sEXPORTED_FUNCTIONS=_main,_malloc,_free,_key_event,_mouse_event,_wheel_event,_loop,_on_message)
 
 add_executable(gardn-client ${SRCS})
+set(CMAKE_EXECUTABLE_SUFFIX ".js")
 
 if (SERVER_URL)
     target_compile_definitions(gardn-client PRIVATE SERVER_URL="${SERVER_URL}")

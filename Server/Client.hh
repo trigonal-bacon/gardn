@@ -2,8 +2,8 @@
 
 #include <Shared/EntityDef.hh>
 
-#include <set>
 #include <cstdint>
+#include <set>
 #include <string>
 
 #ifdef WASM_SERVER
@@ -20,7 +20,7 @@ class Client {
 public:
     Simulation *simulation;
     EntityID camera;
-    std::set<EntityID> last_in_view;
+    std::set<EntityID> in_view;
     WebSocket *ws;
     uint8_t verified = 0;
     uint8_t seen_arena = 0;
@@ -31,7 +31,6 @@ public:
     uint8_t alive();
 
     void send_packet(uint8_t const *, size_t);
-    //void on_message();
     static void on_message(WebSocket *, std::string_view, uint64_t);
     static void on_disconnect(WebSocket *, int, std::string_view);
 };

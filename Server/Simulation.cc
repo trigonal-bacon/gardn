@@ -40,7 +40,6 @@ void Simulation::tick() {
         if (BIT_AT(ent.flags, EntityFlags::kHasCulling))
             BIT_SET(ent.flags, EntityFlags::kIsCulled);
     });
-
     for_each<kCamera>(tick_culling_behavior);
     for_each<kFlower>(tick_player_behavior);
     for_each<kMob>(tick_ai_behavior);
