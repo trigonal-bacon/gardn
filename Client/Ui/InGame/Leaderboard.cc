@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include <iostream>
+
 using namespace Ui;
 
 static float const LEADERBOARD_WIDTH = 180;
