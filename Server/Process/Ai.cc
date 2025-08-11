@@ -307,10 +307,9 @@ static void tick_sandstorm(Simulation *sim, Entity &ent) {
             ent.ai_state = AIState::kIdle;
             break;
     }
-    if (sim->ent_alive(ent.owner)) {
-        Entity &parent = sim->get_ent(ent.owner);
-        ent.acceleration.x = (ent.acceleration.x * 0.75 + parent.acceleration.x * 1.5);
-        ent.acceleration.y = (ent.acceleration.y * 0.75 + parent.acceleration.y * 1.5);
+    if (sim->ent_alive(ent.parent)) {
+        Entity &parent = sim->get_ent(ent.parent);
+        ent.acceleration = (ent.acceleration + parent.acceleration) * 0.75;
     }
 }
 

@@ -116,7 +116,6 @@ SINGLE(Name, nametag_visible, uint8_t)
     SINGLE(damage_reflection, float, =0) \
     SINGLE(last_damaged_by, EntityID, =NULL_ENTITY) \
     \
-    SINGLE(owner, EntityID, =NULL_ENTITY) \
     SINGLE(base_entity, EntityID, =NULL_ENTITY) \
     SINGLE(target, EntityID, =NULL_ENTITY) \
     SINGLE(seg_head, EntityID, =NULL_ENTITY) \
