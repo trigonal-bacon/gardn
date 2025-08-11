@@ -21,7 +21,6 @@ Entity &alloc_drop(Simulation *sim, PetalID::T drop_id) {
 
     drop.add_component(kRelations);
     drop.set_team(NULL_ENTITY);
-    //entity_set_owner(drop, NULL_ENTITY);
 
     drop.add_component(kDrop);
     drop.set_drop_id(drop_id);
@@ -42,7 +41,6 @@ static Entity &__alloc_mob(Simulation *sim, MobID::T mob_id, float x, float y, E
     mob.set_x(x);
     mob.set_y(y);
     mob.friction = DEFAULT_FRICTION;
-    mob.immunity_ticks = TPS;
     mob.mass = 1 + mob.radius / 25;
     if (data.attributes.stationary) mob.mass *= 10000;
     if (mob_id == MobID::kAntHole)
@@ -118,8 +116,6 @@ Entity &alloc_player(Simulation *sim, EntityID const team) {
     Entity &player = sim->alloc_ent();
 
     player.add_component(kPhysics);
-    //player.set_x(camera.camera_x);
-    //player.set_y(camera.camera_y);
     player.set_radius(25);
     player.friction = DEFAULT_FRICTION;
 
@@ -127,8 +123,6 @@ Entity &alloc_player(Simulation *sim, EntityID const team) {
 
     player.add_component(kRelations);
     player.set_team(team);
-    //player.owner = player.id;
-    //player.set_team(camera_id);
 
     player.add_component(kHealth);
     player.health = 100;
@@ -198,7 +192,6 @@ void player_spawn(Simulation *sim, Entity &camera, Entity &player) {
     camera.set_player(player.id);
     player.set_parent(camera.id);
     player.set_color(camera.color);
-    player.owner = camera.id;
     uint32_t power = Map::difficulty_at_level(camera.respawn_level);
     ZoneDefinition const &zone = MAP[power];
     float spawn_x = (frand() - 0.5) * zone.w + zone.x;

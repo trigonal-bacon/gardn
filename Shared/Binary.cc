@@ -216,7 +216,6 @@ template<>
 void Reader::read<std::string>(std::string &ref) {
     uint32_t len = read<uint32_t>();
     ref.clear();
-    ref.reserve(len);
     for (uint32_t i = 0; i < len; ++i) ref.push_back(read<uint8_t>());
 }
 

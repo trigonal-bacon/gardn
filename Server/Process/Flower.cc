@@ -21,16 +21,14 @@ struct PlayerBuffs {
     uint8_t has_cutter : 1;
 };
 
-static struct PlayerBuffs petal_passive_buffs(Simulation *sim, Entity &player) {
+static struct PlayerBuffs _get_petal_passive_buffs(Simulation *sim, Entity &player) {
     struct PlayerBuffs buffs = {0};
     if (player.has_component(kMob)) return buffs;
-    int count = 0;
     player.damage_reflection = 0;
     player.poison_armor = 0;
     for (uint8_t i = 0; i < player.loadout_count; ++i) {
         LoadoutSlot const &slot = player.loadout[i];
         struct PetalData const &petal_data = PETAL_DATA[slot.id];
-
         if (slot.id == PetalID::kAntennae) {
             buffs.has_antennae = 1;
             buffs.extra_vision = fclamp(0.4,buffs.extra_vision,1);
@@ -67,10 +65,21 @@ static struct PlayerBuffs petal_passive_buffs(Simulation *sim, Entity &player) {
     return buffs;
 }
 
+static uint32_t _get_petal_rotation_count(Entity &player) {
+    uint32_t count = 0;
+    for (uint8_t i = 0; i < player.loadout_count; ++i) {
+        struct PetalData const &petal_data = PETAL_DATA[player.loadout[i].id];
+        if (petal_data.count == 1 || petal_data.attributes.clump_radius > 0)
+            ++count;
+        else count += petal_data.count;
+    }
+    return count;
+}
+
 void tick_player_behavior(Simulation *sim, Entity &player) {
     if (player.pending_delete) return;
     DEBUG_ONLY(assert(player.max_health > 0);)
-    PlayerBuffs const buffs = petal_passive_buffs(sim, player);
+    PlayerBuffs const buffs = _get_petal_passive_buffs(sim, player);
     float health_ratio = player.health / player.max_health;
     if (!player.has_component(kMob)) {
         player.max_health = hp_at_level(score_to_level(player.score)) + buffs.extra_health;
@@ -86,6 +95,7 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
         player.poison_damage = {0, 0};
     
     float rot_pos = 0;
+    uint32_t rotation_count = _get_petal_rotation_count(player);
     player.set_face_flags(0);
 
     if (sim->ent_alive(player.parent)) {
@@ -143,8 +153,8 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
                     //petal rotation behavior
                     Vector wanting;
                     Vector delta(player.x - petal.x, player.y - petal.y);
-                    if (player.rotation_count > 0)
-                        wanting.unit_normal(2 * M_PI * rot_pos / player.rotation_count + player.heading_angle);
+                    if (rotation_count > 0)
+                        wanting.unit_normal(2 * M_PI * rot_pos / rotation_count + player.heading_angle);
 
                     float range = 60;
                     if (BIT_AT(player.input, InputFlags::kAttacking)) { 
@@ -225,6 +235,4 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
         }
     } else 
         player.heading_angle += 10 * (2.5 + buffs.extra_rot) / TPS;
-
-    player.rotation_count = rot_pos;
 }

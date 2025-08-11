@@ -98,7 +98,6 @@ SINGLE(Name, nametag_visible, uint8_t)
     MULTIPLE(loadout, LoadoutSlot, MAX_SLOT_COUNT, .reset()) \
     SINGLE(heading_angle, float, =0) \
     SINGLE(input, uint8_t, =0) \
-    SINGLE(rotation_count, uint8_t, =1) \
     \
     SINGLE(slow_ticks, game_tick_t, =0) \
     SINGLE(slow_inflict, game_tick_t, =0) \
@@ -116,7 +115,6 @@ SINGLE(Name, nametag_visible, uint8_t)
     SINGLE(damage_reflection, float, =0) \
     SINGLE(last_damaged_by, EntityID, =NULL_ENTITY) \
     \
-    SINGLE(owner, EntityID, =NULL_ENTITY) \
     SINGLE(base_entity, EntityID, =NULL_ENTITY) \
     SINGLE(target, EntityID, =NULL_ENTITY) \
     SINGLE(seg_head, EntityID, =NULL_ENTITY) \

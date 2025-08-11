@@ -86,17 +86,17 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
             VALIDATE(validator.validate_float());
             float x = reader.read<float>();
             float y = reader.read<float>();
-            if (x == 0 && y == 0) camera.acceleration.set(0,0);
+            if (x == 0 && y == 0) player.acceleration.set(0,0);
             else {
                 if (std::abs(x) > 5e3 || std::abs(y) > 5e3) break;
                 Vector accel(x,y);
                 float m = accel.magnitude();
                 if (m > 200) accel.set_magnitude(PLAYER_ACCELERATION);
                 else accel.set_magnitude(m / 200 * PLAYER_ACCELERATION);
-                camera.acceleration = accel;
+                player.acceleration = accel;
             }
             VALIDATE(validator.validate_uint8());
-            camera.input = reader.read<uint8_t>();
+            player.input = reader.read<uint8_t>();
             //store player's acceleration and input in camera (do not reset ever)
             break;
         }

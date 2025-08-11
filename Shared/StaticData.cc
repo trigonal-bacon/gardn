@@ -155,7 +155,7 @@ struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
         .secondary_reload = 0.5,
         .defend_only = 1,
     }},
-    {"Antennae", "Lets your flower see foes from farther away",
+    {"Antennae", "Allows your flower to sense foes from farther away",
         0.0, 0.0, 12.5, 0.0, 0, RarityID::kLegendary, {}},
     {"Cactus", "Not very strong, but somehow increases your maximum health",
         15.0, 5.0, 10.0, 1.0, 3, RarityID::kLegendary, {
@@ -176,7 +176,7 @@ struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
     }},
     {"Salt", "Reflects some damage dealt to the flower. Does not stack with itseld",
         10.0, 10.0, 10.0, 2.5, 1, RarityID::kRare, {}},
-    {"Basic", "Something extremely rare and useless",
+    {"Basic", "Something incredibly rare and useless",
         10.0, 10.0, 10.0, 2.5, 1, RarityID::kUnique, {}},
     {"Square", "This shape... it looks familiar...",
         10.0, 10.0, 15.0, 2.5, 1, RarityID::kUnique, {
