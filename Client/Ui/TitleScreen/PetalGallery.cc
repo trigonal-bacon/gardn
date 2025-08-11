@@ -56,7 +56,7 @@ void PetalsCollectedIndicator::on_render(Renderer &ctx) {
 }
 
 static Element *make_scroll() {
-    Element *elt = new Ui::VContainer({}, 0, 10, {});
+    Element *elt = new Ui::VContainer({}, 10, 10, {});
 
     PetalID::T id_list[PetalID::kNumPetals];
     for (PetalID::T i = 0; i < PetalID::kNumPetals; ++i)

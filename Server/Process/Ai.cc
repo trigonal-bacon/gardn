@@ -421,8 +421,7 @@ void tick_ai_behavior(Simulation *sim, Entity &ent) {
                 behind.unit_normal(ent.angle + M_PI);
                 behind *= ent.radius;
                 Entity &spawned = alloc_mob(sim, MobID::kSoldierAnt, ent.x + behind.x, ent.y + behind.y, ent.team);
-                BIT_SET(spawned.flags, EntityFlags::kIsDespawning);
-                spawned.despawn_tick = 10 * TPS;
+                entity_set_despawn_tick(spawned, 10 * TPS);
                 spawned.set_parent(ent.parent);
             }
             tick_default_aggro(sim, ent, 0.95);

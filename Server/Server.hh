@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Shared/Simulation.hh>
+#include <Server/Game.hh>
 
 #include <set>
 
@@ -20,9 +20,10 @@ typedef uWS::App WebSocketServer;
 
 namespace Server {
     extern uint8_t OUTGOING_PACKET[MAX_PACKET_LEN];
-    extern Simulation simulation;
+    //extern Simulation simulation;
+    extern GameInstance game;
     extern WebSocketServer server;
-    extern std::set<Client *> clients;
+    //extern std::set<Client *> clients;
     extern void init();
     extern void run();
     extern void tick();

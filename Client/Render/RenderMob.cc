@@ -24,7 +24,8 @@ void render_mob(Renderer &ctx, Entity const &ent) {
             .mouth = ent.mouth,
             .cutter_angle = (float) (Game::timestamp / 200),
             .face_flags = ent.face_flags,
-            .flags = static_cast<uint8_t>(1 | ((ent.deletion_animation > 0 ? 1 : 0) << 1))
+            .flags = static_cast<uint8_t>(1 | ((ent.deletion_animation > 0 ? 1 : 0) << 1)),
+            .color = ent.color
         };
     }
     draw_static_mob(ent.mob_id, ctx, attrs);

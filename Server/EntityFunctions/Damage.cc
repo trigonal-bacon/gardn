@@ -7,21 +7,6 @@
 
 #include <cmath>
 
-static std::vector<std::vector<MobID::T>> const anthole_spawns = {
-    {MobID::kBabyAnt},
-    {MobID::kWorkerAnt,MobID::kBabyAnt},
-    {MobID::kWorkerAnt,MobID::kWorkerAnt},
-    {MobID::kSoldierAnt},
-    {MobID::kBabyAnt,MobID::kSoldierAnt},
-    {MobID::kSoldierAnt,MobID::kWorkerAnt,MobID::kWorkerAnt},
-    {MobID::kSoldierAnt},
-    {MobID::kQueenAnt},
-    {MobID::kSoldierAnt,MobID::kWorkerAnt},
-    {MobID::kSoldierAnt,MobID::kSoldierAnt,MobID::kSoldierAnt}
-};
-
-static uint32_t num_spawn_waves = anthole_spawns.size() - 1;
-
 void inflict_damage(Simulation *sim, EntityID const atk_id, EntityID const def_id, float amt, uint8_t type) {
     if (amt <= 0) return;
     if (!sim->ent_alive(def_id)) return;
@@ -40,11 +25,12 @@ void inflict_damage(Simulation *sim, EntityID const atk_id, EntityID const def_i
     float damage_dealt = old_health - defender.health;
     //ant hole spawns
     //floor start, ceil end
+    uint32_t const num_spawn_waves = ANTHOLE_SPAWNS.size() - 1;
     if (defender.has_component(kMob) && defender.mob_id == MobID::kAntHole) {
         uint32_t start = (old_health / defender.max_health) * num_spawn_waves;
         uint32_t end = ceilf((defender.health / defender.max_health) * num_spawn_waves);
         for (uint32_t i = start; i + 1 > end; --i) {
-            for (MobID::T mob_id : anthole_spawns[num_spawn_waves - i]) {
+            for (MobID::T mob_id : ANTHOLE_SPAWNS[num_spawn_waves - i]) {
                 Entity &child = alloc_mob(sim, mob_id, defender.x, defender.y, defender.team);
                 child.set_parent(defender.id);
                 child.target = defender.target;

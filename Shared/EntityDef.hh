@@ -50,12 +50,13 @@ SINGLE(Camera, fov, Float)
 
 #define FIELDS_Relations \
 SINGLE(Relations, team, EntityID) \
-SINGLE(Relations, parent, EntityID)
+SINGLE(Relations, parent, EntityID) \
+SINGLE(Flower, color, uint8_t)
 
 #define FIELDS_Flower \
 SINGLE(Flower, eye_angle, float) \
 SINGLE(Flower, overlevel_timer, float) \
-SINGLE(Flower, loadout_count, uint32_t) \
+SINGLE(Flower, loadout_count, uint8_t) \
 SINGLE(Flower, face_flags, uint8_t) \
 MULTIPLE(Flower, loadout_ids, PetalID::T, 2 * MAX_SLOT_COUNT) \
 MULTIPLE(Flower, loadout_reloads, uint8_t, MAX_SLOT_COUNT)

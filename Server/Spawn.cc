@@ -12,7 +12,7 @@
 
 Entity &alloc_drop(Simulation *sim, PetalID::T drop_id) {
     DEBUG_ONLY(assert(drop_id < PetalID::kNumPetals);)
-    PetalTracker::add_petal(drop_id);
+    PetalTracker::add_petal(sim, drop_id);
     Entity &drop = sim->alloc_ent();
     drop.add_component(kPhysics);
     drop.set_radius(20);
@@ -73,6 +73,7 @@ static Entity &__alloc_mob(Simulation *sim, MobID::T mob_id, float x, float y, E
     if (mob_id == MobID::kDigger) {
         mob.add_component(kFlower);
         mob.set_angle(0);
+        mob.set_color(ColorID::kGray);
     }
     return mob;
 }
@@ -196,6 +197,7 @@ Entity &alloc_web(Simulation *sim, float radius, Entity const &parent) {
 void player_spawn(Simulation *sim, Entity &camera, Entity &player) {
     camera.set_player(player.id);
     player.set_parent(camera.id);
+    player.set_color(camera.color);
     player.owner = camera.id;
     uint32_t power = Map::difficulty_at_level(camera.respawn_level);
     ZoneDefinition const &zone = MAP[power];
