@@ -12,7 +12,6 @@
 
 static uint32_t const RARITY_TO_XP[RarityID::kNumRarities] = { 2, 10, 50, 200, 1000, 5000, 0 };
 
-
 Client::Client() : game(nullptr) {}
 
 void Client::init() {

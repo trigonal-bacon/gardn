@@ -55,9 +55,7 @@ static void _update_client(Simulation *sim, Client *client) {
     client->send_packet(writer.packet, writer.at - writer.packet);
 }
 
-GameInstance::GameInstance() : simulation(), clients(), team_manager(&simulation) {
-    //init();
-}
+GameInstance::GameInstance() : simulation(), clients(), team_manager(&simulation) {}
 
 void GameInstance::init() {
     for (uint32_t i = 0; i < ENTITY_CAP / 2; ++i)
@@ -82,7 +80,7 @@ void GameInstance::add_client(Client *client) {
     Entity &ent = simulation.alloc_ent();
     ent.add_component(kCamera);
     ent.add_component(kRelations);
-    bool const FFA = true;
+    constexpr bool FFA = true;
     if constexpr (FFA) {
         ent.set_team(ent.id);
         ent.set_color(ColorID::kYellow); //set the team here

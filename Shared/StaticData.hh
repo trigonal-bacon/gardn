@@ -12,6 +12,7 @@ extern float const PETAL_DISABLE_DELAY;
 extern float const PLAYER_ACCELERATION;
 extern float const DEFAULT_FRICTION;
 extern float const SUMMON_RETREAT_RADIUS;
+extern float const DIGGER_SPAWN_CHANCE;
 
 extern float const BASE_FOV;
 extern float const BASE_HEALTH;
@@ -113,7 +114,21 @@ std::array const MAP = std::to_array<struct ZoneDefinition>({
     }
 });
 
-extern StaticArray<float, MAX_DROPS_PER_MOB> const &get_mob_drop_chances(MobID::T);
+std::array const ANTHOLE_SPAWNS = std::to_array<StaticArray<MobID::T, 3>>({
+    {MobID::kBabyAnt},
+    {MobID::kWorkerAnt,MobID::kBabyAnt},
+    {MobID::kWorkerAnt,MobID::kWorkerAnt},
+    {MobID::kSoldierAnt,MobID::kWorkerAnt},
+    {MobID::kBabyAnt,MobID::kWorkerAnt,MobID::kSoldierAnt},
+    {MobID::kWorkerAnt,MobID::kSoldierAnt},
+    {MobID::kSoldierAnt,MobID::kWorkerAnt,MobID::kWorkerAnt},
+    {MobID::kSoldierAnt,MobID::kSoldierAnt},
+    {MobID::kQueenAnt},
+    {MobID::kSoldierAnt,MobID::kSoldierAnt},
+    {MobID::kSoldierAnt,MobID::kSoldierAnt,MobID::kSoldierAnt}
+});
+
+extern std::array<StaticArray<float, MAX_DROPS_PER_MOB>, MobID::kNumMobs> const MOB_DROP_CHANCES;
 
 extern uint32_t score_to_pass_level(uint32_t);
 extern uint32_t score_to_level(uint32_t);

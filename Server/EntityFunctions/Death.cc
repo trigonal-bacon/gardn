@@ -71,12 +71,12 @@ void entity_on_death(Simulation *sim, Entity const &ent) {
         if (!natural_despawn && !(BIT_AT(ent.flags, EntityFlags::kNoDrops))) {
             struct MobData const &mob_data = MOB_DATA[ent.mob_id];
             std::vector<PetalID::T> success_drops = {};
-            StaticArray<float, MAX_DROPS_PER_MOB> const &drop_chances = get_mob_drop_chances(ent.mob_id);
+            StaticArray<float, MAX_DROPS_PER_MOB> const &drop_chances = MOB_DROP_CHANCES[ent.mob_id];
             for (uint32_t i = 0; i < mob_data.drops.size(); ++i) 
                 if (frand() < drop_chances[i]) success_drops.push_back(mob_data.drops[i]);
             _alloc_drops(sim, success_drops, ent.x, ent.y);
         }
-        if (ent.mob_id == MobID::kAntHole && ent.team == NULL_ENTITY && frand() < 0.25) { 
+        if (ent.mob_id == MobID::kAntHole && ent.team == NULL_ENTITY && frand() < DIGGER_SPAWN_CHANCE) { 
             EntityID team = NULL_ENTITY;
             if (sim->ent_exists(ent.last_damaged_by))
                 team = sim->get_ent(ent.last_damaged_by).team;
@@ -122,27 +122,27 @@ void entity_on_death(Simulation *sim, Entity const &ent) {
             return;
         Entity &camera = sim->get_ent(ent.parent);
         //reset all reloads and stuff
-        uint32_t numLeft = potential.size();
+        uint32_t num_left = potential.size();
         //set respawn level
         uint32_t respawn_level = div_round_up(3 * score_to_level(ent.score), 4);
         if (respawn_level > MAX_LEVEL) respawn_level = MAX_LEVEL;
         camera.set_respawn_level(respawn_level);
-        uint32_t max_possible = MAX_SLOT_COUNT + loadout_slots_at_level(camera.respawn_level);
-        if (numLeft > max_possible) numLeft = max_possible;
+        uint32_t max_possible = MAX_SLOT_COUNT + loadout_slots_at_level(respawn_level);
+        if (num_left > max_possible) num_left = max_possible;
         //fill petals
         for (uint32_t i = 0; i < 2 * MAX_SLOT_COUNT; ++i)
             camera.set_inventory(i, PetalID::kNone); //force reset
-        for (uint32_t i = 0; i < numLeft; ++i) {
+        for (uint32_t i = 0; i < num_left; ++i) {
             DEBUG_ONLY(assert(potential.back() < PetalID::kNumPetals));
             PetalTracker::add_petal(potential.back());
             camera.set_inventory(i, potential.back());
             potential.pop_back();
         }
         //only track up to max_possible
-        for (uint32_t i = numLeft; i < max_possible; ++i)
+        for (uint32_t i = num_left; i < max_possible; ++i)
             camera.set_inventory(i, PetalID::kNone); //don't track kNone
         //fill with basics
-        for (uint32_t i = numLeft; i < ent.loadout_count; ++i) {
+        for (uint32_t i = num_left; i < ent.loadout_count; ++i) {
             PetalTracker::add_petal(PetalID::kBasic);
             camera.set_inventory(i, PetalID::kBasic);
         }

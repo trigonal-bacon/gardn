@@ -31,17 +31,17 @@ void GalleryMob::on_render(Renderer &ctx) {
     float radius = (data.radius.upper + data.radius.lower) / 2;
     if (radius > width * 0.5) ctx.scale(0.5 * width / radius);
     ctx.scale(0.5);
-    draw_static_mob(id, ctx, { .radius = radius });
+    draw_static_mob(id, ctx, { .radius = radius, .flower_attrs = { .color = ColorID::kGray } });
     if (data.attributes.segments > 1) {
         ctx.translate(-2 * radius, 0);
-        draw_static_mob(id, ctx, { .radius = radius, .flags = 1<<1 });
+        draw_static_mob(id, ctx, { .radius = radius, .flags = 1<<1, .flower_attrs = { .color = ColorID::kGray } });
     }
 }
 
 static Element *make_mob_drops(MobID::T id) {
     Element *elt = new Ui::HContainer({}, 0, 6, { .h_justify = Style::Left });
     struct MobData const &data = MOB_DATA[id];
-    StaticArray<float, MAX_DROPS_PER_MOB> const &drop_chances = get_mob_drop_chances(id);
+    StaticArray<float, MAX_DROPS_PER_MOB> const &drop_chances = MOB_DROP_CHANCES[id];
     std::vector<uint8_t> order;
     for (uint32_t i = 0; i < data.drops.size(); ++i)
         order.push_back(i);
