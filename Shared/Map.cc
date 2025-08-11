@@ -11,8 +11,6 @@
 
 using namespace Map;
 
-SERVER_ONLY(uint32_t ZONE_MOB_COUNTS[MAP.size()] = {0};)
-
 uint32_t Map::difficulty_at_level(uint32_t level) {
     if (level / LEVELS_PER_EXTRA_SLOT > MAX_DIFFICULTY) return MAX_DIFFICULTY;
     return level / LEVELS_PER_EXTRA_SLOT;
@@ -30,9 +28,9 @@ uint32_t Map::get_zone_from_pos(float x, float y) {
 
 #ifdef SERVERSIDE
 #include <Shared/Simulation.hh>
-void Map::remove_mob(uint32_t zone) {
+void Map::remove_mob(Simulation *sim, uint32_t zone) {
     DEBUG_ONLY(assert(zone < MAP.size());)
-    --ZONE_MOB_COUNTS[zone];
+    --sim->zone_mob_counts[zone];
 }
 
 void Map::spawn_random_mob(Simulation *sim) {
@@ -40,7 +38,7 @@ void Map::spawn_random_mob(Simulation *sim) {
     float y = frand() * ARENA_HEIGHT;
     uint32_t zone_id = Map::get_zone_from_pos(x, y);
     struct ZoneDefinition const &zone = MAP[zone_id];
-    if (zone.density * zone.w * zone.h / (500 * 500) < ZONE_MOB_COUNTS[zone_id]) return;
+    if (zone.density * zone.w * zone.h / (500 * 500) < sim->zone_mob_counts[zone_id]) return;
     float sum = 0;
     for (SpawnChance const &s : zone.spawns)
         sum += s.chance;
@@ -51,7 +49,7 @@ void Map::spawn_random_mob(Simulation *sim) {
             Entity &ent = alloc_mob(sim, s.id, x, y, NULL_ENTITY);
             ent.zone = zone_id;
             BIT_SET(ent.flags, EntityFlags::kSpawnedFromZone);
-            ZONE_MOB_COUNTS[zone_id]++;
+            sim->zone_mob_counts[zone_id]++;
             return;
         }
     }

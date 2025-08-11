@@ -129,7 +129,7 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
                 //need to delete if over cap
                 if (player.deleted_petals.size() == MAX_SLOT_COUNT)
                     //removes old trashed old petal
-                    PetalTracker::remove_petal(player.deleted_petals.curr());
+                    PetalTracker::remove_petal(simulation, player.deleted_petals.curr());
                 player.deleted_petals.push(old_id);
             }
             player.set_loadout_ids(pos, PetalID::kNone);

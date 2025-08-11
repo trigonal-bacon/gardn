@@ -12,7 +12,7 @@
 
 Entity &alloc_drop(Simulation *sim, PetalID::T drop_id) {
     DEBUG_ONLY(assert(drop_id < PetalID::kNumPetals);)
-    PetalTracker::add_petal(drop_id);
+    PetalTracker::add_petal(sim, drop_id);
     Entity &drop = sim->alloc_ent();
     drop.add_component(kPhysics);
     drop.set_radius(20);
