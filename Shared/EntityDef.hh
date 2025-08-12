@@ -114,6 +114,7 @@ SINGLE(Name, nametag_visible, uint8_t)
     SINGLE(poison_armor, float, =0) \
     SINGLE(damage_reflection, float, =0) \
     SINGLE(last_damaged_by, EntityID, =NULL_ENTITY) \
+    SINGLE(score_reward, uint32_t, =0) \
     \
     SINGLE(base_entity, EntityID, =NULL_ENTITY) \
     SINGLE(target, EntityID, =NULL_ENTITY) \

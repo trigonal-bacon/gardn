@@ -42,6 +42,7 @@ namespace Game {
     extern uint8_t is_mobile;
     
     void init();
+    void reset();
     uint8_t alive();
     uint8_t in_game();
     uint8_t should_render_title_ui();

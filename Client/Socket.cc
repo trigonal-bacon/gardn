@@ -16,11 +16,8 @@ extern "C" {
             Writer w(INCOMING_PACKET);
             w.write<uint8_t>(Serverbound::kVerify);
             w.write<uint64_t>(VERSION_HASH);
-            Game::simulation_ready = 0;
-            Game::on_game_screen = 0;
-            Game::simulation.reset();
-            Game::camera_id = NULL_ENTITY;
-            Game::socket.ready = 1; //force send;
+            Game::reset();
+            Game::socket.ready = 1; //force send
             Game::socket.send(w.packet, w.at - w.packet);
             Game::socket.ready = 0;
         } 

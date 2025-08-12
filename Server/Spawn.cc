@@ -60,9 +60,8 @@ static Entity &__alloc_mob(Simulation *sim, MobID::T mob_id, float x, float y, E
     mob.poison_damage = data.attributes.poison_damage;
     mob.set_health_ratio(1);
 
-    mob.add_component(kScore);
-    mob.set_score(data.xp);
     mob.detection_radius = data.attributes.aggro_radius;
+    mob.score_reward = data.xp;
 
     mob.add_component(kName);
     mob.set_name(data.name);
@@ -118,6 +117,7 @@ Entity &alloc_player(Simulation *sim, EntityID const team) {
     player.add_component(kPhysics);
     player.set_radius(25);
     player.friction = DEFAULT_FRICTION;
+    player.mass = 1;
 
     player.add_component(kFlower);
 
@@ -125,12 +125,10 @@ Entity &alloc_player(Simulation *sim, EntityID const team) {
     player.set_team(team);
 
     player.add_component(kHealth);
-    player.health = 100;
-    player.max_health = 100;
+    player.health = player.max_health = BASE_HEALTH;
     player.set_health_ratio(1);
-    player.damage = 25;
+    player.damage = BASE_BODY_DAMAGE;
     player.immunity_ticks = 1.0 * TPS;
-    player.mass = 1;
 
     player.add_component(kScore);
 
@@ -193,7 +191,7 @@ void player_spawn(Simulation *sim, Entity &camera, Entity &player) {
     player.set_parent(camera.id);
     player.set_color(camera.color);
     uint32_t power = Map::difficulty_at_level(camera.respawn_level);
-    ZoneDefinition const &zone = MAP[power];
+    ZoneDefinition const &zone = MAP[Map::get_suitable_difficulty_zone(power)];
     float spawn_x = (frand() - 0.5) * zone.w + zone.x;
     float spawn_y = (frand() - 0.5) * zone.h + zone.y;
     camera.set_camera_x(spawn_x);
@@ -212,8 +210,9 @@ void player_spawn(Simulation *sim, Entity &camera, Entity &player) {
             player.loadout[i].petals[j].reload = PETAL_DATA[id].reload * TPS;
     }
 
-    for (uint32_t i = player.loadout_count; i < MAX_SLOT_COUNT * 2; ++i)
+    for (uint32_t i = player.loadout_count; i < player.loadout_count + MAX_SLOT_COUNT; ++i)
         player.set_loadout_ids(i, camera.inventory[i]);
+
     //peaceful transfer, no petal tracking needed
     for (uint32_t i = 0; i < MAX_SLOT_COUNT * 2; ++i)
         camera.set_inventory(i, PetalID::kNone);

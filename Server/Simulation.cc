@@ -50,6 +50,7 @@ void Simulation::tick() {
     for_each<kPhysics>(tick_entity_motion);
     for_each<kSegmented>(tick_segment_behavior);
     for_each<kCamera>(tick_camera_behavior);
+    for_each<kScore>(tick_score_behavior);
     calculate_leaderboard(this);
 }
 
