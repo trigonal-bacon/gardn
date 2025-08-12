@@ -18,11 +18,6 @@ bool EntityID::equal_to(EntityID const a, EntityID const b) {
     return a.id == b.id && a.hash == b.hash;
 }
 
-void EntityID::operator=(const EntityID o) {
-    id = o.id;
-    hash = o.hash;
-}
-
 bool operator<(EntityID const a, EntityID const b) {
     return EntityID::make_hash(a) < EntityID::make_hash(b);
 }
