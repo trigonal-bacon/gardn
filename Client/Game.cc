@@ -210,7 +210,9 @@ void Game::tick(double time) {
         renderer.translate(renderer.width/2,renderer.height/2);
         renderer.draw_image(game_ui_renderer);
         //process keybind petal switches
-        if (Input::keys_pressed_this_tick.contains('E')) 
+        if (Input::keys_pressed_this_tick.contains('X'))
+            Game::swap_all_petals();
+        else if (Input::keys_pressed_this_tick.contains('E')) 
             Ui::forward_secondary_select();
         else if (Input::keys_pressed_this_tick.contains('Q')) 
             Ui::backward_secondary_select();

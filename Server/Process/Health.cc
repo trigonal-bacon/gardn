@@ -21,4 +21,6 @@ void tick_health_behavior(Simulation *sim, Entity &ent) {
     if (ent.max_health == 0) return;
     if (ent.has_component(kFlower))
         ent.set_health_ratio(ent.health / ent.max_health);
+    else
+        ent.set_health_ratio(1);
 }
