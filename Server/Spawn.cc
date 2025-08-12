@@ -159,10 +159,10 @@ Entity &alloc_petal(Simulation *sim, PetalID::T petal_id, Entity const &parent) 
     petal.add_component(kHealth);
     petal.health = petal.max_health = petal_data.health;
     petal.damage = petal_data.damage;
-    if (petal_id == PetalID::kBone) petal.armor = 4;
     petal.set_health_ratio(1);
     petal.poison_damage = petal_data.attributes.poison_damage;
-    if (petal_id == PetalID::kPincer) petal.slow_inflict = TPS * 1.0;
+    if (petal_id == PetalID::kPincer) petal.slow_inflict = TPS * 1.5;
+    if (petal_id == PetalID::kBone) petal.armor = 4;
 
     if (parent.id == NULL_ENTITY) petal.base_entity = petal.id;
     else petal.base_entity = parent.id;

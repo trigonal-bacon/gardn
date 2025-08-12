@@ -221,7 +221,7 @@ void Reader::read<std::string>(std::string &ref) {
 
 template<>
 void Reader::read<PersistentFlag>(PersistentFlag &ref) {
-    ref = read<uint8_t>();
+    ref.set(read<uint8_t>());
 }
 
 Validator::Validator(uint8_t const *start, uint8_t const *end) : at(start), end(end) {}
