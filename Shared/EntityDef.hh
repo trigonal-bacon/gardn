@@ -153,7 +153,6 @@ public:
     static uint32_t make_hash(EntityID const);
     static bool equal_to(EntityID const, EntityID const);
     bool null() const;
-    void operator=(EntityID const);
 };
 
 bool operator<(EntityID const, EntityID const);
