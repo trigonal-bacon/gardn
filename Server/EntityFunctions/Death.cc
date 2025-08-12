@@ -44,12 +44,8 @@ static void _alloc_drops(Simulation *sim, std::vector<PetalID::T> &success_drops
 static void _add_score(Simulation *sim, EntityID const killer_id, Entity const &target) {
     if (!sim->ent_exists(killer_id)) return;
     Entity &killer = sim->get_ent(killer_id);
-    if (killer.has_component(kFlower)) {
-        if (target.has_component(kMob))
-            killer.set_score(killer.score + target.score);
-        else
-            killer.set_score(killer.score + target.score / 2);
-    }
+    if (killer.has_component(kScore))
+        killer.set_score(killer.score + target.score_reward);
     if (target.has_component(kFlower) && sim->ent_alive(target.parent)) {
         Entity &camera = sim->get_ent(target.parent);
         if (!killer.has_component(kName)) camera.set_killed_by("");
@@ -60,7 +56,7 @@ static void _add_score(Simulation *sim, EntityID const killer_id, Entity const &
 void entity_on_death(Simulation *sim, Entity const &ent) {
     //don't do on_death for any despawned entity
     uint8_t natural_despawn = BIT_AT(ent.flags, EntityFlags::kIsDespawning) && ent.despawn_tick == 0;
-    if (ent.has_component(kScore) && sim->ent_exists(ent.last_damaged_by) && !natural_despawn) {
+    if (ent.score_reward > 0 && sim->ent_exists(ent.last_damaged_by) && !natural_despawn) {
         EntityID killer_id = sim->get_ent(ent.last_damaged_by).base_entity;
         _add_score(sim, killer_id, ent);
     }
@@ -142,7 +138,7 @@ void entity_on_death(Simulation *sim, Entity const &ent) {
         for (uint32_t i = num_left; i < max_possible; ++i)
             camera.set_inventory(i, PetalID::kNone); //don't track kNone
         //fill with basics
-        for (uint32_t i = num_left; i < ent.loadout_count; ++i) {
+        for (uint32_t i = num_left; i < loadout_slots_at_level(respawn_level); ++i) {
             PetalTracker::add_petal(sim, PetalID::kBasic);
             camera.set_inventory(i, PetalID::kBasic);
         }

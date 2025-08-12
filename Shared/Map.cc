@@ -26,6 +26,14 @@ uint32_t Map::get_zone_from_pos(float x, float y) {
     return ret;
 }
 
+uint32_t Map::get_suitable_difficulty_zone(uint32_t power) {
+    std::vector<uint32_t> possible_zones;
+    for (uint32_t i = 0; i < MAP.size(); ++i)
+        if (MAP[i].difficulty == power) possible_zones.push_back(i);
+    if (possible_zones.size() == 0) return 0;
+    return possible_zones[frand() * possible_zones.size()];
+}
+
 #ifdef SERVERSIDE
 #include <Shared/Simulation.hh>
 void Map::remove_mob(Simulation *sim, uint32_t zone) {

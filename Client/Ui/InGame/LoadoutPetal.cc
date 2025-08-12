@@ -99,7 +99,7 @@ UiLoadoutPetal::UiLoadoutPetal(uint8_t pos) : Element(60, 60),
             if (no_change_ticks == 0 || player.get_state_loadout_ids(static_pos)) {
                 no_change_ticks = 0;
                 petal_id = Game::cached_loadout[static_pos];
-                if (petal_id != PetalID::kNone)
+                if (petal_id != PetalID::kNone && petal_id < PetalID::kNumPetals)
                     last_id = petal_id;
             } else --no_change_ticks;
         }
@@ -116,7 +116,7 @@ UiLoadoutPetal::UiLoadoutPetal(uint8_t pos) : Element(60, 60),
         if (petal_id == PetalID::kNone) return false;
         return true;
     };
-    style.animate = [&](Element *elt, Renderer &ctx){
+    style.animate = [&](Element *elt, Renderer &ctx) {
         float lerp_amt = Ui::lerp_amount * 0.75;
         reload.step(lerp_amt);
         if (curr_pos != 2 * MAX_SLOT_COUNT) 

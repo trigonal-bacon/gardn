@@ -18,6 +18,7 @@ set(SOURCES
     Process/Health.cc
     Process/Motion.cc
     Process/Petal.cc
+    Process/Score.cc
     Process/Segment.cc
     Client.cc
     Game.cc
