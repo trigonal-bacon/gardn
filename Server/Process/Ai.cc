@@ -150,6 +150,8 @@ static void tick_hornet_aggro(Simulation *sim, Entity &ent) {
         if (dist > 300) {
             v.set_magnitude(PLAYER_ACCELERATION * 0.975);
             ent.acceleration = v;
+        } else {
+            ent.acceleration.set(0,0);
         }
         ent.set_angle(v.angle());
         if (ent.ai_tick >= 1.5 * TPS && dist < 800) {

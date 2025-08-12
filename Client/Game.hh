@@ -53,5 +53,6 @@ namespace Game {
     void spawn_in();
     void delete_petal(uint8_t);
     void swap_petals(uint8_t, uint8_t);
+    void swap_all_petals();
     void on_message(uint8_t *, uint32_t);
 };
