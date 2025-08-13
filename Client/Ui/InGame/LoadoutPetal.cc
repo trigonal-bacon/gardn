@@ -5,6 +5,7 @@
 #include <Client/Input.hh>
 
 #include <cmath>
+#include <iostream>
 
 using namespace Ui;
 
@@ -40,7 +41,7 @@ void Ui::backward_secondary_select() {
 
 static uint8_t static_to_dynamic(uint8_t static_pos) {
     if (static_pos >= Game::loadout_count) 
-        return MAX_SLOT_COUNT + static_pos - Game::loadout_count;
+        return std::min(MAX_SLOT_COUNT + static_pos - Game::loadout_count, 2 * MAX_SLOT_COUNT);
     else
         return static_pos;
 }

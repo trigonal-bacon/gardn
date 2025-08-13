@@ -202,7 +202,8 @@ void Game::tick(double time) {
         render_title_screen();
         Particle::tick_title(renderer, Ui::dt);
         title_ui_window.render(renderer);
-    }
+    } else
+        title_ui_window.on_render_skip(renderer);
 
     if (should_render_game_ui()) {
         RenderContext c(&renderer);
@@ -257,8 +258,10 @@ void Game::tick(double time) {
                 }
             }
         }
-    } else 
+    } else {
         Ui::UiLoadout::selected_with_keys = MAX_SLOT_COUNT;
+        game_ui_window.on_render_skip(game_ui_renderer);
+    }
         
     if (Game::timestamp - Ui::UiLoadout::last_key_select > 5000)
         Ui::UiLoadout::selected_with_keys = MAX_SLOT_COUNT;
