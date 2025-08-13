@@ -97,6 +97,7 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
     
     float rot_pos = 0;
     uint32_t rotation_count = _get_petal_rotation_count(player);
+    //maybe use delta mode for face flags?
     player.set_face_flags(0);
 
     if (sim->ent_alive(player.parent)) {
@@ -107,13 +108,13 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
     DEBUG_ONLY(assert(player.loadout_count <= MAX_SLOT_COUNT);)
     for (uint32_t i = 0; i < player.loadout_count; ++i) {
         LoadoutSlot &slot = player.loadout[i];
-        DEBUG_ONLY(assert(petal_data.count <= MAX_PETALS_IN_CLUMP);)
         //player.set_loadout_ids(i, slot.id);
         //other way around. loadout_ids should dictate loadout
         if (slot.get_petal_id() != player.loadout_ids[i] || player.overlevel_timer >= PETAL_DISABLE_DELAY * TPS)
             slot.update_id(sim, player.loadout_ids[i]);
         PetalID::T slot_petal_id = slot.get_petal_id();
         struct PetalData const &petal_data = PETAL_DATA[slot_petal_id];
+        DEBUG_ONLY(assert(petal_data.count <= MAX_PETALS_IN_CLUMP);)
 
         if (slot_petal_id == PetalID::kNone || petal_data.count == 0)
             continue;
@@ -209,12 +210,18 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
         player.set_face_flags(player.face_flags | (1 << FaceFlags::kAttacking));
     else if (BIT_AT(player.input, InputFlags::kDefending))
         player.set_face_flags(player.face_flags | (1 << FaceFlags::kDefending));
-    if (player.poison_ticks > 0) player.set_face_flags(player.face_flags | (1 << FaceFlags::kPoisoned));
-    if (player.dandy_ticks > 0) player.set_face_flags(player.face_flags | (1 << FaceFlags::kDandelioned));
-    if (buffs.extra_range > 0) player.set_face_flags(player.face_flags | (1 << FaceFlags::kThirdEye));
-    if (buffs.has_antennae) player.set_face_flags(player.face_flags | (1 << FaceFlags::kAntennae));
-    if (buffs.has_observer) player.set_face_flags(player.face_flags | (1 << FaceFlags::kObserver));
-    if (buffs.has_cutter) player.set_face_flags(player.face_flags | (1 << FaceFlags::kCutter));
+    if (player.poison_ticks > 0)
+        player.set_face_flags(player.face_flags | (1 << FaceFlags::kPoisoned));
+    if (player.dandy_ticks > 0)
+        player.set_face_flags(player.face_flags | (1 << FaceFlags::kDandelioned));
+    if (buffs.extra_range > 0)
+        player.set_face_flags(player.face_flags | (1 << FaceFlags::kThirdEye));
+    if (buffs.has_antennae)
+        player.set_face_flags(player.face_flags | (1 << FaceFlags::kAntennae));
+    if (buffs.has_observer)
+        player.set_face_flags(player.face_flags | (1 << FaceFlags::kObserver));
+    if (buffs.has_cutter)
+        player.set_face_flags(player.face_flags | (1 << FaceFlags::kCutter));
     if (buffs.yinyang_count != MAX_SLOT_COUNT) {
         switch (buffs.yinyang_count % 3) {
             case 0:
