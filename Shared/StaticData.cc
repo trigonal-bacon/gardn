@@ -13,6 +13,7 @@ float const DEFAULT_FRICTION = 1.0f/3.0f;
 float const SUMMON_RETREAT_RADIUS = 600.0f;
 float const DIGGER_SPAWN_CHANCE = 0.25f;
 
+float const BASE_FLOWER_RADIUS = 25.0f;
 float const BASE_FOV = 0.9f;
 float const BASE_HEALTH = 100.0f;
 float const BASE_BODY_DAMAGE = 25.0f;

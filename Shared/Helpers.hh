@@ -110,7 +110,7 @@ class PersistentFlag {
     uint8_t preserved : 1;
 public:
     PersistentFlag();
-    void operator=(uint8_t);
+    void set(uint8_t);
     operator uint8_t() const;
     void clear();
 };

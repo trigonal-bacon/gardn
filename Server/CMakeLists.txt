@@ -23,14 +23,12 @@ set(SOURCES
     Client.cc
     Game.cc
     Main.cc
-    Native.cc
     PetalTracker.cc
     Server.cc
     Simulation.cc
     SpatialHashUniform.cc
     Spawn.cc
     TeamManager.cc
-    Wasm.cc
     ../Shared/Arena.cc
     ../Shared/Binary.cc
     ../Shared/Config.cc
@@ -43,8 +41,13 @@ set(SOURCES
     ../Shared/Vector.cc
 )
 
+if(WASM_SERVER)
+    set(SOURCES ${SOURCES} Wasm.cc)
+else()
+    set(SOURCES ${SOURCES} Native.cc)
+endif()
 if(DEBUG)
-    set(CMAKE_CXX_FLAGS "-gdwarf-4 -lpthread -DDEBUG=1")
+    set(CMAKE_CXX_FLAGS "-gdwarf-4 -DDEBUG=1")
 else()
     set(CMAKE_CXX_FLAGS "-O3 -ffast-math")
 endif()

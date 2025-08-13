@@ -158,7 +158,7 @@ public:
 bool operator<(EntityID const, EntityID const);
 bool operator==(EntityID const, EntityID const);
 
-inline EntityID const NULL_ENTITY;
+inline const EntityID NULL_ENTITY;
 
 #ifdef SERVER_ONLY
 struct LoadoutPetal {

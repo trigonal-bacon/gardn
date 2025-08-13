@@ -82,7 +82,7 @@ void LerpFloat::step_angle(float amt) {
 
 PersistentFlag::PersistentFlag() : value(0), preserved(0) {}
 
-void PersistentFlag::operator=(uint8_t v) {
+void PersistentFlag::set(uint8_t v) {
     value = v;
     preserved |= v;
 }
