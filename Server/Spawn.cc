@@ -202,11 +202,10 @@ void player_spawn(Simulation *sim, Entity &camera, Entity &player) {
     player.health = player.max_health = hp_at_level(camera.respawn_level);
     for (uint32_t i = 0; i < player.loadout_count; ++i) {
         PetalID::T id = camera.inventory[i];
+        LoadoutSlot &slot = player.loadout[i];
         player.set_loadout_ids(i, id);
-        player.loadout[i].id = id;
-        player.loadout[i].already_spawned = 1;
-        for (uint32_t j = 0; j < PETAL_DATA[id].count; ++j)
-            player.loadout[i].petals[j].reload = PETAL_DATA[id].reload * TPS;
+        slot.update_id(sim, id);
+        slot.force_reload();
     }
 
     for (uint32_t i = player.loadout_count; i < player.loadout_count + MAX_SLOT_COUNT; ++i)

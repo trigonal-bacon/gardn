@@ -26,39 +26,40 @@ static struct PlayerBuffs _get_petal_passive_buffs(Simulation *sim, Entity &play
     if (player.has_component(kMob)) return buffs;
     player.damage_reflection = 0;
     player.poison_armor = 0;
-    for (uint8_t i = 0; i < player.loadout_count; ++i) {
+    for (uint32_t i = 0; i < player.loadout_count; ++i) {
         LoadoutSlot const &slot = player.loadout[i];
-        struct PetalData const &petal_data = PETAL_DATA[slot.id];
-        if (slot.id == PetalID::kAntennae) {
+        PetalID::T slot_petal_id = slot.get_petal_id();
+        struct PetalData const &petal_data = PETAL_DATA[slot_petal_id];
+        if (slot_petal_id == PetalID::kAntennae) {
             buffs.has_antennae = 1;
             buffs.extra_vision = fclamp(0.4,buffs.extra_vision,1);
-        } else if (slot.id == PetalID::kObserver) {
+        } else if (slot_petal_id == PetalID::kObserver) {
             buffs.has_observer = 1;
             buffs.extra_vision = 0.75;
-        } else if (slot.id == PetalID::kThirdEye) {
+        } else if (slot_petal_id == PetalID::kThirdEye) {
             buffs.extra_range = 75;
-        } else if (slot.id == PetalID::kCutter) {
+        } else if (slot_petal_id == PetalID::kCutter) {
             buffs.has_cutter = 1;
-        } else if (slot.id == PetalID::kYinYang) {
+        } else if (slot_petal_id == PetalID::kYinYang) {
             ++buffs.yinyang_count;
         }
         if (!player.loadout[i].already_spawned) continue;
-        if (slot.id == PetalID::kLeaf) 
+        if (slot_petal_id == PetalID::kLeaf) 
             buffs.heal += petal_data.attributes.constant_heal / TPS;
-        else if (slot.id == PetalID::kYucca && BIT_AT(player.input, InputFlags::kDefending) && !BIT_AT(player.input, InputFlags::kAttacking)) 
+        else if (slot_petal_id == PetalID::kYucca && BIT_AT(player.input, InputFlags::kDefending) && !BIT_AT(player.input, InputFlags::kAttacking)) 
             buffs.heal += petal_data.attributes.constant_heal / TPS;
-        if (slot.id == PetalID::kFaster) 
+        if (slot_petal_id == PetalID::kFaster) 
             buffs.extra_rot += 1.0;
-        else if (slot.id == PetalID::kCactus) 
+        else if (slot_petal_id == PetalID::kCactus) 
             buffs.extra_health += 20;
-        else if (slot.id == PetalID::kTricac) 
+        else if (slot_petal_id == PetalID::kTricac) 
             buffs.extra_health += 60;
-        else if (slot.id == PetalID::kPoisonCactus) {
+        else if (slot_petal_id == PetalID::kPoisonCactus) {
             buffs.extra_health += 20;
             buffs.is_poisonous = 1;
-        } else if (slot.id == PetalID::kSalt) {
+        } else if (slot_petal_id == PetalID::kSalt) {
             player.damage_reflection = 0.25;
-        } else if (slot.id == PetalID::kLotus) {
+        } else if (slot_petal_id == PetalID::kLotus) {
             player.poison_armor = 2.5f / TPS;
         }
     }
@@ -68,7 +69,7 @@ static struct PlayerBuffs _get_petal_passive_buffs(Simulation *sim, Entity &play
 static uint32_t _get_petal_rotation_count(Entity &player) {
     uint32_t count = 0;
     for (uint8_t i = 0; i < player.loadout_count; ++i) {
-        struct PetalData const &petal_data = PETAL_DATA[player.loadout[i].id];
+        struct PetalData const &petal_data = PETAL_DATA[player.loadout[i].get_petal_id()];
         if (petal_data.count == 1 || petal_data.attributes.clump_radius > 0)
             ++count;
         else count += petal_data.count;
@@ -104,24 +105,17 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
     }
 
     DEBUG_ONLY(assert(player.loadout_count <= MAX_SLOT_COUNT);)
-    for (uint8_t i = 0; i < player.loadout_count; ++i) {
+    for (uint32_t i = 0; i < player.loadout_count; ++i) {
         LoadoutSlot &slot = player.loadout[i];
-        struct PetalData const &petal_data = PETAL_DATA[slot.id];
         DEBUG_ONLY(assert(petal_data.count <= MAX_PETALS_IN_CLUMP);)
         //player.set_loadout_ids(i, slot.id);
         //other way around. loadout_ids should dictate loadout
-        if (slot.id != player.loadout_ids[i] || player.overlevel_timer >= PETAL_DISABLE_DELAY * TPS) {
-            //delete all old petals
-            for (uint32_t j = 0; j < petal_data.count; ++j) {
-                LoadoutPetal &petal_slot = slot.petals[j];
-                if (sim->ent_alive(petal_slot.ent_id))
-                    sim->request_delete(petal_slot.ent_id);
-            }
-            slot.reset();
-            slot.id = player.loadout_ids[i];
-        }
+        if (slot.get_petal_id() != player.loadout_ids[i] || player.overlevel_timer >= PETAL_DISABLE_DELAY * TPS)
+            slot.update_id(sim, player.loadout_ids[i]);
+        PetalID::T slot_petal_id = slot.get_petal_id();
+        struct PetalData const &petal_data = PETAL_DATA[slot_petal_id];
 
-        if (slot.id == PetalID::kNone || petal_data.count == 0)
+        if (slot_petal_id == PetalID::kNone || petal_data.count == 0)
             continue;
         //if overleveled timer too large
         if (player.overlevel_timer >= PETAL_DISABLE_DELAY * TPS) {
@@ -129,17 +123,16 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
             continue;
         }
         float min_reload = 1;
-        for (uint32_t j = 0; j < petal_data.count; ++j) {
+        for (uint32_t j = 0; j < slot.size(); ++j) {
             LoadoutPetal &petal_slot = slot.petals[j];
             if (!sim->ent_alive(petal_slot.ent_id)) {
                 petal_slot.ent_id = NULL_ENTITY;
                 uint32_t reload_time = (petal_data.reload * TPS);
                 if (!slot.already_spawned) reload_time += TPS;
                 float this_reload = reload_time == 0 ? 1 : (float) petal_slot.reload / reload_time;
-                if (this_reload < min_reload) min_reload = this_reload;
+                min_reload = std::min(min_reload, this_reload);
                 if (petal_slot.reload >= reload_time) {
-                    Entity &petal = alloc_petal(sim, slot.id, player);
-                    petal_slot.ent_id = petal.id;
+                    petal_slot.ent_id = alloc_petal(sim, slot_petal_id, player).id;
                     petal_slot.reload = 0;
                     slot.already_spawned = 1;
                 } 
@@ -201,8 +194,8 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
                     }
                 } else {
                     //if petal is a mob, or detached (IsDespawning)
-                    if (petal.has_component(kMob)) --rot_pos;
-                    else petal_slot.ent_id = NULL_ENTITY;
+                    if (BIT_AT(petal.flags, EntityFlags::kIsDespawning))
+                        petal_slot.ent_id = NULL_ENTITY;
                 }
             }
             //spread out

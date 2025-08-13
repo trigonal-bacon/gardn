@@ -51,7 +51,7 @@ SINGLE(Camera, fov, Float)
 #define FIELDS_Relations \
 SINGLE(Relations, team, EntityID) \
 SINGLE(Relations, parent, EntityID) \
-SINGLE(Flower, color, uint8_t)
+SINGLE(Relations, color, uint8_t)
 
 #define FIELDS_Flower \
 SINGLE(Flower, eye_angle, float) \
@@ -161,17 +161,23 @@ bool operator==(EntityID const, EntityID const);
 inline const EntityID NULL_ENTITY;
 
 #ifdef SERVER_ONLY
+class Simulation;
+
 struct LoadoutPetal {
     EntityID ent_id;
     game_tick_t reload;
 };
 
 class LoadoutSlot {
-public:
-    LoadoutPetal petals[MAX_PETALS_IN_CLUMP];
     PetalID::T id;
+public:
     uint8_t already_spawned;
+    LoadoutPetal petals[MAX_PETALS_IN_CLUMP];    
     LoadoutSlot();
     void reset();
+    void update_id(Simulation *, PetalID::T);
+    void force_reload();
+    PetalID::T get_petal_id() const;
+    uint32_t size() const;
 };
 #endif
