@@ -41,8 +41,7 @@ static Entity &__alloc_mob(Simulation *sim, MobID::T mob_id, float x, float y, E
     mob.set_x(x);
     mob.set_y(y);
     mob.friction = DEFAULT_FRICTION;
-    mob.mass = 1 + mob.radius / 25;
-    if (data.attributes.stationary) mob.mass *= 10000;
+    mob.mass = (1 + mob.radius / BASE_FLOWER_RADIUS) * (data.attributes.stationary ? 10000 : 1);
     if (mob_id == MobID::kAntHole)
         BIT_SET(mob.flags, EntityFlags::kNoFriendlyCollision);
     if (team == NULL_ENTITY)
@@ -115,7 +114,7 @@ Entity &alloc_player(Simulation *sim, EntityID const team) {
     Entity &player = sim->alloc_ent();
 
     player.add_component(kPhysics);
-    player.set_radius(25);
+    player.set_radius(BASE_FLOWER_RADIUS);
     player.friction = DEFAULT_FRICTION;
     player.mass = 1;
 

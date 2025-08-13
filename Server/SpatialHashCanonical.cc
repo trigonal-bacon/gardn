@@ -64,7 +64,7 @@ void SpatialHash::query(float x, float y, float w, float h, std::function<void(S
                 if (ent.x - ent.radius > x + w) continue;
                 if (ent.y + ent.radius < y - h) continue;
                 if (ent.y - ent.radius > y + h) continue;
-                if (seen_entities.contains(cell[i].id)) continue;;
+                if (seen_entities.contains(cell[i].id)) continue;
                 cb(simulation, ent);
                 seen_entities.insert(cell[i].id);
             }
