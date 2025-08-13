@@ -128,7 +128,7 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
             LoadoutPetal &petal_slot = slot.petals[j];
             if (!sim->ent_alive(petal_slot.ent_id)) {
                 petal_slot.ent_id = NULL_ENTITY;
-                uint32_t reload_time = (petal_data.reload * TPS);
+                game_tick_t reload_time = (petal_data.reload * TPS);
                 if (!slot.already_spawned) reload_time += TPS;
                 float this_reload = reload_time == 0 ? 1 : (float) petal_slot.reload / reload_time;
                 min_reload = std::min(min_reload, this_reload);
@@ -178,7 +178,6 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
                         Entity &mob = alloc_mob(sim, spawn_id, petal.x, petal.y, petal.team);
                         mob.set_parent(player.id);
                         mob.base_entity = player.id;
-                        mob.set_score(0);
                         BIT_SET(mob.flags, EntityFlags::kDieOnParentDeath)
                         BIT_SET(mob.flags, EntityFlags::kNoDrops)
                         if (petal_data.attributes.spawn_count == 0) {
@@ -225,14 +224,14 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
     if (buffs.yinyang_count != MAX_SLOT_COUNT) {
         switch (buffs.yinyang_count % 3) {
             case 0:
-                player.heading_angle += (2.5 + buffs.extra_rot) / TPS;
+                player.heading_angle += (BASE_PETAL_ROTATION_SPEED + buffs.extra_rot) / TPS;
                 break;
             case 1:
-                player.heading_angle -= (2.5 + buffs.extra_rot) / TPS;
+                player.heading_angle -= (BASE_PETAL_ROTATION_SPEED + buffs.extra_rot) / TPS;
                 break;
             default:
                 break;
         }
     } else 
-        player.heading_angle += 10 * (2.5 + buffs.extra_rot) / TPS;
+        player.heading_angle += 10 * (BASE_PETAL_ROTATION_SPEED + buffs.extra_rot) / TPS;
 }

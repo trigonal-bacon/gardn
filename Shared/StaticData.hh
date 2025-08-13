@@ -15,6 +15,7 @@ extern float const SUMMON_RETREAT_RADIUS;
 extern float const DIGGER_SPAWN_CHANCE;
 
 extern float const BASE_FLOWER_RADIUS;
+extern float const BASE_PETAL_ROTATION_SPEED;
 extern float const BASE_FOV;
 extern float const BASE_HEALTH;
 extern float const BASE_BODY_DAMAGE;
