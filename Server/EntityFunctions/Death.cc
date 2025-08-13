@@ -24,6 +24,7 @@ static void _alloc_drops(Simulation *sim, std::vector<PetalID::T> &success_drops
             success_drops[i] = success_drops[count - 1];
             --count;
             success_drops.pop_back();
+            PetalTracker::remove_petal(sim, drop_id);
         }
     }
     DEBUG_ONLY(assert(success_drops.size() == count);)
