@@ -150,6 +150,8 @@ static void tick_hornet_aggro(Simulation *sim, Entity &ent) {
         if (dist > 300) {
             v.set_magnitude(PLAYER_ACCELERATION * 0.975);
             ent.acceleration = v;
+        } else {
+            ent.acceleration.set(0,0);
         }
         ent.set_angle(v.angle());
         if (ent.ai_tick >= 1.5 * TPS && dist < 800) {
@@ -307,10 +309,9 @@ static void tick_sandstorm(Simulation *sim, Entity &ent) {
             ent.ai_state = AIState::kIdle;
             break;
     }
-    if (sim->ent_alive(ent.owner)) {
-        Entity &parent = sim->get_ent(ent.owner);
-        ent.acceleration.x = (ent.acceleration.x * 0.75 + parent.acceleration.x * 1.5);
-        ent.acceleration.y = (ent.acceleration.y * 0.75 + parent.acceleration.y * 1.5);
+    if (sim->ent_alive(ent.parent)) {
+        Entity &parent = sim->get_ent(ent.parent);
+        ent.acceleration = (ent.acceleration + parent.acceleration) * 0.75;
     }
 }
 
@@ -395,7 +396,7 @@ void tick_ai_behavior(Simulation *sim, Entity &ent) {
             tick_centipede_aggro(sim, ent);
             break;
         case MobID::kDesertCentipede:
-            tick_centipede_neutral(sim, ent, 1.5);
+            tick_centipede_neutral(sim, ent, 1.33);
             break;
         case MobID::kWorkerAnt:
         case MobID::kDarkLadybug:
@@ -408,12 +409,12 @@ void tick_ai_behavior(Simulation *sim, Entity &ent) {
             tick_default_aggro(sim, ent, 0.95);
             break;
         case MobID::kScorpion:
-            tick_default_aggro(sim, ent, 1.25);
+            tick_default_aggro(sim, ent, 1.20);
             break;
         case MobID::kSpider:
             if (ent.lifetime % (TPS) == 0) 
                 alloc_web(sim, 25, ent);
-            tick_default_aggro(sim, ent, 1.25);
+            tick_default_aggro(sim, ent, 1.20);
             break;
         case MobID::kQueenAnt:
             if (ent.lifetime % (2 * TPS) == 0) {
@@ -421,8 +422,7 @@ void tick_ai_behavior(Simulation *sim, Entity &ent) {
                 behind.unit_normal(ent.angle + M_PI);
                 behind *= ent.radius;
                 Entity &spawned = alloc_mob(sim, MobID::kSoldierAnt, ent.x + behind.x, ent.y + behind.y, ent.team);
-                BIT_SET(spawned.flags, EntityFlags::kIsDespawning);
-                spawned.despawn_tick = 10 * TPS;
+                entity_set_despawn_tick(spawned, 10 * TPS);
                 spawned.set_parent(ent.parent);
             }
             tick_default_aggro(sim, ent, 0.95);

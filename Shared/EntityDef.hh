@@ -50,12 +50,13 @@ SINGLE(Camera, fov, Float)
 
 #define FIELDS_Relations \
 SINGLE(Relations, team, EntityID) \
-SINGLE(Relations, parent, EntityID)
+SINGLE(Relations, parent, EntityID) \
+SINGLE(Relations, color, uint8_t)
 
 #define FIELDS_Flower \
 SINGLE(Flower, eye_angle, float) \
 SINGLE(Flower, overlevel_timer, float) \
-SINGLE(Flower, loadout_count, uint32_t) \
+SINGLE(Flower, loadout_count, uint8_t) \
 SINGLE(Flower, face_flags, uint8_t) \
 MULTIPLE(Flower, loadout_ids, PetalID::T, 2 * MAX_SLOT_COUNT) \
 MULTIPLE(Flower, loadout_reloads, uint8_t, MAX_SLOT_COUNT)
@@ -97,7 +98,6 @@ SINGLE(Name, nametag_visible, uint8_t)
     MULTIPLE(loadout, LoadoutSlot, MAX_SLOT_COUNT, .reset()) \
     SINGLE(heading_angle, float, =0) \
     SINGLE(input, uint8_t, =0) \
-    SINGLE(rotation_count, uint8_t, =1) \
     \
     SINGLE(slow_ticks, game_tick_t, =0) \
     SINGLE(slow_inflict, game_tick_t, =0) \
@@ -114,8 +114,8 @@ SINGLE(Name, nametag_visible, uint8_t)
     SINGLE(poison_armor, float, =0) \
     SINGLE(damage_reflection, float, =0) \
     SINGLE(last_damaged_by, EntityID, =NULL_ENTITY) \
+    SINGLE(score_reward, uint32_t, =0) \
     \
-    SINGLE(owner, EntityID, =NULL_ENTITY) \
     SINGLE(base_entity, EntityID, =NULL_ENTITY) \
     SINGLE(target, EntityID, =NULL_ENTITY) \
     SINGLE(seg_head, EntityID, =NULL_ENTITY) \
@@ -153,26 +153,31 @@ public:
     static uint32_t make_hash(EntityID const);
     static bool equal_to(EntityID const, EntityID const);
     bool null() const;
-    void operator=(EntityID const);
 };
 
 bool operator<(EntityID const, EntityID const);
 bool operator==(EntityID const, EntityID const);
 
-inline EntityID const NULL_ENTITY;
+inline const EntityID NULL_ENTITY;
 
 #ifdef SERVER_ONLY
+class Simulation;
+
 struct LoadoutPetal {
     EntityID ent_id;
     game_tick_t reload;
 };
 
 class LoadoutSlot {
-public:
-    LoadoutPetal petals[MAX_PETALS_IN_CLUMP];
     PetalID::T id;
+public:
     uint8_t already_spawned;
+    LoadoutPetal petals[MAX_PETALS_IN_CLUMP];    
     LoadoutSlot();
     void reset();
+    void update_id(Simulation *, PetalID::T);
+    void force_reload();
+    PetalID::T get_petal_id() const;
+    uint32_t size() const;
 };
 #endif

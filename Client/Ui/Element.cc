@@ -110,7 +110,7 @@ void Element::on_render_tooltip(Renderer &ctx) {
             ctx.translate((tooltip->width / 2 + 10) * Ui::scale, screen_y);
         else ctx.translate(screen_x, screen_y);
         ctx.scale(Ui::scale);
-        ctx.translate(0, -(height + tooltip->height) / 2 - 10);
+        ctx.translate(0, -(height + tooltip->height) / 2 - 5);
         ctx.set_global_alpha((float) tooltip_animation);
         tooltip->on_render(ctx);
     }
@@ -152,7 +152,6 @@ void Element::poll_events() {
 
 std::vector<Element *> const Ui::make_range(uint32_t start, uint32_t end, Element *gen(uint32_t)) {
     std::vector<Element *> elts;
-    elts.reserve(end - start);
     for (uint32_t i = start; i < end; ++i)
         elts.push_back(gen(i));
     return elts; 

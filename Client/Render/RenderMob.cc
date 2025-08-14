@@ -24,10 +24,20 @@ void render_mob(Renderer &ctx, Entity const &ent) {
             .mouth = ent.mouth,
             .cutter_angle = (float) (Game::timestamp / 200),
             .face_flags = ent.face_flags,
-            .flags = static_cast<uint8_t>(1 | ((ent.deletion_animation > 0 ? 1 : 0) << 1))
+            .flags = static_cast<uint8_t>(1 | ((ent.deletion_animation > 0 ? 1 : 0) << 1)),
+            .color = ent.color
         };
     }
     draw_static_mob(ent.mob_id, ctx, attrs);
     if (ent.deletion_animation > 0)
         Game::seen_mobs[ent.mob_id] = 1;
+    /*
+    #ifdef DEBUG
+    ctx.set_stroke(0x80ff0000);
+    ctx.set_line_width(1);
+    ctx.begin_path();
+    ctx.arc(0,0,MOB_DATA[ent.mob_id].attributes.aggro_radius);
+    ctx.stroke();
+    #endif
+    */
 }

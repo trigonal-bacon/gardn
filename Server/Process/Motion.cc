@@ -24,7 +24,7 @@ void tick_entity_motion(Simulation *sim, Entity &ent) {
         if (ent.acceleration.x != 0 || ent.acceleration.y != 0)
             ent.set_eye_angle(ent.acceleration.angle());
     }
-    ent.acceleration.set(0,0);
+    //ent.acceleration.set(0,0);
     ent.collision_velocity.set(0,0);
     ent.speed_ratio = 1;
 }

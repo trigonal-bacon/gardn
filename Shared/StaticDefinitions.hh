@@ -122,6 +122,16 @@ namespace RarityID {
     };
 };
 
+namespace ColorID {
+    enum {
+        kYellow,
+        kGray,
+        kBlue,
+        kRed,
+        kNumColors
+    };
+};
+
 namespace AIState {
     enum {
         kIdle,

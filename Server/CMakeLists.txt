@@ -18,16 +18,17 @@ set(SOURCES
     Process/Health.cc
     Process/Motion.cc
     Process/Petal.cc
+    Process/Score.cc
     Process/Segment.cc
     Client.cc
+    Game.cc
     Main.cc
-    Native.cc
     PetalTracker.cc
     Server.cc
     Simulation.cc
     SpatialHashUniform.cc
     Spawn.cc
-    Wasm.cc
+    TeamManager.cc
     ../Shared/Arena.cc
     ../Shared/Binary.cc
     ../Shared/Config.cc
@@ -40,8 +41,13 @@ set(SOURCES
     ../Shared/Vector.cc
 )
 
+if(WASM_SERVER)
+    set(SOURCES ${SOURCES} Wasm.cc)
+else()
+    set(SOURCES ${SOURCES} Native.cc)
+endif()
 if(DEBUG)
-    set(CMAKE_CXX_FLAGS "-gdwarf-4 -lpthread -DDEBUG=1")
+    set(CMAKE_CXX_FLAGS "-gdwarf-4 -DDEBUG=1")
 else()
     set(CMAKE_CXX_FLAGS "-O3 -ffast-math")
 endif()
@@ -56,7 +62,6 @@ if(WASM_SERVER)
     endif()
     add_executable(gardn-server ${SOURCES})
     set(CMAKE_EXECUTABLE_SUFFIX ".js")
-    target_link_libraries(gardn-server m)
 else()
     set(CMAKE_CXX_COMPILER "g++")
     add_executable(gardn-server ${SOURCES})

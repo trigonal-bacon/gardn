@@ -19,6 +19,8 @@ public:
     float clip_h;
     RenderContext();
     RenderContext(Renderer *);
+    RenderContext(RenderContext const &) = delete;
+    RenderContext &operator=(RenderContext const &) = default;
     void reset();
     ~RenderContext();
 };

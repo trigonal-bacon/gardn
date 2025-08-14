@@ -12,7 +12,7 @@
 
 Entity &alloc_drop(Simulation *sim, PetalID::T drop_id) {
     DEBUG_ONLY(assert(drop_id < PetalID::kNumPetals);)
-    PetalTracker::add_petal(drop_id);
+    PetalTracker::add_petal(sim, drop_id);
     Entity &drop = sim->alloc_ent();
     drop.add_component(kPhysics);
     drop.set_radius(20);
@@ -21,7 +21,6 @@ Entity &alloc_drop(Simulation *sim, PetalID::T drop_id) {
 
     drop.add_component(kRelations);
     drop.set_team(NULL_ENTITY);
-    //entity_set_owner(drop, NULL_ENTITY);
 
     drop.add_component(kDrop);
     drop.set_drop_id(drop_id);
@@ -42,9 +41,7 @@ static Entity &__alloc_mob(Simulation *sim, MobID::T mob_id, float x, float y, E
     mob.set_x(x);
     mob.set_y(y);
     mob.friction = DEFAULT_FRICTION;
-    mob.immunity_ticks = TPS;
-    mob.mass = 1 + mob.radius / 25;
-    if (data.attributes.stationary) mob.mass *= 10000;
+    mob.mass = (1 + mob.radius / BASE_FLOWER_RADIUS) * (data.attributes.stationary ? 10000 : 1);
     if (mob_id == MobID::kAntHole)
         BIT_SET(mob.flags, EntityFlags::kNoFriendlyCollision);
     if (team == NULL_ENTITY)
@@ -62,9 +59,8 @@ static Entity &__alloc_mob(Simulation *sim, MobID::T mob_id, float x, float y, E
     mob.poison_damage = data.attributes.poison_damage;
     mob.set_health_ratio(1);
 
-    mob.add_component(kScore);
-    mob.set_score(data.xp);
     mob.detection_radius = data.attributes.aggro_radius;
+    mob.score_reward = data.xp;
 
     mob.add_component(kName);
     mob.set_name(data.name);
@@ -73,6 +69,7 @@ static Entity &__alloc_mob(Simulation *sim, MobID::T mob_id, float x, float y, E
     if (mob_id == MobID::kDigger) {
         mob.add_component(kFlower);
         mob.set_angle(0);
+        mob.set_color(ColorID::kGray);
     }
     return mob;
 }
@@ -117,25 +114,20 @@ Entity &alloc_player(Simulation *sim, EntityID const team) {
     Entity &player = sim->alloc_ent();
 
     player.add_component(kPhysics);
-    //player.set_x(camera.camera_x);
-    //player.set_y(camera.camera_y);
-    player.set_radius(25);
+    player.set_radius(BASE_FLOWER_RADIUS);
     player.friction = DEFAULT_FRICTION;
+    player.mass = 1;
 
     player.add_component(kFlower);
 
     player.add_component(kRelations);
     player.set_team(team);
-    //player.owner = player.id;
-    //player.set_team(camera_id);
 
     player.add_component(kHealth);
-    player.health = 100;
-    player.max_health = 100;
+    player.health = player.max_health = BASE_HEALTH;
     player.set_health_ratio(1);
-    player.damage = 25;
+    player.damage = BASE_BODY_DAMAGE;
     player.immunity_ticks = 1.0 * TPS;
-    player.mass = 1;
 
     player.add_component(kScore);
 
@@ -166,10 +158,10 @@ Entity &alloc_petal(Simulation *sim, PetalID::T petal_id, Entity const &parent) 
     petal.add_component(kHealth);
     petal.health = petal.max_health = petal_data.health;
     petal.damage = petal_data.damage;
-    if (petal_id == PetalID::kBone) petal.armor = 4;
     petal.set_health_ratio(1);
     petal.poison_damage = petal_data.attributes.poison_damage;
-    if (petal_id == PetalID::kPincer) petal.slow_inflict = TPS * 1.0;
+    if (petal_id == PetalID::kPincer) petal.slow_inflict = TPS * 1.5;
+    if (petal_id == PetalID::kBone) petal.armor = 4;
 
     if (parent.id == NULL_ENTITY) petal.base_entity = petal.id;
     else petal.base_entity = parent.id;
@@ -196,9 +188,9 @@ Entity &alloc_web(Simulation *sim, float radius, Entity const &parent) {
 void player_spawn(Simulation *sim, Entity &camera, Entity &player) {
     camera.set_player(player.id);
     player.set_parent(camera.id);
-    player.owner = camera.id;
+    player.set_color(camera.color);
     uint32_t power = Map::difficulty_at_level(camera.respawn_level);
-    ZoneDefinition const &zone = MAP[power];
+    ZoneDefinition const &zone = MAP[Map::get_suitable_difficulty_zone(power)];
     float spawn_x = (frand() - 0.5) * zone.w + zone.x;
     float spawn_y = (frand() - 0.5) * zone.h + zone.y;
     camera.set_camera_x(spawn_x);
@@ -210,15 +202,15 @@ void player_spawn(Simulation *sim, Entity &camera, Entity &player) {
     player.health = player.max_health = hp_at_level(camera.respawn_level);
     for (uint32_t i = 0; i < player.loadout_count; ++i) {
         PetalID::T id = camera.inventory[i];
+        LoadoutSlot &slot = player.loadout[i];
         player.set_loadout_ids(i, id);
-        player.loadout[i].id = id;
-        player.loadout[i].already_spawned = 1;
-        for (uint32_t j = 0; j < PETAL_DATA[id].count; ++j)
-            player.loadout[i].petals[j].reload = PETAL_DATA[id].reload * TPS;
+        slot.update_id(sim, id);
+        slot.force_reload();
     }
 
-    for (uint32_t i = player.loadout_count; i < MAX_SLOT_COUNT * 2; ++i)
+    for (uint32_t i = player.loadout_count; i < player.loadout_count + MAX_SLOT_COUNT; ++i)
         player.set_loadout_ids(i, camera.inventory[i]);
+
     //peaceful transfer, no petal tracking needed
     for (uint32_t i = 0; i < MAX_SLOT_COUNT * 2; ++i)
         camera.set_inventory(i, PetalID::kNone);

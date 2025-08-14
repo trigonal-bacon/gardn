@@ -92,3 +92,9 @@ void Game::swap_petals(uint8_t pos1, uint8_t pos2) {
     writer.write<uint8_t>(pos2);
     socket.send(writer.packet, writer.at - writer.packet);
 }
+
+void Game::swap_all_petals() {
+    if (!Game::alive()) return;
+    for (uint32_t i = 0; i < Game::loadout_count; ++i)
+        Ui::ui_swap_petals(i, i + Game::loadout_count);
+}

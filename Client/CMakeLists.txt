@@ -84,5 +84,3 @@ set(CMAKE_EXECUTABLE_SUFFIX ".js")
 if (SERVER_URL)
     target_compile_definitions(gardn-client PRIVATE SERVER_URL="${SERVER_URL}")
 endif()
-
-target_link_libraries(gardn-client m)

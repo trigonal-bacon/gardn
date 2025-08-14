@@ -36,7 +36,7 @@ namespace Game {
     float slot_indicator_opacity = 0;
     float transition_circle = 0;
 
-    uint32_t respawn_level = 0;
+    uint32_t respawn_level = 1;
 
     PetalID::T cached_loadout[2 * MAX_SLOT_COUNT] = {PetalID::kNone};
 
@@ -51,6 +51,7 @@ using namespace Game;
 
 void Game::init() {
     Storage::retrieve();
+    reset();
     title_ui_window.add_child(
         [](){ 
             Ui::Element *elt = new Ui::StaticText(60, "the gardn project");
@@ -113,6 +114,21 @@ void Game::init() {
     );
     other_ui_window.style.no_polling = 1;
     socket.connect(WS_URL);
+}
+
+void Game::reset() {
+    simulation_ready = 0;
+    on_game_screen = 0;
+    score = 0;
+    overlevel_timer = 0;
+    slot_indicator_opacity = 0;
+    transition_circle = 0;
+    respawn_level = 1;
+    loadout_count = 5;
+    camera_id = player_id = NULL_ENTITY;
+    for (uint32_t i = 0; i < 2 * MAX_SLOT_COUNT; ++i)
+        cached_loadout[i] = PetalID::kNone;
+    simulation.reset();
 }
 
 uint8_t Game::alive() {
@@ -186,7 +202,8 @@ void Game::tick(double time) {
         render_title_screen();
         Particle::tick_title(renderer, Ui::dt);
         title_ui_window.render(renderer);
-    }
+    } else
+        title_ui_window.on_render_skip(renderer);
 
     if (should_render_game_ui()) {
         RenderContext c(&renderer);
@@ -210,7 +227,9 @@ void Game::tick(double time) {
         renderer.translate(renderer.width/2,renderer.height/2);
         renderer.draw_image(game_ui_renderer);
         //process keybind petal switches
-        if (Input::keys_pressed_this_tick.contains('E')) 
+        if (Input::keys_pressed_this_tick.contains('X'))
+            Game::swap_all_petals();
+        else if (Input::keys_pressed_this_tick.contains('E')) 
             Ui::forward_secondary_select();
         else if (Input::keys_pressed_this_tick.contains('Q')) 
             Ui::backward_secondary_select();
@@ -239,8 +258,10 @@ void Game::tick(double time) {
                 }
             }
         }
-    } else 
+    } else {
         Ui::UiLoadout::selected_with_keys = MAX_SLOT_COUNT;
+        game_ui_window.on_render_skip(game_ui_renderer);
+    }
         
     if (Game::timestamp - Ui::UiLoadout::last_key_select > 5000)
         Ui::UiLoadout::selected_with_keys = MAX_SLOT_COUNT;
@@ -254,7 +275,7 @@ void Game::tick(double time) {
 
     if (Input::keys_pressed_this_tick.contains((char) 186)) //';'
         show_debug = !show_debug;
-    if (Input::keys_pressed_this_tick.contains('\x0d') && !Game::alive())
+    if (Input::keys_pressed_this_tick.contains('\r') && !Game::alive())
         Game::spawn_in();
 
     //clearing operations

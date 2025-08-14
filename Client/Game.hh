@@ -42,6 +42,7 @@ namespace Game {
     extern uint8_t is_mobile;
     
     void init();
+    void reset();
     uint8_t alive();
     uint8_t in_game();
     uint8_t should_render_title_ui();
@@ -53,5 +54,6 @@ namespace Game {
     void spawn_in();
     void delete_petal(uint8_t);
     void swap_petals(uint8_t, uint8_t);
+    void swap_all_petals();
     void on_message(uint8_t *, uint32_t);
 };

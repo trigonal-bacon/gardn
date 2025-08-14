@@ -13,6 +13,7 @@ struct FlowerRenderAttributes {
     float cutter_angle = 0;
     uint8_t face_flags = 0;
     uint8_t flags = 0;
+    uint8_t color = 0;
 };
 
 struct MobRenderAttributes {

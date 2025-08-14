@@ -101,7 +101,6 @@ namespace StorageProtocol {
     std::string Decoder::read<std::string>() {
         std::string ref;
         uint32_t len = read<uint32_t>();
-        ref.reserve(len);
         for (uint32_t i = 0; i < len; ++i) ref.push_back(read<uint8_t>());
         return ref;
     }
@@ -166,7 +165,7 @@ void Storage::retrieve() {
     }
     {
         uint32_t len = StorageProtocol::retrieve("nickname", MAX_NAME_LENGTH + 4);
-        if (len > 0 && len <= MAX_NAME_LENGTH) {
+        if (len > 0 && len <= MAX_NAME_LENGTH + 4) {
             Decoder reader(&StorageProtocol::buffer[0]);
             Game::nickname = reader.read<std::string>();
         }

@@ -12,7 +12,8 @@ CLIENT_ONLY(class Reader;)
 #define FIELDS_Arena \
     SINGLE(player_count, uint32_t) \
     MULTIPLE(scores, Float, LEADERBOARD_SIZE) \
-    MULTIPLE(names, std::string, LEADERBOARD_SIZE)
+    MULTIPLE(names, std::string, LEADERBOARD_SIZE) \
+    MULTIPLE(colors, uint8_t, LEADERBOARD_SIZE)
 
 class Arena {
     enum Fields {

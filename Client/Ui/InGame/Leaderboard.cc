@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include <iostream>
+
 using namespace Ui;
 
 static float const LEADERBOARD_WIDTH = 180;
@@ -32,7 +34,7 @@ void LeaderboardSlot::on_render(Renderer &ctx) {
     ctx.move_to(-(width-height)/2,0);
     ctx.line_to((width-height)/2,0);
     ctx.stroke();
-    ctx.set_stroke(0xfff9e496);
+    ctx.set_stroke(FLOWER_COLORS[Game::simulation.arena_info.colors[pos]]);
     ctx.set_line_width(height * 0.8);
     ctx.begin_path();
     ctx.move_to(-(width-height)/2,0);

@@ -10,8 +10,11 @@ uint32_t const TPS = 20;
 float const PETAL_DISABLE_DELAY = 45.0f; //seconds
 float const PLAYER_ACCELERATION = 5.0f;
 float const DEFAULT_FRICTION = 1.0f/3.0f;
-float const SUMMON_RETREAT_RADIUS = 600;
+float const SUMMON_RETREAT_RADIUS = 600.0f;
+float const DIGGER_SPAWN_CHANCE = 0.25f;
 
+float const BASE_FLOWER_RADIUS = 25.0f;
+float const BASE_PETAL_ROTATION_SPEED = 2.5f;
 float const BASE_FOV = 0.9f;
 float const BASE_HEALTH = 100.0f;
 float const BASE_BODY_DAMAGE = 25.0f;
@@ -67,7 +70,7 @@ struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
         100.0, 10.0, 12.0, 7.5, 1, RarityID::kRare, {}},
     {"Cactus", "Not very strong, but somehow increases your maximum health",
         15.0, 5.0, 15.0, 1.0, 1, RarityID::kRare, {}},
-    {"Web", "It's very sticky",
+    {"Web", "It's really sticky",
         10.0, 5.0, 10.0, 3.0, 1, RarityID::kRare, {
         .secondary_reload = 0.5,
         .defend_only = 1,
@@ -80,7 +83,7 @@ struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
         5.0, 8.0, 7.0, 2.0, 4, RarityID::kRare, {
         .clump_radius = 8,
         .secondary_reload = 0.1,
-        .defend_only = 1
+        .defend_only = 1,
     }},
     {"Sand", "It's coarse, rough, and gets everywhere",
         10.0, 3.0, 7.0, 1.5, 4, RarityID::kRare, {
@@ -100,7 +103,7 @@ struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
     }},
     {"Triplet", "How about THREE?!",
         5.0, 8.0, 7.0, 1.0, 3, RarityID::kEpic, {}},
-    {"Egg", "Something interesting mught pop out of this",
+    {"Egg", "Something interesting might pop out of this",
         50.0, 1.0, 12.5, 1.0, 2, RarityID::kEpic, { 
         .secondary_reload = 3.5,
         .defend_only = 1,
@@ -111,12 +114,12 @@ struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
         10.0, 5.0, 7.0, 5.0, 1, RarityID::kEpic, { 
         .poison_damage = { 15.0, 4.0 }
     }},
-    {"Pollen", "Shoutout to all the allergies out there",
+    {"Pollen", "Asthmatics beware",
         7.0, 8.0, 7.0, 1.5, 3, RarityID::kEpic, {
         .secondary_reload = 0.5,
         .defend_only = 1
     }},
-    {"Peas", "4 in 1, not with a secret ingredient: poison",
+    {"Peas", "4 in 1 deal, now with a secret ingredient: poison",
         5.0, 2.0, 7.0, 2.0, 4, RarityID::kEpic, {
         .clump_radius = 8,
         .secondary_reload = 0.1,
@@ -148,19 +151,19 @@ struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
         5.0, 35.0, 7.0, 4.5, 3, RarityID::kLegendary, {
         .clump_radius = 10
     }},
-    {"Web", "It's very sticky",
+    {"Web", "It's really sticky",
         10.0, 5.0, 10.0, 3.0, 3, RarityID::kLegendary, {
         .clump_radius = 10,
         .secondary_reload = 0.5,
         .defend_only = 1,
     }},
-    {"Antennae", "Lets your flower see foes from farther away",
+    {"Antennae", "Allows your flower to sense foes from farther away",
         0.0, 0.0, 12.5, 0.0, 0, RarityID::kLegendary, {}},
     {"Cactus", "Not very strong, but somehow increases your maximum health",
         15.0, 5.0, 10.0, 1.0, 3, RarityID::kLegendary, {
         .clump_radius = 10,
     }},
-    {"Heaviest", "This thing is so heavy that nothing can get in its way",
+    {"Heaviest", "This thing is so heavy that nothing gets in the way",
         200.0, 10.0, 12.0, 15.0, 1, RarityID::kEpic, {
         .mass = 10,
         .rotation_style = PetalAttributes::kNoRot
@@ -173,11 +176,11 @@ struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
         15.0, 5.0, 10.0, 1.0, 1, RarityID::kEpic, {
         .poison_damage = { 1.0, 5.0 }
     }},
-    {"Salt", "Reflects some damage dealt to the flower. Does not stack",
+    {"Salt", "Reflects some damage dealt to the flower. Does not stack with itseld",
         10.0, 10.0, 10.0, 2.5, 1, RarityID::kRare, {}},
-    {"Basic", "Something extremely rare and useless",
+    {"Basic", "Something incredibly rare and useless",
         10.0, 10.0, 10.0, 2.5, 1, RarityID::kUnique, {}},
-    {"Square", "This shape seems familiar...",
+    {"Square", "This shape... it looks familiar...",
         10.0, 10.0, 15.0, 2.5, 1, RarityID::kUnique, {
         .icon_angle = M_PI / 4 + 1
     }},
@@ -365,7 +368,7 @@ struct MobData const MOB_DATA[MobID::kNumMobs] = {
     }, {}},
 };
 
-std::array<StaticArray<float, MAX_DROPS_PER_MOB>, MobID::kNumMobs> const _get_auto_petal_drops() {
+std::array<StaticArray<float, MAX_DROPS_PER_MOB>, MobID::kNumMobs> const MOB_DROP_CHANCES = [](){
     std::array<StaticArray<float, MAX_DROPS_PER_MOB>, MobID::kNumMobs> ret;
     double const RARITY_MULT[RarityID::kNumRarities] = {50000,15000,2500,100,10,2.5,1};
     double MOB_SPAWN_RATES[MobID::kNumMobs] = {0};
@@ -374,14 +377,13 @@ std::array<StaticArray<float, MAX_DROPS_PER_MOB>, MobID::kNumMobs> const _get_au
         double total = 0;
         for (SpawnChance const &s : zone.spawns) total += s.chance;
         for (SpawnChance const &s : zone.spawns) {
-            double xx = (s.chance * zone.drop_multiplier / total);
-            MOB_SPAWN_RATES[s.id] += xx;
+            double base_chance = (s.chance * zone.drop_multiplier / total);
+            MOB_SPAWN_RATES[s.id] += base_chance;
             if (s.id == MobID::kAntHole) {
-                MOB_SPAWN_RATES[MobID::kQueenAnt] += xx;
-                MOB_SPAWN_RATES[MobID::kDigger] += 0.25 * xx;
-                MOB_SPAWN_RATES[MobID::kSoldierAnt] += 15 * xx;
-                MOB_SPAWN_RATES[MobID::kWorkerAnt] += 10 * xx;
-                MOB_SPAWN_RATES[MobID::kBabyAnt] += 5 * xx;
+                MOB_SPAWN_RATES[MobID::kDigger] += DIGGER_SPAWN_CHANCE * base_chance;
+                for (auto const &spawn_wave : ANTHOLE_SPAWNS)
+                    for (MobID::T spawn : spawn_wave)
+                        MOB_SPAWN_RATES[spawn] += base_chance;
             }
         }
     }
@@ -398,13 +400,7 @@ std::array<StaticArray<float, MAX_DROPS_PER_MOB>, MobID::kNumMobs> const _get_au
         }
     }
     return ret;
-}
-
-static std::array<StaticArray<float, MAX_DROPS_PER_MOB>, MobID::kNumMobs> const _drop_chances = _get_auto_petal_drops();
-
-StaticArray<float, MAX_DROPS_PER_MOB> const &get_mob_drop_chances(MobID::T id) {
-    return _drop_chances[id];
-}
+}();
 
 uint32_t score_to_pass_level(uint32_t level) {
     return (uint32_t)(pow(1.06, level - 1) * level) + 3;

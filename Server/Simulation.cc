@@ -26,6 +26,7 @@ static void calculate_leaderboard(Simulation *sim) {
     for (uint32_t i = 0; i < num; ++i) {
         sim->arena_info.set_names(i, players[i]->name);
         sim->arena_info.set_scores(i, players[i]->score);
+        sim->arena_info.set_colors(i, players[i]->color);
     }
 }
 
@@ -49,6 +50,7 @@ void Simulation::tick() {
     for_each<kPhysics>(tick_entity_motion);
     for_each<kSegmented>(tick_segment_behavior);
     for_each<kCamera>(tick_camera_behavior);
+    for_each<kScore>(tick_score_behavior);
     calculate_leaderboard(this);
 }
 
@@ -69,15 +71,11 @@ void Simulation::post_tick() {
     for_each_entity([](Simulation *sim, Entity &ent) {
         if (!ent.pending_delete) return;
         if (!ent.has_component(kPhysics)) 
-            sim->_delete_ent(ent.id);
-        else {
-            if (ent.deletion_tick >= TPS / 5) 
-                sim->_delete_ent(ent.id);
-            else {
-                if (ent.deletion_tick == 0)
-                    entity_on_death(sim, ent);
-                ent.deletion_tick += 1;
-            }
-        }
+            return sim->_delete_ent(ent.id);
+        if (ent.deletion_tick >= TPS / 5) 
+            return sim->_delete_ent(ent.id);
+        if (ent.deletion_tick == 0)
+            entity_on_death(sim, ent);
+        ++ent.deletion_tick;
     });
 }

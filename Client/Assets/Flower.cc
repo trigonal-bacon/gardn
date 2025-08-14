@@ -1,5 +1,7 @@
 #include <Client/Assets/Assets.hh>
 
+#include <Client/StaticData.hh>
+
 void draw_static_flower(Renderer &ctx, FlowerRenderAttributes attributes) {
     if (BIT_AT(attributes.face_flags, FaceFlags::kCutter)) {
         RenderContext context(&ctx);
@@ -10,7 +12,9 @@ void draw_static_flower(Renderer &ctx, FlowerRenderAttributes attributes) {
     uint32_t base_color = 0xffffe763;
     if (BIT_AT(attributes.face_flags, FaceFlags::kPoisoned)) base_color = 0xffce76db;
     else if (BIT_AT(attributes.face_flags, FaceFlags::kDandelioned)) base_color = Renderer::MIX(base_color, 0xffcfcfcf, 0.5);
-    else if (BIT_AT(attributes.flags, 0)) base_color = 0xff999999;
+    else if (attributes.color < ColorID::kNumColors) {
+        base_color = FLOWER_COLORS[attributes.color];
+    }
     ctx.set_stroke(Renderer::HSV(base_color, 0.8));
     ctx.set_fill(base_color);
     ctx.set_line_width(3);

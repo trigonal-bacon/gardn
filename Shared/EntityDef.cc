@@ -1,5 +1,6 @@
 #include <Shared/EntityDef.hh>
 
+#include <Shared/Simulation.hh>
 #include <Shared/StaticDefinitions.hh>
 
 EntityID::EntityID() : id(0), hash(0) {}
@@ -16,11 +17,6 @@ uint32_t EntityID::make_hash(EntityID const o) {
 
 bool EntityID::equal_to(EntityID const a, EntityID const b) {
     return a.id == b.id && a.hash == b.hash;
-}
-
-void EntityID::operator=(const EntityID o) {
-    id = o.id;
-    hash = o.hash;
 }
 
 bool operator<(EntityID const a, EntityID const b) {
@@ -42,4 +38,29 @@ void LoadoutSlot::reset() {
         petals[i].reload = 0;
         petals[i].ent_id = NULL_ENTITY;
     }
+}
+
+PetalID::T LoadoutSlot::get_petal_id() const {
+    return id;
+}
+
+void LoadoutSlot::update_id(Simulation *sim, PetalID::T petal_id) {
+    struct PetalData const &petal_data = PETAL_DATA[id];
+    for (uint32_t j = 0; j < size(); ++j) {
+        LoadoutPetal &petal_slot = petals[j];
+        if (sim->ent_alive(petal_slot.ent_id))
+            sim->request_delete(petal_slot.ent_id);
+    }
+    reset();
+    id = petal_id;
+}
+
+void LoadoutSlot::force_reload() {
+    already_spawned = 1;
+    for (uint32_t j = 0; j < size(); ++j)
+        petals[j].reload = PETAL_DATA[id].reload * TPS;
+}
+
+uint32_t LoadoutSlot::size() const {
+    return PETAL_DATA[id].count;
 }
