@@ -176,7 +176,7 @@ struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
         15.0, 5.0, 10.0, 1.0, 1, RarityID::kEpic, {
         .poison_damage = { 1.0, 5.0 }
     }},
-    {"Salt", "Reflects some damage dealt to the flower. Does not stack with itseld",
+    {"Salt", "Reflects some damage dealt to the flower. Does not stack with itself",
         10.0, 10.0, 10.0, 2.5, 1, RarityID::kRare, {}},
     {"Basic", "Something incredibly rare and useless",
         10.0, 10.0, 10.0, 2.5, 1, RarityID::kUnique, {}},

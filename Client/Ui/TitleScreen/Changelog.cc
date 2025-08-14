@@ -32,6 +32,11 @@ static Element *make_entries(std::initializer_list<std::string const> contents) 
 
 static Element *make_changelog_contents() {
     Element *elt = new Ui::VContainer({
+        make_date("August 14th 2025"),
+        make_entries({
+            "Added ability to restore score and petals for players who leave the game without dying"
+        }),
+        make_divider(),
         make_date("August 10th 2025"),
         make_entries({
             "Added TDM",

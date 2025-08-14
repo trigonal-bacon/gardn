@@ -41,3 +41,7 @@ ports:
     name: Game Server
     onOpen: ignore
     visibility: public
+
+  - port: 9229
+    name: Node.js Debugger
+    onOpen: ignore
