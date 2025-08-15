@@ -15,7 +15,7 @@ Entity &alloc_drop(Simulation *sim, PetalID::T drop_id) {
     PetalTracker::add_petal(sim, drop_id);
     Entity &drop = sim->alloc_ent();
     drop.add_component(kPhysics);
-    drop.set_radius(20);
+    drop.set_radius(25);
     drop.set_angle(frand() * 0.2 - 0.1);
     drop.friction = 0.25;
 

@@ -14,8 +14,10 @@ void Simulation::tick() {
         if (ent.has_component(kPhysics)) {
             float prev_x = ent.x;
             float prev_y = ent.y;
-            ent.x.step(amt);
-            ent.y.step(amt);
+            if (!ent.pending_delete) {
+                ent.x.step(amt);
+                ent.y.step(amt);
+            }
             if (ent.has_component(kDrop) || ent.has_component(kWeb)) {
                 if (ent.lifetime < TPS)
                     LERP(ent.animation, 1, amt * 0.75)
@@ -27,7 +29,7 @@ void Simulation::tick() {
             ent.radius.step(amt);
             ent.angle.step_angle(amt);
             if (ent.pending_delete)
-                LERP(ent.deletion_animation, 1, amt);
+                ent.deletion_animation = fclamp(ent.deletion_animation + Ui::dt / 125, 0, 1);
         }
         if (ent.has_component(kCamera)) {
             ent.camera_x.step(amt);
