@@ -113,7 +113,9 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
             VALIDATE(UTF8Parser::is_valid_utf8(name));
             name = UTF8Parser::trunc_string(name, MAX_NAME_LENGTH);
             player.set_name(name);
-            std::cout << "player_spawn '" << player.name << "' <" << +player.id.hash << "," << +player.id.id << ">" << std::endl;
+            std::cout << "player_spawn "
+                << (player.name.size() == 0 ? "Unnamed" : player.name)
+                << " <" << +player.id.hash << "," << +player.id.id << ">" << std::endl;
             break;
         }
         case Serverbound::kPetalDelete: {

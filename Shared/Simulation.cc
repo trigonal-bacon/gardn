@@ -50,7 +50,7 @@ Entity &Simulation::get_ent(EntityID const &id) {
 void Simulation::force_alloc_ent(EntityID const &id) {
     assert(id.id < ENTITY_CAP);
     DEBUG_ONLY(std::cout << "ent_create " << id << "\n";)
-    assert(BIT_AT_ARR(entity_tracker, id.id));
+    assert(!BIT_AT_ARR(entity_tracker, id.id));
     entities[id.id].init();
     BIT_SET_ARR(entity_tracker, id.id);
     hash_tracker[id.id] = id.hash;
