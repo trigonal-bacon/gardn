@@ -37,7 +37,7 @@ uint8_t Client::alive() {
     && simulation->ent_exists(simulation->get_ent(camera).player);
 }
 
-#define VALIDATE(expr) if (!expr) { client->disconnect(); }
+#define VALIDATE(expr) if (!expr) { client->disconnect(); return; }
 
 void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) {
     if (ws == nullptr) return;
@@ -110,6 +110,7 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
             //check string length;
             VALIDATE(validator.validate_string(MAX_NAME_LENGTH));
             reader.read<std::string>(name);
+            VALIDATE(UTF8Parser::is_valid_utf8(name));
             name = UTF8Parser::trunc_string(name, MAX_NAME_LENGTH);
             player.set_name(name);
             break;

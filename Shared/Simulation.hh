@@ -14,13 +14,13 @@
 inline uint32_t const ENTITY_CAP = 8192;
 
 class Simulation {
-    uint8_t entity_tracker[ENTITY_CAP] = {0};
-    EntityID::hash_type hash_tracker[ENTITY_CAP] = {0};
+    uint8_t entity_tracker[div_round_up(ENTITY_CAP, 8)];
+    EntityID::hash_type hash_tracker[ENTITY_CAP];
     Entity entities[ENTITY_CAP];
     StaticArray<EntityID::id_type, ENTITY_CAP> active_entities;
 public:
-    SERVER_ONLY(uint32_t petal_count_tracker[PetalID::kNumPetals] = {0};)
-    SERVER_ONLY(uint32_t zone_mob_counts[MAP.size()] = {0};)
+    SERVER_ONLY(uint32_t petal_count_tracker[PetalID::kNumPetals];)
+    SERVER_ONLY(uint32_t zone_mob_counts[MAP.size()];)
     SERVER_ONLY(SpatialHash spatial_hash;)
     Arena arena_info;
     Simulation();

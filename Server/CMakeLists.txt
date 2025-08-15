@@ -26,7 +26,6 @@ set(SOURCES
     PetalTracker.cc
     Server.cc
     Simulation.cc
-    SpatialHashUniform.cc
     Spawn.cc
     TeamManager.cc
     ../Shared/Arena.cc
@@ -46,10 +45,18 @@ if(WASM_SERVER)
 else()
     set(SOURCES ${SOURCES} Native.cc)
 endif()
+if(GENERAL_SPATIAL_HASH)
+    set(SOURCES ${SOURCES} SpatialHashCanonical.cc)
+else()
+    set(SOURCES ${SOURCES} SpatialHashUniform.cc)
+endif()
 if(DEBUG)
     set(CMAKE_CXX_FLAGS "-gdwarf-4 -DDEBUG=1")
 else()
     set(CMAKE_CXX_FLAGS "-O3 -ffast-math")
+endif()
+if (TDM)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20 -DGAMEMODE_TDM=1")
 endif()
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20 -DSERVERSIDE=1")
 

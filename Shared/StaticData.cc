@@ -392,6 +392,7 @@ std::array<StaticArray<float, MAX_DROPS_PER_MOB>, MobID::kNumMobs> const MOB_DRO
         for (PetalID::T const drop_id : MOB_DATA[id].drops) PETAL_AGGREGATE_DROPS[drop_id]++;
 
     double const BASE_NUM = MOB_SPAWN_RATES[MobID::kSquare];
+    if (BASE_NUM <= 0) assert(!"Square mob must spawn in at least one zone");
 
     for (MobID::T id = 0; id < MobID::kNumMobs; ++id) {
         for (PetalID::T const drop_id : MOB_DATA[id].drops) {

@@ -234,10 +234,10 @@ struct SpawnChance {
 };
 
 struct ZoneDefinition {
-    float x;
-    float y;
-    float w;
-    float h;
+    float left;
+    float top;
+    float right;
+    float bottom;
     float density;
     float drop_multiplier;
     StaticArray<struct SpawnChance, MobID::kNumMobs> spawns;

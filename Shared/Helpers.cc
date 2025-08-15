@@ -137,6 +137,28 @@ std::string UTF8Parser::trunc_string(std::string const &str, uint32_t max) {
     return str.substr(0, last);
 }
 
+bool UTF8Parser::is_valid_utf8(std::string const &str) {
+    uint32_t at = 0;
+    while (at < str.size()) {
+        uint8_t c = (uint8_t) str[at];
+        if (c < 0x80) {
+            ++at;
+            continue;
+        }
+        uint32_t run_len;
+        if (c >= 0xf0)
+            run_len = 3;
+        else if (c >= 0xe0)
+            run_len = 2;
+        else
+            run_len = 1;
+        if (at + run_len > str.size()) return false;
+        for (uint32_t i = 0; i < run_len; ++i, ++at)
+            if (((uint8_t) str[at]) < 0x80) return false;
+    }
+    return true;
+}
+
 char UTF8Parser::next_char() {
     if (*at == 0) return 0;
     return *at++;

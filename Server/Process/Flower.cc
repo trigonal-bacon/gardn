@@ -158,17 +158,17 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
                     if (rotation_count > 0)
                         wanting.unit_normal(2 * M_PI * rot_pos / rotation_count + player.heading_angle);
 
-                    float range = 60;
+                    float range = player.radius + 40;
                     if (BIT_AT(player.input, InputFlags::kAttacking)) { 
                         if (petal_data.attributes.defend_only == 0) 
-                            range = 120 + buffs.extra_range; 
+                            range = player.radius + 100 + buffs.extra_range; 
                         if (petal.petal_id == PetalID::kWing) {
                             float wave = sinf((float) petal.lifetime / (0.4 * TPS));
                             wave = wave * wave;
                             range += wave * 120;
                         }
                     }
-                    else if (BIT_AT(player.input, InputFlags::kDefending)) range = 40;
+                    else if (BIT_AT(player.input, InputFlags::kDefending)) range = player.radius + 15;
                     wanting *= range;
                     if (petal_data.attributes.clump_radius > 0) {
                         Vector secondary;

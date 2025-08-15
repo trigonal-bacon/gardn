@@ -191,8 +191,8 @@ void player_spawn(Simulation *sim, Entity &camera, Entity &player) {
     player.set_color(camera.color);
     uint32_t power = Map::difficulty_at_level(camera.respawn_level);
     ZoneDefinition const &zone = MAP[Map::get_suitable_difficulty_zone(power)];
-    float spawn_x = (frand() - 0.5) * zone.w + zone.x;
-    float spawn_y = (frand() - 0.5) * zone.h + zone.y;
+    float spawn_x = lerp(zone.left, zone.right, frand());
+    float spawn_y = lerp(zone.top, zone.bottom, frand());
     camera.set_camera_x(spawn_x);
     camera.set_camera_y(spawn_y);
     player.set_x(spawn_x);

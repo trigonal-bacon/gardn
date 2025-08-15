@@ -18,10 +18,10 @@ void Minimap::on_render(Renderer &ctx) {
     ctx.scale(width/ARENA_WIDTH);
     for (ZoneDefinition const &def : MAP) {
         ctx.set_fill(def.color);
-        ctx.fill_rect(def.x-def.w/2,def.y-def.h/2,def.w,def.h);
-        ctx.translate(def.x,def.y);
-        ctx.draw_text(def.name, { .size = def.h/2 });
-        ctx.translate(-def.x,-def.y);
+        ctx.fill_rect(def.left, def.top, def.right - def.left, def.bottom - def.top);
+        ctx.translate((def.left+def.right)/2,(def.top+def.bottom)/2);
+        ctx.draw_text(def.name, { .size = (def.bottom-def.top)/2 });
+        ctx.translate(-(def.left+def.right)/2,-(def.top+def.bottom)/2);
     }
     if (Game::in_game()) {
         Entity const &camera = Game::simulation.get_ent(Game::camera_id);

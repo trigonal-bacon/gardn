@@ -20,7 +20,7 @@ uint32_t Map::get_zone_from_pos(float x, float y) {
     uint32_t ret = 0;
     for (uint32_t i = 1; i < MAP.size(); ++i) {
         struct ZoneDefinition const &zone = MAP[i];
-        if (fabs(x - zone.x) < zone.w / 2 && fabs(y - zone.y) < zone.h / 2)
+        if (fclamp(x, zone.left, zone.right) == x && fclamp(y, zone.top, zone.bottom) == y)
             ret = i;
     }
     return ret;
@@ -46,7 +46,7 @@ void Map::spawn_random_mob(Simulation *sim) {
     float y = frand() * ARENA_HEIGHT;
     uint32_t zone_id = Map::get_zone_from_pos(x, y);
     struct ZoneDefinition const &zone = MAP[zone_id];
-    if (zone.density * zone.w * zone.h / (500 * 500) < sim->zone_mob_counts[zone_id]) return;
+    if (zone.density * (zone.right - zone.left) * (zone.bottom - zone.top) / (500 * 500) < sim->zone_mob_counts[zone_id]) return;
     float sum = 0;
     for (SpawnChance const &s : zone.spawns)
         sum += s.chance;
