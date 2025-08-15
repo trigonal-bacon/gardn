@@ -23,12 +23,13 @@ extern float const BASE_BODY_DAMAGE;
 extern struct PetalData const PETAL_DATA[PetalID::kNumPetals];
 extern struct MobData const MOB_DATA[MobID::kNumMobs];
 
+//map extends from (0,0) to (ARENA_WIDTH,ARENA_HEIGHT)
 std::array const MAP = std::to_array<struct ZoneDefinition>({
     {
-        .x = 5000,
-        .y = 2000,
-        .w = 10000,
-        .h = 4000,
+        .left = 0,
+        .top = 0,
+        .right = 10000,
+        .bottom = 4000,
         .density = 1,
         .drop_multiplier = 0.3,
         .spawns = {
@@ -46,10 +47,10 @@ std::array const MAP = std::to_array<struct ZoneDefinition>({
         .name = "Easy"
     },
     {
-        .x = 15000,
-        .y = 2000,
-        .w = 10000,
-        .h = 4000,
+        .left = 10000,
+        .top = 0,
+        .right = 20000,
+        .bottom = 4000,
         .density = 1,
         .drop_multiplier = 0.15,
         .spawns = {
@@ -69,10 +70,10 @@ std::array const MAP = std::to_array<struct ZoneDefinition>({
         .name = "Medium"
     },
     {
-        .x = 25000,
-        .y = 2000,
-        .w = 10000,
-        .h = 4000,
+        .left = 20000,
+        .top = 0,
+        .right = 30000,
+        .bottom = 4000,
         .density = 1,
         .drop_multiplier = 0.1,
         .spawns = {
@@ -93,10 +94,10 @@ std::array const MAP = std::to_array<struct ZoneDefinition>({
         .name = "Hard"
     },
     {
-        .x = 35000,
-        .y = 2000,
-        .w = 10000,
-        .h = 4000,
+        .left = 30000,
+        .top = 0,
+        .right = 40000,
+        .bottom = 4000,
         .density = 1,
         .drop_multiplier = 0.025,
         .spawns = {

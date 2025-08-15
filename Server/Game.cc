@@ -80,15 +80,14 @@ void GameInstance::add_client(Client *client) {
     Entity &ent = simulation.alloc_ent();
     ent.add_component(kCamera);
     ent.add_component(kRelations);
-    constexpr bool FFA = true;
-    if constexpr (FFA) {
-        ent.set_team(ent.id);
-        ent.set_color(ColorID::kYellow); //set the team here
-    } else {
-        EntityID team = team_manager.get_random_team();
-        ent.set_team(team);
-        ent.set_color(simulation.get_ent(team).color);
-    }
+    #ifdef GAMEMODE_TDM
+    EntityID team = team_manager.get_random_team();
+    ent.set_team(team);
+    ent.set_color(simulation.get_ent(team).color);
+    #else
+    ent.set_team(ent.id);
+    ent.set_color(ColorID::kYellow); 
+    #endif
     
     ent.set_fov(BASE_FOV);
     ent.set_respawn_level(1);

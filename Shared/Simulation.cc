@@ -16,7 +16,8 @@ Simulation::Simulation() SERVER_ONLY(: spatial_hash(this)) {
 void Simulation::reset() {
     active_entities.clear();
     for (EntityID::id_type i = 0; i < ENTITY_CAP; ++i) { 
-        hash_tracker[i] = entity_tracker[i] = 0;
+        hash_tracker[i] = 0;
+        BIT_UNSET_ARR(entity_tracker, i);
         entities[i].init();
     }
     arena_info.init();
@@ -31,8 +32,8 @@ void Simulation::reset() {
 
 Entity &Simulation::alloc_ent() {
     for (EntityID::id_type i = 1; i < ENTITY_CAP; ++i) {
-        if (entity_tracker[i]) continue;
-        entity_tracker[i] = 1;
+        if (BIT_AT_ARR(entity_tracker, i)) continue;
+        BIT_SET_ARR(entity_tracker, i);
         entities[i].init();
         DEBUG_ONLY(std::cout << "ent_create " << EntityID(i, hash_tracker[i]) << "\n";)
         entities[i].id = EntityID(i, hash_tracker[i]);
@@ -49,20 +50,20 @@ Entity &Simulation::get_ent(EntityID const &id) {
 void Simulation::force_alloc_ent(EntityID const &id) {
     assert(id.id < ENTITY_CAP);
     DEBUG_ONLY(std::cout << "ent_create " << id << "\n";)
-    assert(!entity_tracker[id.id]);
+    assert(BIT_AT_ARR(entity_tracker, id.id));
     entities[id.id].init();
-    entity_tracker[id.id] = 1;
+    BIT_SET_ARR(entity_tracker, id.id);
     hash_tracker[id.id] = id.hash;
     entities[id.id].id = id;
 }
 
 uint8_t Simulation::ent_exists(EntityID const &id) const {
     DEBUG_ONLY(assert(id.id < ENTITY_CAP);)
-    return entity_tracker[id.id] && hash_tracker[id.id] == id.hash;
+    return BIT_AT_ARR(entity_tracker, id.id) && hash_tracker[id.id] == id.hash;
 }
 
 uint8_t Simulation::ent_alive(EntityID const &id) const {
-    return ent_exists(id) && entities[id.id].pending_delete == 0
+    return ent_exists(id) && !entities[id.id].pending_delete
     SERVER_ONLY(&& entities[id.id].deletion_tick == 0);
 }
 
@@ -74,14 +75,14 @@ void Simulation::request_delete(EntityID const &id) {
 void Simulation::_delete_ent(EntityID const &id) {
     DEBUG_ONLY(std::cout << "ent_delete " << id << "\n";)
     DEBUG_ONLY(assert(ent_exists(id)));
-    entity_tracker[id.id] = 0;
+    BIT_UNSET_ARR(entity_tracker, id.id);
     hash_tracker[id.id]++;
 }
 
 void Simulation::pre_tick() {
     active_entities.clear();
     for (EntityID::id_type i = 1; i < ENTITY_CAP; ++i) {
-        if (!entity_tracker[i]) continue;
+        if (!BIT_AT_ARR(entity_tracker, i)) continue;
         active_entities.push(entities[i].id.id);
     }
 }

@@ -34,7 +34,8 @@ void Simulation::tick() {
     pre_tick();
     spatial_hash.refresh(ARENA_WIDTH, ARENA_HEIGHT);
     if (frand() < 1.0f / TPS)
-        Map::spawn_random_mob(this);
+        for (uint32_t i = 0; i < 10; ++i)
+            Map::spawn_random_mob(this);
     for_each_entity([](Simulation *sim, Entity &ent) {
         if (ent.has_component(kPhysics))
             sim->spatial_hash.insert(ent);

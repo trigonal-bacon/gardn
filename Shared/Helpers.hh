@@ -144,6 +144,7 @@ class UTF8Parser {
 public:
     UTF8Parser(char const *);
     static std::string trunc_string(std::string const &, uint32_t);
+    static bool is_valid_utf8(std::string const &);
     uint32_t next_symbol();
     uint32_t offset() const;
 };

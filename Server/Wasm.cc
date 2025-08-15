@@ -7,12 +7,12 @@
 #include <Shared/Map.hh>
 
 #include <iostream>
-#include <map>
 #include <string>
+#include <unordered_map>
 
 #include <emscripten.h>
 
-std::map<int, WebSocket *> WS_MAP;
+std::unordered_map<int, WebSocket *> WS_MAP;
 
 size_t const MAX_BUFFER_LEN = 1024;
 static uint8_t INCOMING_BUFFER[MAX_BUFFER_LEN] = {0};
@@ -27,6 +27,7 @@ extern "C" {
         WebSocket *ws = WS_MAP[ws_id];
         if (ws == nullptr) return;
         Client::on_disconnect(ws,reason, {});
+        WS_MAP.erase(ws_id);
     }
 
     void tick() {

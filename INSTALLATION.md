@@ -52,5 +52,12 @@ The client may be hosted with any http server (eg. ``nginx``, ``http-server``). 
 
 If hosting somewhere other than ``localhost``, the ``SERVER_URL`` flag can be passed into CMake (ex. ``cmake .. -DSERVER_URL="ws://myhost:9001"``) to automatically configure protocol.
 
+# Compilation Flags
+
+``DEBUG`` | ``Server & Client`` | ``Default: 0`` : compiles with assertions and failsafes. <br>
+``WASM_SERVER`` | ``Server only`` | ``Default : 0`` : compiles to WASM/JS instead of a native binary <br>
+``TDM`` | ``Server only`` | ``Default: 0`` : enables TDM instead of FFA.<br>
+``GENERAL_SPATIAL_HASH`` | ``Server only`` | ``Default: 0`` : uses the canonical hash grid implementation instead of a uniform grid; enable this to support large entities
+
 # License
 [LICENSE](./LICENSE)

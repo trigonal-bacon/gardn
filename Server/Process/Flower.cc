@@ -66,13 +66,21 @@ static struct PlayerBuffs _get_petal_passive_buffs(Simulation *sim, Entity &play
     return buffs;
 }
 
-static uint32_t _get_petal_rotation_count(Entity &player) {
+static uint32_t _get_petal_rotation_count(Simulation *sim, Entity &player) {
     uint32_t count = 0;
     for (uint8_t i = 0; i < player.loadout_count; ++i) {
-        struct PetalData const &petal_data = PETAL_DATA[player.loadout[i].get_petal_id()];
-        if (petal_data.count == 1 || petal_data.attributes.clump_radius > 0)
+        LoadoutSlot const &slot = player.loadout[i];
+        struct PetalData const &petal_data = PETAL_DATA[slot.get_petal_id()];
+        if (petal_data.attributes.clump_radius > 0)
             ++count;
-        else count += petal_data.count;
+        else {
+            for (uint32_t j = 0; j < slot.size(); ++j) {
+                if (!sim->ent_alive(slot.petals[j].ent_id))
+                    ++count;
+                else if (!sim->get_ent(slot.petals[j].ent_id).has_component(kMob))
+                    ++count;
+            }
+        }
     }
     return count;
 }
@@ -96,7 +104,7 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
         player.poison_damage = {0, 0};
     
     float rot_pos = 0;
-    uint32_t rotation_count = _get_petal_rotation_count(player);
+    uint32_t rotation_count = _get_petal_rotation_count(sim, player);
     //maybe use delta mode for face flags?
     player.set_face_flags(0);
 
@@ -150,17 +158,17 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
                     if (rotation_count > 0)
                         wanting.unit_normal(2 * M_PI * rot_pos / rotation_count + player.heading_angle);
 
-                    float range = 60;
+                    float range = player.radius + 40;
                     if (BIT_AT(player.input, InputFlags::kAttacking)) { 
                         if (petal_data.attributes.defend_only == 0) 
-                            range = 120 + buffs.extra_range; 
+                            range = player.radius + 100 + buffs.extra_range; 
                         if (petal.petal_id == PetalID::kWing) {
                             float wave = sinf((float) petal.lifetime / (0.4 * TPS));
                             wave = wave * wave;
                             range += wave * 120;
                         }
                     }
-                    else if (BIT_AT(player.input, InputFlags::kDefending)) range = 40;
+                    else if (BIT_AT(player.input, InputFlags::kDefending)) range = player.radius + 15;
                     wanting *= range;
                     if (petal_data.attributes.clump_radius > 0) {
                         Vector secondary;
@@ -196,6 +204,8 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
                     //if petal is a mob, or detached (IsDespawning)
                     if (BIT_AT(petal.flags, EntityFlags::kIsDespawning))
                         petal_slot.ent_id = NULL_ENTITY;
+                    if (petal.has_component(kMob))
+                        --rot_pos;
                 }
             }
             //spread out

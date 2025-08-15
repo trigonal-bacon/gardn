@@ -48,10 +48,10 @@ void Game::render_game() {
         RenderContext context(&renderer);
         for (ZoneDefinition const &def : MAP) {
             renderer.set_fill(def.color);
-            renderer.fill_rect(def.x - def.w/2,def.y-def.h/2,def.w,def.h);
+            renderer.fill_rect(def.left, def.top, def.right - def.left, def.bottom - def.top);
             if (Map::difficulty_at_level(score_to_level(Game::score)) > def.difficulty) {
                 renderer.set_fill(0x40000000);
-                renderer.fill_rect(def.x - def.w/2,def.y-def.h/2,def.w,def.h);
+                renderer.fill_rect(def.left, def.top, def.right - def.left, def.bottom - def.top);
             }
         }
         renderer.set_stroke(alpha);
