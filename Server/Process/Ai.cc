@@ -378,6 +378,7 @@ void tick_ai_behavior(Simulation *sim, Entity &ent) {
     if (BIT_AT(ent.flags, EntityFlags::kIsCulled)) {
         ent.target = NULL_ENTITY;
         ent.ai_tick = 0;
+        ent.acceleration.set(0,0);
         return;
     }
     switch(ent.mob_id) {

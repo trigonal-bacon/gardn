@@ -185,6 +185,7 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
                         uint8_t spawn_id = petal_data.attributes.spawns;
                         Entity &mob = alloc_mob(sim, spawn_id, petal.x, petal.y, petal.team);
                         mob.set_parent(player.id);
+                        mob.set_color(player.color);
                         mob.base_entity = player.id;
                         BIT_SET(mob.flags, EntityFlags::kDieOnParentDeath)
                         BIT_SET(mob.flags, EntityFlags::kNoDrops)
