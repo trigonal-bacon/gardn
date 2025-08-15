@@ -126,8 +126,15 @@ struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
         .defend_only = 1,
         .poison_damage = { 20.0, 0.5 }
     }},
+    {"Peas", "4 in 1 deal, now with a secret ingredient: poison",
+        5.0, 2.0, 7.0, 2.0, 4, RarityID::kLegendary, {
+        .clump_radius = 10,
+        .secondary_reload = 0.1,
+        .defend_only = 1,
+        .poison_damage = { 27.5, 1 }
+    }},
     {"Egg", "Something interesting might pop out of this",
-        50.0, 1.0, 15.0, 1.0, 1, RarityID::kEpic, { 
+        50.0, 1.0, 15.0, 1.0, 1, RarityID::kLegendary, { 
         .secondary_reload = 3.5,
         .defend_only = 1,
         .rotation_style = PetalAttributes::kNoRot,
@@ -310,7 +317,7 @@ struct MobData const MOB_DATA[MobID::kNumMobs] = {
         "Evil Centipede",
         "This one loves flowers.",
         RarityID::kRare, {50.0}, 10.0, {35.0}, 3, {
-        PetalID::kIris, PetalID::kPoisonPeas, PetalID::kBlueIris
+        PetalID::kIris, PetalID::kPoisonPeas, PetalID::kBlueIris,  PetalID::kFatPeas
     }, { .segments = 10, .poison_damage = { 5.0, 2.0 } }},
     {
         "Desert Centipede",

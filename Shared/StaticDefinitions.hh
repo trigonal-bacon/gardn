@@ -51,6 +51,7 @@ namespace PetalID {
         kBlueIris,
         kPollen,
         kPoisonPeas,
+        kFatPeas,
         kBeetleEgg,
         kAzalea,
         kStick,

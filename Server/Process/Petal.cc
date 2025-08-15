@@ -99,6 +99,14 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
                         entity_set_despawn_tick(petal, 0.25 * TPS);
                     }
                     break;
+                case PetalID::kFatPeas:
+                    if (BIT_AT(player.input, InputFlags::kAttacking)) {
+                        Vector delta(petal.x - player.x, petal.y - player.y);
+                        petal.friction = DEFAULT_FRICTION;
+                        petal.acceleration.unit_normal(delta.angle()).set_magnitude(30 * PLAYER_ACCELERATION);
+                        entity_set_despawn_tick(petal, 0.35 * TPS);
+                    }
+                    break;
                 case PetalID::kMoon: {
                     if (BIT_AT(player.input, InputFlags::kAttacking)) {
                         Vector delta(petal.x - player.x, petal.y - player.y);

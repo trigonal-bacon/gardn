@@ -306,6 +306,15 @@ void draw_static_petal_single(PetalID::T id, Renderer &ctx) {
             ctx.fill();
             ctx.stroke();
             break;
+        case PetalID::kFatPeas:
+            ctx.set_fill(0xffce76db);
+            ctx.set_stroke(0xffa760b1);
+            ctx.set_line_width(3);
+            ctx.begin_path();
+            ctx.arc(0, 0, 11); // <- pick your fatness here
+            ctx.fill();
+            ctx.stroke();
+            break;
         case PetalID::kPeas:
             ctx.set_fill(0xff8ac255);
             ctx.set_stroke(0xff709d45);
