@@ -26,7 +26,7 @@ struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
         10.0, 10.0, 10.0, 2.5, 1, RarityID::kCommon, {}},
     {"Fast", "Weaker than most petals, but reloads very quickly",
         5.0, 8.0, 7.0, 1.0, 1, RarityID::kCommon, {}},
-    {"Heavy", "Very resilient and reals more damage, but reloads very slowly",
+    {"Heavy", "Very resilient and deals more damage, but reloads very slowly",
         20.0, 20.0, 12.0, 4.5, 1, RarityID::kCommon, {}},
     {"Stinger", "It really hurts, but it's really fragile",
         5.0, 35.0, 7.0, 3.5, 1, RarityID::kUnusual, {}},
