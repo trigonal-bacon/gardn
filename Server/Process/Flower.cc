@@ -60,7 +60,7 @@ static struct PlayerBuffs _get_petal_passive_buffs(Simulation *sim, Entity &play
         } else if (slot_petal_id == PetalID::kSalt) {
             player.damage_reflection = 0.25;
         } else if (slot_petal_id == PetalID::kLotus) {
-            player.poison_armor = 2.5f / TPS;
+            player.poison_armor = 3.5f / TPS;
         }
     }
     return buffs;
