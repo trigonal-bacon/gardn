@@ -9,12 +9,11 @@ void draw_static_flower(Renderer &ctx, FlowerRenderAttributes attributes) {
         ctx.rotate(attributes.cutter_angle);
         draw_static_petal_single(PetalID::kCutter, ctx);
     }
-    uint32_t base_color = 0xffffe763;
-    if (BIT_AT(attributes.face_flags, FaceFlags::kPoisoned)) base_color = 0xffce76db;
-    else if (BIT_AT(attributes.face_flags, FaceFlags::kDandelioned)) base_color = Renderer::MIX(base_color, 0xffcfcfcf, 0.5);
-    else if (attributes.color < ColorID::kNumColors) {
-        base_color = FLOWER_COLORS[attributes.color];
-    }
+    uint32_t base_color = FLOWER_COLORS[attributes.color];
+    if (BIT_AT(attributes.face_flags, FaceFlags::kPoisoned)) 
+        base_color = 0xffce76db;
+    else if (BIT_AT(attributes.face_flags, FaceFlags::kDandelioned)) 
+        base_color = Renderer::MIX(base_color, 0xffffffff, 0.4);
     ctx.set_stroke(Renderer::HSV(base_color, 0.8));
     ctx.set_fill(base_color);
     ctx.set_line_width(3);
