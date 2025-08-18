@@ -21,6 +21,8 @@ void _apply_damage_filter(Renderer &ctx, Entity const &ent) {
         ctx.add_color_filter(0xffff1200, ent.damage_flash * 1.5);
 }
 
+static float screen_shake_radius = 0;
+
 void Game::render_game() {
     RenderContext context(&renderer);
     DEBUG_ONLY(assert(simulation.ent_exists(camera_id));)
@@ -30,8 +32,13 @@ void Game::render_game() {
     renderer.translate(-camera.camera_x, -camera.camera_y);
     if (alive()) {
         Entity const &player = simulation.get_ent(player_id);
-        if (Game::timestamp - player.last_damaged_time < 100) {
-            Vector rand = Vector::rand(3.5);
+        if (Game::timestamp - player.last_damaged_time < 150) {
+            screen_shake_radius = lerp(screen_shake_radius, 5, Ui::lerp_amount);
+        } else {
+            screen_shake_radius = lerp(screen_shake_radius, 0, 2 * Ui::lerp_amount);
+        }
+        if (screen_shake_radius > 0.01) {
+            Vector rand = Vector::rand(std::sqrt(frand()) * screen_shake_radius);
             renderer.translate(rand.x, rand.y);
         }
     }
