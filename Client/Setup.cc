@@ -45,11 +45,11 @@ int setup_inputs() {
     EM_ASM({
         window.addEventListener("keydown", (e) => {
             //e.preventDefault();
-            _key_event(e.which, 0);
+            !e.repeat && _key_event(e.which, 0);
         });
         window.addEventListener("keyup", (e) => {
             //e.preventDefault();
-            _key_event(e.which, 1);
+            !e.repeat && _key_event(e.which, 1);
         });
         window.addEventListener("mousedown", (e) => {
             //e.preventDefault();

@@ -95,7 +95,6 @@ void GameInstance::add_client(Client *client) {
         ent.set_inventory(i, PetalID::kBasic);
     if (frand() < 0.0001 && PetalTracker::get_count(&simulation, PetalID::kUniqueBasic) == 0)
         ent.set_inventory(0, PetalID::kUniqueBasic);
-
     for (uint32_t i = 0; i < loadout_slots_at_level(ent.respawn_level); ++i)
         PetalTracker::add_petal(&simulation, ent.inventory[i]);
     client->camera = ent.id;
