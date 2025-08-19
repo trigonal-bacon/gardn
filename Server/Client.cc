@@ -131,10 +131,10 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
                 uint8_t rarity = PETAL_DATA[old_id].rarity;
                 player.set_score(player.score + RARITY_TO_XP[rarity]);
                 //need to delete if over cap
-                if (player.deleted_petals.size() == MAX_SLOT_COUNT)
+                if (player.deleted_petals.size() == player.deleted_petals.capacity())
                     //removes old trashed old petal
-                    PetalTracker::remove_petal(simulation, player.deleted_petals.curr());
-                player.deleted_petals.push(old_id);
+                    PetalTracker::remove_petal(simulation, player.deleted_petals[0]);
+                player.deleted_petals.push_back(old_id);
             }
             player.set_loadout_ids(pos, PetalID::kNone);
             break;

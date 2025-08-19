@@ -72,21 +72,36 @@ public:
     constexpr T const *end() const { return &values[length]; };
 };
 
-template<typename T, uint32_t capacity>
+template<typename T, uint32_t max_len>
 class CircularArray {
-    T values[capacity];
-    uint32_t at;
+    T values[max_len];
+    uint32_t start;
     uint32_t length;
 public:
-    constexpr CircularArray() : at(0), length(0) {};
+    constexpr CircularArray() : start(0), length(0) { static_assert(max_len > 0); };
     constexpr uint32_t size() const { return length; }
-    constexpr T operator[](uint32_t idx) const { return values[idx]; };
-    constexpr T curr() const { return values[at]; };
-    constexpr void push(T val) { 
-        values[at] = val; at = (at + 1) % capacity;
-        if (length < capacity) ++length;
+    constexpr uint32_t capacity() const { return max_len; }
+    constexpr T &operator[](uint32_t idx) {
+        DEBUG_ONLY(assert(idx < size());)
+        return values[(start+idx)%max_len];
     };
-    constexpr void clear() { length = at = 0; };
+    constexpr T operator[](uint32_t idx) const {
+        DEBUG_ONLY(assert(idx < size());)
+        return values[(start+idx)%max_len];
+    };
+    constexpr void push_back(T const &val) {
+        values[(start+length)%max_len] = val;
+        if (length == max_len)
+            start = (start + 1) % max_len;
+        else
+            ++length;
+    };
+    constexpr T pop_back() {
+        DEBUG_ONLY(assert(size() > 0);)
+        --length;
+        return values[(start+length)%max_len];
+    }
+    constexpr void clear() { start = length = 0; };
 };
 
 class LerpFloat {

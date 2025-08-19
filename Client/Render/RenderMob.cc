@@ -13,9 +13,9 @@
 
 void render_mob(Renderer &ctx, Entity const &ent) {
     uint32_t flags = 0;
-    flags |= (ent.team == Game::camera_id);
+    flags |= (ent.team == Game::simulation.get_ent(Game::camera_id).team);
     flags |= (ent.is_tail << 1);
-    MobRenderAttributes attrs = {ent.animation, ent.radius, ent.id.id, flags};
+    MobRenderAttributes attrs = {ent.animation, ent.radius, ent.id.id, flags, ent.color};
     if (ent.has_component(kFlower)) {
         attrs.flower_attrs = {
             .radius = ent.radius,

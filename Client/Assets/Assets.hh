@@ -21,6 +21,7 @@ struct MobRenderAttributes {
     float radius;
     uint32_t seed;
     uint32_t flags;
+    uint8_t color;
     FlowerRenderAttributes flower_attrs;
 };
 

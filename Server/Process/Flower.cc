@@ -60,7 +60,7 @@ static struct PlayerBuffs _get_petal_passive_buffs(Simulation *sim, Entity &play
         } else if (slot_petal_id == PetalID::kSalt) {
             player.damage_reflection = 0.25;
         } else if (slot_petal_id == PetalID::kLotus) {
-            player.poison_armor = 2.5f / TPS;
+            player.poison_armor = 3.5f / TPS;
         }
     }
     return buffs;
@@ -185,6 +185,7 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
                         uint8_t spawn_id = petal_data.attributes.spawns;
                         Entity &mob = alloc_mob(sim, spawn_id, petal.x, petal.y, petal.team);
                         mob.set_parent(player.id);
+                        mob.set_color(player.color);
                         mob.base_entity = player.id;
                         BIT_SET(mob.flags, EntityFlags::kDieOnParentDeath)
                         BIT_SET(mob.flags, EntityFlags::kNoDrops)

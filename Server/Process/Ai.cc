@@ -361,6 +361,7 @@ static void tick_digger(Simulation *sim, Entity &ent) {
 void tick_ai_behavior(Simulation *sim, Entity &ent) {
     if (ent.pending_delete) return;
     if (sim->ent_alive(ent.seg_head)) return;
+    ent.acceleration.set(0,0);
     if (!(ent.parent == NULL_ENTITY)) {
         if (!sim->ent_alive(ent.parent)) {
             if (BIT_AT(ent.flags, EntityFlags::kDieOnParentDeath))

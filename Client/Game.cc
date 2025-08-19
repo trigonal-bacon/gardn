@@ -282,6 +282,6 @@ void Game::tick(double time) {
     simulation.post_tick();
     Storage::set();
     Input::reset();
-    Debug::frame_times.push(Ui::dt);
-    Debug::tick_times.push(Debug::get_timestamp() - tick_start);
+    Debug::frame_times.push_back(Ui::dt);
+    Debug::tick_times.push_back(Debug::get_timestamp() - tick_start);
 }

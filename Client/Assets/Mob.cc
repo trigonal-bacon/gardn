@@ -6,7 +6,7 @@
 
 #include <cmath>
 
-#define SET_BASE_COLOR(color) { if (!BIT_AT(flags, 0)) base_color = color; }
+#define SET_BASE_COLOR(set_color) { if (!BIT_AT(flags, 0)) base_color = set_color; else { base_color = FLOWER_COLORS[attr.color]; } }
 
 void draw_static_mob(MobID::T mob_id, Renderer &ctx, MobRenderAttributes attr) {
     float radius = attr.radius;
