@@ -6,6 +6,7 @@
 
 namespace Ui {
     class TextInput : public Element {
+    protected:
         std::string const name;
         std::string &ref;
         uint32_t max;

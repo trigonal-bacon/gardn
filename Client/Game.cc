@@ -45,6 +45,9 @@ namespace Game {
     uint8_t on_game_screen = 0;
     uint8_t show_debug = 0;
     uint8_t is_mobile = check_mobile();
+
+    uint8_t show_chat = 0;
+    std::string chat_text;
 }
 
 using namespace Game;
@@ -102,6 +105,9 @@ void Game::init() {
     );
     game_ui_window.add_child(
         Ui::make_stat_screen()
+    );
+    game_ui_window.add_child(
+        Ui::make_chat_input()
     );
     game_ui_window.add_child(
         new Ui::HContainer({
@@ -226,24 +232,26 @@ void Game::tick(double time) {
         renderer.set_global_alpha(0.85);
         renderer.translate(renderer.width/2,renderer.height/2);
         renderer.draw_image(game_ui_renderer);
-        //process keybind petal switches
-        if (Input::keys_pressed_this_tick.contains('X'))
-            Game::swap_all_petals();
-        else if (Input::keys_pressed_this_tick.contains('E')) 
-            Ui::forward_secondary_select();
-        else if (Input::keys_pressed_this_tick.contains('Q')) 
-            Ui::backward_secondary_select();
-        else if (Ui::UiLoadout::selected_with_keys == MAX_SLOT_COUNT) {
-            for (uint8_t i = 0; i < Game::loadout_count; ++i) {
-                if (Input::keys_pressed_this_tick.contains(SLOT_KEYCODES[i])) {
-                    Ui::forward_secondary_select();
-                    break;
+        if (!Game::show_chat) {
+            //process keybind petal switches
+            if (Input::keys_pressed_this_tick.contains('X'))
+                Game::swap_all_petals();
+            else if (Input::keys_pressed_this_tick.contains('E')) 
+                Ui::forward_secondary_select();
+            else if (Input::keys_pressed_this_tick.contains('Q')) 
+                Ui::backward_secondary_select();
+            else if (Ui::UiLoadout::selected_with_keys == MAX_SLOT_COUNT) {
+                for (uint8_t i = 0; i < Game::loadout_count; ++i) {
+                    if (Input::keys_pressed_this_tick.contains(SLOT_KEYCODES[i])) {
+                        Ui::forward_secondary_select();
+                        break;
+                    }
                 }
             }
-        } else if (Game::cached_loadout[Game::loadout_count + Ui::UiLoadout::selected_with_keys] == PetalID::kNone)
+        }
+        if (Game::cached_loadout[Game::loadout_count + Ui::UiLoadout::selected_with_keys] == PetalID::kNone)
             Ui::UiLoadout::selected_with_keys = MAX_SLOT_COUNT;
-        if (Ui::UiLoadout::selected_with_keys < MAX_SLOT_COUNT 
-            && Game::cached_loadout[Game::loadout_count + Ui::UiLoadout::selected_with_keys] != PetalID::kNone) {
+        if (!Game::show_chat && Ui::UiLoadout::selected_with_keys < MAX_SLOT_COUNT) {
             if (Input::keys_pressed_this_tick.contains('T')) {
                 Ui::ui_delete_petal(Ui::UiLoadout::selected_with_keys + Game::loadout_count);
                 Ui::forward_secondary_select();

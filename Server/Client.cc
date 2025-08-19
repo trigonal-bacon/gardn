@@ -155,6 +155,21 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
             player.set_loadout_ids(pos2, tmp);
             break;
         }
+        case Serverbound::kChatSend: {
+            if (!client->alive()) break;
+            Simulation *simulation = &client->game->simulation;
+            Entity &camera = simulation->get_ent(client->camera);
+            Entity &player = simulation->get_ent(camera.player);
+            if (player.chat_sent != NULL_ENTITY) break;
+            std::string text;
+            VALIDATE(validator.validate_string(MAX_CHAT_LENGTH));
+            reader.read<std::string>(text);
+            VALIDATE(UTF8Parser::is_valid_utf8(text));
+            text = UTF8Parser::trunc_string(text, MAX_CHAT_LENGTH);
+            if (text.size() == 0) break;
+            player.chat_sent = alloc_chat(simulation, text, player).id;
+            break;
+        }
     }
 }
 

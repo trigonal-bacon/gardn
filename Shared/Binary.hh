@@ -17,7 +17,8 @@ enum Serverbound {
     kClientInput,
     kClientSpawn,
     kPetalSwap,
-    kPetalDelete
+    kPetalDelete,
+    kChatSend
 };
 
 class Writer {

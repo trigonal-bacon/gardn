@@ -185,6 +185,19 @@ Entity &alloc_web(Simulation *sim, float radius, Entity const &parent) {
     return web;
 }
 
+Entity &alloc_chat(Simulation *sim, std::string &text, Entity const &parent) {
+    Entity &chat = sim->alloc_ent();
+    chat.add_component(kPhysics);
+    chat.set_radius(18 / 2 * text.size());
+    chat.add_component(kRelations);
+    chat.set_parent(parent.id);
+    chat.set_color(parent.color);
+    chat.add_component(kChat);
+    chat.set_text(text);
+    entity_set_despawn_tick(chat, 10 * TPS);
+    return chat;
+}
+
 void player_spawn(Simulation *sim, Entity &camera, Entity &player) {
     camera.set_player(player.id);
     player.set_parent(camera.id);

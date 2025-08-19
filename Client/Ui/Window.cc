@@ -46,6 +46,8 @@ void Window::poll_events() {
 }
 
 void Window::on_event(uint8_t event) {
-    if (event == Ui::kMouseDown)
+    if (event == Ui::kMouseDown) {
         Ui::panel_open = Ui::Panel::kNone;
+        Game::show_chat = false;
+    }
 }

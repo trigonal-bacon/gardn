@@ -52,6 +52,7 @@ void Simulation::tick() {
     for_each<kSegmented>(tick_segment_behavior);
     for_each<kCamera>(tick_camera_behavior);
     for_each<kScore>(tick_score_behavior);
+    for_each<kChat>(tick_chat_behavior);
     calculate_leaderboard(this);
 }
 
@@ -61,6 +62,7 @@ void Simulation::post_tick() {
         //no deletions mid tick
         ent.reset_protocol();
         ++ent.lifetime;
+        ent.chat_sent = NULL_ENTITY;
         if (BIT_AT(ent.flags, EntityFlags::kIsDespawning)) {
             if (ent.despawn_tick == 0)
                 sim->request_delete(ent.id);

@@ -13,6 +13,7 @@ inline uint32_t const LEADERBOARD_SIZE = 10;
 inline uint32_t const MAX_PETALS_IN_CLUMP = 4;
 inline uint32_t const MAX_DIFFICULTY = 3;
 inline uint32_t const MAX_DROPS_PER_MOB = 6;
+inline uint32_t const CHAT_SIZE = 5;
 
 namespace DamageType {
     enum : uint8_t {

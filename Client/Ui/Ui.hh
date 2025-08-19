@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Client/Ui/InGame/Chat.hh>
 #include <Client/Ui/InGame/GameInfo.hh>
 #include <Client/Ui/InGame/Loadout.hh>
 #include <Client/Ui/TitleScreen/TitleScreen.hh>
