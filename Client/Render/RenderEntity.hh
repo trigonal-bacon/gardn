@@ -3,6 +3,7 @@
 class Entity;
 class Renderer;
 
+void render_chat(Renderer &, Entity const &);
 void render_drop(Renderer &, Entity const &);
 void render_flower(Renderer &, Entity const &);
 void render_health(Renderer &, Entity const &);

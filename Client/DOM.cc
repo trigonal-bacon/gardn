@@ -90,3 +90,11 @@ void DOM::update_text(char const *name, std::string const &contents, uint32_t ma
         elem.value = UTF8ToString($1).slice(0,$2);
     }, name, contents.c_str(), max_length);
 }
+
+void DOM::element_focus(char const *name) {
+    EM_ASM({
+        const name = UTF8ToString($0);
+        const elem = document.getElementById(name);
+        elem.focus();
+    }, name);
+}

@@ -25,7 +25,7 @@ tasks:
           --slave /usr/bin/g++ g++ /usr/bin/g++-13
     init: |
       make -C Server/uWebSockets -j$(nproc) && \
-      cmake -S Server -B Server/build -DDEBUG=1
+      cmake -S Server -B Server/build -DDEBUG=1 -DGENERAL_SPATIAL_HASH=1
     command: |
       source ../emsdk/emsdk_env.sh && \
       cd Server/build && \

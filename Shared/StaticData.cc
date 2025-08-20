@@ -428,7 +428,7 @@ uint32_t level_to_score(uint32_t level) {
 uint32_t loadout_slots_at_level(uint32_t level) {
     if (level > MAX_LEVEL) level = MAX_LEVEL;
     uint32_t ret = 5 + level / LEVELS_PER_EXTRA_SLOT;
-    if (level == MAX_LEVEL) ret += 1;
+    if (level == MAX_LEVEL) ++ret;
     if (ret > MAX_SLOT_COUNT) return MAX_SLOT_COUNT;
     return ret;
 }

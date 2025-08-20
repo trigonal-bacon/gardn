@@ -69,7 +69,7 @@ void on_collide(Simulation *sim, Entity &ent1, Entity &ent2) {
     Vector separation(ent1.x - ent2.x, ent1.y - ent2.y);
     float dist = min_dist - separation.magnitude();
     if (dist < 0) return;
-    if (NO(kDrop) && NO(kWeb)) {
+    if (NO(kDrop) && NO(kWeb) && NO(kChat)) {
         if (separation.x == 0 && separation.y == 0)
             separation.unit_normal(frand() * 2 * M_PI);
         else

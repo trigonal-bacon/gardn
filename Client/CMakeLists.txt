@@ -10,6 +10,7 @@ set(SRCS
     Assets/Mob.cc
     Assets/Petal.cc
     Assets/Web.cc
+    Render/RenderChat.cc
     Render/RenderDrop.cc
     Render/RenderFlower.cc
     Render/RenderHealth.cc
@@ -31,6 +32,7 @@ set(SRCS
     Socket.cc
     StaticData.cc
     Storage.cc
+    Ui/InGame/ChatInput.cc
     Ui/InGame/InputFreeze.cc
     Ui/InGame/Leaderboard.cc
     Ui/InGame/LevelBar.cc

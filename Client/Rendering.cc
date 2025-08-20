@@ -172,6 +172,12 @@ void Game::render_game() {
         renderer.translate(ent.x, ent.y);
         render_name(renderer, ent);
     });
+    simulation.for_each<kChat>([](Simulation *sim, Entity const &ent){
+        RenderContext context(&renderer);
+        renderer.translate(ent.x, ent.y);
+        renderer.scale(ent.animation);
+        render_chat(renderer, ent);
+    });
 }
 
 void Game::render_title_screen() {

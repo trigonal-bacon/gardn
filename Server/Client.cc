@@ -113,8 +113,7 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
             VALIDATE(UTF8Parser::is_valid_utf8(name));
             name = UTF8Parser::trunc_string(name, MAX_NAME_LENGTH);
             player.set_name(name);
-            std::cout << "player_spawn "
-                << (player.name.size() == 0 ? "Unnamed" : player.name)
+            std::cout << "player_spawn " << name_or_unnamed(player.name)
                 << " <" << +player.id.hash << "," << +player.id.id << ">" << std::endl;
             break;
         }
@@ -153,6 +152,22 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
             PetalID::T tmp = player.loadout_ids[pos1];
             player.set_loadout_ids(pos1, player.loadout_ids[pos2]);
             player.set_loadout_ids(pos2, tmp);
+            break;
+        }
+        case Serverbound::kChatSend: {
+            if (!client->alive()) break;
+            Simulation *simulation = &client->game->simulation;
+            Entity &camera = simulation->get_ent(client->camera);
+            Entity &player = simulation->get_ent(camera.player);
+            if (player.chat_sent != NULL_ENTITY) break;
+            std::string text;
+            VALIDATE(validator.validate_string(MAX_CHAT_LENGTH));
+            reader.read<std::string>(text);
+            VALIDATE(UTF8Parser::is_valid_utf8(text));
+            text = UTF8Parser::trunc_string(text, MAX_CHAT_LENGTH);
+            if (text.size() == 0) break;
+            player.chat_sent = alloc_chat(simulation, text, player).id;
+            std::cout << "chat " << name_or_unnamed(player.name) << ": " << text << std::endl;
             break;
         }
     }

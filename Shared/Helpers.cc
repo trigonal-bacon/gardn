@@ -50,6 +50,11 @@ std::string format_score(float score) {
     return std::format("{:.1f}m", score / 1000000);
 }
 
+std::string name_or_unnamed(std::string const &name) {
+    if (name.size() == 0) return "Unnamed";
+    return name;
+}
+
 LerpFloat::LerpFloat() {
     value = lerp_value = 0;
     touched = 0;
