@@ -32,14 +32,14 @@ static Element *make_entries(std::initializer_list<std::string const> contents) 
 
 static Element *make_changelog_contents() {
     Element *elt = new Ui::VContainer({
-        make_date("August 19th 2025"),
+        make_date("August 20th 2025"),
         make_entries({
             "Added chat"
         }),
         make_divider(),
         make_date("August 14th 2025"),
         make_entries({
-            "Added ability to restore score and petals for players who leave the game without dying"
+            "Added ability to manually restore score and petals for players who leave the game without dying"
         }),
         make_divider(),
         make_date("August 10th 2025"),
@@ -51,7 +51,7 @@ static Element *make_changelog_contents() {
         make_divider(),
         make_date("August 4th 2025"),
         make_entries({
-            "Max slot number increased to 12"
+            "Increased max slot number to 12"
         }),
         make_divider(),
         make_date("July 31st 2025"),

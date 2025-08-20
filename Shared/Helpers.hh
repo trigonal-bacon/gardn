@@ -49,6 +49,7 @@ float angle_lerp(float, float, float);
 
 std::string format_pct(float);
 std::string format_score(float);
+std::string name_or_unnamed(std::string const &);
 
 template<typename T, uint32_t capacity>
 class StaticArray {

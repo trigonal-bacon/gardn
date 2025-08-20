@@ -53,7 +53,8 @@ void Game::send_inputs() {
             if (!Game::show_chat) {
                 x = 300 * (Input::keys_pressed.contains('D') - Input::keys_pressed.contains('A') + Input::keys_pressed.contains(39) - Input::keys_pressed.contains(37));
                 y = 300 * (Input::keys_pressed.contains('S') - Input::keys_pressed.contains('W') + Input::keys_pressed.contains(40) - Input::keys_pressed.contains(38));
-            } else x = y = 0;
+            } else
+                x = y = 0;
         }
         writer.write<float>(x);
         writer.write<float>(y);
@@ -101,7 +102,7 @@ void Game::swap_all_petals() {
         Ui::ui_swap_petals(i, i + Game::loadout_count);
 }
 
-void Game::send_chat(std::string &text) {
+void Game::send_chat(std::string const &text) {
     uint8_t packet[100];
     Writer writer(static_cast<uint8_t *>(packet));
     if (!Game::alive()) return;

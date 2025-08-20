@@ -58,6 +58,6 @@ namespace Game {
     void delete_petal(uint8_t);
     void swap_petals(uint8_t, uint8_t);
     void swap_all_petals();
-    void send_chat(std::string &);
+    void send_chat(std::string const &);
     void on_message(uint8_t *, uint32_t);
 };

@@ -113,8 +113,7 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
             VALIDATE(UTF8Parser::is_valid_utf8(name));
             name = UTF8Parser::trunc_string(name, MAX_NAME_LENGTH);
             player.set_name(name);
-            std::cout << "player_spawn "
-                << (player.name.size() == 0 ? "Unnamed" : player.name)
+            std::cout << "player_spawn " << name_or_unnamed(player.name)
                 << " <" << +player.id.hash << "," << +player.id.id << ">" << std::endl;
             break;
         }
@@ -168,6 +167,7 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
             text = UTF8Parser::trunc_string(text, MAX_CHAT_LENGTH);
             if (text.size() == 0) break;
             player.chat_sent = alloc_chat(simulation, text, player).id;
+            std::cout << "chat " << name_or_unnamed(player.name) << ": " << text << std::endl;
             break;
         }
     }

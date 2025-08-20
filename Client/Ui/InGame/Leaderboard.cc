@@ -41,7 +41,7 @@ void LeaderboardSlot::on_render(Renderer &ctx) {
     ctx.line_to(-(width-height)/2+(width-height)*((float) ratio),0);
     ctx.stroke();
     std::string format_string = std::format("{} - {}", 
-        Game::simulation.arena_info.names[pos].size() == 0 ? "Unnamed" : Game::simulation.arena_info.names[pos],
+        name_or_unnamed(Game::simulation.arena_info.names[pos]),
         format_score((float) Game::simulation.arena_info.scores[pos]));
     ctx.set_fill(0xffffffff);
     ctx.set_stroke(0xff222222);
