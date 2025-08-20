@@ -3,7 +3,6 @@
 #include <Client/Ui/Extern.hh>
 #include <Client/DOM.hh>
 
-#include <iostream>
 using namespace Ui;
 
 static std::string _gen_nonce() {
@@ -25,7 +24,6 @@ void TextInput::on_render(Renderer &ctx) {
     DOM::element_show(name.c_str());
     DOM::update_pos_and_dimension(name.c_str(), screen_x, screen_y, width * Ui::scale, height * Ui::scale);
     ref = DOM::retrieve_text(name.c_str(), max);
-    std::cout << ref << '\n';
     DOM::update_text(name.c_str(), ref, max);
     Element::on_render(ctx);
 }
