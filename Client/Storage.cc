@@ -164,8 +164,8 @@ void Storage::retrieve() {
         }
     }
     {
-        uint32_t len = StorageProtocol::retrieve("nickname", MAX_NAME_LENGTH + 4);
-        if (len > 0 && len <= MAX_NAME_LENGTH + 4) {
+        uint32_t len = StorageProtocol::retrieve("nickname", sizeof(uint32_t) * MAX_NAME_LENGTH + 4);
+        if (len > 0 && len <= sizeof(uint32_t) * MAX_NAME_LENGTH + 4) {
             Decoder reader(&StorageProtocol::buffer[0]);
             Game::nickname = reader.read<std::string>();
         }

@@ -55,9 +55,10 @@ If hosting somewhere other than ``localhost``, use the  ``WS_URL`` constant in `
 # Compilation Flags
 
 ``DEBUG`` | ``Server & Client`` | ``Default: 0`` : compiles with assertions and failsafes. <br>
-``WASM_SERVER`` | ``Server only`` | ``Default : 0`` : compiles to WASM/JS instead of a native binary <br>
+``WASM_SERVER`` | ``Server only`` | ``Default : 0`` : compiles to WASM/JS instead of a native binary. <br>
 ``TDM`` | ``Server only`` | ``Default: 0`` : enables TDM instead of FFA.<br>
-``GENERAL_SPATIAL_HASH`` | ``Server only`` | ``Default: 0`` : uses the canonical hash grid implementation instead of a uniform grid; enable this to support large entities
+``GENERAL_SPATIAL_HASH`` | ``Server only`` | ``Default: 0`` : uses the canonical hash grid implementation instead of a uniform grid; enable this to support large entities. <br>
+``USE_CODEPOINT_LEN`` | ``Server & Client`` | ``Default: 0`` : uses the number of codepoints (characters) instead of byte length for string validation and truncation - useful for non-english characters.
 
 # License
 [LICENSE](./LICENSE)

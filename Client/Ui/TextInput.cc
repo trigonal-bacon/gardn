@@ -10,7 +10,11 @@ static std::string _gen_nonce() {
     return "fjs" + std::to_string(static_cast<uint32_t>(frand() * 49263 + 672));
 }
 
-TextInput::TextInput(std::string &r, float w, float h, uint32_t m, Style s) : Element(w, h, s), name(_gen_nonce()), ref(r), max(m) {
+TextInput::TextInput(std::string &r, float w, float h, uint32_t m, Style s) : 
+    Element(w, h, s), name(_gen_nonce()), ref(r), max(m) {
+#ifdef USE_CODEPOINT_LEN
+    max *= 2; //1 codepoint is at most 2 utf16 symbols
+#endif
     style.fill = 0xffeeeeee;
     style.stroke_hsv = 0;
     DOM::create_text_input(name.c_str(), max);
@@ -21,6 +25,7 @@ void TextInput::on_render(Renderer &ctx) {
     DOM::element_show(name.c_str());
     DOM::update_pos_and_dimension(name.c_str(), screen_x, screen_y, width * Ui::scale, height * Ui::scale);
     ref = DOM::retrieve_text(name.c_str(), max);
+    std::cout << ref << '\n';
     DOM::update_text(name.c_str(), ref, max);
     Element::on_render(ctx);
 }

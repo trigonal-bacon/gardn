@@ -256,12 +256,23 @@ uint8_t Validator::validate_string(uint32_t max_len) {
     uint8_t const *old = at;
     if (!validate_uint32()) return 0;
     at = old;
-    uint32_t len = 0;
+    uint32_t byte_len = 0;
     for (uint32_t i = 0; i < 5; ++i) {
         uint8_t o = *at++;
-        len |= ((o & 127) << (i * 7));
+        byte_len |= ((o & 127) << (i * 7));
         if (o <= 127) break;
     }
-    if (len > max_len) return 0;
-    return (at += len) <= end;
+#ifdef USE_CODEPOINT_LEN
+    old = at + byte_len;
+    UTF8Parser utf8_parser(reinterpret_cast<char const *>(at));
+    for (uint32_t i = 0; i < max_len; ++i) {
+        at += utf8_parser.next_symbol_len();
+        if (at < old) continue;
+        return (at == old);
+    }
+    return 0;
+#else
+    if (byte_len > max_len) return 0;
+    return (at += byte_len) <= end;
+#endif
 }

@@ -127,6 +127,11 @@ UTF8Parser::UTF8Parser(char const *s) : str(s), at(s) {}
 
 std::string UTF8Parser::trunc_string(std::string const &str, uint32_t max) {
     UTF8Parser parser(str.c_str());
+#ifdef USE_CODEPOINT_LEN
+    for (uint32_t i = 0; i < max; ++i)
+        if (parser.next_symbol() == 0) break;
+    return str.substr(0, parser.offset());
+#else
     uint32_t last = 0;
     while (last <= max) {
         if (parser.next_symbol() == 0) break;
@@ -135,6 +140,7 @@ std::string UTF8Parser::trunc_string(std::string const &str, uint32_t max) {
         last = len;
     }
     return str.substr(0, last);
+#endif
 }
 
 bool UTF8Parser::is_valid_utf8(std::string const &str) {
@@ -182,6 +188,14 @@ uint32_t UTF8Parser::next_symbol() {
         }
     }
     return c;
+}
+
+uint32_t UTF8Parser::next_symbol_len() {
+    uint8_t c = (uint8_t) *at;
+    if (c < 0x80) return 1;
+    if (c < 0xe0) return 2;
+    if (c < 0xf0) return 3;
+    return 4;
 }
 
 uint32_t UTF8Parser::offset() const {
