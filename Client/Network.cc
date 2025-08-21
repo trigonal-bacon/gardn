@@ -39,8 +39,7 @@ void Game::on_message(uint8_t *ptr, uint32_t len) {
 }
 
 void Game::send_inputs() {
-    uint8_t packet[64];
-    Writer writer(static_cast<uint8_t *>(packet));
+    Writer writer(static_cast<uint8_t *>(OUTGOING_PACKET));
     writer.write<uint8_t>(Serverbound::kClientInput);
     if (Input::freeze_input) {
         writer.write<float>(0);
@@ -65,8 +64,7 @@ void Game::send_inputs() {
 }
 
 void Game::spawn_in() {
-    uint8_t packet[100];
-    Writer writer(static_cast<uint8_t *>(packet));
+    Writer writer(static_cast<uint8_t *>(OUTGOING_PACKET));
     if (Game::alive()) return;
     if (Game::on_game_screen == 0) {
         writer.write<uint8_t>(Serverbound::kClientSpawn);
@@ -77,8 +75,7 @@ void Game::spawn_in() {
 }
 
 void Game::delete_petal(uint8_t pos) {
-    uint8_t packet[8];
-    Writer writer(static_cast<uint8_t *>(packet));
+    Writer writer(static_cast<uint8_t *>(OUTGOING_PACKET));
     if (!Game::alive()) return;
     writer.write<uint8_t>(Serverbound::kPetalDelete);
     writer.write<uint8_t>(pos);
@@ -86,8 +83,7 @@ void Game::delete_petal(uint8_t pos) {
 }
 
 void Game::swap_petals(uint8_t pos1, uint8_t pos2) {
-    uint8_t packet[8];
-    Writer writer(static_cast<uint8_t *>(packet));
+    Writer writer(static_cast<uint8_t *>(OUTGOING_PACKET));
     if (!Game::alive()) return;
     writer.write<uint8_t>(Serverbound::kPetalSwap);
     writer.write<uint8_t>(pos1);

@@ -1,7 +1,5 @@
 #include <Shared/Binary.hh>
 
-#include <iostream>
-
 static const uint32_t PROTOCOL_FLOAT_SCALE = 64;
 
 Writer::Writer(uint8_t *buf) : at(buf), packet(buf) {}
@@ -269,7 +267,10 @@ uint8_t Validator::validate_string(uint32_t max_len) {
     UTF8Parser utf8_parser(reinterpret_cast<char const *>(at));
     for (uint32_t i = 0; i < max_len; ++i) {
         at += utf8_parser.next_symbol_len();
-        if (at < old) continue;
+        if (at < old) {
+            utf8_parser.next_symbol();
+            continue;
+        }
         return (at == old);
     }
     return 0;
