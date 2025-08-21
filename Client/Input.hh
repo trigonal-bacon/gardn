@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
 #include <unordered_set>
 #include <vector>
 
@@ -25,7 +26,8 @@ namespace Input {
     extern std::unordered_set<char> keys_held;
     extern std::unordered_set<char> keys_held_this_tick;
     //use these for text input
-    extern std::vector<char> keys_pressed_this_tick;
+    //extern std::vector<uint32_t> keys_pressed_this_tick;
+    extern std::string clipboard;
 
     extern float input_x;
     extern float input_y;

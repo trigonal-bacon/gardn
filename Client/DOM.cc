@@ -68,13 +68,7 @@ std::string DOM::retrieve_text(char const *name, uint32_t max_length) {
     {
         const name = UTF8ToString($0);
         const elem = document.getElementById(name);
-        const arr = new TextEncoder().encode(elem.value);
-        const len = arr.length;
-        // remember off by one errors
-        const ptr = Module["_malloc"](len + 1);
-        HEAPU8.set(arr, ptr);
-        HEAPU8[ptr + len] = 0;
-        return ptr;
+        return stringToNewUTF8(elem.value);
     },
     name);
     std::string out{ptr};

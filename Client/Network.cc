@@ -47,15 +47,17 @@ void Game::send_inputs() {
         writer.write<float>(0);
         writer.write<uint8_t>(0);
     } else {
-        float x = (Input::mouse_x - renderer.width / 2) / Ui::scale;
-        float y = (Input::mouse_y - renderer.height / 2) / Ui::scale;
+        float x, y;
         if (Input::keyboard_movement) {
             x = 300 * (Input::keys_held.contains('D') - Input::keys_held.contains('A') + Input::keys_held.contains(39) - Input::keys_held.contains(37));
             y = 300 * (Input::keys_held.contains('S') - Input::keys_held.contains('W') + Input::keys_held.contains(40) - Input::keys_held.contains(38));
+        } else {
+           x = (Input::mouse_x - renderer.width / 2) / Ui::scale;
+           y = (Input::mouse_y - renderer.height / 2) / Ui::scale;
         }
         writer.write<float>(x);
         writer.write<float>(y);
-        uint8_t attack = Input::keys_held.contains('\x20') || BIT_AT(Input::mouse_buttons_state, Input::LeftMouse);
+        uint8_t attack = Input::keys_held.contains(' ') || BIT_AT(Input::mouse_buttons_state, Input::LeftMouse);
         uint8_t defend = Input::keys_held.contains('\x10') || BIT_AT(Input::mouse_buttons_state, Input::RightMouse);
         writer.write<uint8_t>((attack << InputFlags::kAttacking) | (defend << InputFlags::kDefending));
     }
