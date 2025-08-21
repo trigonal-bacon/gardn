@@ -107,7 +107,7 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
             Entity &player = alloc_player(simulation, camera.team);
             player_spawn(simulation, camera, player);
             std::string name;
-            //check string length;
+            //check string length
             VALIDATE(validator.validate_string(MAX_NAME_LENGTH));
             reader.read<std::string>(name);
             VALIDATE(UTF8Parser::is_valid_utf8(name));

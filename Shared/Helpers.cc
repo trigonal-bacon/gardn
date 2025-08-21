@@ -143,6 +143,11 @@ std::string UTF8Parser::trunc_string(std::string const &str, uint32_t max) {
 #endif
 }
 
+char UTF8Parser::next_char() {
+    if (*at == 0) return 0;
+    return *at++;
+}
+
 bool UTF8Parser::is_valid_utf8(std::string const &str) {
     uint32_t at = 0;
     while (at < str.size()) {
@@ -165,11 +170,6 @@ bool UTF8Parser::is_valid_utf8(std::string const &str) {
     return true;
 }
 
-char UTF8Parser::next_char() {
-    if (*at == 0) return 0;
-    return *at++;
-}
-
 uint32_t UTF8Parser::next_symbol() {
     uint32_t c = (uint8_t) next_char();
     if (c & 0x80) {
@@ -190,7 +190,7 @@ uint32_t UTF8Parser::next_symbol() {
     return c;
 }
 
-uint32_t UTF8Parser::next_symbol_len() {
+uint32_t UTF8Parser::next_symbol_len() const {
     uint8_t c = (uint8_t) *at;
     if (c < 0x80) return 1;
     if (c < 0xe0) return 2;
