@@ -84,6 +84,7 @@ void GameInstance::add_client(Client *client) {
     EntityID team = team_manager.get_random_team();
     ent.set_team(team);
     ent.set_color(simulation.get_ent(team).color);
+    ++simulation.get_ent(team).player_count;
     #else
     ent.set_team(ent.id);
     ent.set_color(ColorID::kYellow); 

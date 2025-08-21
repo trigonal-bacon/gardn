@@ -15,8 +15,9 @@ namespace Input {
     uint8_t freeze_input = 0;
     uint8_t movement_helper = 0;
     uint8_t keyboard_movement = 0;
-    std::unordered_set<char> keys_pressed;
-    std::unordered_set<char> keys_pressed_this_tick;
+    std::unordered_set<char> keys_held;
+    std::unordered_set<char> keys_held_this_tick;
+    std::vector<char> keys_pressed_this_tick;
 
     float input_x = 0;
     float input_y = 0;
@@ -28,6 +29,7 @@ uint8_t Input::is_valid() {
 }
 
 void Input::reset() {
+    Input::keys_held_this_tick.clear();
     Input::keys_pressed_this_tick.clear();
     Input::mouse_buttons_pressed = Input::mouse_buttons_released = 0;
     Input::prev_mouse_x = Input::mouse_x;

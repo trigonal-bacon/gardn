@@ -227,15 +227,15 @@ void Game::tick(double time) {
         renderer.translate(renderer.width/2,renderer.height/2);
         renderer.draw_image(game_ui_renderer);
         //process keybind petal switches
-        if (Input::keys_pressed_this_tick.contains('X'))
+        if (Input::keys_held_this_tick.contains('X'))
             Game::swap_all_petals();
-        else if (Input::keys_pressed_this_tick.contains('E')) 
+        else if (Input::keys_held_this_tick.contains('E')) 
             Ui::forward_secondary_select();
-        else if (Input::keys_pressed_this_tick.contains('Q')) 
+        else if (Input::keys_held_this_tick.contains('Q')) 
             Ui::backward_secondary_select();
         else if (Ui::UiLoadout::selected_with_keys == MAX_SLOT_COUNT) {
             for (uint8_t i = 0; i < Game::loadout_count; ++i) {
-                if (Input::keys_pressed_this_tick.contains(SLOT_KEYBINDS[i])) {
+                if (Input::keys_held_this_tick.contains(SLOT_KEYBINDS[i])) {
                     Ui::forward_secondary_select();
                     break;
                 }
@@ -244,12 +244,12 @@ void Game::tick(double time) {
             Ui::UiLoadout::selected_with_keys = MAX_SLOT_COUNT;
         if (Ui::UiLoadout::selected_with_keys < MAX_SLOT_COUNT 
             && Game::cached_loadout[Game::loadout_count + Ui::UiLoadout::selected_with_keys] != PetalID::kNone) {
-            if (Input::keys_pressed_this_tick.contains('T')) {
+            if (Input::keys_held_this_tick.contains('T')) {
                 Ui::ui_delete_petal(Ui::UiLoadout::selected_with_keys + Game::loadout_count);
                 Ui::forward_secondary_select();
             } else {
                 for (uint8_t i = 0; i < Game::loadout_count; ++i) {
-                    if (Input::keys_pressed_this_tick.contains(SLOT_KEYBINDS[i])) {
+                    if (Input::keys_held_this_tick.contains(SLOT_KEYBINDS[i])) {
                         Ui::ui_swap_petals(i, Ui::UiLoadout::selected_with_keys + Game::loadout_count);
                         if (Game::cached_loadout[Game::loadout_count + Ui::UiLoadout::selected_with_keys] == PetalID::kNone)
                             Ui::forward_secondary_select();
@@ -273,9 +273,9 @@ void Game::tick(double time) {
 
     if (socket.ready && alive()) send_inputs();
 
-    if (Input::keys_pressed_this_tick.contains((char) 186)) //';'
+    if (Input::keys_held_this_tick.contains((char) 186)) //';'
         show_debug = !show_debug;
-    if (Input::keys_pressed_this_tick.contains('\r') && !Game::alive())
+    if (Input::keys_held_this_tick.contains('\r') && !Game::alive())
         Game::spawn_in();
 
     //clearing operations

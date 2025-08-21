@@ -24,10 +24,11 @@ extern "C" {
 
     void key_event(char button, uint8_t type) {
         if (type == 0) {
-            Input::keys_pressed.insert(button);
-            Input::keys_pressed_this_tick.insert(button);
+            Input::keys_held.insert(button);
+            Input::keys_held_this_tick.insert(button);
         }
-        else if (type == 1) Input::keys_pressed.erase(button);
+        else if (type == 1) Input::keys_held.erase(button);
+        else if (type == 2) Input::keys_pressed_this_tick.push_back(button);
     }
 
     void wheel_event(float wheel) {
@@ -50,6 +51,10 @@ int setup_inputs() {
         window.addEventListener("keyup", (e) => {
             //e.preventDefault();
             !e.repeat && _key_event(e.which, 1);
+        });
+        window.addEventListener("keypress", (e) => {
+            //e.preventDefault();
+            _key_event(e.which, 2);
         });
         window.addEventListener("mousedown", (e) => {
             //e.preventDefault();
