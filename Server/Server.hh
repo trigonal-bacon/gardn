@@ -20,10 +20,8 @@ typedef uWS::App WebSocketServer;
 
 namespace Server {
     extern uint8_t OUTGOING_PACKET[MAX_PACKET_LEN];
-    //extern Simulation simulation;
     extern GameInstance game;
     extern WebSocketServer server;
-    //extern std::set<Client *> clients;
     extern void init();
     extern void run();
     extern void tick();

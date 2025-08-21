@@ -4,7 +4,7 @@
 #include <Shared/Entity.hh>
 
 void tick_segment_behavior(Simulation *sim, Entity &ent) {
-    if (ent.is_tail && sim->ent_alive(ent.seg_head)) {
+    if (sim->ent_alive(ent.seg_head)) {
         Entity &par = sim->get_ent(ent.seg_head);
         Vector diff(ent.x - par.x, ent.y - par.y);
         diff.set_magnitude(ent.radius + par.radius + 0.01);

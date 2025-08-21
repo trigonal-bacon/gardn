@@ -11,9 +11,6 @@ static std::string _gen_nonce() {
 
 TextInput::TextInput(std::string &r, float w, float h, uint32_t m, Style s) : 
     Element(w, h, s), name(_gen_nonce()), ref(r), max(m) {
-#ifdef USE_CODEPOINT_LEN
-    max *= 2; //1 codepoint is at most 2 utf16 symbols
-#endif
     style.fill = 0xffeeeeee;
     style.stroke_hsv = 0;
     DOM::create_text_input(name.c_str(), max);

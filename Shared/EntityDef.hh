@@ -74,10 +74,9 @@ SINGLE(Mob, mob_id, MobID::T)
 #define FIELDS_Drop \
 SINGLE(Drop, drop_id, PetalID::T)
 
-#define FIELDS_Segmented \
-SINGLE(Segmented, is_tail, uint8_t)
+#define FIELDS_Segmented
 
-#define FIELDS_Web ;
+#define FIELDS_Web
 
 #define FIELDS_Score \
 SINGLE(Score, score, uint32_t)
@@ -98,6 +97,7 @@ SINGLE(Name, nametag_visible, uint8_t)
     MULTIPLE(loadout, LoadoutSlot, MAX_SLOT_COUNT, .reset()) \
     SINGLE(heading_angle, float, =0) \
     SINGLE(input, uint8_t, =0) \
+    SINGLE(player_count, uint32_t, =0) \
     \
     SINGLE(slow_ticks, game_tick_t, =0) \
     SINGLE(slow_inflict, game_tick_t, =0) \
@@ -146,8 +146,8 @@ class EntityID {
 public:
     typedef uint8_t hash_type;
     typedef uint16_t id_type;
-    hash_type hash;
     id_type id;
+    hash_type hash;
     EntityID();
     EntityID(id_type, hash_type);
     static uint32_t make_hash(EntityID const);

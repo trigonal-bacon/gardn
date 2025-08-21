@@ -23,7 +23,7 @@ void DOM::create_text_input(char const *name, uint32_t max_len) {
         elem.setAttribute("spellcheck", "false");
         document.body.appendChild(elem);
     },
-    name, max_len);
+    name, max_len * 2);
 }
 
 void DOM::element_show(char const *name)

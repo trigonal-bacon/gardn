@@ -93,13 +93,11 @@ Entity &alloc_mob(Simulation *sim, MobID::T mob_id, float x, float y, EntityID c
     }
     else {
         Entity &head = __alloc_mob(sim, mob_id, x, y, team);
-        head.add_component(kSegmented);
-        head.set_is_tail(0);
+        //head.add_component(kSegmented);
         Entity *curr = &head;
         for (uint32_t i = 1; i < data.attributes.segments; ++i) {
             Entity &seg = __alloc_mob(sim, mob_id, x, y, team);
             seg.add_component(kSegmented);
-            seg.set_is_tail(1);
             seg.seg_head = curr->id;
             seg.set_angle(curr->angle + frand() * 0.1 - 0.05);
             seg.set_x(curr->x - (curr->radius + seg.radius) * cosf(seg.angle));

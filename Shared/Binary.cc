@@ -263,6 +263,7 @@ uint8_t Validator::validate_string(uint32_t max_len) {
         if (o <= 127) break;
     }
 #ifdef USE_CODEPOINT_LEN
+    if (byte_len == 0) return 1;
     old = at + byte_len;
     UTF8Parser utf8_parser(reinterpret_cast<char const *>(at));
     for (uint32_t i = 0; i < max_len; ++i) {

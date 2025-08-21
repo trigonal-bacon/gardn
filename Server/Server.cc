@@ -11,8 +11,6 @@
 namespace Server {
     uint8_t OUTGOING_PACKET[MAX_PACKET_LEN] = {0};
     GameInstance game;
-    std::set<Client *> clients;
-    double timestamp;
 }
 
 using namespace Server;
