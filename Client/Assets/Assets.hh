@@ -12,7 +12,7 @@ struct FlowerRenderAttributes {
     float mouth = 15;
     float cutter_angle = 0;
     uint8_t face_flags = 0;
-    uint8_t flags = 0;
+    uint8_t equip_flags = 0;
     uint8_t color = 0;
 };
 
@@ -29,7 +29,7 @@ void draw_loadout_background(Renderer &, PetalID::T, float=1);
 
 void draw_static_flower(Renderer &, FlowerRenderAttributes);
 
-void draw_static_petal_single(MobID::T, Renderer &);
+void draw_static_petal_single(PetalID::T, Renderer &);
 
 void draw_static_petal(PetalID::T, Renderer &);
 

@@ -160,10 +160,18 @@ namespace FaceFlags {
         kDefending,
         kPoisoned,
         kDandelioned,
+        kDeadEyes,
+        kSquareEyes
+    };
+};
+
+namespace EquipmentFlags {
+    enum {
         kThirdEye,
         kAntennae,
         kObserver,
-        kCutter
+        kCutter,
+        kNone
     };
 };
 
@@ -196,6 +204,7 @@ struct PetalAttributes {
     struct PoisonDamage poison_damage;
     uint8_t spawns = MobID::kNumMobs;
     uint8_t spawn_count = 0;
+    uint8_t equipment = EquipmentFlags::kNone;
 };
 
 struct PetalData {

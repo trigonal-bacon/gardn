@@ -10,10 +10,17 @@ namespace Ui {
         uint8_t pos;
         StatPetalSlot(uint8_t);
 
-        virtual void on_render(Renderer &ctx) override;
+        virtual void on_render(Renderer &) override;
         virtual void refactor() override;
 
         virtual void on_event(uint8_t) override;
+    };
+
+    class DeadFlowerIcon final : public Element {
+    public:
+        DeadFlowerIcon(float);
+
+        virtual void on_render(Renderer &) override;
     };
 
     class TitlePetalSlot final : public Element {
@@ -21,7 +28,7 @@ namespace Ui {
         uint8_t pos;
         TitlePetalSlot(uint8_t);
 
-        virtual void on_render(Renderer &ctx) override;
+        virtual void on_render(Renderer &) override;
 
         virtual void on_event(uint8_t) override;
     };

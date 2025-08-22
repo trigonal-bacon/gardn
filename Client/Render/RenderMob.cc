@@ -13,8 +13,8 @@
 
 void render_mob(Renderer &ctx, Entity const &ent) {
     uint32_t flags = 0;
-    flags |= (ent.team == Game::simulation.get_ent(Game::camera_id).team);
-    flags |= (ent.is_tail << 1);
+    if (ent.team == Game::simulation.get_ent(Game::camera_id).team) BIT_SET(flags, 0);
+    if (ent.has_component(kSegmented)) BIT_SET(flags, 1);
     MobRenderAttributes attrs = {ent.animation, ent.radius, ent.id.id, flags, ent.color};
     if (ent.has_component(kFlower)) {
         attrs.flower_attrs = {
@@ -24,7 +24,7 @@ void render_mob(Renderer &ctx, Entity const &ent) {
             .mouth = ent.mouth,
             .cutter_angle = (float) (Game::timestamp / 200),
             .face_flags = ent.face_flags,
-            .flags = static_cast<uint8_t>(1 | ((ent.deletion_animation > 0 ? 1 : 0) << 1)),
+            .equip_flags = ent.equip_flags,
             .color = ent.color
         };
     }

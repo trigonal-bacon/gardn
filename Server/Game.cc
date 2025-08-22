@@ -84,6 +84,7 @@ void GameInstance::add_client(Client *client) {
     EntityID team = team_manager.get_random_team();
     ent.set_team(team);
     ent.set_color(simulation.get_ent(team).color);
+    ++simulation.get_ent(team).player_count;
     #else
     ent.set_team(ent.id);
     ent.set_color(ColorID::kYellow); 
@@ -106,6 +107,8 @@ void GameInstance::remove_client(Client *client) {
     clients.erase(client);
     if (simulation.ent_exists(client->camera)) {
         Entity &c = simulation.get_ent(client->camera);
+        if (simulation.ent_exists(c.team))
+            --simulation.get_ent(c.team).player_count;
         if (simulation.ent_exists(c.player))
             simulation.request_delete(c.player);
         for (uint32_t i = 0; i < 2 * MAX_SLOT_COUNT; ++i)

@@ -25,7 +25,7 @@ void Simulation::reset() {
     spatial_hash.refresh(ARENA_WIDTH, ARENA_HEIGHT);
     for (PetalID::T i = 0; i < PetalID::kNumPetals; ++i)
         petal_count_tracker[i] = 0;
-    for (uint32_t i = 0; i < MAP.size(); ++i)
+    for (uint32_t i = 0; i < MAP_DATA.size(); ++i)
         zone_mob_counts[i] = 0;
     #endif
 }

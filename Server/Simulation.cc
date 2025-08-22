@@ -32,6 +32,7 @@ static void calculate_leaderboard(Simulation *sim) {
 
 void Simulation::tick() {
     pre_tick();
+    //systems (for_each loops) are ONLY SAFE TO USE HERE
     spatial_hash.refresh(ARENA_WIDTH, ARENA_HEIGHT);
     if (frand() < 1.0f / TPS)
         for (uint32_t i = 0; i < 10; ++i)
@@ -81,4 +82,5 @@ void Simulation::post_tick() {
             entity_on_death(sim, ent);
         ++ent.deletion_tick;
     });
+    //systems are NO LONGER SAFE - active entities may have been changed as some were deleted
 }

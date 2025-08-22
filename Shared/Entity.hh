@@ -40,6 +40,7 @@ public:
     void reset_protocol();
     Entity(Entity const &) = delete;
     Entity &operator=(Entity const &) = delete;
+    Entity &operator=(Entity &&) = delete;
     uint32_t lifetime;
     EntityID id;
     uint8_t pending_delete;

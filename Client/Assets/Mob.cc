@@ -671,8 +671,8 @@ void draw_static_mob(MobID::T mob_id, Renderer &ctx, MobRenderAttributes attr) {
             break;
         case MobID::kDigger: {
             attr.flower_attrs.radius = attr.radius;
-            attr.flower_attrs.flags |= 1;
-            attr.flower_attrs.face_flags |= (1 << 7);
+            BIT_SET(attr.flower_attrs.equip_flags, EquipmentFlags::kCutter);
+            BIT_SET(attr.flower_attrs.face_flags, FaceFlags::kSquareEyes);
             draw_static_flower(ctx, attr.flower_attrs);
             break;
         };

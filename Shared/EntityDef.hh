@@ -60,6 +60,7 @@ SINGLE(Flower, eye_angle, float) \
 SINGLE(Flower, overlevel_timer, float) \
 SINGLE(Flower, loadout_count, uint8_t) \
 SINGLE(Flower, face_flags, uint8_t) \
+SINGLE(Flower, equip_flags, uint8_t) \
 MULTIPLE(Flower, loadout_ids, PetalID::T, 2 * MAX_SLOT_COUNT) \
 MULTIPLE(Flower, loadout_reloads, uint8_t, MAX_SLOT_COUNT)
 
@@ -76,10 +77,9 @@ SINGLE(Mob, mob_id, MobID::T)
 #define FIELDS_Drop \
 SINGLE(Drop, drop_id, PetalID::T)
 
-#define FIELDS_Segmented \
-SINGLE(Segmented, is_tail, uint8_t)
+#define FIELDS_Segmented
 
-#define FIELDS_Web ;
+#define FIELDS_Web
 
 #define FIELDS_Score \
 SINGLE(Score, score, uint32_t)
@@ -103,6 +103,7 @@ SINGLE(Chat, text, std::string)
     MULTIPLE(loadout, LoadoutSlot, MAX_SLOT_COUNT, .reset()) \
     SINGLE(heading_angle, float, =0) \
     SINGLE(input, uint8_t, =0) \
+    SINGLE(player_count, uint32_t, =0) \
     \
     SINGLE(slow_ticks, game_tick_t, =0) \
     SINGLE(slow_inflict, game_tick_t, =0) \
@@ -154,8 +155,8 @@ class EntityID {
 public:
     typedef uint8_t hash_type;
     typedef uint16_t id_type;
-    hash_type hash;
     id_type id;
+    hash_type hash;
     EntityID();
     EntityID(id_type, hash_type);
     static uint32_t make_hash(EntityID const);

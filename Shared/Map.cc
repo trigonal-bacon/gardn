@@ -18,8 +18,8 @@ uint32_t Map::difficulty_at_level(uint32_t level) {
 
 uint32_t Map::get_zone_from_pos(float x, float y) {
     uint32_t ret = 0;
-    for (uint32_t i = 1; i < MAP.size(); ++i) {
-        struct ZoneDefinition const &zone = MAP[i];
+    for (uint32_t i = 1; i < MAP_DATA.size(); ++i) {
+        struct ZoneDefinition const &zone = MAP_DATA[i];
         if (fclamp(x, zone.left, zone.right) == x && fclamp(y, zone.top, zone.bottom) == y)
             ret = i;
     }
@@ -28,8 +28,8 @@ uint32_t Map::get_zone_from_pos(float x, float y) {
 
 uint32_t Map::get_suitable_difficulty_zone(uint32_t power) {
     std::vector<uint32_t> possible_zones;
-    for (uint32_t i = 0; i < MAP.size(); ++i)
-        if (MAP[i].difficulty == power) possible_zones.push_back(i);
+    for (uint32_t i = 0; i < MAP_DATA.size(); ++i)
+        if (MAP_DATA[i].difficulty == power) possible_zones.push_back(i);
     if (possible_zones.size() == 0) return 0;
     return possible_zones[frand() * possible_zones.size()];
 }
@@ -45,7 +45,7 @@ void Map::spawn_random_mob(Simulation *sim) {
     float x = frand() * ARENA_WIDTH;
     float y = frand() * ARENA_HEIGHT;
     uint32_t zone_id = Map::get_zone_from_pos(x, y);
-    struct ZoneDefinition const &zone = MAP[zone_id];
+    struct ZoneDefinition const &zone = MAP_DATA[zone_id];
     if (zone.density * (zone.right - zone.left) * (zone.bottom - zone.top) / (500 * 500) < sim->zone_mob_counts[zone_id]) return;
     float sum = 0;
     for (SpawnChance const &s : zone.spawns)

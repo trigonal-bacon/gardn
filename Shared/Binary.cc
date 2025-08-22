@@ -1,7 +1,5 @@
 #include <Shared/Binary.hh>
 
-#include <iostream>
-
 static const uint32_t PROTOCOL_FLOAT_SCALE = 64;
 
 Writer::Writer(uint8_t *buf) : at(buf), packet(buf) {}
@@ -231,6 +229,7 @@ uint8_t Validator::validate_uint8() {
 }
 
 uint8_t Validator::validate_uint32() {
+    if (at >= end) return 0;
     for (uint8_t i = 0; i < 5; ++i) {
         uint8_t x = *at;
         if (!validate_uint8()) return 0;
@@ -255,13 +254,24 @@ uint8_t Validator::validate_float() {
 uint8_t Validator::validate_string(uint32_t max_len) {
     uint8_t const *old = at;
     if (!validate_uint32()) return 0;
-    at = old;
-    uint32_t len = 0;
-    for (uint32_t i = 0; i < 5; ++i) {
-        uint8_t o = *at++;
-        len |= ((o & 127) << (i * 7));
-        if (o <= 127) break;
+    Reader reader(old);
+    uint32_t byte_len = reader.read<uint32_t>();
+#ifdef USE_CODEPOINT_LEN
+    if (byte_len == 0) return 1;
+    if (byte_len + at > end) return 0;
+    old = at + byte_len;
+    UTF8Parser utf8_parser(reinterpret_cast<char const *>(at));
+    for (uint32_t i = 0; i < max_len; ++i) {
+        at += utf8_parser.next_symbol_len();
+        if (at < old) {
+            utf8_parser.next_symbol();
+            continue;
+        }
+        return (at == old);
     }
-    if (len > max_len) return 0;
-    return (at += len) <= end;
+    return 0;
+#else
+    if (byte_len > max_len) return 0;
+    return (at += byte_len) <= end;
+#endif
 }

@@ -23,7 +23,7 @@ void DOM::create_text_input(char const *name, uint32_t max_len) {
         elem.setAttribute("spellcheck", "false");
         document.body.appendChild(elem);
     },
-    name, max_len);
+    name, max_len * 2);
 }
 
 void DOM::element_show(char const *name)
@@ -68,13 +68,7 @@ std::string DOM::retrieve_text(char const *name, uint32_t max_length) {
     {
         const name = UTF8ToString($0);
         const elem = document.getElementById(name);
-        let arr = new TextEncoder().encode(elem.value);
-        const len = arr.length;
-        // remember off by one errors
-        const ptr = Module["_malloc"](len + 1);
-        HEAPU8.set(arr, ptr);
-        HEAPU8[ptr + len] = 0;
-        return ptr;
+        return stringToNewUTF8(elem.value);
     },
     name);
     std::string out{ptr};

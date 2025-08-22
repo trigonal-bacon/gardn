@@ -24,7 +24,7 @@ extern struct PetalData const PETAL_DATA[PetalID::kNumPetals];
 extern struct MobData const MOB_DATA[MobID::kNumMobs];
 
 //map extends from (0,0) to (ARENA_WIDTH,ARENA_HEIGHT)
-std::array const MAP = std::to_array<struct ZoneDefinition>({
+inline std::array const MAP_DATA = std::to_array<struct ZoneDefinition>({
     {
         .left = 0,
         .top = 0,

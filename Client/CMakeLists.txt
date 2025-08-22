@@ -70,15 +70,20 @@ set(SRCS
     ../Shared/Vector.cc
 )
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DCLIENTSIDE=1 -std=c++20")
 set(CMAKE_CXX_COMPILER "em++")
+set(CMAKE_CXX_FLAGS "-DCLIENTSIDE=1 -std=c++20")
+
+if (USE_CODEPOINT_LEN)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSE_CODEPOINT_LEN=1")
+endif()
 if(DEBUG)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DDEBUG=1 -gdwarf-4 -sNO_DISABLE_EXCEPTION_CATCHING")
 else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -ffast-math --closure=1")
 endif()
 
-add_link_options(-sEXPORTED_FUNCTIONS=_main,_malloc,_free,_key_event,_mouse_event,_wheel_event,_loop,_on_message)
+add_link_options(-sEXPORTED_RUNTIME_METHODS=stringToNewUTF8)
+add_link_options(-sEXPORTED_FUNCTIONS=_main,_key_event,_mouse_event,_wheel_event,_clipboard_event,_loop,_on_message)
 
 add_executable(gardn-client ${SRCS})
 set(CMAKE_EXECUTABLE_SUFFIX ".js")

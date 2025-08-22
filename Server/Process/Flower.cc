@@ -15,26 +15,26 @@ struct PlayerBuffs {
     float extra_vision;
     float extra_health;
     uint8_t yinyang_count;
-    uint8_t has_antennae : 1;
-    uint8_t has_observer : 1;
     uint8_t is_poisonous : 1;
     uint8_t has_cutter : 1;
+    uint8_t equip_flags;
 };
 
 static struct PlayerBuffs _get_petal_passive_buffs(Simulation *sim, Entity &player) {
     struct PlayerBuffs buffs = {0};
     if (player.has_component(kMob)) return buffs;
+    player.set_equip_flags(0);
     player.damage_reflection = 0;
     player.poison_armor = 0;
     for (uint32_t i = 0; i < player.loadout_count; ++i) {
         LoadoutSlot const &slot = player.loadout[i];
         PetalID::T slot_petal_id = slot.get_petal_id();
         struct PetalData const &petal_data = PETAL_DATA[slot_petal_id];
+        if (petal_data.attributes.equipment != EquipmentFlags::kNone)
+            player.set_equip_flags(player.equip_flags | (1 << petal_data.attributes.equipment));
         if (slot_petal_id == PetalID::kAntennae) {
-            buffs.has_antennae = 1;
             buffs.extra_vision = fclamp(0.4,buffs.extra_vision,1);
         } else if (slot_petal_id == PetalID::kObserver) {
-            buffs.has_observer = 1;
             buffs.extra_vision = 0.75;
         } else if (slot_petal_id == PetalID::kThirdEye) {
             buffs.extra_range = 75;
@@ -224,14 +224,6 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
         player.set_face_flags(player.face_flags | (1 << FaceFlags::kPoisoned));
     if (player.dandy_ticks > 0)
         player.set_face_flags(player.face_flags | (1 << FaceFlags::kDandelioned));
-    if (buffs.extra_range > 0)
-        player.set_face_flags(player.face_flags | (1 << FaceFlags::kThirdEye));
-    if (buffs.has_antennae)
-        player.set_face_flags(player.face_flags | (1 << FaceFlags::kAntennae));
-    if (buffs.has_observer)
-        player.set_face_flags(player.face_flags | (1 << FaceFlags::kObserver));
-    if (buffs.has_cutter)
-        player.set_face_flags(player.face_flags | (1 << FaceFlags::kCutter));
     if (buffs.yinyang_count < 8) {
         switch (buffs.yinyang_count % 3) {
             case 0:

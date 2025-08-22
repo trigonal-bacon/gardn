@@ -1,7 +1,5 @@
 #include <Shared/StaticData.hh>
 
-#include <Shared/Map.hh>
-
 #include <cmath>
 
 uint32_t const MAX_LEVEL = 99;
@@ -158,7 +156,7 @@ struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
         .defend_only = 1,
     }},
     {"Antennae", "Allows your flower to sense foes from farther away",
-        0.0, 0.0, 12.5, 0.0, 0, RarityID::kLegendary, {}},
+        0.0, 0.0, 12.5, 0.0, 0, RarityID::kLegendary, { .equipment = EquipmentFlags::kAntennae }},
     {"Cactus", "Not very strong, but somehow increases your maximum health",
         15.0, 5.0, 10.0, 1.0, 3, RarityID::kLegendary, {
         .clump_radius = 10,
@@ -169,9 +167,9 @@ struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
         .rotation_style = PetalAttributes::kNoRot
     }},
     {"Third Eye", "Allows your flower to extend petals further out",
-        0.0, 0.0, 20.0, 0.0, 0, RarityID::kMythic, {}},
+        0.0, 0.0, 20.0, 0.0, 0, RarityID::kMythic, { .equipment = EquipmentFlags::kThirdEye }},
     {"Observer", "The one who sees all", 
-        0.0, 0.0, 12.5, 0.0, 0, RarityID::kMythic, {}},
+        0.0, 0.0, 12.5, 0.0, 0, RarityID::kMythic, { .equipment = EquipmentFlags::kObserver }},
     {"Cactus", "Turns your flower poisonous. Enemies will take poison damage on contact",
         15.0, 5.0, 10.0, 1.0, 1, RarityID::kEpic, {
         .poison_damage = { 1.0, 5.0 }
@@ -194,7 +192,7 @@ struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
         .icon_angle = 0.1
     }},
     {"Cutter", "Increases the flower's body damage",
-        0.0, 0.0, 40.0, 0.0, 0, RarityID::kEpic, {}},
+        0.0, 0.0, 40.0, 0.0, 0, RarityID::kEpic, { .equipment = EquipmentFlags::kCutter }},
     {"Yin Yang", "Alters the flower's petal rotation in interesting ways",
         15.0, 15.0, 10.0, 2.5, 1, RarityID::kEpic, {}},
     {"Yggdrasil", "Unfortunately, its powers are useless here",
@@ -373,7 +371,7 @@ std::array<StaticArray<float, MAX_DROPS_PER_MOB>, MobID::kNumMobs> const MOB_DRO
     double const RARITY_MULT[RarityID::kNumRarities] = {50000,15000,2500,100,10,2.5,1};
     double MOB_SPAWN_RATES[MobID::kNumMobs] = {0};
     double PETAL_AGGREGATE_DROPS[PetalID::kNumPetals] = {0};
-    for (struct ZoneDefinition const &zone : MAP) {
+    for (struct ZoneDefinition const &zone : MAP_DATA) {
         double total = 0;
         for (SpawnChance const &s : zone.spawns) total += s.chance;
         for (SpawnChance const &s : zone.spawns) {

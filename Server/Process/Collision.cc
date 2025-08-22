@@ -94,6 +94,8 @@ void on_collide(Simulation *sim, Entity &ent1, Entity &ent2) {
             inflict_damage(sim, ent1.id, ent2.id, ent1.damage, DamageType::kContact);
             inflict_damage(sim, ent2.id, ent1.id, ent2.damage, DamageType::kContact);
         }
+        if (ent1.health == 0) sim->request_delete(ent1.id);
+        if (ent2.health == 0) sim->request_delete(ent2.id);
     }
 
     if (ent1.has_component(kDrop) && ent2.has_component(kFlower)) 

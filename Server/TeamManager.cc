@@ -16,5 +16,14 @@ void TeamManager::add_team(uint8_t color) {
 EntityID const TeamManager::get_random_team() const {
     assert(teams.size() > 0);
     if (teams.size() == 0) return NULL_ENTITY;
-    return teams[frand() * teams.size()];
+    uint32_t min = simulation->get_ent(teams[0]).player_count;
+    uint32_t min_index = 0;
+    for (uint32_t i = 1; i < teams.size(); ++i) {
+        uint32_t player_count = simulation->get_ent(teams[i]).player_count;
+        if (player_count < min || player_count == min && frand() > 0.5) {
+            min = player_count;
+            min_index = i;
+        }
+    } 
+    return teams[min_index];
 }

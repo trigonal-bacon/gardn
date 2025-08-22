@@ -1,7 +1,9 @@
 #pragma once
 
+#include <cstdint>
+#include <string>
 #include <unordered_set>
-#include <stdint.h>
+#include <vector>
 
 namespace Input {
     enum MouseButton {
@@ -20,8 +22,12 @@ namespace Input {
     extern uint8_t freeze_input;
     extern uint8_t movement_helper;
     extern uint8_t keyboard_movement;
-    extern std::unordered_set<char> keys_pressed;
-    extern std::unordered_set<char> keys_pressed_this_tick;
+    //use these for game inputs that can be held down
+    extern std::unordered_set<char> keys_held;
+    extern std::unordered_set<char> keys_held_this_tick;
+    //use these for text input
+    //extern std::vector<uint32_t> keys_pressed_this_tick;
+    extern std::string clipboard;
 
     extern float input_x;
     extern float input_y;

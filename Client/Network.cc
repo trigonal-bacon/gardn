@@ -39,35 +39,35 @@ void Game::on_message(uint8_t *ptr, uint32_t len) {
 }
 
 void Game::send_inputs() {
-    uint8_t packet[64];
-    Writer writer(static_cast<uint8_t *>(packet));
+    Writer writer(static_cast<uint8_t *>(OUTGOING_PACKET));
     writer.write<uint8_t>(Serverbound::kClientInput);
     if (Input::freeze_input) {
         writer.write<float>(0);
         writer.write<float>(0);
         writer.write<uint8_t>(0);
     } else {
-        float x = (Input::mouse_x - renderer.width / 2) / Ui::scale;
-        float y = (Input::mouse_y - renderer.height / 2) / Ui::scale;
+        float x, y;
         if (Input::keyboard_movement) {
             if (!Game::show_chat) {
-                x = 300 * (Input::keys_pressed.contains('D') - Input::keys_pressed.contains('A') + Input::keys_pressed.contains(39) - Input::keys_pressed.contains(37));
-                y = 300 * (Input::keys_pressed.contains('S') - Input::keys_pressed.contains('W') + Input::keys_pressed.contains(40) - Input::keys_pressed.contains(38));
+                x = 300 * (Input::keys_held.contains('D') - Input::keys_held.contains('A') + Input::keys_held.contains(39) - Input::keys_held.contains(37));
+                y = 300 * (Input::keys_held.contains('S') - Input::keys_held.contains('W') + Input::keys_held.contains(40) - Input::keys_held.contains(38));
             } else
                 x = y = 0;
+        } else {
+           x = (Input::mouse_x - renderer.width / 2) / Ui::scale;
+           y = (Input::mouse_y - renderer.height / 2) / Ui::scale;
         }
         writer.write<float>(x);
         writer.write<float>(y);
-        uint8_t attack = (!Game::show_chat && Input::keys_pressed.contains('\x20')) || BIT_AT(Input::mouse_buttons_state, Input::LeftMouse);
-        uint8_t defend = (!Game::show_chat && Input::keys_pressed.contains('\x10')) || BIT_AT(Input::mouse_buttons_state, Input::RightMouse);
+        uint8_t attack = (!Game::show_chat && Input::keys_held.contains(' ')) || BIT_AT(Input::mouse_buttons_state, Input::LeftMouse);
+        uint8_t defend = (!Game::show_chat && Input::keys_held.contains('\x10')) || BIT_AT(Input::mouse_buttons_state, Input::RightMouse);
         writer.write<uint8_t>((attack << InputFlags::kAttacking) | (defend << InputFlags::kDefending));
     }
     socket.send(writer.packet, writer.at - writer.packet);
 }
 
 void Game::spawn_in() {
-    uint8_t packet[100];
-    Writer writer(static_cast<uint8_t *>(packet));
+    Writer writer(static_cast<uint8_t *>(OUTGOING_PACKET));
     if (Game::alive()) return;
     if (Game::on_game_screen == 0) {
         writer.write<uint8_t>(Serverbound::kClientSpawn);
@@ -78,8 +78,7 @@ void Game::spawn_in() {
 }
 
 void Game::delete_petal(uint8_t pos) {
-    uint8_t packet[8];
-    Writer writer(static_cast<uint8_t *>(packet));
+    Writer writer(static_cast<uint8_t *>(OUTGOING_PACKET));
     if (!Game::alive()) return;
     writer.write<uint8_t>(Serverbound::kPetalDelete);
     writer.write<uint8_t>(pos);
@@ -87,8 +86,7 @@ void Game::delete_petal(uint8_t pos) {
 }
 
 void Game::swap_petals(uint8_t pos1, uint8_t pos2) {
-    uint8_t packet[8];
-    Writer writer(static_cast<uint8_t *>(packet));
+    Writer writer(static_cast<uint8_t *>(OUTGOING_PACKET));
     if (!Game::alive()) return;
     writer.write<uint8_t>(Serverbound::kPetalSwap);
     writer.write<uint8_t>(pos1);
