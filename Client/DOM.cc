@@ -84,3 +84,11 @@ void DOM::update_text(char const *name, std::string const &contents, uint32_t ma
         elem.value = UTF8ToString($1).slice(0,$2);
     }, name, contents.c_str(), max_length);
 }
+
+void DOM::open_page(char const *url) {
+    EM_ASM({
+        try {
+            window.open(UTF8ToString($0));
+        } catch(e) {}
+    }, url);
+}

@@ -81,6 +81,9 @@ void Game::init() {
     title_ui_window.add_child(
         Ui::make_changelog()
     );
+    title_ui_window.add_child(
+        Ui::make_github_link_button()
+    );
     game_ui_window.add_child(
         Ui::make_death_main_screen()
     );
@@ -273,7 +276,7 @@ void Game::tick(double time) {
 
     if (socket.ready && alive()) send_inputs();
 
-    if (Input::keys_held_this_tick.contains((char) 186)) //';'
+    if (Input::keys_held_this_tick.contains(';'))
         show_debug = !show_debug;
     if (Input::keys_held_this_tick.contains('\r') && !Game::alive())
         Game::spawn_in();

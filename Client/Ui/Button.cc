@@ -30,11 +30,11 @@ void Button::on_render(Renderer &ctx) {
         ctx.fill();
         if (style.fill >= 0xff000000) ctx.stroke();
     }
-    if (children[0] != nullptr) children[0]->render(ctx);
+    for (Element *child : children) child->render(ctx);
 }
 
 void Button::refactor() {
-    if (children[0] != nullptr) children[0]->refactor();
+    for (Element *child : children) child->refactor();
 }
 
 void Button::on_event(uint8_t event) {
