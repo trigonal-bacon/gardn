@@ -18,32 +18,40 @@ DeadFlowerIcon::DeadFlowerIcon(float width) : Element(width, width, {}) {}
 
 void DeadFlowerIcon::on_render(Renderer &ctx) {
     if (Game::loadout_count == 0) return;
-    ctx.scale((width / 3) / 25);
+    StaticArray<PetalID::T, MAX_SLOT_COUNT> physical_loadout;
+    uint8_t equip_flags = 0;
     for (uint32_t i = 0; i < Game::loadout_count; ++i) {
-        float angle = 2 * M_PI * i / Game::loadout_count + 0.5;
+        PetalData const &data = PETAL_DATA[Game::cached_loadout[i]];
+        if (data.count > 0) physical_loadout.push(Game::cached_loadout[i]);
+        if (data.attributes.equipment != EquipmentFlags::kNone) 
+            BIT_SET(equip_flags, data.attributes.equipment)
+    }
+    ctx.scale((width / 4) / 25);
+    for (uint32_t i = 0; i < physical_loadout.size(); ++i) {
+        float angle = 2 * M_PI * i / physical_loadout.size() + 0.5;
         float offset_x = cosf(angle) * 40;
         float offset_y = sinf(angle) * 25;
         if (offset_y > 0) continue;
         RenderContext c(&ctx);
         ctx.translate(offset_x, offset_y);
-        ctx.rotate(PETAL_DATA[Game::cached_loadout[i]].attributes.icon_angle);
-        draw_static_petal_single(Game::cached_loadout[i], ctx);
+        ctx.rotate(PETAL_DATA[physical_loadout[i]].attributes.icon_angle);
+        draw_static_petal_single(physical_loadout[i], ctx);
     }
     {
         RenderContext c(&ctx);
         ctx.rotate(-0.2);
         float flower_radius = width / 3;
-        draw_static_flower(ctx, { .radius = 25, .mouth = 5, .flags = 1<<1 });
+        draw_static_flower(ctx, { .radius = 25, .mouth = 5, .face_flags = (1<<FaceFlags::kDeadEyes), .equip_flags = equip_flags });
     }
-    for (uint32_t i = 0; i < Game::loadout_count; ++i) {
-        float angle = 2 * M_PI * i / Game::loadout_count + 0.5;
+    for (uint32_t i = 0; i < physical_loadout.size(); ++i) {
+        float angle = 2 * M_PI * i / physical_loadout.size() + 0.5;
         float offset_x = cosf(angle) * 40;
         float offset_y = sinf(angle) * 25;
         if (offset_y <= 0) continue;
         RenderContext c(&ctx);
         ctx.translate(offset_x, offset_y);
-        ctx.rotate(PETAL_DATA[Game::cached_loadout[i]].attributes.icon_angle);
-        draw_static_petal_single(Game::cached_loadout[i], ctx);
+        ctx.rotate(PETAL_DATA[physical_loadout[i]].attributes.icon_angle);
+        draw_static_petal_single(physical_loadout[i], ctx);
     }
 }
 
@@ -65,7 +73,7 @@ Element *Ui::make_death_main_screen() {
                 return std::string{"a mysterious entity"};
             return Game::simulation.get_ent(Game::camera_id).killed_by;
         }),
-        new Ui::DeadFlowerIcon(100),
+        new Ui::DeadFlowerIcon(125),
         continue_button,
         new Ui::StaticText(14, "(or press ENTER to continue)")
     }, 0, 10, { .animate = [](Element *elt, Renderer &ctx) {

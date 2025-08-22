@@ -3,7 +3,7 @@
 #include <Client/StaticData.hh>
 
 void draw_static_flower(Renderer &ctx, FlowerRenderAttributes attributes) {
-    if (BIT_AT(attributes.face_flags, FaceFlags::kCutter)) {
+    if (BIT_AT(attributes.equip_flags, EquipmentFlags::kCutter)) {
         RenderContext context(&ctx);
         ctx.scale(attributes.radius / 25);
         ctx.rotate(attributes.cutter_angle);
@@ -26,7 +26,7 @@ void draw_static_flower(Renderer &ctx, FlowerRenderAttributes attributes) {
         RenderContext context(&ctx);
         ctx.set_fill(0xff222222);
         ctx.begin_path();
-        if (BIT_AT(attributes.flags, 1)) {
+        if (BIT_AT(attributes.face_flags, FaceFlags::kDeadEyes)) {
             float const len = 4;
             ctx.set_stroke(0xff222222);
             ctx.set_line_width(3);
@@ -40,7 +40,7 @@ void draw_static_flower(Renderer &ctx, FlowerRenderAttributes attributes) {
             ctx.move_to(7+len,-5-len);
             ctx.line_to(7-len,-5+len);
             ctx.stroke();
-        } else if (BIT_AT(attributes.flags, 0)) {
+        } else if (BIT_AT(attributes.face_flags, FaceFlags::kSquareEyes)) {
             ctx.rect(-7-3.25, -5-6.5, 6.5, 13);
             ctx.rect(7-3.25, -5-6.5, 6.5, 13);
             ctx.fill();
@@ -75,7 +75,7 @@ void draw_static_flower(Renderer &ctx, FlowerRenderAttributes attributes) {
     ctx.move_to(-6, 10);
     ctx.qcurve_to(0, attributes.mouth, 6, 10);
     ctx.stroke();
-    if (!BIT_AT(attributes.flags, 1) && attributes.mouth <= 8 && BIT_AT(attributes.face_flags, FaceFlags::kAttacking))
+    if (!BIT_AT(attributes.face_flags, FaceFlags::kDeadEyes) && attributes.mouth <= 8 && BIT_AT(attributes.face_flags, FaceFlags::kAttacking))
     {
         RenderContext context(&ctx);
         ctx.translate(0, -attributes.mouth - 8);
@@ -87,19 +87,19 @@ void draw_static_flower(Renderer &ctx, FlowerRenderAttributes attributes) {
         ctx.line_to(-12, 0);
         ctx.fill();
     }
-    if (BIT_AT(attributes.face_flags, FaceFlags::kThirdEye))
+    if (BIT_AT(attributes.equip_flags, EquipmentFlags::kThirdEye))
     {
         RenderContext g(&ctx);
         ctx.translate(0, -14);
         ctx.scale(0.5);
         draw_static_petal(PetalID::kThirdEye, ctx);
     }
-    if (BIT_AT(attributes.face_flags, FaceFlags::kObserver))
+    if (BIT_AT(attributes.equip_flags, EquipmentFlags::kObserver))
     {
         RenderContext g(&ctx);
         ctx.translate(0, -35);
         draw_static_petal(PetalID::kObserver, ctx);
-    } else if (BIT_AT(attributes.face_flags, FaceFlags::kAntennae))
+    } else if (BIT_AT(attributes.equip_flags, EquipmentFlags::kAntennae))
     {
         RenderContext g(&ctx);
         ctx.translate(0, -35);
