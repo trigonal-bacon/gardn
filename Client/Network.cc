@@ -101,8 +101,7 @@ void Game::swap_all_petals() {
 }
 
 void Game::send_chat(std::string const &text) {
-    uint8_t packet[100];
-    Writer writer(static_cast<uint8_t *>(packet));
+    Writer writer(static_cast<uint8_t *>(OUTGOING_PACKET));
     if (!Game::alive()) return;
     writer.write<uint8_t>(Serverbound::kChatSend);
     writer.write<std::string>(text);

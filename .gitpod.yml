@@ -9,7 +9,7 @@ tasks:
       git clone https://github.com/emscripten-core/emsdk.git ../emsdk && \
       ../emsdk/emsdk install latest && \
       ../emsdk/emsdk activate latest && \
-      cmake -S Client -B Client/build -DDEBUG=1 \
+      cmake -S Client -B Client/build -DDEBUG=1 -DUSE_CODEPOINT_LEN=1 \
           -DSERVER_URL="${GITPOD_WORKSPACE_URL/'https://'/'wss://9001-'}"
     command: |
       source ../emsdk/emsdk_env.sh && \
@@ -25,7 +25,8 @@ tasks:
           --slave /usr/bin/g++ g++ /usr/bin/g++-13
     init: |
       make -C Server/uWebSockets -j$(nproc) && \
-      cmake -S Server -B Server/build -DDEBUG=1 -DGENERAL_SPATIAL_HASH=1
+      cmake -S Server -B Server/build -DDEBUG=1 \
+          -DUSE_CODEPOINT_LEN=1 -DGENERAL_SPATIAL_HASH=1
     command: |
       source ../emsdk/emsdk_env.sh && \
       cd Server/build && \

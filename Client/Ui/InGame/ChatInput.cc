@@ -11,9 +11,9 @@ ChatInput::ChatInput(std::string &r, float w, float h, uint32_t m, Style s) : Te
 
 void ChatInput::on_render(Renderer &ctx) {
     if (animation > 0.99) {
-        if (Input::keys_pressed_this_tick.contains(27)) // esc
+        if (Input::keys_held_this_tick.contains(27)) // esc
             Game::show_chat = false;
-        else if (Input::keys_pressed_this_tick.contains('\r')) {
+        else if (Input::keys_held_this_tick.contains('\r')) {
             Game::show_chat = false;
             Game::send_chat(ref);
             ref.clear();
@@ -25,7 +25,7 @@ void ChatInput::on_render(Renderer &ctx) {
 
 void ChatInput::on_render_skip(Renderer &ctx) {
     if (!Game::alive()) Game::show_chat = false;
-    else if (Input::keys_pressed_this_tick.contains('\r')) {
+    else if (Input::keys_held_this_tick.contains('\r')) {
         Game::show_chat = true;
         DOM::update_text(name.c_str(), ref, max);
     }

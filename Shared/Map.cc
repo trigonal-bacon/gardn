@@ -37,7 +37,7 @@ uint32_t Map::get_suitable_difficulty_zone(uint32_t power) {
 #ifdef SERVERSIDE
 #include <Shared/Simulation.hh>
 void Map::remove_mob(Simulation *sim, uint32_t zone) {
-    DEBUG_ONLY(assert(zone < MAP.size());)
+    DEBUG_ONLY(assert(zone < MAP_DATA.size());)
     --sim->zone_mob_counts[zone];
 }
 
