@@ -53,7 +53,7 @@ void Game::render_game() {
     }
     {
         RenderContext context(&renderer);
-        for (ZoneDefinition const &def : MAP) {
+        for (ZoneDefinition const &def : MAP_DATA) {
             renderer.set_fill(def.color);
             renderer.fill_rect(def.left, def.top, def.right - def.left, def.bottom - def.top);
             if (Map::difficulty_at_level(score_to_level(Game::score)) > def.difficulty) {

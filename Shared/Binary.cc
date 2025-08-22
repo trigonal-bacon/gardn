@@ -229,6 +229,7 @@ uint8_t Validator::validate_uint8() {
 }
 
 uint8_t Validator::validate_uint32() {
+    if (at >= end) return 0;
     for (uint8_t i = 0; i < 5; ++i) {
         uint8_t x = *at;
         if (!validate_uint8()) return 0;
@@ -253,13 +254,8 @@ uint8_t Validator::validate_float() {
 uint8_t Validator::validate_string(uint32_t max_len) {
     uint8_t const *old = at;
     if (!validate_uint32()) return 0;
-    at = old;
-    uint32_t byte_len = 0;
-    for (uint32_t i = 0; i < 5; ++i) {
-        uint8_t o = *at++;
-        byte_len |= ((o & 127) << (i * 7));
-        if (o <= 127) break;
-    }
+    Reader reader(old);
+    uint32_t byte_len = reader.read<uint32_t>();
 #ifdef USE_CODEPOINT_LEN
     if (byte_len == 0) return 1;
     if (byte_len + at > end) return 0;

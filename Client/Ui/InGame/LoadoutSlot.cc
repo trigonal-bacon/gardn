@@ -72,7 +72,7 @@ Element *Ui::make_loadout_backgrounds() {
         }, 0, 0, { .should_render = [](){ return Game::alive(); } }
     );
     base->style.v_justify = Style::Bottom;
-    base->style.animate = [](Element *elt, Renderer &ctx){
+    base->style.animate = [](Element *elt, Renderer &ctx) {
         ctx.translate(0, (1 - elt->animation) * elt->height * 2);
     };
     return base;

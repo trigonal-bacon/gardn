@@ -29,7 +29,7 @@ void draw_loadout_background(Renderer &, PetalID::T, float=1);
 
 void draw_static_flower(Renderer &, FlowerRenderAttributes);
 
-void draw_static_petal_single(MobID::T, Renderer &);
+void draw_static_petal_single(PetalID::T, Renderer &);
 
 void draw_static_petal(PetalID::T, Renderer &);
 

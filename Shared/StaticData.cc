@@ -1,7 +1,5 @@
 #include <Shared/StaticData.hh>
 
-#include <Shared/Map.hh>
-
 #include <cmath>
 
 uint32_t const MAX_LEVEL = 99;
@@ -373,7 +371,7 @@ std::array<StaticArray<float, MAX_DROPS_PER_MOB>, MobID::kNumMobs> const MOB_DRO
     double const RARITY_MULT[RarityID::kNumRarities] = {50000,15000,2500,100,10,2.5,1};
     double MOB_SPAWN_RATES[MobID::kNumMobs] = {0};
     double PETAL_AGGREGATE_DROPS[PetalID::kNumPetals] = {0};
-    for (struct ZoneDefinition const &zone : MAP) {
+    for (struct ZoneDefinition const &zone : MAP_DATA) {
         double total = 0;
         for (SpawnChance const &s : zone.spawns) total += s.chance;
         for (SpawnChance const &s : zone.spawns) {

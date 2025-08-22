@@ -20,7 +20,7 @@ class Simulation {
     StaticArray<EntityID::id_type, ENTITY_CAP> active_entities;
 public:
     SERVER_ONLY(uint32_t petal_count_tracker[PetalID::kNumPetals];)
-    SERVER_ONLY(uint32_t zone_mob_counts[MAP.size()];)
+    SERVER_ONLY(uint32_t zone_mob_counts[MAP_DATA.size()];)
     SERVER_ONLY(SpatialHash spatial_hash;)
     Arena arena_info;
     Simulation();
