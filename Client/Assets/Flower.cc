@@ -92,7 +92,19 @@ void draw_static_flower(Renderer &ctx, FlowerRenderAttributes attributes) {
         RenderContext g(&ctx);
         ctx.translate(0, -14);
         ctx.scale(0.5);
-        draw_static_petal(PetalID::kThirdEye, ctx);
+        if (BIT_AT(attributes.face_flags, FaceFlags::kDeadEyes)) {
+            float const len = 4;
+            ctx.set_stroke(0xff222222);
+            ctx.set_line_width(3);
+            ctx.begin_path();
+            ctx.move_to(-len,-len);
+            ctx.line_to(len,len);
+            ctx.move_to(len,-len);
+            ctx.line_to(-len,len);
+            ctx.stroke();
+        }
+        else
+            draw_static_petal(PetalID::kThirdEye, ctx);
     }
     if (BIT_AT(attributes.equip_flags, EquipmentFlags::kObserver))
     {
