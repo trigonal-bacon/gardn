@@ -73,7 +73,7 @@ void Particle::tick_game(Renderer &ctx, double dt) {
         RenderContext c(&ctx);
         part.x += part.x_velocity * dt / 1000;
         part.y += part.y_velocity * dt / 1000;
-        part.opacity *= 0.95;
+        part.opacity = fclamp(part.opacity - dt / 1000, 0, 1);
         ctx.set_global_alpha(part.opacity);
         ctx.set_fill(0x80ffffff);
         ctx.begin_path();
