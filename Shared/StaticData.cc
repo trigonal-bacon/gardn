@@ -78,7 +78,7 @@ struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
         .icon_angle = 1,
     }},
     {"Peas", "4 in 1 deal",
-        5.0, 8.0, 7.0, 2.0, 4, RarityID::kRare, {
+        5.0, 8.0, 7.0, 1.0, 4, RarityID::kRare, {
         .clump_radius = 8,
         .secondary_reload = 0.1,
         .defend_only = 1,
@@ -118,7 +118,7 @@ struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
         .defend_only = 1
     }},
     {"Peas", "4 in 1 deal, now with a secret ingredient: poison",
-        5.0, 2.0, 7.0, 2.0, 4, RarityID::kEpic, {
+        5.0, 2.0, 7.0, 1.0, 4, RarityID::kEpic, {
         .clump_radius = 8,
         .secondary_reload = 0.1,
         .defend_only = 1,
