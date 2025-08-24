@@ -20,29 +20,34 @@ Element *Ui::make_title_input_box() {
         new Ui::Choose(
             new Ui::StaticText(40, "Connecting..."),
             new Ui::VContainer({
-                new Ui::StaticText(20, "This pretty little flower is called..."),
-                new Ui::HContainer({
-                    new Ui::TextInput(Game::nickname, 400, 50, MAX_NAME_LENGTH, {
-                        .line_width = 5,
-                        .round_radius = 5,
-                        .animate = [](Element *elt, Renderer &ctx) { 
-                            ctx.translate(0, (elt->animation - 1) * ctx.height * 0.6);
-                        },
-                        .should_render = [](){
-                            return !Game::in_game() && Game::transition_circle <= 0;
-                        }
-                    }),
-                    new Ui::Button(110, 36, 
-                        new Ui::StaticText(25, "Spawn"), 
-                        [](Element *elt, uint8_t e){ if (e == Ui::kClick) Game::spawn_in(); },
-                        [](){ return Game::in_game() != 0; },
-                        { .fill = 0xff1dd129, .line_width = 5, .round_radius = 3 }
-                    )
-                }, 0, 10,{}),
-                new Ui::StaticText(14, "(or press ENTER to spawn)")
-            }, 10, 5, { .animate = [](Element *elt, Renderer &ctx) {
-                ctx.translate(0, (elt->animation - 1) * ctx.height);
-            } }),
+                new Ui::VContainer({
+                    new Ui::StaticText(20, "This pretty little flower is called..."),
+                    new Ui::HContainer({
+                        new Ui::TextInput(Game::nickname, 400, 50, MAX_NAME_LENGTH, {
+                            .line_width = 5,
+                            .round_radius = 5,
+                        }),
+                        new Ui::Button(110, 36, 
+                            new Ui::StaticText(25, "Spawn"), 
+                            [](Element *elt, uint8_t e){ if (e == Ui::kClick) Game::spawn_in(); },
+                            [](){ return Game::in_game() != 0; },
+                            { .fill = 0xff1dd129, .line_width = 5, .round_radius = 3 }
+                        )
+                    }, 0, 10,{}),
+                    new Ui::StaticText(14, "(or press ENTER to spawn)")
+                }, 10, 5, {
+                    .animate = [](Element *elt, Renderer &ctx) { 
+                        ctx.translate(0, (elt->animation - 1) * ctx.height * 0.6);
+                    },
+                    .should_render = [](){
+                        return !Game::in_game() && Game::transition_circle <= 50;
+                    }
+                }),
+            }, 0, 0, {
+                .animate = [](Element *elt, Renderer &ctx) { 
+                    ctx.translate(0, (elt->animation - 1) * ctx.height);
+                }
+            }),
             [](){ return Game::socket.ready; }
         ),
         new Ui::Element(0,20),

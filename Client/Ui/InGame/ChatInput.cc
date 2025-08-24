@@ -39,6 +39,6 @@ Element *Ui::make_chat_input() {
         }
     });
     elt->x = 0;
-    elt->y = 55;
+    elt->y = 75;
     return elt;
 }
