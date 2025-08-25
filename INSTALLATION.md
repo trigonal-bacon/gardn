@@ -32,7 +32,7 @@ Then,
 > cmake .. -DWASM_SERVER=1
 > make
 > npm install ws fs http
-> node ./gardn-server
+> node ./gardn-server.js
 ```
 
 ## Client:

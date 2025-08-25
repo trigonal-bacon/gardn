@@ -22,9 +22,10 @@ extern "C" {
     }
 
     void on_disconnect(int ws_id, int reason) {
-        WebSocket *ws = WS_MAP[ws_id];
-        if (ws == nullptr) return;
-        Client::on_disconnect(ws,reason, {});
+        auto iter = WS_MAP.find(ws_id);
+        //WebSocket *ws = WS_MAP[ws_id];
+        if (iter == WS_MAP.end()) return;
+        Client::on_disconnect(iter->second, reason, {});
         WS_MAP.erase(ws_id);
     }
 
