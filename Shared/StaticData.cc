@@ -10,6 +10,7 @@ float const PLAYER_ACCELERATION = 5.0f;
 float const DEFAULT_FRICTION = 1.0f/3.0f;
 float const SUMMON_RETREAT_RADIUS = 600.0f;
 float const DIGGER_SPAWN_CHANCE = 0.25f;
+float const TEAMMATE_HEAL_RADIUS = 200.0f;
 
 float const BASE_FLOWER_RADIUS = 25.0f;
 float const BASE_PETAL_ROTATION_SPEED = 2.5f;

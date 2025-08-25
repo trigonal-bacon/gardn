@@ -46,15 +46,34 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
     }
     else if (petal_data.attributes.secondary_reload > 0) {
         if (petal.secondary_reload > petal_data.attributes.secondary_reload * TPS) {
-            if (petal_data.attributes.burst_heal > 0 && player.health < player.max_health && player.dandy_ticks == 0) {
-                Vector delta(player.x - petal.x, player.y - petal.y);
-                if (delta.magnitude() < petal.radius) {
-                    inflict_heal(sim, player, petal_data.attributes.burst_heal);
-                    sim->request_delete(petal.id);
-                    return;
+            if (petal_data.attributes.burst_heal > 0) {
+                Entity *potential = nullptr;
+                float min_health_ratio = 1;
+                if (player.health < player.max_health && player.dandy_ticks == 0)
+                    potential = &player;
+                else
+                    sim->spatial_hash.query(player.x, player.y, TEAMMATE_HEAL_RADIUS, TEAMMATE_HEAL_RADIUS, [&](Simulation *sim, Entity &ent){
+                        if (!sim->ent_alive(ent.id)) return;
+                        if (!ent.has_component(kFlower)) return;
+                        if (ent.team != player.team) return;
+                        if (ent.dandy_ticks > 0) return;
+                        float health_ratio = ent.health / ent.max_health;
+                        if (health_ratio >= min_health_ratio) return;
+                        float dist = Vector(ent.x - player.x, ent.y - player.y).magnitude();
+                        if (dist > TEAMMATE_HEAL_RADIUS) return;
+                        potential = &ent;
+                        min_health_ratio = health_ratio;
+                    });
+                if (potential != nullptr) {
+                    Vector delta(potential->x - petal.x, potential->y - petal.y);
+                    if (delta.magnitude() < petal.radius) {
+                        inflict_heal(sim, *potential, petal_data.attributes.burst_heal);
+                        sim->request_delete(petal.id);
+                        return;
+                    }
+                    delta.set_magnitude(PLAYER_ACCELERATION * 4);
+                    petal.acceleration = delta;
                 }
-                delta.set_magnitude(PLAYER_ACCELERATION * 4);
-                petal.acceleration = delta;
             }
             switch (petal.petal_id) {
                 case PetalID::kMissile:
