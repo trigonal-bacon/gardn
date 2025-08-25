@@ -63,7 +63,7 @@ void Ui::ui_swap_petals(uint8_t static_pos1, uint8_t static_pos2) {
     a2->static_pos = static_pos1;
     Ui::UiLoadout::petal_slots[static_pos1] = a2;
     Ui::UiLoadout::petal_slots[static_pos2] = a1;
-    a1->no_change_ticks = a2->no_change_ticks = 10;
+    a1->no_change_ticks = a2->no_change_ticks = 100;
     Game::swap_petals(static_pos1, static_pos2);
 }
 
