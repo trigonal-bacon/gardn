@@ -69,7 +69,8 @@ SINGLE(Petal, petal_id, PetalID::T)
 
 #define FIELDS_Health \
 SINGLE(Health, health_ratio, Float) \
-SINGLE(Health, damaged, StickyFlag)
+SINGLE(Health, damaged, StickyFlag) \
+SINGLE(Health, revived, StickyFlag)
 
 #define FIELDS_Mob \
 SINGLE(Mob, mob_id, MobID::T)
@@ -148,7 +149,8 @@ SINGLE(Chat, text, std::string)
     SINGLE(eye_y, float, =0) \
     SINGLE(mouth, float, =15) \
     SINGLE(animation, float, =0) \
-    SINGLE(damage_flash, float, =0)
+    SINGLE(damage_flash, float, =0) \
+    SINGLE(revival_burst, float, =0)
 #endif
 
 class EntityID {

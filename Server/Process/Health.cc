@@ -8,6 +8,7 @@
 
 void tick_health_behavior(Simulation *sim, Entity &ent) {
     ent.set_damaged(0);
+    ent.set_revived(0);
     if (ent.poison_ticks > 0 && !ent.has_component(kPetal)) {
         ent.poison_ticks--;
         inflict_damage(sim, ent.poison_dealer, ent.id, ent.poison_inflicted, DamageType::kPoison);

@@ -1,6 +1,7 @@
 #include <Shared/Simulation.hh>
 
 #include <Client/Game.hh>
+#include <Client/Particle.hh>
 
 #include <Client/Ui/Extern.hh>
 
@@ -45,6 +46,15 @@ void Simulation::on_tick() {
             if (ent.damaged)
                 ent.last_damaged_time = Game::timestamp;
             ent.damaged.clear();
+            if (ent.revived == 1 && ent.revival_burst < 0.1)
+                ent.revival_burst = 1;
+            else
+                LERP(ent.revival_burst, 0, amt / 3);
+            if (ent.revival_burst > 0.01)
+                for (uint8_t i = 0; i < 3; ++i)
+                    if (frand() < fclamp(ent.revival_burst * Ui::dt * 60 / 1000, 0, 1))
+                        Particle::add_revival_particle(ent.x, ent.y, ent.color);
+            ent.revived.clear();
             if ((float) ent.health_ratio > 0.999)
                 LERP(ent.healthbar_opacity, 0, amt)
             else

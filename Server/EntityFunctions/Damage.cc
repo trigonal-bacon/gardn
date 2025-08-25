@@ -11,7 +11,7 @@ static bool _yggdrasil_revival_clause(Simulation *sim, Entity &player) {
     for (uint32_t i = 0; i < player.loadout_count; ++i) {
         if (!player.loadout[i].already_spawned) continue;
         if (player.loadout[i].get_petal_id() != PetalID::kYggdrasil) continue;
-        player.set_loadout_ids(i, PetalID::kNone);
+        if (frand() > 0.5) continue;
         return true;
     }
     return false;
@@ -60,14 +60,17 @@ void inflict_damage(Simulation *sim, EntityID const atk_id, EntityID const def_i
         }
             */
     }
-    /* yggdrasil revive clause
+    // yggdrasil revive clause
     if (defender.health == 0 && defender.has_component(kFlower)) {
         if (_yggdrasil_revival_clause(sim, defender)) {
-            defender.health = defender.max_health * 0.25;
+            defender.set_revived(1);
+            defender.health = defender.max_health;
+            defender.poison_ticks = 0;
+            defender.slow_ticks = 0;
+            defender.dandy_ticks = 0;
             defender.immunity_ticks = 1.0 * TPS;
         }
     }
-    */
     if (!sim->ent_exists(atk_id)) return;
     Entity &attacker = sim->get_ent(atk_id);
 
@@ -76,14 +79,16 @@ void inflict_damage(Simulation *sim, EntityID const atk_id, EntityID const def_i
     
     if (!sim->ent_alive(atk_id)) return;
 
-    if (type == DamageType::kContact && defender.poison_ticks < attacker.poison_damage.time * TPS) {
-        defender.poison_ticks = attacker.poison_damage.time * TPS;
-        defender.poison_inflicted = attacker.poison_damage.damage / TPS;
-        defender.poison_dealer = atk_id;
-    }
+    if (!defender.revived) {
+        if (type == DamageType::kContact && defender.poison_ticks < attacker.poison_damage.time * TPS) {
+            defender.poison_ticks = attacker.poison_damage.time * TPS;
+            defender.poison_inflicted = attacker.poison_damage.damage / TPS;
+            defender.poison_dealer = atk_id;
+        }
 
-    if (defender.slow_ticks < attacker.slow_inflict)
-        defender.slow_ticks = attacker.slow_inflict;
+        if (defender.slow_ticks < attacker.slow_inflict)
+            defender.slow_ticks = attacker.slow_inflict;
+    }
     
     if (defender.has_component(kPetal)) {
         switch (defender.petal_id) {
