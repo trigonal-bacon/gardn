@@ -220,8 +220,49 @@ Element *Ui::make_debug_stats() {
     return elt;
 }
 
-Element *Ui::make_github_link_button() {
+Element *Ui::make_link_buttons() {
     Element *elt = new Ui::HContainer({
+        new Ui::Button(50, 50, 
+            new Ui::StaticIcon([](Element *elt, Renderer &ctx){
+                ctx.scale(elt->width / 58);
+                ctx.translate(-29, -22);
+                ctx.set_fill(0xfff1f1f1);
+                ctx.begin_path();
+                ctx.move_to(37.19, 0.00);
+                ctx.bcurve_to(36.63, 1.01, 36.12, 2.05, 35.65, 3.11);
+                ctx.bcurve_to(31.26, 2.45, 26.78, 2.45, 22.36, 3.11);
+                ctx.bcurve_to(21.91, 2.05, 21.39, 1.01, 20.83, 0.00);
+                ctx.bcurve_to(16.69, 0.71, 12.66, 1.94, 8.84, 3.69);
+                ctx.bcurve_to(1.27, 14.91, -0.78, 25.84, 0.24, 36.61);
+                ctx.bcurve_to(4.68, 39.89, 9.64, 42.39, 14.93, 43.99);
+                ctx.bcurve_to(16.13, 42.39, 17.18, 40.69, 18.08, 38.92);
+                ctx.bcurve_to(16.37, 38.28, 14.71, 37.48, 13.13, 36.56);
+                ctx.bcurve_to(13.54, 36.26, 13.95, 35.94, 14.34, 35.64);
+                ctx.bcurve_to(23.64, 40.02, 34.40, 40.02, 43.71, 35.64);
+                ctx.bcurve_to(44.10, 35.97, 44.51, 36.28, 44.93, 36.56);
+                ctx.bcurve_to(43.34, 37.49, 41.69, 38.28, 39.96, 38.93);
+                ctx.bcurve_to(40.86, 40.70, 41.92, 42.40, 43.11, 44.00);
+                ctx.bcurve_to(48.40, 42.40, 53.37, 39.91, 57.80, 36.64);
+                ctx.bcurve_to(59.00, 24.14, 55.74, 13.30, 49.17, 3.70);
+                ctx.bcurve_to(45.37, 1.96, 41.34, 0.72, 37.21, 0.02);
+                ctx.move_to(19.38, 29.98);
+                ctx.bcurve_to(16.52, 29.98, 14.15, 27.39, 14.15, 24.18);
+                ctx.bcurve_to(14.15, 20.98, 16.43, 18.37, 19.37, 18.37);
+                ctx.bcurve_to(22.31, 18.37, 24.65, 20.99, 24.60, 24.18);
+                ctx.bcurve_to(24.55, 27.38, 22.30, 29.98, 19.38, 29.98);
+                ctx.move_to(38.66, 29.98);
+                ctx.bcurve_to(35.79, 29.98, 33.44, 27.39, 33.44, 24.18);
+                ctx.bcurve_to(33.44, 20.98, 35.72, 18.37, 38.66, 18.37);
+                ctx.bcurve_to(41.60, 18.37, 43.93, 20.99, 43.88, 24.18);
+                ctx.bcurve_to(43.84, 27.38, 41.58, 29.98, 38.66, 29.98);
+                ctx.fill();
+            }, 40, 40),
+            [](Element *elt, uint8_t e){
+                if (e == Ui::kClick) DOM::open_page("https://discord.gg/Ghwxd8nJnN");
+            },
+            nullptr,
+            { .fill = 0xff5865f2, .line_width = 4, .round_radius = 4 }
+        ),
         new Ui::Button(50, 50, 
             new Ui::StaticIcon([](Element *elt, Renderer &ctx){
                 ctx.scale(elt->width / 20);
@@ -256,7 +297,7 @@ Element *Ui::make_github_link_button() {
                 ctx.fill();
             }, 40, 40),
             [](Element *elt, uint8_t e){
-                if (e == Ui::kClick) DOM::open_page("https://github.com/trigonal-bacon/gardn/");
+                if (e == Ui::kClick) DOM::open_page("https://github.com/maxnest0x0/gardn");
             },
             nullptr,
             { .fill = 0xff333333, .line_width = 4, .round_radius = 4 }

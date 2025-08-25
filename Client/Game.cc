@@ -85,7 +85,7 @@ void Game::init() {
         Ui::make_changelog()
     );
     title_ui_window.add_child(
-        Ui::make_github_link_button()
+        Ui::make_link_buttons()
     );
     game_ui_window.add_child(
         Ui::make_death_main_screen()
