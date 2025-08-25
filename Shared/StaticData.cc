@@ -57,6 +57,8 @@ struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
     }},
     {"Dandelion", "Its interesting properties prevent healing effects on affected units",
         10.0, 10.0, 10.0, 1.0, 1, RarityID::kRare, {
+        .secondary_reload = 0.5,
+        .defend_only = 1,
         .icon_angle = 1,
         .rotation_style = PetalAttributes::kFollowRot 
     }},
