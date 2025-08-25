@@ -7,8 +7,7 @@
 #include <cmath>
 #include <iostream>
 
-void Simulation::tick() {
-    pre_tick();
+void Simulation::on_tick() {
     double const amt = Ui::lerp_amount;
     for_each_entity([=](Simulation *sim, Entity &ent) {
         if (ent.has_component(kPhysics)) {
@@ -29,7 +28,7 @@ void Simulation::tick() {
             ent.radius.step(amt);
             ent.angle.step_angle(amt);
             if (ent.pending_delete)
-                ent.deletion_animation = fclamp(ent.deletion_animation + Ui::dt / 125, 0, 1);
+                ent.deletion_animation = fclamp(ent.deletion_animation + Ui::dt / 150, 0, 1);
         }
         if (ent.has_component(kCamera)) {
             ent.camera_x.step(amt);

@@ -59,7 +59,7 @@ GameInstance::GameInstance() : simulation(), clients(), team_manager(&simulation
 
 void GameInstance::init() {
     for (uint32_t i = 0; i < ENTITY_CAP / 2; ++i)
-        Map::spawn_random_mob(&simulation);
+        Map::spawn_random_mob(&simulation, frand() * ARENA_WIDTH, frand() * ARENA_HEIGHT);
     team_manager.add_team(ColorID::kBlue);
     team_manager.add_team(ColorID::kRed);
 }

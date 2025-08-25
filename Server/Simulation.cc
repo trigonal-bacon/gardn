@@ -30,13 +30,16 @@ static void calculate_leaderboard(Simulation *sim) {
     }
 }
 
-void Simulation::tick() {
-    pre_tick();
+void Simulation::on_tick() {
     //systems (for_each loops) are ONLY SAFE TO USE HERE
     spatial_hash.refresh(ARENA_WIDTH, ARENA_HEIGHT);
-    if (frand() < 1.0f / TPS)
-        for (uint32_t i = 0; i < 10; ++i)
-            Map::spawn_random_mob(this);
+    if (frand() < 1.0f / TPS) {
+        for (uint32_t i = 0; i < 10; ++i) {
+            Vector v;
+            if (Map::find_spawn_location(this, 500, v))
+                Map::spawn_random_mob(this, v.x, v.y);
+        }
+    }
     for_each_entity([](Simulation *sim, Entity &ent) {
         if (ent.has_component(kPhysics))
             sim->spatial_hash.insert(ent);
@@ -63,10 +66,8 @@ void Simulation::post_tick() {
         ent.reset_protocol();
         ++ent.lifetime;
         if (BIT_AT(ent.flags, EntityFlags::kIsDespawning)) {
-            if (ent.despawn_tick == 0)
-                sim->request_delete(ent.id);
-            else
-                --ent.despawn_tick;
+            if (ent.despawn_tick == 0) sim->request_delete(ent.id);
+            else --ent.despawn_tick;
         }
         if (ent.immunity_ticks > 0) --ent.immunity_ticks;
     });
