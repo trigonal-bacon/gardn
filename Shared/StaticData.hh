@@ -13,6 +13,7 @@ extern float const PLAYER_ACCELERATION;
 extern float const DEFAULT_FRICTION;
 extern float const SUMMON_RETREAT_RADIUS;
 extern float const DIGGER_SPAWN_CHANCE;
+extern float const MOB_SPAWN_DISTANCE;
 
 extern float const BASE_FLOWER_RADIUS;
 extern float const BASE_PETAL_ROTATION_SPEED;

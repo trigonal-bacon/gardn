@@ -44,6 +44,9 @@ void Map::remove_mob(Simulation *sim, uint32_t zone) {
 void Map::spawn_random_mob(Simulation *sim) {
     float x = frand() * ARENA_WIDTH;
     float y = frand() * ARENA_HEIGHT;
+    sim->for_each<kCamera>([&](Simulation *sim, Entity &ent) {
+        if (sim->ent_alive(ent.player) && Vector(ent.x - x, ent.y - y).magnitude() < MOB_SPAWN_DISTANCE) return;
+    });
     uint32_t zone_id = Map::get_zone_from_pos(x, y);
     struct ZoneDefinition const &zone = MAP_DATA[zone_id];
     if (zone.density * (zone.right - zone.left) * (zone.bottom - zone.top) / (500 * 500) < sim->zone_mob_counts[zone_id]) return;
