@@ -2,6 +2,7 @@
 
 #include <Shared/Helpers.hh>
 #include <Shared/StaticData.hh>
+#include <Shared/Vector.hh>
 
 #include <array>
 #include <cstdint>
@@ -15,6 +16,10 @@ namespace Map {
     extern uint32_t get_suitable_difficulty_zone(uint32_t);
     #ifdef SERVERSIDE
     extern void remove_mob(Simulation *, uint32_t);
-    extern void spawn_random_mob(Simulation *);
+    extern void spawn_random_mob(Simulation *, float, float);
+    /* finds a spawn location at least <d> units from a player,
+    and places it in the Vector &. returns whether or not a
+    suitable spawn location was found */ 
+    extern bool find_spawn_location(Simulation *, float, Vector &);
     #endif
 }

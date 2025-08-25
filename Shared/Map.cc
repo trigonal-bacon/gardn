@@ -41,9 +41,7 @@ void Map::remove_mob(Simulation *sim, uint32_t zone) {
     --sim->zone_mob_counts[zone];
 }
 
-void Map::spawn_random_mob(Simulation *sim) {
-    float x = frand() * ARENA_WIDTH;
-    float y = frand() * ARENA_HEIGHT;
+void Map::spawn_random_mob(Simulation *sim, float x, float y) {
     uint32_t zone_id = Map::get_zone_from_pos(x, y);
     struct ZoneDefinition const &zone = MAP_DATA[zone_id];
     if (zone.density * (zone.right - zone.left) * (zone.bottom - zone.top) / (500 * 500) < sim->zone_mob_counts[zone_id]) return;
@@ -62,5 +60,20 @@ void Map::spawn_random_mob(Simulation *sim) {
             return;
         }
     }
+}
+
+bool Map::find_spawn_location(Simulation *sim, float d, Vector &vref) {
+    for (uint32_t i = 0; i < 10; ++i) {
+        vref.set(frand() * ARENA_WIDTH, frand() * ARENA_HEIGHT);
+        bool valid = true;
+        sim->for_each<kFlower>([&](Simulation *, Entity &ent) {
+            if (ent.has_component(kMob)) return;
+            if (!valid) return;
+            if (Vector(ent.x - vref.x, ent.y - vref.y).magnitude() < d) 
+                valid = false;
+        });
+        if (valid) return true;
+    }
+    return false;
 }
 #endif

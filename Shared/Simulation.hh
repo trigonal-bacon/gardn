@@ -32,13 +32,12 @@ public:
     Entity &get_ent(EntityID const &);
     uint8_t ent_exists(EntityID const &) const;
     uint8_t ent_alive(EntityID const &) const;
-    void pre_tick();
     void tick();
+    void on_tick();
     void post_tick();
 
+    //will only consider active entities from the start of the tick() call
     void for_each_entity(std::function<void (Simulation *, Entity &)>);
-    void for_each_pending_delete(std::function<void (Simulation *, Entity &)>);
-
     template <uint8_t>
     void for_each(std::function<void (Simulation *, Entity &)>);
 };

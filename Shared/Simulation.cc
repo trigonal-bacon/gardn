@@ -79,16 +79,18 @@ void Simulation::_delete_ent(EntityID const &id) {
     hash_tracker[id.id]++;
 }
 
-void Simulation::pre_tick() {
+void Simulation::tick() {
     active_entities.clear();
     for (EntityID::id_type i = 1; i < ENTITY_CAP; ++i) {
         if (!BIT_AT_ARR(entity_tracker, i)) continue;
         active_entities.push(entities[i].id.id);
     }
+    on_tick();
 }
 
 void Simulation::for_each_entity(std::function<void(Simulation *, Entity &)> cb) { \
     for (EntityID::id_type i = 0; i < active_entities.size(); ++i) { \
+        if (!BIT_AT_ARR(entity_tracker, active_entities[i])) continue; \
         Entity &ent = entities[active_entities[i]]; \
         cb(this, ent); \
     } \
@@ -98,6 +100,7 @@ void Simulation::for_each_entity(std::function<void(Simulation *, Entity &)> cb)
 template<> \
 void Simulation::for_each<k##name>(std::function<void(Simulation *, Entity &)> cb) { \
     for (EntityID::id_type i = 0; i < active_entities.size(); ++i) { \
+        if (!BIT_AT_ARR(entity_tracker, active_entities[i])) continue; \
         Entity &ent = entities[active_entities[i]]; \
         SERVER_ONLY(if (ent.pending_delete) continue;) \
         if (ent.has_component(k##name)) cb(this, ent); \

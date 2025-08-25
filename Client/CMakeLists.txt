@@ -55,6 +55,7 @@ set(SRCS
     Ui/Element.cc
     Ui/Extern.cc
     Ui/ScrollContainer.cc
+    Ui/StaticIcon.cc
     Ui/StaticText.cc
     Ui/TextInput.cc
     Ui/Window.cc

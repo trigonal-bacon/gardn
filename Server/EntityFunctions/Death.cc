@@ -47,11 +47,6 @@ static void _add_score(Simulation *sim, EntityID const killer_id, Entity const &
     Entity &killer = sim->get_ent(killer_id);
     if (killer.has_component(kScore))
         killer.set_score(killer.score + target.score_reward);
-    if (target.has_component(kFlower) && sim->ent_alive(target.parent)) {
-        Entity &camera = sim->get_ent(target.parent);
-        if (!killer.has_component(kName)) camera.set_killed_by("");
-        else camera.set_killed_by(killer.name);
-    }
 }
 
 void entity_on_death(Simulation *sim, Entity const &ent) {
@@ -61,8 +56,17 @@ void entity_on_death(Simulation *sim, Entity const &ent) {
         EntityID killer_id = sim->get_ent(ent.last_damaged_by).base_entity;
         _add_score(sim, killer_id, ent);
     }
+    if (ent.has_component(kFlower) && sim->ent_alive(ent.parent)) {
+        Entity &camera = sim->get_ent(ent.parent);
+        EntityID killer_id = sim->get_ent(ent.last_damaged_by).base_entity;
+        if (sim->ent_alive(killer_id)) {
+            Entity const &killer = sim->get_ent(killer_id);
+            if (killer.has_component(kName)) camera.set_killed_by(killer.name);
+            else camera.set_killed_by("");
+        } else if (ent.poison_ticks > 0) camera.set_killed_by("Poison");
+        else camera.set_killed_by("");
+    }
     if (ent.has_component(kMob)) {
-        //if (!(ent.team == NULL_ENTITY)) return;
         if (BIT_AT(ent.flags, EntityFlags::kSpawnedFromZone))
             Map::remove_mob(sim, ent.zone);
         if (!natural_despawn && !(BIT_AT(ent.flags, EntityFlags::kNoDrops))) {

@@ -35,10 +35,22 @@ void inflict_damage(Simulation *sim, EntityID const atk_id, EntityID const def_i
     float damage_dealt = old_health - defender.health;
     //ant hole spawns
     //floor start, ceil end
-    uint32_t const num_spawn_waves = ANTHOLE_SPAWNS.size() - 1;
     if (defender.has_component(kMob) && defender.mob_id == MobID::kAntHole) {
-        uint32_t start = (old_health / defender.max_health) * num_spawn_waves;
-        uint32_t end = ceilf((defender.health / defender.max_health) * num_spawn_waves);
+        uint32_t const num_waves = ANTHOLE_SPAWNS.size() - 1;
+        uint32_t start = ceilf((defender.max_health - old_health) / defender.max_health * num_waves);
+        uint32_t end = ceilf((defender.max_health - defender.health) / defender.max_health * num_waves);
+        if (defender.health <= 0) end = num_waves + 1;
+        for (uint32_t i = start; i < end; ++i) {
+            for (MobID::T mob_id : ANTHOLE_SPAWNS[i]) {
+                Entity &child = alloc_mob(sim, mob_id, defender.x, defender.y, defender.team);
+                child.set_parent(defender.id);
+                child.target = defender.target;
+            }
+        }
+        /*
+        uint32_t start = old_health * num_spawn_waves / defender.max_health;
+        uint32_t end = ceilf(defender.health * num_spawn_waves / defender.max_health);
+        std::printf("%d,%d,%d\n", start, end, num_spawn_waves);
         for (uint32_t i = start; i + 1 > end; --i) {
             for (MobID::T mob_id : ANTHOLE_SPAWNS[num_spawn_waves - i]) {
                 Entity &child = alloc_mob(sim, mob_id, defender.x, defender.y, defender.team);
@@ -46,6 +58,7 @@ void inflict_damage(Simulation *sim, EntityID const atk_id, EntityID const def_i
                 child.target = defender.target;
             }
         }
+            */
     }
     /* yggdrasil revive clause
     if (defender.health == 0 && defender.has_component(kFlower)) {
