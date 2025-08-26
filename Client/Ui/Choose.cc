@@ -2,6 +2,8 @@
 
 #include <Client/Ui/Extern.hh>
 
+#include <Helpers/Macros.hh>
+
 using namespace Ui;
 
 uint8_t no_show() { return 0; }

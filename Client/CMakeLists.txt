@@ -57,16 +57,17 @@ set(SRCS
     Ui/StaticText.cc
     Ui/TextInput.cc
     Ui/Window.cc
+    ../Helpers/Math.cc
+    ../Helpers/UTF8.cc
+    ../Helpers/Vector.cc
     ../Shared/Arena.cc
     ../Shared/Binary.cc
     ../Shared/Config.cc
     ../Shared/Entity.cc
     ../Shared/EntityDef.cc
-    ../Shared/Helpers.cc
     ../Shared/Map.cc
     ../Shared/Simulation.cc
     ../Shared/StaticData.cc
-    ../Shared/Vector.cc
 )
 
 set(CMAKE_CXX_COMPILER "em++")

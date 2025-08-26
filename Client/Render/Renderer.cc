@@ -1,6 +1,8 @@
 #include <Client/Render/Renderer.hh>
 
-#include <Shared/Helpers.hh>
+#include <Helpers/Macros.hh>
+#include <Helpers/Math.hh>
+#include <Helpers/UTF8.hh>
 
 #include <cmath>
 #include <iostream>
@@ -24,8 +26,9 @@ void RenderContext::reset() {
     color_filter = 0;
     clip_x = renderer->width / 2;
     clip_y = renderer->height / 2;
-    clip_w = renderer->width;
-    clip_h = renderer->height;
+    //prevents premature unrendering
+    clip_w = std::fmax(renderer->width, 10000.0);
+    clip_h = std::fmax(renderer->height, 10000.0);
 }
 
 RenderContext::~RenderContext() {

@@ -8,8 +8,6 @@
 #include <Client/Game.hh>
 #include <Client/StaticData.hh>
 
-#include <Shared/Helpers.hh>
-
 #include <algorithm>
 #include <cstring>
 

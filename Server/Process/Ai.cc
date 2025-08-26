@@ -323,9 +323,9 @@ static void tick_digger(Simulation *sim, Entity &ent) {
         _focus_lose_clause(ent, v);
         v.set_magnitude(PLAYER_ACCELERATION * 0.95);
         if (ent.health / ent.max_health > 0.1) {
-            BIT_SET(ent.input, InputFlags::kAttacking);
+            BitMath::set(ent.input, InputFlags::kAttacking);
         } else {
-            BIT_SET(ent.input, InputFlags::kDefending);
+            BitMath::set(ent.input, InputFlags::kDefending);
             v *= -1;
         }
         ent.acceleration = v;
@@ -364,7 +364,7 @@ void tick_ai_behavior(Simulation *sim, Entity &ent) {
     ent.acceleration.set(0,0);
     if (!(ent.parent == NULL_ENTITY)) {
         if (!sim->ent_alive(ent.parent)) {
-            if (BIT_AT(ent.flags, EntityFlags::kDieOnParentDeath))
+            if (BitMath::at(ent.flags, EntityFlags::kDieOnParentDeath))
                 sim->request_delete(ent.id);
             ent.set_parent(NULL_ENTITY);
         } else {
@@ -376,7 +376,7 @@ void tick_ai_behavior(Simulation *sim, Entity &ent) {
             }
         }
     }
-    if (BIT_AT(ent.flags, EntityFlags::kIsCulled)) {
+    if (BitMath::at(ent.flags, EntityFlags::kIsCulled)) {
         ent.target = NULL_ENTITY;
         ent.ai_tick = 0;
         return;

@@ -12,6 +12,8 @@
 
 #include <Shared/Config.hh>
 
+#include <format>
+
 using namespace Ui;
 
 Element *Ui::make_title_input_box() {

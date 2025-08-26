@@ -3,13 +3,14 @@
 #include <Client/Ui/Extern.hh>
 #include <Client/Input.hh>
 
-#include <Shared/Helpers.hh>
+#include <Helpers/Bits.hh>
+#include <Helpers/Macros.hh>
 
 using namespace Ui;
 
 ScrollBar::ScrollBar() : Element(8, 100, { .fill = 0x40000000, .round_radius = 4 }) {
     style.animate = [&](Element *elt, Renderer &ctx){
-        if (elt->style.layer && BIT_AT(Input::mouse_buttons_released, Input::LeftMouse))
+        if (elt->style.layer && BitMath::at(Input::mouse_buttons_released, Input::LeftMouse))
             elt->style.layer = 0;
     };
 }

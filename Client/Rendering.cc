@@ -6,9 +6,10 @@
 #include <Client/Ui/Extern.hh>
 #include <Client/Render/RenderEntity.hh>
 
+#include <Helpers/Vector.hh>
+
 #include <Shared/Map.hh>
 #include <Shared/StaticData.hh>
-#include <Shared/Vector.hh>
 
 #include <cmath>
 

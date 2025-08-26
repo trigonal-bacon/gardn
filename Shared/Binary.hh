@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Shared/EntityDef.hh>
-#include <Shared/Helpers.hh>
 
 #include <cstdint>
 #include <string>

@@ -66,11 +66,11 @@ void Element::render(Renderer &ctx) {
         on_render_skip(ctx);
     //event emitter
     if (Ui::focused == this) {
-        if (BIT_AT(Input::mouse_buttons_released, Input::LeftMouse)) {
+        if (BitMath::at(Input::mouse_buttons_released, Input::LeftMouse)) {
             focus_state = kClick;
             on_event(kClick);
         }
-        else if (BIT_AT(Input::mouse_buttons_pressed, Input::LeftMouse)) {
+        else if (BitMath::at(Input::mouse_buttons_pressed, Input::LeftMouse)) {
             focus_state = kMouseDown;
             on_event(kMouseDown);
         }

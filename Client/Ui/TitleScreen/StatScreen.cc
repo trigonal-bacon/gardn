@@ -7,6 +7,7 @@
 #include <Client/Assets/Assets.hh>
 #include <Client/Game.hh>
 
+#include <format>
 #include <string>
 
 using namespace Ui;

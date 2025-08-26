@@ -159,8 +159,8 @@ void Storage::retrieve() {
         if (len > 0) {
             Decoder reader(&StorageProtocol::buffer[0]);
             uint8_t opts = reader.read<uint8_t>();
-            Input::movement_helper = BIT_AT(opts, 0);
-            Input::keyboard_movement = BIT_AT(opts, 1);
+            Input::movement_helper = BitMath::at(opts, 0);
+            Input::keyboard_movement = BitMath::at(opts, 1);
         }
     }
     {

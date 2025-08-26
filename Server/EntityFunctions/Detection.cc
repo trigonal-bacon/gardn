@@ -2,7 +2,6 @@
 
 #include <Shared/Simulation.hh>
 #include <Shared/Entity.hh>
-#include <Shared/Vector.hh>
 
 EntityID find_nearest_enemy(Simulation *simulation, Entity const &entity, float radius) {
     if ((entity.id.id - entity.lifetime) % (TPS / 5) != 0) return NULL_ENTITY;

@@ -128,7 +128,7 @@ UiLoadoutPetal::UiLoadoutPetal(uint8_t pos) : Element(60, 60),
             style.layer = 1;
             uint8_t potential_swap = find_viable_target();
             if (potential_swap != ((uint8_t)-1) && potential_swap != static_to_dynamic(static_pos)) {
-                if (BIT_AT(Input::mouse_buttons_released, Input::LeftMouse)) {
+                if (BitMath::at(Input::mouse_buttons_released, Input::LeftMouse)) {
                     if (potential_swap == 2 * MAX_SLOT_COUNT)
                         ui_delete_petal(static_pos);
                     else {
@@ -150,7 +150,7 @@ UiLoadoutPetal::UiLoadoutPetal(uint8_t pos) : Element(60, 60),
                 LERP(height, parent_slot->height + 10, lerp_amt);
                 ctx.rotate(sin(Game::timestamp / 150) * 0.1);
             }
-            if (BIT_AT(Input::mouse_buttons_released, Input::LeftMouse))
+            if (BitMath::at(Input::mouse_buttons_released, Input::LeftMouse))
                 Ui::UiLoadout::petal_selected = nullptr;
         } else if (Ui::UiLoadout::selected_with_keys + Game::loadout_count == static_pos && Game::alive()) {
             if (!showed) lerp_amt = 1;

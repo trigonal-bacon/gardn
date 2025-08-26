@@ -28,6 +28,7 @@ namespace Game {
     std::string nickname;
     std::array<uint8_t, PetalID::kNumPetals> seen_petals;
     std::array<uint8_t, MobID::kNumMobs> seen_mobs;
+    std::array<PetalID::T, 2 * MAX_SLOT_COUNT> cached_loadout = {PetalID::kNone};
 
     double timestamp = 0;
 
@@ -38,7 +39,6 @@ namespace Game {
 
     uint32_t respawn_level = 1;
 
-    PetalID::T cached_loadout[2 * MAX_SLOT_COUNT] = {PetalID::kNone};
 
     uint8_t loadout_count = 5;
     uint8_t simulation_ready = 0;

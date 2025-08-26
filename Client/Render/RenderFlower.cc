@@ -12,7 +12,7 @@
 void render_flower(Renderer &ctx, Entity const &ent) {
     if (ent.has_component(kMob)) return;
     uint8_t face_flags = ent.face_flags;
-    if (ent.deletion_animation > 0) BIT_SET(face_flags, FaceFlags::kDeadEyes);
+    if (ent.deletion_animation > 0) BitMath::set(face_flags, FaceFlags::kDeadEyes);
     draw_static_flower(ctx, {
         .radius = ent.radius,
         .eye_x = ent.eye_x,

@@ -5,6 +5,8 @@
 #include <Server/Server.hh>
 #include <Server/Spawn.hh>
 
+#include <Helpers/UTF8.hh>
+
 #include <Shared/Binary.hh>
 #include <Shared/Config.hh>
 
@@ -37,8 +39,6 @@ uint8_t Client::alive() {
     && simulation->ent_exists(simulation->get_ent(camera).player);
 }
 
-#define VALIDATE(expr) if (!expr) { client->disconnect(); return; }
-
 void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) {
     if (ws == nullptr) return;
     uint8_t const *data = reinterpret_cast<uint8_t const *>(message.data());
@@ -50,13 +50,12 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
         return;
     }
     if (!client->verified) {
-        VALIDATE(validator.validate_uint8());
+        if (client->check_invalid(validator.validate_uint8() && validator.validate_uint64())) return;
         if (reader.read<uint8_t>() != Serverbound::kVerify) {
             //disconnect
             client->disconnect();
             return;
         }
-        VALIDATE(validator.validate_uint64());
         if (reader.read<uint64_t>() != VERSION_HASH) {
             Writer writer(Server::OUTGOING_PACKET);
             writer.write<uint8_t>(Clientbound::kOutdated);
@@ -72,7 +71,7 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
         client->disconnect();
         return;
     }
-    VALIDATE(validator.validate_uint8());
+    if (client->check_invalid(validator.validate_uint8())) return;
     switch (reader.read<uint8_t>()) {
         case Serverbound::kVerify:
             client->disconnect();
@@ -82,8 +81,11 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
             Simulation *simulation = &client->game->simulation;
             Entity &camera = simulation->get_ent(client->camera);
             Entity &player = simulation->get_ent(camera.player);
-            VALIDATE(validator.validate_float());
-            VALIDATE(validator.validate_float());
+            if (client->check_invalid(
+                validator.validate_float() &&
+                validator.validate_float() &&
+                validator.validate_uint8()
+            )) return;
             float x = reader.read<float>();
             float y = reader.read<float>();
             if (x == 0 && y == 0) player.acceleration.set(0,0);
@@ -95,7 +97,6 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
                 else accel.set_magnitude(m / 200 * PLAYER_ACCELERATION);
                 player.acceleration = accel;
             }
-            VALIDATE(validator.validate_uint8());
             player.input = reader.read<uint8_t>();
             //store player's acceleration and input in camera (do not reset ever)
             break;
@@ -104,14 +105,13 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
             if (client->alive()) break;
             //check string length
             std::string name;
-            VALIDATE(validator.validate_string(MAX_NAME_LENGTH));
+            if (client->check_invalid(validator.validate_string(MAX_NAME_LENGTH))) return;
             reader.read<std::string>(name);
-            VALIDATE(UTF8Parser::is_valid_utf8(name));
+            if (client->check_invalid(UTF8Parser::is_valid_utf8(name))) return;
             Simulation *simulation = &client->game->simulation;
             Entity &camera = simulation->get_ent(client->camera);
             Entity &player = alloc_player(simulation, camera.team);
             player_spawn(simulation, camera, player);
-            //unnecessary: name = UTF8Parser::trunc_string(name, MAX_NAME_LENGTH);
             player.set_name(name);
             break;
         }
@@ -120,7 +120,7 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
             Simulation *simulation = &client->game->simulation;
             Entity &camera = simulation->get_ent(client->camera);
             Entity &player = simulation->get_ent(camera.player);
-            VALIDATE(validator.validate_uint8());
+            if (client->check_invalid(validator.validate_uint8())) return;
             uint8_t pos = reader.read<uint8_t>();
             if (pos >= MAX_SLOT_COUNT + player.loadout_count) break;
             PetalID::T old_id = player.loadout_ids[pos];
@@ -141,10 +141,9 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
             Simulation *simulation = &client->game->simulation;
             Entity &camera = simulation->get_ent(client->camera);
             Entity &player = simulation->get_ent(camera.player);
-            VALIDATE(validator.validate_uint8());
+            if (client->check_invalid(validator.validate_uint8() && validator.validate_uint8())) return;
             uint8_t pos1 = reader.read<uint8_t>();
             if (pos1 >= MAX_SLOT_COUNT + player.loadout_count) break;
-            VALIDATE(validator.validate_uint8());
             uint8_t pos2 = reader.read<uint8_t>();
             if (pos2 >= MAX_SLOT_COUNT + player.loadout_count) break;
             PetalID::T tmp = player.loadout_ids[pos1];
@@ -162,4 +161,12 @@ void Client::on_disconnect(WebSocket *ws, int code, std::string_view message) {
     client->remove();
     //Server::clients.erase(client);
     //delete player in systems
+}
+
+bool Client::check_invalid(bool valid) {
+    if (valid) return false;
+    //optional
+    disconnect();
+
+    return true;
 }

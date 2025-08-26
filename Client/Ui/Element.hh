@@ -1,7 +1,8 @@
 #pragma once
 
 #include <Client/Render/Renderer.hh>
-#include <Shared/Helpers.hh>
+
+#include <Helpers/Math.hh>
 
 #include <functional>
 #include <vector>

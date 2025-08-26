@@ -1,13 +1,15 @@
 #pragma once
 
-#include <Shared/Helpers.hh>
 #include <Shared/StaticData.hh>
 
 #include <string>
-#include <stdint.h>
+#include <cstdint>
 
 SERVER_ONLY(class Writer;)
 CLIENT_ONLY(class Reader;)
+
+SERVER_ONLY(typedef float Float;)
+CLIENT_ONLY(typedef LerpFloat Float;)
 
 #define FIELDS_Arena \
     SINGLE(player_count, uint32_t) \

@@ -33,7 +33,7 @@ namespace Game {
 
     extern uint32_t respawn_level;
 
-    extern PetalID::T cached_loadout[2 * MAX_SLOT_COUNT];
+    extern std::array<PetalID::T, 2 * MAX_SLOT_COUNT> cached_loadout;
 
     extern uint8_t loadout_count;
     extern uint8_t simulation_ready;

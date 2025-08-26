@@ -3,7 +3,6 @@
 #include <Client/Render/Renderer.hh>
 
 #include <Shared/StaticData.hh>
-#include <Shared/Vector.hh>
 
 namespace Particle {
     class TitleParticleEntity {

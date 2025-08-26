@@ -26,7 +26,7 @@ namespace Input {
 };
 
 uint8_t Input::is_valid() {
-    return Input::num_touches > 0 || BIT_AT(Input::mouse_buttons_released, Input::LeftMouse) || !Game::is_mobile;
+    return Input::num_touches > 0 || BitMath::at(Input::mouse_buttons_released, Input::LeftMouse) || !Game::is_mobile;
 }
 
 void Input::reset() {

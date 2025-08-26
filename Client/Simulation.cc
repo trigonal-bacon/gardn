@@ -28,7 +28,7 @@ void Simulation::on_tick() {
             ent.radius.step(amt);
             ent.angle.step_angle(amt);
             if (ent.pending_delete)
-                ent.deletion_animation = fclamp(ent.deletion_animation + Ui::dt / 150, 0, 1);
+                ent.deletion_animation = fclamp(ent.deletion_animation + Ui::dt / 200, 0, 1);
         }
         if (ent.has_component(kCamera)) {
             ent.camera_x.step(amt);
@@ -57,11 +57,11 @@ void Simulation::on_tick() {
         if (ent.has_component(kFlower)) {
             LERP(ent.eye_x, cosf(ent.eye_angle) * 3, amt);
             LERP(ent.eye_y, sinf(ent.eye_angle) * 3, amt);
-            if (BIT_AT(ent.face_flags, FaceFlags::kAttacking)
-                || BIT_AT(ent.face_flags, FaceFlags::kPoisoned) 
-                || BIT_AT(ent.face_flags, FaceFlags::kDandelioned)
+            if (BitMath::at(ent.face_flags, FaceFlags::kAttacking)
+                || BitMath::at(ent.face_flags, FaceFlags::kPoisoned) 
+                || BitMath::at(ent.face_flags, FaceFlags::kDandelioned)
                 || ent.pending_delete) LERP(ent.mouth, 5, amt)
-            else if (BIT_AT(ent.face_flags, FaceFlags::kDefending)) LERP(ent.mouth, 8, amt)
+            else if (BitMath::at(ent.face_flags, FaceFlags::kDefending)) LERP(ent.mouth, 8, amt)
             else LERP(ent.mouth, 15, amt)
         }
     });

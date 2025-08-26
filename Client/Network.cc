@@ -23,11 +23,11 @@ void Game::on_message(uint8_t *ptr, uint32_t len) {
             curr_id = reader.read<EntityID>();
             while(!(curr_id == NULL_ENTITY)) {
                 uint8_t create = reader.read<uint8_t>();
-                if (BIT_AT(create, 0)) simulation.force_alloc_ent(curr_id);
+                if (BitMath::at(create, 0)) simulation.force_alloc_ent(curr_id);
                 assert(simulation.ent_exists(curr_id));
                 Entity &ent = simulation.get_ent(curr_id);
-                ent.read(&reader, BIT_AT(create, 0));
-                if (BIT_AT(create, 1)) ent.pending_delete = 1;
+                ent.read(&reader, BitMath::at(create, 0));
+                if (BitMath::at(create, 1)) ent.pending_delete = 1;
                 curr_id = reader.read<EntityID>();
             }
             simulation.arena_info.read(&reader, reader.read<uint8_t>());
@@ -56,8 +56,8 @@ void Game::send_inputs() {
         }
         writer.write<float>(x);
         writer.write<float>(y);
-        uint8_t attack = Input::keys_held.contains(' ') || BIT_AT(Input::mouse_buttons_state, Input::LeftMouse);
-        uint8_t defend = Input::keys_held.contains('\x10') || BIT_AT(Input::mouse_buttons_state, Input::RightMouse);
+        uint8_t attack = Input::keys_held.contains(' ') || BitMath::at(Input::mouse_buttons_state, Input::LeftMouse);
+        uint8_t defend = Input::keys_held.contains('\x10') || BitMath::at(Input::mouse_buttons_state, Input::RightMouse);
         writer.write<uint8_t>((attack << InputFlags::kAttacking) | (defend << InputFlags::kDefending));
     }
     socket.send(writer.packet, writer.at - writer.packet);

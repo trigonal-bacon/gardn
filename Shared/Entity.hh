@@ -1,8 +1,11 @@
 #pragma once
 
 #include <Shared/EntityDef.hh>
-#include <Shared/Helpers.hh>
-#include <Shared/Vector.hh>
+
+#include <Helpers/Array.hh>
+#include <Helpers/Bits.hh>
+#include <Helpers/Macros.hh>
+#include <Helpers/Vector.hh>
 
 #include <cstdint>
 
@@ -10,6 +13,12 @@ typedef CircularArray<PetalID::T, MAX_SLOT_COUNT> circ_arr_t;
 
 SERVER_ONLY(class Writer;)
 CLIENT_ONLY(class Reader;)
+
+SERVER_ONLY(typedef uint8_t StickyFlag;)
+CLIENT_ONLY(typedef PersistentFlag StickyFlag;)
+
+SERVER_ONLY(typedef float Float;)
+CLIENT_ONLY(typedef LerpFloat Float;)
 
 enum Components {
     #define COMPONENT(name) k##name,

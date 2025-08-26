@@ -1,5 +1,8 @@
 #include <Shared/Binary.hh>
 
+#include <Helpers/Bits.hh>
+#include <Helpers/UTF8.hh>
+
 static const uint32_t PROTOCOL_FLOAT_SCALE = 64;
 
 Writer::Writer(uint8_t *buf) : at(buf), packet(buf) {}

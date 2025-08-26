@@ -1,5 +1,7 @@
 #include <Client/Ui/StaticIcon.hh>
 
+#include <Helpers/Macros.hh>
+
 using namespace Ui;
 
 StaticIcon::StaticIcon(std::function<void(Element *, Renderer &)> render_func, float w, float h, Style s)

@@ -3,7 +3,6 @@
 #include <Server/Spawn.hh>
 #include <Shared/Entity.hh>
 #include <Shared/Simulation.hh>
-#include <Shared/Helpers.hh>
 
 #include <cmath>
 

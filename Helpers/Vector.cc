@@ -1,6 +1,6 @@
-#include <Shared/Vector.hh>
+#include <Helpers/Vector.hh>
 
-#include <Shared/Helpers.hh>
+#include <Helpers/Math.hh>
 
 #include <cmath>
 

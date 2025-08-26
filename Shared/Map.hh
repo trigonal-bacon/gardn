@@ -1,12 +1,14 @@
 #pragma once
 
-#include <Shared/Helpers.hh>
 #include <Shared/StaticData.hh>
-#include <Shared/Vector.hh>
 
 #include <array>
 #include <cstdint>
 #include <vector>
+
+#ifdef SERVERSIDE
+#include <Helpers/Vector.hh>
+#endif
 
 SERVER_ONLY(class Simulation;)
 

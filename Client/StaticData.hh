@@ -2,7 +2,9 @@
 
 #include <Shared/StaticData.hh>
 
-extern uint32_t const RARITY_COLORS[RarityID::kNumRarities];
-extern uint32_t const FLOWER_COLORS[ColorID::kNumColors];
-extern char const *RARITY_NAMES[RarityID::kNumRarities];
-extern char const SLOT_KEYBINDS[MAX_SLOT_COUNT];
+#include <array>
+
+extern std::array<uint32_t, RarityID::kNumRarities> const RARITY_COLORS;
+extern std::array<uint32_t, ColorID::kNumColors> const FLOWER_COLORS;
+extern std::array<char const *, RarityID::kNumRarities> const RARITY_NAMES;
+extern std::array<char const, MAX_SLOT_COUNT> const SLOT_KEYBINDS;

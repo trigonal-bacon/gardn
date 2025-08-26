@@ -1,6 +1,7 @@
 #pragma once
 
-#include <Shared/Helpers.hh>
+#include <Helpers/Array.hh>
+#include <Helpers/Math.hh>
 
 #include <cstdint>
 

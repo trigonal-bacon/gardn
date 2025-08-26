@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Shared/Helpers.hh>
+#include <Helpers/Array.hh>
 
 namespace Debug {
     extern CircularArray<double, 100> tick_times;

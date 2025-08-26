@@ -20,8 +20,8 @@ extern float const BASE_FOV;
 extern float const BASE_HEALTH;
 extern float const BASE_BODY_DAMAGE;
 
-extern struct PetalData const PETAL_DATA[PetalID::kNumPetals];
-extern struct MobData const MOB_DATA[MobID::kNumMobs];
+extern std::array<struct PetalData, PetalID::kNumPetals> const PETAL_DATA;
+extern std::array<struct MobData, MobID::kNumMobs> const MOB_DATA;
 
 //map extends from (0,0) to (ARENA_WIDTH,ARENA_HEIGHT)
 inline std::array const MAP_DATA = std::to_array<struct ZoneDefinition>({

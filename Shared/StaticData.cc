@@ -17,7 +17,7 @@ float const BASE_FOV = 0.9f;
 float const BASE_HEALTH = 100.0f;
 float const BASE_BODY_DAMAGE = 25.0f;
 
-struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
+std::array<struct PetalData, PetalID::kNumPetals> const PETAL_DATA ({
     {"None", "How can you see this?",
         0.0, 0.0, 0.0, 1.0, 0, RarityID::kCommon, {}},
     {"Basic", "A nice petal, not too strong but not too weak",
@@ -217,9 +217,9 @@ struct PetalData const PETAL_DATA[PetalID::kNumPetals] = {
         500.0, 2.5, 16.0, 10.0, 1, RarityID::kEpic, {
         .icon_angle = 0.5
     }},
-};
+});
 
-struct MobData const MOB_DATA[MobID::kNumMobs] = {
+std::array<struct MobData, MobID::kNumMobs> const MOB_DATA ({
     {
         "Baby Ant",
         "Weak and defenseless, but big dreams.",
@@ -364,7 +364,7 @@ struct MobData const MOB_DATA[MobID::kNumMobs] = {
         RarityID::kEpic, {250.0}, 25.0, {40.0}, 1, {
         PetalID::kCutter
     }, {}},
-};
+});
 
 std::array<StaticArray<float, MAX_DROPS_PER_MOB>, MobID::kNumMobs> const MOB_DROP_CHANCES = [](){
     std::array<StaticArray<float, MAX_DROPS_PER_MOB>, MobID::kNumMobs> ret;

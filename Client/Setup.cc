@@ -43,13 +43,13 @@ extern "C" {
         Input::mouse_y = y;
         if (type == 0) {
             ++Input::num_touches;
-            BIT_SET(Input::mouse_buttons_pressed, button);
-            BIT_SET(Input::mouse_buttons_state, button);
+            BitMath::set(Input::mouse_buttons_pressed, button);
+            BitMath::set(Input::mouse_buttons_state, button);
         }
         else if (type == 2) {
             --Input::num_touches;
-            BIT_SET(Input::mouse_buttons_released, button);
-            BIT_UNSET(Input::mouse_buttons_state, button);
+            BitMath::set(Input::mouse_buttons_released, button);
+            BitMath::unset(Input::mouse_buttons_state, button);
         }
     }
 
