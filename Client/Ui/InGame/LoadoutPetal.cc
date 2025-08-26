@@ -138,34 +138,34 @@ UiLoadoutPetal::UiLoadoutPetal(uint8_t pos) : Element(60, 60),
                     }
                 } else {
                     UiLoadoutSlot *slot = Ui::UiLoadout::petal_backgrounds[potential_swap];
-                    LERP(x, (slot->screen_x - Ui::window_width / 2) / Ui::scale, lerp_amt);
-                    LERP(y, (slot->screen_y - Ui::window_height / 2) / Ui::scale, lerp_amt);
-                    LERP(width, slot->width, lerp_amt);
-                    LERP(height, slot->height, lerp_amt);
+                    x = lerp(x, (slot->screen_x - Ui::window_width / 2) / Ui::scale, lerp_amt);
+                    y = lerp(y, (slot->screen_y - Ui::window_height / 2) / Ui::scale, lerp_amt);
+                    width = lerp(width, slot->width, lerp_amt);
+                    height = lerp(height, slot->height, lerp_amt);
                 }
             } else {
-                LERP(x, (Input::mouse_x - Ui::window_width / 2) / Ui::scale, lerp_amt);
-                LERP(y, (Input::mouse_y - Ui::window_height / 2) / Ui::scale, lerp_amt);
-                LERP(width, parent_slot->width + 10, lerp_amt);
-                LERP(height, parent_slot->height + 10, lerp_amt);
+                x = lerp(x, (Input::mouse_x - Ui::window_width / 2) / Ui::scale, lerp_amt);
+                y = lerp(y, (Input::mouse_y - Ui::window_height / 2) / Ui::scale, lerp_amt);
+                width = lerp(width, parent_slot->width + 10, lerp_amt);
+                height = lerp(height, parent_slot->height + 10, lerp_amt);
                 ctx.rotate(sin(Game::timestamp / 150) * 0.1);
             }
             if (BitMath::at(Input::mouse_buttons_released, Input::LeftMouse))
                 Ui::UiLoadout::petal_selected = nullptr;
         } else if (Ui::UiLoadout::selected_with_keys + Game::loadout_count == static_pos && Game::alive()) {
             if (!showed) lerp_amt = 1;
-            LERP(x, (parent_slot->screen_x - Ui::window_width / 2) / Ui::scale, lerp_amt);
-            LERP(y, (parent_slot->screen_y - Ui::window_height / 2) / Ui::scale, lerp_amt);
-            LERP(width, parent_slot->width + 20, lerp_amt);
-            LERP(height, parent_slot->height + 20, lerp_amt);
+            x = lerp(x, (parent_slot->screen_x - Ui::window_width / 2) / Ui::scale, lerp_amt);
+            y = lerp(y, (parent_slot->screen_y - Ui::window_height / 2) / Ui::scale, lerp_amt);
+            width = lerp(width, parent_slot->width + 20, lerp_amt);
+            height = lerp(height, parent_slot->height + 20, lerp_amt);
             ctx.rotate(sin(Game::timestamp / 150) * 0.1);
         } else {
             style.layer = 0;
             if (!showed) lerp_amt = 1;
-            LERP(x, (parent_slot->screen_x - Ui::window_width / 2) / Ui::scale, lerp_amt);
-            LERP(y, (parent_slot->screen_y - Ui::window_height / 2) / Ui::scale, lerp_amt);
-            LERP(width, parent_slot->width, lerp_amt);
-            LERP(height, parent_slot->height, lerp_amt);
+            x = lerp(x, (parent_slot->screen_x - Ui::window_width / 2) / Ui::scale, lerp_amt);
+            y = lerp(y, (parent_slot->screen_y - Ui::window_height / 2) / Ui::scale, lerp_amt);
+            width = lerp(width, parent_slot->width, lerp_amt);
+            height = lerp(height, parent_slot->height, lerp_amt);
         }
         if (!Game::alive())
             Ui::UiLoadout::petal_selected = nullptr;

@@ -37,8 +37,8 @@ void ScrollContainer::on_render(Renderer &ctx) {
             lerp_scroll += Input::wheel_delta / ratio;
         if (scroll->style.layer) lerp_scroll += (Input::mouse_y - Input::prev_mouse_y);
         lerp_scroll = fclamp(lerp_scroll, 0, height - scroll->height);
-        LERP(scroll->y, lerp_scroll, Ui::lerp_amount)
-        LERP(content->y, -ratio * lerp_scroll, Ui::lerp_amount);
+        scroll->y = lerp(scroll->y, lerp_scroll, Ui::lerp_amount);
+        content->y = lerp(content->y, -ratio * lerp_scroll, Ui::lerp_amount);
     } else 
         content->y = scroll->y = 0;
     RenderContext c(&ctx);

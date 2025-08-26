@@ -28,14 +28,13 @@ uWS::App Server::server = uWS::App({
         Client::on_message(ws, message, opCode);
     },
     .dropped = [](WebSocket *ws, std::string_view /*message*/, uWS::OpCode /*opCode*/) {
-        std::cout << "dropped packet, uh oh\n";
+        std::cout << "dropped packet\n";
         Client *client = ws->getUserData();
         if (client == nullptr) {
-            ws->end();
+            ws->end(1006, "Dropped Message");
             return;
         }
         client->disconnect();
-        //ws->end();
         /* A message was dropped due to set maxBackpressure and closeOnBackpressureLimit limit */
     },
     .drain = [](WebSocket */*ws*/) {

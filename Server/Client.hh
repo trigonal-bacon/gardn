@@ -27,7 +27,7 @@ public:
     Client();
     void init();
     void remove();
-    void disconnect();
+    void disconnect(int = 1002, std::string const & = "Protocol Error");
     uint8_t alive();
 
     void send_packet(uint8_t const *, size_t);
@@ -47,6 +47,6 @@ public:
     WebSocket(int);
     Client *getUserData();
     void send(uint8_t const *, size_t);
-    void end();
+    void end(int, std::string const &);
 };
 #endif

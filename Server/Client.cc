@@ -10,9 +10,10 @@
 #include <Shared/Binary.hh>
 #include <Shared/Config.hh>
 
+#include <array>
 #include <iostream>
 
-static uint32_t const RARITY_TO_XP[RarityID::kNumRarities] = { 2, 10, 50, 200, 1000, 5000, 0 };
+constexpr std::array<uint32_t, RarityID::kNumRarities> RARITY_TO_XP = { 2, 10, 50, 200, 1000, 5000, 0 };
 
 Client::Client() : game(nullptr) {}
 
@@ -26,10 +27,10 @@ void Client::remove() {
     game->remove_client(this);
 }
 
-void Client::disconnect() {
+void Client::disconnect(int reason, std::string const &message) {
     if (ws == nullptr) return;
     remove();
-    ws->end();
+    ws->end(reason, message);
 }
 
 uint8_t Client::alive() {
@@ -46,7 +47,7 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
     Validator validator(data, data + message.size());
     Client *client = ws->getUserData();
     if (client == nullptr) {
-        ws->end();
+        ws->end(1006, "Server Error");
         return;
     }
     if (!client->verified) {
@@ -57,9 +58,6 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
             return;
         }
         if (reader.read<uint64_t>() != VERSION_HASH) {
-            Writer writer(Server::OUTGOING_PACKET);
-            writer.write<uint8_t>(Clientbound::kOutdated);
-            client->send_packet(writer.packet, writer.at - writer.packet);
             client->disconnect();
             return;
         }
@@ -67,7 +65,7 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
         client->init();
         return;
     }
-    if (client->game == nullptr) {
+    if (client->game != nullptr) {
         client->disconnect();
         return;
     }
@@ -98,7 +96,6 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
                 player.acceleration = accel;
             }
             player.input = reader.read<uint8_t>();
-            //store player's acceleration and input in camera (do not reset ever)
             break;
         }
         case Serverbound::kClientSpawn: {
@@ -155,16 +152,15 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
 }
 
 void Client::on_disconnect(WebSocket *ws, int code, std::string_view message) {
-    std::cout << "client disconnection\n";
+    std::printf("disconnect: [%d](%s)\n", code, message.data());
     Client *client = ws->getUserData();
     if (client == nullptr) return;
     client->remove();
-    //Server::clients.erase(client);
-    //delete player in systems
 }
 
 bool Client::check_invalid(bool valid) {
     if (valid) return false;
+    std::cout << "client sent an invalid packet\n";
     //optional
     disconnect();
 

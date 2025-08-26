@@ -9,9 +9,6 @@ constexpr double M_PI = 3.14159265358979323846;
 
 constexpr uint32_t div_round_up(uint32_t a, uint32_t b) { return (a + b - 1) / b; }
 
-#define LERP(result, from, amt) { result = lerp(result, from, amt); }
-#define ANGLE_LERP(result, from, amt) { result = angle_lerp(result, from, amt); }
-
 double frand();
 float fclamp(float, float, float);
 float lerp(float, float, float);

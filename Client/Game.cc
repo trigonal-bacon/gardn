@@ -26,6 +26,7 @@ namespace Game {
     EntityID camera_id;
     EntityID player_id;
     std::string nickname;
+    std::string disconnect_message;
     std::array<uint8_t, PetalID::kNumPetals> seen_petals;
     std::array<uint8_t, MobID::kNumMobs> seen_mobs;
     std::array<PetalID::T, 2 * MAX_SLOT_COUNT> cached_loadout = {PetalID::kNone};
@@ -115,6 +116,21 @@ void Game::init() {
     other_ui_window.add_child(
         Ui::make_debug_stats()
     );
+    other_ui_window.add_child(
+        [](){ 
+            Ui::Element *elt = new Ui::HContainer({
+                new Ui::DynamicText(16, [](){ return Game::disconnect_message; })
+            }, 5, 5, { 
+                .fill = 0x40000000, 
+                .should_render = [](){
+                    return !Game::socket.ready && Game::disconnect_message != "";
+                },
+                .v_justify = Ui::Style::Top
+            });
+            elt->y = 50;
+            return elt;
+        }()
+    );
     other_ui_window.style.no_polling = 1;
     socket.connect(WS_URL);
 }
@@ -170,7 +186,7 @@ void Game::tick(double time) {
     Ui::focused = nullptr;
     double a = Ui::window_width / 1920;
     double b = Ui::window_height / 1080;
-    Ui::scale = std::max({a, b});
+    Ui::scale = std::max(a, b);
     if (alive()) {
         on_game_screen = 1;
         player_id = simulation.get_ent(camera_id).player;
@@ -268,7 +284,7 @@ void Game::tick(double time) {
         
     if (Game::timestamp - Ui::UiLoadout::last_key_select > 5000)
         Ui::UiLoadout::selected_with_keys = MAX_SLOT_COUNT;
-    LERP(slot_indicator_opacity, Ui::UiLoadout::selected_with_keys != MAX_SLOT_COUNT, Ui::lerp_amount);
+    slot_indicator_opacity = lerp(slot_indicator_opacity, Ui::UiLoadout::selected_with_keys != MAX_SLOT_COUNT, Ui::lerp_amount);
 
     other_ui_window.render(renderer);
 

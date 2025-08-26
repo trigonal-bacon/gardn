@@ -6,9 +6,7 @@
 #include <string>
 
 enum Clientbound {
-    kDisconnect,
-    kClientUpdate,
-    kOutdated
+    kClientUpdate
 };
 
 enum Serverbound {

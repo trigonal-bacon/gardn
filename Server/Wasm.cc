@@ -80,19 +80,19 @@ WebSocketServer::WebSocketServer() {
         const wss = new WSS.Server({ "server": server });
         Module.ws_connections = {};
         let curr_id = 0;
-        wss.on("connection", function(ws, req){
+        wss.on("connection", function(ws, req) {
             const ws_id = curr_id;
             Module.ws_connections[ws_id] = ws;
             _on_connect(ws_id);
             curr_id = (curr_id + 1) | 0;
-            ws.on("message", function(message){
+            ws.on("message", function(message) {
                 let data = new Uint8Array(message);
                 const len = data.length > $2 ? $2 : data.length;
                 data = data.subarray(0, len);
                 HEAPU8.set(data, $1);
                 _on_message(ws_id, len);
             });
-            ws.on("close", function(reason){
+            ws.on("close", function(reason) {
                 _on_disconnect(ws_id, reason);
                 delete Module.ws_connections[ws_id];
             });
@@ -125,12 +125,12 @@ void WebSocket::send(uint8_t const *packet, size_t size) {
     }, ws_id, packet, size);
 }
 
-void WebSocket::end() {
+void WebSocket::end(int code, std::string const &message) {
     EM_ASM({
         if (!Module.ws_connections || !Module.ws_connections[$0]) return;
         const ws = Module.ws_connections[$0];
-        ws.close();
-    }, ws_id);
+        ws.close($1, UTF8ToString($2));
+    }, ws_id, code, message.c_str());
 }
 
 Client *WebSocket::getUserData() {
