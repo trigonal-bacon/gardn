@@ -14,7 +14,7 @@ tasks:
     command: |
       source ../emsdk/emsdk_env.sh && \
       cd Client/build && \
-      make -j$(nproc) && cp gardn-client* ../public
+      make -j$(nproc) && cp gardn-client.* ../public
 
   - name: Game Server
     before: |
@@ -24,13 +24,15 @@ tasks:
       sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100 \
           --slave /usr/bin/g++ g++ /usr/bin/g++-13
     init: |
+      npm install --prefix Server/build ws && \
       make -C Server/uWebSockets -j$(nproc) && \
       cmake -S Server -B Server/build -DDEBUG=1 \
           -DUSE_CODEPOINT_LEN=1 -DGENERAL_SPATIAL_HASH=1
     command: |
       source ../emsdk/emsdk_env.sh && \
       cd Server/build && \
-      make -j$(nproc) && ./gardn-server
+      # cmake -DWASM_BUILD=1 .. && make -j$(nproc) && node --inspect gardn-server.js
+      cmake -DWASM_BUILD=0 .. && make -j$(nproc) && ./gardn-server
 
 ports:
   - port: 8080
