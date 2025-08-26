@@ -1,3 +1,4 @@
+#include <Client/DOM.hh>
 #include <Client/Game.hh>
 
 #include <Client/Ui/Ui.hh>
@@ -31,6 +32,10 @@ void Game::on_message(uint8_t *ptr, uint32_t len) {
                 curr_id = reader.read<EntityID>();
             }
             simulation.arena_info.read(&reader, reader.read<uint8_t>());
+            break;
+        }
+        case Clientbound::kOutdated: {
+            DOM::reload_page();
             break;
         }
         default:

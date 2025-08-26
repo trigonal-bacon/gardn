@@ -12,4 +12,5 @@ namespace DOM {
     void update_text(char const *, std::string const &, uint32_t);
     void element_focus(char const *);
     void open_page(char const *);
+    void reload_page();
 }

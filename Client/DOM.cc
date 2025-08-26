@@ -100,3 +100,10 @@ void DOM::open_page(char const *url) {
         } catch(e) {}
     }, url);
 }
+
+void DOM::reload_page() {
+    EM_ASM({
+        window.onbeforeunload = null;
+        window.location.reload();
+    });
+}
