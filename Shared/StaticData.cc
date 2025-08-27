@@ -17,354 +17,1019 @@ float const BASE_FOV = 0.9f;
 float const BASE_HEALTH = 100.0f;
 float const BASE_BODY_DAMAGE = 25.0f;
 
-std::array<struct PetalData, PetalID::kNumPetals> const PETAL_DATA ({
-    {"None", "How can you see this?",
-        0.0, 0.0, 0.0, 1.0, 0, RarityID::kCommon, {}},
-    {"Basic", "A nice petal, not too strong but not too weak",
-        10.0, 10.0, 10.0, 2.5, 1, RarityID::kCommon, {}},
-    {"Fast", "Weaker than most petals, but reloads very quickly",
-        5.0, 8.0, 7.0, 1.0, 1, RarityID::kCommon, {}},
-    {"Heavy", "Very resilient and deals more damage, but reloads very slowly",
-        20.0, 20.0, 12.0, 4.5, 1, RarityID::kCommon, {}},
-    {"Stinger", "It really hurts, but it's really fragile",
-        5.0, 35.0, 7.0, 3.5, 1, RarityID::kUnusual, {}},
-    {"Leaf", "Gathers energy from the sun to passively heal your flower",
-        10.0, 8.0, 10.0, 1.0, 1, RarityID::kUnusual, {
-        .constant_heal = 1,
-        .icon_angle = -1
-    }},
-    {"Twin", "Why stop at one? Why not TWO?!",
-        5.0, 8.0, 7.0, 1.0, 2, RarityID::kUnusual, {}},
-    {"Rose", "Its healing properties are amazing. Not so good at combat though",
-        5.0, 5.0, 10.0, 3.5, 1, RarityID::kUnusual, { 
-        .secondary_reload = 1.0,
-        .burst_heal = 10,
-        .defend_only = 1
-    }},
-    {"Iris", "Very poisonous, but takes a while to do its work",
-         5.0, 5.0, 7.0, 5.0, 1, RarityID::kUnusual, { 
-        .poison_damage = { 10.0, 6.0 }
-    }},
-    {"Missile", "You can actually shoot this one",
-        5.0, 25.0, 10.0, 1.0, 1, RarityID::kRare, {
-        .secondary_reload = 0.5, 
-        .defend_only = 1,
-        .icon_angle = 1,
-        .rotation_style = PetalAttributes::kFollowRot 
-    }},
-    {"Dandelion", "Its interesting properties prevent healing effects on affected units",
-        10.0, 10.0, 10.0, 1.0, 1, RarityID::kRare, {
-        .icon_angle = 1,
-        .rotation_style = PetalAttributes::kFollowRot 
-    }},
-    {"Bubble", "You can right click to pop it and propel your flower",
-        1.0, 0.0, 12.0, 2.0, 1, RarityID::kRare, {
-        .secondary_reload = 0.5,
-        .defend_only = 1,
-    }},
-    {"Faster", "It's so light it makes your other petals spin faster",
-        5.0, 7.0, 7.0, 0.5, 1, RarityID::kRare, {}},
-    {"Rock", "Even more durable, but slower to recharge",
-        100.0, 10.0, 12.0, 7.5, 1, RarityID::kRare, {}},
-    {"Cactus", "Not very strong, but somehow increases your maximum health",
-        15.0, 5.0, 15.0, 1.0, 1, RarityID::kRare, {}},
-    {"Web", "It's really sticky",
-        10.0, 5.0, 10.0, 3.0, 1, RarityID::kRare, {
-        .secondary_reload = 0.5,
-        .defend_only = 1,
-    }},
-    {"Wing", "It comes and goes",
-        15.0, 15.0, 10.0, 2.5, 1, RarityID::kRare, {
-        .icon_angle = 1,
-    }},
-    {"Peas", "4 in 1 deal",
-        5.0, 8.0, 7.0, 2.0, 4, RarityID::kRare, {
-        .clump_radius = 8,
-        .secondary_reload = 0.1,
-        .defend_only = 1,
-    }},
-    {"Sand", "It's coarse, rough, and gets everywhere",
-        10.0, 3.0, 7.0, 1.5, 4, RarityID::kRare, {
-        .clump_radius = 10,
-    }},
-    {"Pincer", "Stuns and poisons targets for a short duration",
-        10.0, 5.0, 10.0, 2.5, 1, RarityID::kRare, {
-        .icon_angle = 0.7,
-        .poison_damage = { 5.0, 1.0 }
-    }},
-    {"Dahlia", "Its healing properties are amazing. Not so good at combat though",
-        5.0, 5.0, 7.0, 3.5, 3, RarityID::kRare, { 
-        .clump_radius = 10,
-        .secondary_reload = 1.0,
-        .burst_heal = 3.5,
-        .defend_only = 1
-    }},
-    {"Triplet", "How about THREE?!",
-        5.0, 8.0, 7.0, 1.0, 3, RarityID::kEpic, {}},
-    {"Egg", "Something interesting might pop out of this",
-        50.0, 1.0, 12.5, 1.0, 2, RarityID::kEpic, { 
-        .secondary_reload = 3.5,
-        .defend_only = 1,
-        .rotation_style = PetalAttributes::kNoRot,
-        .spawns = MobID::kSoldierAnt
-    }},
-    {"Iris", "Deals its effects quicker than traditional irises",
-        10.0, 5.0, 7.0, 5.0, 1, RarityID::kEpic, { 
-        .poison_damage = { 15.0, 4.0 }
-    }},
-    {"Pollen", "Asthmatics beware",
-        7.0, 8.0, 7.0, 1.5, 3, RarityID::kEpic, {
-        .secondary_reload = 0.5,
-        .defend_only = 1
-    }},
-    {"Peas", "4 in 1 deal, now with a secret ingredient: poison",
-        5.0, 2.0, 7.0, 2.0, 4, RarityID::kEpic, {
-        .clump_radius = 8,
-        .secondary_reload = 0.1,
-        .defend_only = 1,
-        .poison_damage = { 20.0, 0.5 }
-    }},
-    {"Egg", "Something interesting might pop out of this",
-        50.0, 1.0, 15.0, 1.0, 1, RarityID::kEpic, { 
-        .secondary_reload = 3.5,
-        .defend_only = 1,
-        .rotation_style = PetalAttributes::kNoRot,
-        .spawns = MobID::kBeetle
-    }},
-    {"Rose", "Extremely powerful rose, almost unheard of",
-        5.0, 5.0, 10.0, 3.5, 1, RarityID::kEpic, { 
-        .secondary_reload = 1.0,
-        .burst_heal = 22,
-        .defend_only = 1
-    }},
-    {"Stick", "Harnesses the power of the wind",
-        10.0, 1.0, 15.0, 3.0, 1, RarityID::kLegendary, { 
-        .secondary_reload = 4.0,
-        .defend_only = 1,
-        .icon_angle = 1,
-        .spawns = MobID::kSandstorm,
-        .spawn_count = 2
-    }},
-    {"Stinger", "It really hurts, but it's really fragile",
-        5.0, 35.0, 7.0, 4.5, 3, RarityID::kLegendary, {
-        .clump_radius = 10
-    }},
-    {"Web", "It's really sticky",
-        10.0, 5.0, 10.0, 3.0, 3, RarityID::kLegendary, {
-        .clump_radius = 10,
-        .secondary_reload = 0.5,
-        .defend_only = 1,
-    }},
-    {"Antennae", "Allows your flower to sense foes from farther away",
-        0.0, 0.0, 12.5, 0.0, 0, RarityID::kLegendary, { .equipment = EquipmentFlags::kAntennae }},
-    {"Cactus", "Not very strong, but somehow increases your maximum health",
-        15.0, 5.0, 10.0, 1.0, 3, RarityID::kLegendary, {
-        .clump_radius = 10,
-    }},
-    {"Heaviest", "This thing is so heavy that nothing gets in the way",
-        200.0, 10.0, 12.0, 15.0, 1, RarityID::kEpic, {
-        .mass = 10,
-        .rotation_style = PetalAttributes::kNoRot
-    }},
-    {"Third Eye", "Allows your flower to extend petals further out",
-        0.0, 0.0, 20.0, 0.0, 0, RarityID::kMythic, { .equipment = EquipmentFlags::kThirdEye }},
-    {"Observer", "The one who sees all", 
-        0.0, 0.0, 12.5, 0.0, 0, RarityID::kMythic, { .equipment = EquipmentFlags::kObserver }},
-    {"Cactus", "Turns your flower poisonous. Enemies will take poison damage on contact",
-        15.0, 5.0, 10.0, 1.0, 1, RarityID::kEpic, {
-        .poison_damage = { 1.0, 5.0 }
-    }},
-    {"Salt", "Reflects some damage dealt to the flower. Does not stack with itself",
-        10.0, 10.0, 10.0, 2.5, 1, RarityID::kRare, {}},
-    {"Basic", "Something incredibly rare and useless",
-        10.0, 10.0, 10.0, 2.5, 1, RarityID::kUnique, {}},
-    {"Square", "This shape... it looks familiar...",
-        10.0, 10.0, 15.0, 2.5, 1, RarityID::kUnique, {
-        .icon_angle = M_PI / 4 + 1
-    }},
-    {"Moon", "Where did this come from?",
-        1000.0, 1.0, 50.0, 10.0, 1, RarityID::kMythic, {
-        .secondary_reload = 0.5,
-        .mass = 200
-    }},
-    {"Lotus", "Absorbs some poison damage taken by the flower",
-        5.0, 5.0, 12.0, 2.0, 1, RarityID::kEpic, {
-        .icon_angle = 0.1
-    }},
-    {"Cutter", "Increases the flower's body damage",
-        0.0, 0.0, 40.0, 0.0, 0, RarityID::kEpic, { .equipment = EquipmentFlags::kCutter }},
-    {"Yin Yang", "Alters the flower's petal rotation in interesting ways",
-        15.0, 15.0, 10.0, 2.5, 1, RarityID::kEpic, {}},
-    {"Yggdrasil", "Unfortunately, its powers are useless here",
-        1.0, 1.0, 12.0, 10.0, 1, RarityID::kUnique, {
-        .defend_only = 1,
-        .icon_angle = M_PI
-    }},
-    {"Rice", "Spawns instantly, but not very strong",
-        1.0, 4.0, 13.0, 0.1, 1, RarityID::kEpic, {
-        .icon_angle = 0.7
-    }},
-    {"Bone", "Sturdy",
-        12.0, 10.0, 12.0, 2.5, 1, RarityID::kLegendary, {
-        .icon_angle = 1
-    }},
-    {"Yucca", "Heals the flower, but only while in the defensive position",
-        10.0, 5.0, 10.0, 1.0, 1, RarityID::kUnusual, {
-        .constant_heal = 1.5,
-        .icon_angle = -1
-    }},
-    {"Corn", "Takes a long time to spawn, but has a lot of health",
-        500.0, 2.5, 16.0, 10.0, 1, RarityID::kEpic, {
-        .icon_angle = 0.5
-    }},
-});
+std::array<struct PetalData, PetalID::kNumPetals> const PETAL_DATA = {{
+    {
+        .name = "None",
+        .description = "How can you see this?",
+        .health = 0.0, 
+        .damage = 0.0,
+        .radius = 0.0,
+        .reload = 1.0,
+        .count = 0,
+        .rarity = RarityID::kCommon,
+        .attributes = {}
+    },
+    {
+        .name = "Basic",
+        .description = "A nice petal, not too strong but not too weak",
+        .health = 10.0,
+        .damage = 10.0,
+        .radius = 10.0,
+        .reload = 2.5,
+        .count = 1,
+        .rarity = RarityID::kCommon,
+        .attributes = {}
+    },
+    {
+        .name = "Fast",
+        .description = "Weaker than most petals, but reloads very quickly",
+        .health = 5.0,
+        .damage = 8.0,
+        .radius = 7.0,
+        .reload = 1.0,
+        .count = 1,
+        .rarity = RarityID::kCommon,
+        .attributes = {}
+    },
+    {
+        .name = "Heavy",
+        .description = "Very resilient and deals more damage, but reloads very slowly",
+        .health = 20.0,
+        .damage = 20.0,
+        .radius = 12.0,
+        .reload = 4.5,
+        .count = 1,
+        .rarity = RarityID::kCommon,
+        .attributes = {}
+    },
+    {
+        .name = "Stinger",
+        .description = "It really hurts, but it's really fragile",
+        .health = 5.0,
+        .damage = 35.0,
+        .radius = 7.0,
+        .reload = 3.5,
+        .count = 1,
+        .rarity = RarityID::kUnusual,
+        .attributes = {}
+    },
+    {
+        .name = "Leaf",
+        .description = "Gathers energy from the sun to passively heal your flower",
+        .health = 10.0,
+        .damage = 8.0,
+        .radius = 10.0,
+        .reload = 1.0,
+        .count = 1,
+        .rarity = RarityID::kUnusual,
+        .attributes = {
+            .constant_heal = 1,
+            .icon_angle = -1
+        }
+    },
+    {
+        .name = "Twin",
+        .description = "Why stop at one? Why not TWO?!",
+        .health = 5.0,
+        .damage = 8.0,
+        .radius = 7.0,
+        .reload = 1.0,
+        .count = 2,
+        .rarity = RarityID::kUnusual,
+        .attributes = {}
+    },
+    {
+        .name = "Rose",
+        .description = "Its healing properties are amazing. Not so good at combat though",
+        .health = 5.0,
+        .damage = 5.0,
+        .radius = 10.0,
+        .reload = 3.5,
+        .count = 1,
+        .rarity = RarityID::kUnusual,
+        .attributes = { 
+            .secondary_reload = 1.0,
+            .burst_heal = 10,
+            .defend_only = 1
+        }
+    },
+    {
+        .name = "Iris",
+        .description = "Very poisonous, but takes a while to do its work",
+        .health = 5.0,
+        .damage = 5.0,
+        .radius = 7.0,
+        .reload = 5.0,
+        .count = 1,
+        .rarity = RarityID::kUnusual,
+        .attributes = { 
+            .poison_damage = {
+                .damage = 10.0,
+                .time = 6.0
+            }
+        }
+    },
+    {
+        .name = "Missile",
+        .description = "You can actually shoot this one",
+        .health = 5.0,
+        .damage = 25.0,
+        .radius = 10.0,
+        .reload = 1.0,
+        .count = 1,
+        .rarity = RarityID::kRare,
+        .attributes = {
+            .secondary_reload = 0.5, 
+            .defend_only = 1,
+            .icon_angle = 1,
+            .rotation_style = PetalAttributes::kFollowRot 
+        }
+    },
+    {
+        .name = "Dandelion",
+        .description = "Its interesting properties prevent healing effects on affected units",
+        .health = 10.0,
+        .damage = 10.0,
+        .radius = 10.0,
+        .reload = 1.0,
+        .count = 1,
+        .rarity = RarityID::kRare,
+        .attributes = {
+            .icon_angle = 1,
+            .rotation_style = PetalAttributes::kFollowRot 
+        }
+    },
+    {
+        .name = "Bubble",
+        .description = "You can right click to pop it and propel your flower",
+        .health = 1.0,
+        .damage = 0.0,
+        .radius = 12.0,
+        .reload = 2.0,
+        .count = 1,
+        .rarity = RarityID::kRare,
+        .attributes = {
+            .secondary_reload = 0.5,
+            .defend_only = 1,
+        }
+    },
+    {
+        .name = "Faster",
+        .description = "It's so light it makes your other petals spin faster",
+        .health = 5.0,
+        .damage = 7.0,
+        .radius = 7.0,
+        .reload = 0.5,
+        .count = 1,
+        .rarity = RarityID::kRare,
+        .attributes = {}
+    },
+    {
+        .name = "Rock",
+        .description = "Even more durable, but slower to recharge",
+        .health = 100.0,
+        .damage = 10.0,
+        .radius = 12.0,
+        .reload = 7.5,
+        .count = 1,
+        .rarity = RarityID::kRare,
+        .attributes = {}
+    },
+    {
+        .name = "Cactus",
+        .description = "Not very strong, but somehow increases your maximum health",
+        .health = 15.0,
+        .damage = 5.0, 
+        .radius = 10.0,
+        .reload = 1.0,
+        .count = 1,
+        .rarity = RarityID::kRare,
+        .attributes = {}
+    },
+    {
+        .name = "Web",
+        .description = "It's really sticky",
+        .health = 10.0,
+        .damage = 5.0,
+        .radius = 10.0,
+        .reload = 3.0,
+        .count = 1,
+        .rarity = RarityID::kRare,
+        .attributes = {
+            .secondary_reload = 0.5,
+            .defend_only = 1,
+        }
+    },
+    {
+        .name = "Wing",
+        .description = "It comes and goes",
+        .health = 15.0,
+        .damage = 15.0,
+        .radius = 10.0,
+        .reload = 2.5,
+        .count = 1,
+        .rarity = RarityID::kRare,
+        .attributes = {
+            .icon_angle = 1,
+        }
+    },
+    {
+        .name = "Peas",
+        .description = "4 in 1 deal",
+        .health = 5.0,
+        .damage = 8.0,
+        .radius = 7.0,
+        .reload = 2.0,
+        .count = 4,
+        .rarity = RarityID::kRare,
+        .attributes = {
+            .clump_radius = 8,
+            .secondary_reload = 0.1,
+            .defend_only = 1,
+        }
+    },
+    {
+        .name = "Sand",
+        .description = "It's coarse, rough, and gets everywhere",
+        .health = 10.0,
+        .damage = 3.0,
+        .radius = 7.0,
+        .reload = 1.5,
+        .count = 4,
+        .rarity = RarityID::kRare,
+        .attributes = {
+            .clump_radius = 10,
+        }
+    },
+    {
+        .name = "Pincer",
+        .description = "Stuns and poisons targets for a short duration",
+        .health = 10.0,
+        .damage = 10.0,
+        .radius = 10.0,
+        .reload = 2.5,
+        .count = 1,
+        .rarity = RarityID::kRare,
+        .attributes = {
+            .icon_angle = 0.7,
+            .poison_damage = {
+                .damage = 5.0,
+                .time = 1.0
+            }
+        }
+    },
+    {
+        .name = "Dahlia",
+        .description = "Its healing properties are amazing. Not so good at combat though",
+        .health = 5.0,
+        .damage = 5.0,
+        .radius = 7.0,
+        .reload = 3.5,
+        .count = 3,
+        .rarity = RarityID::kRare,
+        .attributes = { 
+            .clump_radius = 10,
+            .secondary_reload = 1.0,
+            .burst_heal = 3.5,
+            .defend_only = 1
+        }
+    },
+    {
+        .name = "Triplet",
+        .description = "How about THREE?!",
+        .health = 5.0,
+        .damage = 8.0,
+        .radius = 7.0,
+        .reload = 1.0,
+        .count = 3,
+        .rarity = RarityID::kEpic,
+        .attributes = {}
+    },
+    {
+        .name = "Egg",
+        .description = "Something interesting might pop out of this",
+        .health = 50.0,
+        .damage = 1.0,
+        .radius = 12.5,
+        .reload = 1.0,
+        .count = 2,
+        .rarity = RarityID::kEpic,
+        .attributes = { 
+            .secondary_reload = 3.5,
+            .defend_only = 1,
+            .rotation_style = PetalAttributes::kNoRot,
+            .spawns = MobID::kSoldierAnt
+        }
+    },
+    {
+        .name = "Iris",
+        .description = "Deals its effects quicker than traditional irises",
+        .health = 10.0,
+        .damage = 5.0,
+        .radius = 7.0,
+        .reload = 5.0,
+        .count = 1,
+        .rarity = RarityID::kEpic,
+        .attributes = { 
+            .poison_damage = {
+                .damage = 15.0,
+                .time = 4.0
+            }
+        }
+    },
+    {
+        .name = "Pollen",
+        .description = "Asthmatics beware",
+        .health = 7.0,
+        .damage = 8.0,
+        .radius = 7.0,
+        .reload = 1.5,
+        .count = 3,
+        .rarity = RarityID::kEpic,
+        .attributes = {
+            .secondary_reload = 0.5,
+            .defend_only = 1
+        }
+    },
+    {
+        .name = "Peas",
+        .description = "4 in 1 deal, now with a secret ingredient: poison",
+        .health = 5.0,
+        .damage = 2.0,
+        .radius = 7.0,
+        .reload = 2.0,
+        .count = 4,
+        .rarity = RarityID::kEpic,
+        .attributes = {
+            .clump_radius = 8,
+            .secondary_reload = 0.1,
+            .defend_only = 1,
+            .poison_damage = {
+                .damage = 20.0,
+                .time = 0.5
+            }
+        }
+    },
+    {
+        .name = "Egg",
+        .description = "Something interesting might pop out of this",
+        .health = 50.0,
+        .damage = 1.0,
+        .radius = 15.0,
+        .reload = 1.0,
+        .count = 1,
+        .rarity = RarityID::kEpic,
+        .attributes = { 
+            .secondary_reload = 3.5,
+            .defend_only = 1,
+            .rotation_style = PetalAttributes::kNoRot,
+            .spawns = MobID::kBeetle
+        }
+    },
+    {
+        .name = "Rose",
+        .description = "Extremely powerful rose, almost unheard of",
+        .health = 5.0,
+        .damage = 5.0,
+        .radius = 10.0,
+        .reload = 3.5,
+        .count = 1,
+        .rarity = RarityID::kEpic,
+        .attributes = { 
+            .secondary_reload = 1.0,
+            .burst_heal = 22,
+            .defend_only = 1
+        }
+    },
+    {
+        .name = "Stick",
+        .description = "Harnesses the power of the wind",
+        .health = 10.0,
+        .damage = 1.0,
+        .radius = 15.0,
+        .reload = 3.0,
+        .count = 1,
+        .rarity = RarityID::kLegendary,
+        .attributes = { 
+            .secondary_reload = 4.0,
+            .defend_only = 1,
+            .icon_angle = 1,
+            .spawns = MobID::kSandstorm,
+            .spawn_count = 2
+        }
+    },
+    {
+        .name = "Stinger",
+        .description = "It really hurts, but it's really fragile",
+        .health = 5.0,
+        .damage = 35.0,
+        .radius = 7.0,
+        .reload = 4.5,
+        .count = 3,
+        .rarity = RarityID::kLegendary,
+        .attributes = {
+            .clump_radius = 10
+        }
+    },
+    {
+        .name = "Web",
+        .description = "It's really sticky",
+        .health = 10.0,
+        .damage = 5.0,
+        .radius = 10.0,
+        .reload = 3.0,
+        .count = 3,
+        .rarity = RarityID::kLegendary,
+        .attributes = {
+            .clump_radius = 10,
+            .secondary_reload = 0.5,
+            .defend_only = 1,
+        }
+    },
+    {
+        .name = "Antennae",
+        .description = "Allows your flower to sense foes from farther away",
+        .health = 0.0,
+        .damage = 0.0,
+        .radius = 12.5,
+        .reload = 0.0,
+        .count = 0,
+        .rarity = RarityID::kLegendary,
+        .attributes = { 
+            .equipment = EquipmentFlags::kAntennae 
+        }
+    },
+    {
+        .name = "Cactus",
+        .description = "Not very strong, but somehow increases your maximum health",
+        .health = 15.0,
+        .damage = 5.0,
+        .radius = 10.0,
+        .reload = 1.0,
+        .count = 3,
+        .rarity = RarityID::kLegendary,
+        .attributes = {
+            .clump_radius = 10,
+        }
+    },
+    {
+        .name = "Heaviest",
+        .description = "This thing is so heavy that nothing gets in the way",
+        .health = 200.0,
+        .damage = 10.0,
+        .radius = 12.0,
+        .reload = 15.0,
+        .count = 1,
+        .rarity = RarityID::kEpic,
+        .attributes = {}
+    },
+    {
+        .name = "Third Eye",
+        .description = "Allows your flower to extend petals further out",
+        .health = 0.0,
+        .damage = 0.0,
+        .radius = 20.0,
+        .reload = 0.0,
+        .count = 0,
+        .rarity = RarityID::kMythic,
+        .attributes = { 
+            .equipment = EquipmentFlags::kThirdEye
+        }
+    },
+    {
+        .name = "Observer",
+        .description = "The one who sees all",
+        .health = 0.0,
+        .damage = 0.0,
+        .radius = 12.5,
+        .reload = 0.0,
+        .count = 0,
+        .rarity = RarityID::kMythic,
+        .attributes = { 
+            .equipment = EquipmentFlags::kObserver
+        }
+    },
+    {
+        .name = "Cactus",
+        .description = "Turns your flower poisonous. Enemies will take poison damage on contact",
+        .health = 15.0,
+        .damage = 5.0,
+        .radius = 10.0,
+        .reload = 1.0,
+        .count = 1,
+        .rarity = RarityID::kEpic,
+        .attributes = {
+            .poison_damage = {
+                .damage = 1.0,
+                .time = 5.0
+            }
+        }
+    },
+    {
+        .name = "Salt",
+        .description = "Reflects some damage dealt to the flower. Does not stack with itself",
+        .health = 10.0,
+        .damage = 10.0,
+        .radius = 10.0,
+        .reload = 2.5,
+        .count = 1,
+        .rarity = RarityID::kRare,
+        .attributes = {}
+    },
+    {
+        .name = "Basic",
+        .description = "Something incredibly rare and useless",
+        .health = 10.0,
+        .damage = 10.0,
+        .radius = 10.0,
+        .reload = 2.5,
+        .count = 1,
+        .rarity = RarityID::kUnique,
+        .attributes = {}
+    },
+    {
+        .name = "Square",
+        .description = "This shape... it looks familiar...",
+        .health = 10.0,
+        .damage = 10.0,
+        .radius = 15.0,
+        .reload = 2.5,
+        .count = 1,
+        .rarity = RarityID::kUnique,
+        .attributes = {
+            .icon_angle = M_PI / 4 + 1
+        }
+    },
+    {
+        .name = "Moon",
+        .description = "Where did this come from?",
+        .health = 1000.0,
+        .damage = 1.0,
+        .radius = 50.0,
+        .reload = 10.0,
+        .count = 1,
+        .rarity = RarityID::kMythic,
+        .attributes = {
+            .secondary_reload = 0.5,
+            .mass = 200
+        }
+    },
+    {
+        .name = "Lotus",
+        .description = "Absorbs some poison damage taken by the flower",
+        .health = 5.0,
+        .damage = 5.0,
+        .radius = 12.0,
+        .reload = 2.0,
+        .count = 1,
+        .rarity = RarityID::kEpic,
+        .attributes = {
+            .icon_angle = 0.1
+        }
+    },
+    {
+        .name = "Cutter",
+        .description = "Increases the flower's body damage",
+        .health = 0.0,
+        .damage = 0.0,
+        .radius = 40.0,
+        .reload = 0.0,
+        .count = 0,
+        .rarity = RarityID::kEpic,
+        .attributes = { 
+            .equipment = EquipmentFlags::kCutter 
+        }
+    },
+    {
+        .name = "Yin Yang",
+        .description = "Alters the flower's petal rotation in interesting ways",
+        .health = 15.0,
+        .damage = 15.0,
+        .radius = 10.0,
+        .reload = 2.5,
+        .count = 1,
+        .rarity = RarityID::kEpic,
+        .attributes = {}
+    },
+    {
+        .name = "Yggdrasil",
+        .description = "Unfortunately, its powers are useless here",
+        .health = 1.0,
+        .damage = 1.0,
+        .radius = 12.0,
+        .reload = 10.0,
+        .count = 1,
+        .rarity = RarityID::kUnique,
+        .attributes = {
+            .defend_only = 1,
+            .icon_angle = M_PI
+        }
+    },
+    {
+        .name = "Rice",
+        .description = "Spawns instantly, but not very strong",
+        .health = 1.0,
+        .damage = 4.0,
+        .radius = 13.0,
+        .reload = 0.05,
+        .count = 1,
+        .rarity = RarityID::kEpic,
+        .attributes = {
+            .icon_angle = 0.7
+        }
+    },
+    {
+        .name = "Bone",
+        .description = "Sturdy",
+        .health = 12.0,
+        .damage = 12.0,
+        .radius = 12.0,
+        .reload = 2.5,
+        .count = 1,
+        .rarity = RarityID::kLegendary,
+        .attributes = {
+            .icon_angle = 1
+        }
+    },
+    {
+        .name = "Yucca",
+        .description = "Heals the flower, but only while in the defensive position",
+        .health = 10.0,
+        .damage = 5.0,
+        .radius = 10.0,
+        .reload = 1.0,
+        .count = 1,
+        .rarity = RarityID::kUnusual,
+        .attributes = {
+            .constant_heal = 1.5,
+            .icon_angle = -1
+        }
+    },
+    {
+        .name = "Corn", 
+        .description = "Takes a long time to spawn, but has a lot of health",
+        .health = 500.0,
+        .damage = 2.5,
+        .radius = 16.0,
+        .reload = 10.0,
+        .count = 1,
+        .rarity = RarityID::kEpic,
+        .attributes = {
+            .icon_angle = 0.5
+        }
+    },
+}};
 
-std::array<struct MobData, MobID::kNumMobs> const MOB_DATA ({
+std::array<struct MobData, MobID::kNumMobs> const MOB_DATA = {{
     {
-        "Baby Ant",
-        "Weak and defenseless, but big dreams.",
-        RarityID::kCommon, {10.0}, 10.0, {14.0}, 1, {
-        PetalID::kLight, PetalID::kLeaf, PetalID::kTwin, PetalID::kRice, PetalID::kTriplet
-    }, {}},
+        .name = "Baby Ant",
+        .description = "Weak and defenseless, but big dreams.",
+        .rarity = RarityID::kCommon,
+        .health = {10.0},
+        .damage = 10.0,
+        .radius = {14.0},
+        .xp = 1,
+        .drops = {
+            PetalID::kLight, PetalID::kLeaf, PetalID::kTwin, PetalID::kRice, PetalID::kTriplet
+        }, 
+        .attributes = {}
+    },
     {
-        "Worker Ant",
-        "It's temperamental, probably from working all the time.",
-        RarityID::kCommon, {25.0}, 10.0, {14.0}, 3, {
-        PetalID::kLight, PetalID::kLeaf, PetalID::kTwin, PetalID::kCorn, PetalID::kBone
-    }, {}},
+        .name = "Worker Ant",
+        .description = "It's temperamental, probably from working all the time.",
+        .rarity = RarityID::kCommon,
+        .health = {25.0},
+        .damage = 10.0,
+        .radius = {14.0},
+        .xp = 3,
+        .drops = {
+            PetalID::kLight, PetalID::kLeaf, PetalID::kTwin, PetalID::kCorn, PetalID::kBone
+        }, 
+        .attributes = {}
+    },
     {
-        "Soldier Ant",
-        "It's got wings and it's ready to use them.",
-        RarityID::kUnusual, {40.0}, 10.0, {14.0}, 5, {
-        PetalID::kTwin, PetalID::kIris, PetalID::kWing, PetalID::kFaster, PetalID::kTriplet
-    }, {}},
+        .name = "Soldier Ant",
+        .description = "It's got wings and it's ready to use them.",
+        .rarity = RarityID::kUnusual,
+        .health = {40.0},
+        .damage = 10.0,
+        .radius = {14.0},
+        .xp = 5,
+        .drops = {
+            PetalID::kTwin, PetalID::kIris, PetalID::kWing, PetalID::kFaster, PetalID::kTriplet
+        }, 
+        .attributes = {}
+    },
     {
-        "Bee",
-        "It stings. Don't touch it.",
-        RarityID::kCommon, {15.0}, 50.0, {20.0}, 4, {
-        PetalID::kLight, PetalID::kStinger, PetalID::kTwin, PetalID::kWing
-    }, {}},
+        .name = "Bee",
+        .description = "It stings. Don't touch it.",
+        .rarity = RarityID::kCommon,
+        .health = {15.0},
+        .damage = 50.0,
+        .radius = {20.0},
+        .xp = 4,
+        .drops = {
+            PetalID::kLight, PetalID::kStinger, PetalID::kTwin, PetalID::kWing
+        },
+        .attributes = {}
+    },
     {
-        "Ladybug",
-        "Cute and harmless.",
-        RarityID::kCommon, {25.0}, 10.0, {30.0}, 3, {
-        PetalID::kLight, PetalID::kRose, PetalID::kTwin, PetalID::kBubble
-    }, {}},
+        .name = "Ladybug",
+        .description = "Cute and harmless.",
+        .rarity = RarityID::kCommon,
+        .health = {25.0},
+        .damage = 10.0,
+        .radius = {30.0},
+        .xp = 3,
+        .drops = {
+            PetalID::kLight, PetalID::kRose, PetalID::kTwin, PetalID::kBubble
+        },
+        .attributes = {}
+    },
     {
-        "Beetle",
-        "It's hungry and flowers are its favorite meal.",
-        RarityID::kUnusual, {40.0}, 35.0, {35.0}, 10, {
-        PetalID::kIris, PetalID::kSalt, PetalID::kWing, PetalID::kTriplet
-    }, {}},
+        .name = "Beetle",
+        .description = "It's hungry and flowers are its favorite meal.",
+        .rarity = RarityID::kUnusual,
+        .health = {40.0},
+        .damage = 35.0,
+        .radius = {35.0},
+        .xp = 10,
+        .drops = {
+            PetalID::kIris, PetalID::kSalt, PetalID::kWing, PetalID::kTriplet
+        },
+        .attributes = {}
+    },
     {
-        "Massive Ladybug",
-        "Much larger, but still cute.",
-        RarityID::kEpic, {1000.0}, 10.0, {90.0}, 400, {
-        PetalID::kRose, PetalID::kDahlia, PetalID::kBubble, PetalID::kAzalea, PetalID::kObserver
-    }, {}},
+        .name = "Massive Ladybug",
+        .description = "Much larger, but still cute.",
+        .rarity = RarityID::kEpic,
+        .health = {1000.0},
+        .damage = 10.0,
+        .radius = {90.0},
+        .xp = 400,
+        .drops = {
+            PetalID::kRose, PetalID::kDahlia, PetalID::kBubble, PetalID::kAzalea, PetalID::kObserver
+        }, 
+        .attributes = {}
+    },
     {
-        "Massive Beetle",
-        "Someone overfed this one, you might be next.",
-        RarityID::kRare, {600.0}, 35.0, {75.0}, 50, {
-        PetalID::kIris, PetalID::kWing, PetalID::kBlueIris, PetalID::kTriplet, PetalID::kBeetleEgg, PetalID::kThirdEye
-    }, { .aggro_radius = 750 }},
+        .name = "Massive Beetle",
+        .description = "Someone overfed this one, you might be next.",
+        .rarity = RarityID::kRare,
+        .health = {600.0},
+        .damage = 35.0,
+        .radius = {75.0},
+        .xp = 50,
+        .drops = {
+            PetalID::kIris, PetalID::kWing, PetalID::kBlueIris, PetalID::kTriplet, PetalID::kBeetleEgg, PetalID::kThirdEye
+        }, 
+        .attributes = { 
+            .aggro_radius = 750
+        }
+    },
     {
-        "Ladybug",
-        "Cute and harmless... if left unprovoked.",
-        RarityID::kUnusual, {35.0}, 10.0, {30.0}, 5, {
-        PetalID::kDahlia, PetalID::kWing, PetalID::kYinYang, PetalID::kAzalea
-    }, {}},
+        .name = "Ladybug",
+        .description = "Cute and harmless... if left unprovoked.",
+        .rarity = RarityID::kUnusual,
+        .health = {35.0},
+        .damage = 10.0,
+        .radius = {30.0},
+        .xp = 5,
+        .drops = {
+            PetalID::kDahlia, PetalID::kWing, PetalID::kYinYang, PetalID::kAzalea
+        },
+        .attributes = {}
+    },
     {
-        "Hornet",
-        "These aren't quite as nice as the little bees.",
-        RarityID::kUnusual, {40.0}, 40.0, {40.0}, 12, {
-        PetalID::kDandelion, PetalID::kMissile, PetalID::kWing, PetalID::kBubble, PetalID::kAntennae
-    }, { .aggro_radius = 600 }},
+        .name = "Hornet",
+        .description = "These aren't quite as nice as the little bees.",
+        .rarity = RarityID::kUnusual,
+        .health = {40.0},
+        .damage = 40.0,
+        .radius = {40.0},
+        .xp = 12,
+        .drops = {
+            PetalID::kDandelion, PetalID::kMissile, PetalID::kWing, PetalID::kBubble, PetalID::kAntennae
+        },
+        .attributes = {
+            .aggro_radius = 600
+        }
+    },
     {
-        "Cactus",
-        "This one's prickly, don't touch it either.",
-        RarityID::kCommon, {25.0, 50.0}, 30.0, {30.0, 60.0}, 2, {
-        PetalID::kStinger, PetalID::kYucca, PetalID::kCactus, PetalID::kPoisonCactus, PetalID::kTricac
-    }, { .stationary = 1 }},
+        .name = "Cactus",
+        .description = "This one's prickly, don't touch it either.",
+        .rarity = RarityID::kCommon,
+        .health = {25.0, 50.0},
+        .damage = 30.0,
+        .radius = {30.0, 60.0},
+        .xp = 2,
+        .drops = {
+            PetalID::kStinger, PetalID::kYucca, PetalID::kCactus, PetalID::kPoisonCactus, PetalID::kTricac
+        },
+        .attributes = {
+            .stationary = 1
+        }
+    },
     {
-        "Rock",
-        "A rock. It doesn't do much.",
-        RarityID::kCommon, {5.0, 15.0}, 10.0, {10.0, 25.0}, 1, {
-        PetalID::kHeavy, PetalID::kLight, PetalID::kRock
-    }, { .stationary = 1 }},
+        .name = "Rock",
+        .description = "A rock. It doesn't do much.",
+        .rarity = RarityID::kCommon,
+        .health = {5.0, 15.0},
+        .damage = 10.0,
+        .radius = {10.0, 25.0},
+        .xp = 1,
+        .drops = {
+            PetalID::kHeavy, PetalID::kLight, PetalID::kRock
+        },
+        .attributes = {
+            .stationary = 1
+        }
+    },
     {
-        "Boulder",
-        "A bigger rock. It also doesn't do much.",
-        RarityID::kUnusual, {40.0, 60.0}, 10.0, {50.0, 75.0}, 1, {
-        PetalID::kHeavy, PetalID::kRock, PetalID::kHeaviest, PetalID::kMoon
-    }, { .stationary = 1 }},
+        .name = "Boulder",
+        .description = "A bigger rock. It also doesn't do much.",
+        .rarity = RarityID::kUnusual,
+        .health = {40.0, 60.0},
+        .damage = 10.0,
+        .radius = {50.0, 75.0},
+        .xp = 10,
+        .drops = {
+            PetalID::kHeavy, PetalID::kRock, PetalID::kHeaviest, PetalID::kMoon
+        }, 
+        .attributes = {
+            .stationary = 1
+        }
+    },
     {
-        "Centipede",
-        "It's just there doing its thing.",
-        RarityID::kUnusual, {50.0}, 10.0, {35.0}, 2, {
-        PetalID::kLight, PetalID::kTwin, PetalID::kLeaf, PetalID::kPeas, PetalID::kTriplet
-    }, { .segments = 10 }},
+        .name = "Centipede",
+        .description = "It's just there doing its thing.",
+        .rarity = RarityID::kUnusual,
+        .health = {50.0},
+        .damage = 10.0,
+        .radius = {35.0},
+        .xp = 2,
+        .drops = {
+            PetalID::kLight, PetalID::kTwin, PetalID::kLeaf, PetalID::kPeas, PetalID::kTriplet
+        },
+        .attributes = {
+            .segments = 10
+        }
+    },
     {
-        "Evil Centipede",
-        "This one loves flowers.",
-        RarityID::kRare, {50.0}, 10.0, {35.0}, 3, {
-        PetalID::kIris, PetalID::kPoisonPeas, PetalID::kBlueIris
-    }, { .segments = 10, .poison_damage = { 5.0, 2.0 } }},
+        .name = "Evil Centipede",
+        .description = "This one loves flowers.",
+        .rarity = RarityID::kRare,
+        .health = {50.0},
+        .damage = 10.0,
+        .radius = {35.0},
+        .xp = 3,
+        .drops = {
+            PetalID::kIris, PetalID::kPoisonPeas, PetalID::kBlueIris
+        },
+        .attributes = { 
+            .segments = 10, 
+            .poison_damage = {
+                .damage = 5.0,
+                .time = 2.0
+            }
+        }
+    },
     {
-        "Desert Centipede",
-        "It doesn't like it when you interrupt its run.",
-        RarityID::kRare, {50.0}, 10.0, {35.0}, 4, {
-        PetalID::kSand, PetalID::kFaster, PetalID::kSalt, PetalID::kStick
-    }, { .segments = 6 }},
+        .name = "Desert Centipede",
+        .description = "It doesn't like it when you interrupt its run.",
+        .rarity = RarityID::kRare,
+        .health= {50.0},
+        .damage = 10.0,
+        .radius = {35.0},
+        .xp = 4,
+        .drops = {
+            PetalID::kSand, PetalID::kFaster, PetalID::kSalt, PetalID::kStick
+        },
+        .attributes = {
+            .segments = 6
+        }
+    },
     {
-        "Sandstorm",
-        "Quite unpredictable.",
-        RarityID::kUnusual, {30.0, 45.0}, 40.0, {32.0, 48.0}, 5, {
-        PetalID::kSand, PetalID::kFaster, PetalID::kStick
-    }, {}},
+        .name = "Sandstorm",
+        .description = "Quite unpredictable.",
+        .rarity = RarityID::kUnusual,
+        .health = {30.0, 45.0},
+        .damage = 40.0,
+        .radius = {32.0, 48.0},
+        .xp = 5,
+        .drops = {
+            PetalID::kSand, PetalID::kFaster, PetalID::kStick
+        },
+        .attributes = {}
+    },
     {
-        "Scorpion",
-        "This one stings, now with poison.",
-        RarityID::kUnusual, {35.0}, 15.0, {35.0}, 10, {
-        PetalID::kIris, PetalID::kPincer, PetalID::kTriplet, PetalID::kLotus
-    }, { .poison_damage = { 5.0, 1.0 } }},
+        .name = "Scorpion",
+        .description = "This one stings, now with poison.",
+        .rarity = RarityID::kUnusual,
+        .health = {35.0},
+        .damage = 15.0,
+        .radius = {35.0},
+        .xp = 10,
+        .drops = {
+            PetalID::kIris, PetalID::kPincer, PetalID::kTriplet, PetalID::kLotus
+        }, 
+        .attributes = {
+            .poison_damage = {
+                .damage = 5.0,
+                .time = 1.0
+            }
+        }
+    },
     {
-        "Spider",
-        "Spooky.",
-        RarityID::kUnusual, {35.0}, 10.0, {15.0}, 8, {
-        PetalID::kStinger, PetalID::kWeb, PetalID::kFaster, PetalID::kTriweb
-    }, { .poison_damage = { 5.0, 3.0 } }},
+        .name = "Spider",
+        .description = "Spooky.",
+        .rarity = RarityID::kUnusual,
+        .health = {35.0},
+        .damage = 10.0,
+        .radius = {15.0},
+        .xp = 8,
+        .drops = {
+            PetalID::kStinger, PetalID::kWeb, PetalID::kFaster, PetalID::kTriweb
+        },
+        .attributes = { 
+            .poison_damage = {
+                .damage = 5.0,
+                .time = 3.0
+            }
+        }
+    },
     {
-        "Ant Hole",
-        "Ants go in, and come out. Can't explain that.",
-        RarityID::kRare, {500.0}, 10.0, {45.0}, 25, {
-        PetalID::kIris, PetalID::kWing, PetalID::kAntEgg, PetalID::kTriplet
-    }, { .stationary = 1 }},
+        .name = "Ant Hole",
+        .description = "Ants go in, and come out. Can't explain that.",
+        .rarity = RarityID::kRare,
+        .health = {500.0},
+        .damage = 10.0,
+        .radius = {45.0},
+        .xp = 25,
+        .drops = {
+            PetalID::kIris, PetalID::kWing, PetalID::kAntEgg, PetalID::kTriplet
+        },
+        .attributes = {
+            .stationary = 1 
+        }
+    },
     {
-        "Queen Ant",
-        "You must have done something really bad if she's chasing you.",
-        RarityID::kRare, {350.0}, 10.0, {25.0}, 15, {
-        PetalID::kTwin, PetalID::kIris, PetalID::kWing, PetalID::kAntEgg, PetalID::kTringer
-    }, { .aggro_radius = 750 }},
+        .name = "Queen Ant",
+        .description = "You must have done something really bad if she's chasing you.",
+        .rarity = RarityID::kRare,
+        .health = {350.0},
+        .damage = 10.0,
+        .radius = {25.0},
+        .xp = 15,
+        .drops = {
+            PetalID::kTwin, PetalID::kIris, PetalID::kWing, PetalID::kAntEgg, PetalID::kTringer
+        },
+        .attributes = {
+            .aggro_radius = 750
+        }
+    },
     {
-        "Ladybug",
-        "This one is shiny... I wonder what it could mean...",
-        RarityID::kEpic, {25.0}, 10.0, {30.0}, 3, {
-        PetalID::kDahlia, PetalID::kWing, PetalID::kBubble, PetalID::kYggdrasil
-    }, {}},
+        .name = "Ladybug",
+        .description = "This one is shiny... I wonder what it could mean...",
+        .rarity = RarityID::kEpic,
+        .health = {25.0},
+        .damage = 10.0,
+        .radius = {30.0},
+        .xp = 3,
+        .drops = {
+            PetalID::kDahlia, PetalID::kWing, PetalID::kBubble, PetalID::kYggdrasil
+        },
+        .attributes = {}
+    },
     {
-        "Square",
-        "???",
-        RarityID::kUnique, {20.0}, 10.0, {40.0}, 1, {
-        PetalID::kSquare
-    }, { .stationary = 1 }},
+        .name = "Square",
+        .description = "???",
+        .rarity = RarityID::kUnique,
+        .health = {20.0},
+        .damage = 10.0,
+        .radius = {40.0},
+        .xp = 1,
+        .drops = {
+            PetalID::kSquare
+        },
+        .attributes = {
+            .stationary = 1
+        }
+    },
     {
-        "Digger",
-        "Friend or foe? You'll never know...",
-        RarityID::kEpic, {250.0}, 25.0, {40.0}, 1, {
-        PetalID::kCutter
-    }, {}},
-});
+        .name = "Digger",
+        .description = "Friend or foe? You'll never know...",
+        .rarity = RarityID::kEpic,
+        .health = {250.0},
+        .damage = 25.0,
+        .radius = {40.0},
+        .xp = 1,
+        .drops = {
+            PetalID::kCutter
+        },
+        .attributes = {}
+    },
+}};
 
 std::array<StaticArray<float, MAX_DROPS_PER_MOB>, MobID::kNumMobs> const MOB_DROP_CHANCES = [](){
     std::array<StaticArray<float, MAX_DROPS_PER_MOB>, MobID::kNumMobs> ret;

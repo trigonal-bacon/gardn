@@ -65,7 +65,7 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
         client->init();
         return;
     }
-    if (client->game != nullptr) {
+    if (client->game == nullptr) {
         client->disconnect();
         return;
     }
@@ -152,7 +152,7 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
 }
 
 void Client::on_disconnect(WebSocket *ws, int code, std::string_view message) {
-    std::printf("disconnect: [%d](%s)\n", code, message.data());
+    std::printf("disconnect: [%d]\n", code);
     Client *client = ws->getUserData();
     if (client == nullptr) return;
     client->remove();
