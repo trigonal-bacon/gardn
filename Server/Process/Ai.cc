@@ -444,5 +444,16 @@ void tick_ai_behavior(Simulation *sim, Entity &ent) {
         default:
             break;
     }
+    //wall avoidance
+    if (ent.target == NULL_ENTITY) {
+        if (ent.x - ent.radius <= 0 && angle_within(ent.angle, M_PI, M_PI / 2))
+            ent.set_angle(M_PI - ent.angle);
+        if (ent.x + ent.radius >= ARENA_WIDTH && angle_within(ent.angle, 0, M_PI / 2))
+            ent.set_angle(M_PI - ent.angle);
+        if (ent.y - ent.radius <= 0 && angle_within(ent.angle, 3 * M_PI / 2, M_PI / 2))
+            ent.set_angle(0 - ent.angle);
+        if (ent.y + ent.radius >= ARENA_HEIGHT && angle_within(ent.angle, M_PI / 2, M_PI / 2))
+            ent.set_angle(0 - ent.angle);
+    }
     ++ent.ai_tick;
 }

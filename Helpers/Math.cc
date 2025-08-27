@@ -13,14 +13,12 @@ double frand() {
     return std::rand() / (double) RAND_MAX;
 }
 
-
 float lerp(float v, float e, float a) {
     a = fclamp(a, 0, 1);
     return v * (1 - a) + e * a;
 }
 
-float angle_lerp(float start, float end, float t)
-{
+float angle_lerp(float start, float end, float t) {
     t = fclamp(t, 0, 1);
 
     start = fmod(start, 2 * M_PI);
@@ -35,6 +33,19 @@ float angle_lerp(float start, float end, float t)
             end += 2 * M_PI;
         return fmod((end - start) * t + start + 2 * M_PI, 2 * M_PI);
     }
+}
+
+float normalize_angle(float angle) {
+    angle = fmod(angle, 2 * M_PI);
+    if (angle < 0) angle += 2 * M_PI;
+    return angle;
+}
+
+float angle_within(float angle, float target, float dist) {
+    angle = normalize_angle(angle);
+    target = normalize_angle(target);
+    float diff = normalize_angle(angle - target);
+    return diff <= dist || diff >= 2 * M_PI - dist;
 }
 
 LerpFloat::LerpFloat() {

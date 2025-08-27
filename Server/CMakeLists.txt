@@ -63,7 +63,7 @@ endif()
 if(DEBUG)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -gdwarf-4 -DDEBUG=1")
 else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -ffast-math -flto")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -ffast-math")
 endif()
 
 if(WASM_SERVER)
