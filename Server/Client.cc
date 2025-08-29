@@ -47,7 +47,7 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
     Validator validator(data, data + message.size());
     Client *client = ws->getUserData();
     if (client == nullptr) {
-        ws->end(1006, "Server Error");
+        ws->end(CloseReason::kServer, "Server Error");
         return;
     }
     if (!client->verified) {
@@ -58,7 +58,7 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
             return;
         }
         if (reader.read<uint64_t>() != VERSION_HASH) {
-            client->disconnect();
+            client->disconnect(CloseReason::kOutdated, "Outdated Version");
             return;
         }
         client->verified = 1;

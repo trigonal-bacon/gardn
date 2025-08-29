@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Shared/Binary.hh>
 #include <Shared/EntityDef.hh>
 
 #include <cstdint>
@@ -27,7 +28,7 @@ public:
     Client();
     void init();
     void remove();
-    void disconnect(int = 1002, std::string const & = "Protocol Error");
+    void disconnect(int = CloseReason::kProtocol, std::string const & = "Protocol Error");
     uint8_t alive();
 
     void send_packet(uint8_t const *, size_t);

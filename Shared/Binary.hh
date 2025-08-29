@@ -17,6 +17,12 @@ enum Serverbound {
     kPetalDelete
 };
 
+enum CloseReason {
+    kServer = 4001,
+    kProtocol = 4002,
+    kOutdated = 4003
+};
+
 class Writer {
 public:
     uint8_t *packet;
