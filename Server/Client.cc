@@ -53,7 +53,6 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
     if (!client->verified) {
         if (client->check_invalid(validator.validate_uint8() && validator.validate_uint64())) return;
         if (reader.read<uint8_t>() != Serverbound::kVerify) {
-            //disconnect
             client->disconnect();
             return;
         }

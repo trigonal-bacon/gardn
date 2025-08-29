@@ -24,8 +24,13 @@ extern "C" {
     void on_disconnect(int ws_id, int reason) {
         auto iter = WS_MAP.find(ws_id);
         //WebSocket *ws = WS_MAP[ws_id];
-        if (iter == WS_MAP.end()) return;
+        if (iter == WS_MAP.end()) {
+            std::printf("unknown ws disconnect: [%d]", ws_id);
+            return;
+        }
+        if (iter->second == nullptr) return;
         Client::on_disconnect(iter->second, reason, {});
+        delete iter->second;
         WS_MAP.erase(ws_id);
     }
 

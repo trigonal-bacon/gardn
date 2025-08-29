@@ -46,17 +46,14 @@ void Socket::connect(std::string const url) {
         function connect() {
             let socket = Module.socket = new WebSocket(string);
             socket.binaryType = "arraybuffer";
-            socket.onopen = function()
-            {
+            socket.onopen = function() {
                 _on_message(0, 0, 0);
             };
-            socket.onclose = function(a)
-            {
+            socket.onclose = function(a) {
                 _on_message(2, a.code, stringToNewUTF8(a.reason));
                 setTimeout(connect, 1000);
             };
-            socket.onmessage = function(event)
-            {
+            socket.onmessage = function(event) {
                 HEAPU8.set(new Uint8Array(event.data), $0);
                 _on_message(1, event.data.byteLength, 0);
             };
