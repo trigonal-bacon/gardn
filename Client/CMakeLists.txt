@@ -37,6 +37,7 @@ set(SRCS
     Ui/InGame/LoadoutPetal.cc
     Ui/InGame/LoadoutSlot.cc
     Ui/InGame/Map.cc
+    Ui/InGame/Mobile.cc
     Ui/InGame/OverlevelTimer.cc
     Ui/InGame/Tooltip.cc
     Ui/TitleScreen/Changelog.cc
@@ -83,7 +84,7 @@ else()
 endif()
 
 add_link_options(-sEXPORTED_RUNTIME_METHODS=stringToNewUTF8)
-add_link_options(-sEXPORTED_FUNCTIONS=_main,_key_event,_mouse_event,_wheel_event,_clipboard_event,_loop,_on_message)
+add_link_options(-sEXPORTED_FUNCTIONS=_main,_key_event,_mouse_event,_touch_event,_wheel_event,_clipboard_event,_loop,_on_message)
 
 add_executable(gardn-client ${SRCS})
 set(CMAKE_EXECUTABLE_SUFFIX ".js")

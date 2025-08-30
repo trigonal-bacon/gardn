@@ -10,15 +10,15 @@
 
 #include <emscripten.h>
 
-std::unordered_map<int, WebSocket *> WS_MAP;
+std::unordered_map<int, WebSocket> WS_MAP;
 
 size_t const MAX_BUFFER_LEN = 1024;
 static uint8_t INCOMING_BUFFER[MAX_BUFFER_LEN] = {0};
 
 extern "C" {
     void on_connect(int ws_id) {
-        std::printf("client connection with id %d\n", ws_id);
-        WebSocket *ws = new WebSocket(ws_id);
+        std::printf("client connect: [%d]\n", ws_id);
+        WS_MAP.insert({ws_id, WebSocket(ws_id)});
     }
 
     void on_disconnect(int ws_id, int reason) {
@@ -28,9 +28,8 @@ extern "C" {
             std::printf("unknown ws disconnect: [%d]", ws_id);
             return;
         }
-        if (iter->second == nullptr) return;
-        Client::on_disconnect(iter->second, reason, {});
-        delete iter->second;
+        std::printf("client disconnect: [%d]\n", ws_id);
+        Client::on_disconnect(&iter->second, reason, {});
         WS_MAP.erase(ws_id);
     }
 
@@ -39,10 +38,11 @@ extern "C" {
     }
 
     void on_message(int ws_id, uint32_t len) {
-        WebSocket *ws = WS_MAP[ws_id];
-        if (ws == nullptr) return;
+        auto iter = WS_MAP.find(ws_id);
+        //WebSocket *ws = WS_MAP[ws_id];
+        if (iter == WS_MAP.end()) return;
         std::string_view message(reinterpret_cast<char const *>(INCOMING_BUFFER), len);
-        Client::on_message(ws, message, 0);
+        Client::on_message(&iter->second, message, 0);
     }
 }
 
@@ -117,9 +117,7 @@ void Client::send_packet(uint8_t const *packet, size_t size) {
 }
 
 WebSocket::WebSocket(int id) : ws_id(id) {
-    //client.init();
     client.ws = this;
-    WS_MAP.insert({id, this});
 }
 
 void WebSocket::send(uint8_t const *packet, size_t size) {

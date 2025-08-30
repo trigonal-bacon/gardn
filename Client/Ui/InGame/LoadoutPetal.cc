@@ -74,12 +74,12 @@ static uint8_t dynamic_to_static(uint8_t dynamic_pos) {
 }
 
 
-static uint8_t find_viable_target() {
+static uint8_t find_viable_target(float x, float y) {
     for (uint8_t i = 0; i < 2 * MAX_SLOT_COUNT + 1; ++i) {
         UiLoadoutSlot *slot = Ui::UiLoadout::petal_backgrounds[i];
         if (slot != nullptr && slot->visible &&
-        fabsf(Input::mouse_x - slot->screen_x) < slot->width * Ui::scale / 2 &&
-        fabsf(Input::mouse_y - slot->screen_y) < slot->height * Ui::scale / 2) {
+        fabsf(x - slot->screen_x) < slot->width * Ui::scale / 2 &&
+        fabsf(y - slot->screen_y) < slot->height * Ui::scale / 2) {
             return i;
         }
     }
@@ -122,13 +122,36 @@ UiLoadoutPetal::UiLoadoutPetal(uint8_t pos) : Element(60, 60),
         reload.step(lerp_amt);
         if (curr_pos != 2 * MAX_SLOT_COUNT) 
             curr_pos = static_to_dynamic(static_pos);
-
+        
+        float mouse_x, mouse_y;
+        uint8_t released;
+        if (Input::is_mobile) {
+            if (Input::touches.contains(touch_id))
+                persistent_touch_id = touch_id;
+            released = 0;
+            auto iter = Input::touches.find(persistent_touch_id);
+            if (iter == Input::touches.end()) {
+                if (persistent_touch_id != (uint32_t)-1)
+                    released = 1;
+                persistent_touch_id = (uint32_t)-1;
+                mouse_x = elt->screen_x;
+                mouse_y = elt->screen_y;
+            } else {
+                mouse_x = iter->second.x;
+                mouse_y = iter->second.y;
+            }
+        }
+        else {
+            mouse_x = Input::mouse_x;
+            mouse_y = Input::mouse_y;
+            released = BitMath::at(Input::mouse_buttons_released, Input::LeftMouse);
+        }
         UiLoadoutSlot *parent_slot = Ui::UiLoadout::petal_backgrounds[curr_pos];
         if (Ui::UiLoadout::petal_selected == this && Game::alive()) {
             style.layer = 1;
-            uint8_t potential_swap = find_viable_target();
+            uint8_t potential_swap = find_viable_target(mouse_x, mouse_y);
             if (potential_swap != ((uint8_t)-1) && potential_swap != static_to_dynamic(static_pos)) {
-                if (BitMath::at(Input::mouse_buttons_released, Input::LeftMouse)) {
+                if (released) {
                     if (potential_swap == 2 * MAX_SLOT_COUNT)
                         ui_delete_petal(static_pos);
                     else {
@@ -144,13 +167,13 @@ UiLoadoutPetal::UiLoadoutPetal(uint8_t pos) : Element(60, 60),
                     height = lerp(height, slot->height, lerp_amt);
                 }
             } else {
-                x = lerp(x, (Input::mouse_x - Ui::window_width / 2) / Ui::scale, lerp_amt);
-                y = lerp(y, (Input::mouse_y - Ui::window_height / 2) / Ui::scale, lerp_amt);
+                x = lerp(x, (mouse_x - Ui::window_width / 2) / Ui::scale, lerp_amt);
+                y = lerp(y, (mouse_y - Ui::window_height / 2) / Ui::scale, lerp_amt);
                 width = lerp(width, parent_slot->width + 10, lerp_amt);
                 height = lerp(height, parent_slot->height + 10, lerp_amt);
                 ctx.rotate(sin(Game::timestamp / 150) * 0.1);
             }
-            if (BitMath::at(Input::mouse_buttons_released, Input::LeftMouse))
+            if (released)
                 Ui::UiLoadout::petal_selected = nullptr;
         } else if (Ui::UiLoadout::selected_with_keys + Game::loadout_count == static_pos && Game::alive()) {
             if (!showed) lerp_amt = 1;

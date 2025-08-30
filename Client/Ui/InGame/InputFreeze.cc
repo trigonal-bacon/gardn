@@ -41,7 +41,7 @@ InputFreeze::InputFreeze() : Container({
             Input::freeze_input = 0;
     };
     style.round_radius = 10;
-    style.should_render = [](){ return !Input::keyboard_movement && !Game::is_mobile; };
+    style.should_render = [](){ return !Input::keyboard_movement && !Input::is_mobile; };
 }
 
 void InputFreeze::on_render(Renderer &ctx) {

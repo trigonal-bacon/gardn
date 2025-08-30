@@ -45,6 +45,7 @@ namespace Ui {
     protected:
         std::vector<Element *> children;
         Ui::Element *tooltip = nullptr;
+        uint32_t touch_id = (uint32_t)-1;
     public:
         Ui::Element *parent = nullptr;
         float width = 0;
