@@ -71,7 +71,7 @@ void Element::render(Renderer &ctx) {
         if (Input::is_mobile) {
             pressed = touch_id != (uint32_t)-1 && Input::touches.contains(touch_id);
             released = !pressed && focus_state != kFocusLost;
-            focused = !released;
+            focused = pressed;
         }
         else {
             pressed = BitMath::at(Input::mouse_buttons_pressed, Input::LeftMouse);
