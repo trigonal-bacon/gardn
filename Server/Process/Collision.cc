@@ -7,13 +7,11 @@
 #include <iostream>
 
 static bool _should_interact(Entity const &ent1, Entity const &ent2) {
-    //if (ent1.has_component(kFlower) || ent2.has_component(kFlower)) return false;
-    //if (ent1.has_component(kPetal) || ent2.has_component(kPetal)) return false;
     if (ent1.pending_delete || ent2.pending_delete) return false;
     if (!(ent1.team == ent2.team)) return true;
     if (BitMath::at((ent1.flags | ent2.flags), EntityFlags::kNoFriendlyCollision)) return false;
-    //if (ent1.has_component(kPetal) || ent2.has_component(kPetal)) return false;
-    if (ent1.has_component(kMob) && ent2.has_component(kMob)) return true;
+    if ((ent1.has_component(kMob) || ent1.has_component(kFlower)) &&
+        (ent2.has_component(kMob) || ent2.has_component(kFlower))) return true;
     return false;
 }
 
@@ -84,6 +82,11 @@ void on_collide(Simulation *sim, Entity &ent1, Entity &ent2) {
                 _cancel_movement(ent2, separation*-1, ent1.velocity - ent2.velocity);
             else
                 _deal_knockback(ent2, separation*-1, 1 - ratio);
+        } else {
+            if (ent1.has_component(kFlower) && !ent1.has_component(kMob) && ent2.has_component(kMob))
+                ratio = 0;
+            if (ent2.has_component(kFlower) && !ent2.has_component(kMob) && ent1.has_component(kMob))
+                ratio = 1;
         }
         _deal_push(ent1, separation, ratio, dist);
         _deal_push(ent2, separation*-1, 1 - ratio, dist);

@@ -32,6 +32,11 @@ static Element *make_entries(std::initializer_list<std::string const> contents) 
 
 static Element *make_changelog_contents() {
     Element *elt = new Ui::VContainer({
+        make_date("August 30th 2025"),
+        make_entries({
+            "Enabled collision between friendly entities"
+        }),
+        make_divider(),
         make_date("August 25th 2025"),
         make_entries({
             "Buffed Peas",
