@@ -18,6 +18,12 @@ UiLoadoutSlot::UiLoadoutSlot(uint8_t pos) : Element(70, 70, { .fill = 0xffeeeeee
     };
     position = pos;
     Ui::UiLoadout::petal_backgrounds[pos] = this;
+    if (Input::is_mobile) {
+        width *= 1.5;
+        height *= 1.5;
+        style.line_width *= 1.5;
+        style.round_radius *= 1.5;
+    }
 }
 
 void UiLoadoutSlot::on_render(Renderer &ctx) {
