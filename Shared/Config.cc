@@ -4,7 +4,7 @@ extern const uint64_t VERSION_HASH =
 #ifdef BUILD_TIME
 BUILD_TIME;
 #else
-0;
+0ull;
 #endif
 
 extern const uint32_t SERVER_PORT = 9001;

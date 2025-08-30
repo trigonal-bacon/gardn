@@ -31,8 +31,8 @@ tasks:
     command: |
       source ../emsdk/emsdk_env.sh && \
       cd Server/build && \
-      # cmake -DWASM_BUILD=1 .. && make -j$(nproc) && node --inspect gardn-server.js
-      cmake -DWASM_BUILD=0 .. && make -j$(nproc) && ./gardn-server
+      # cmake -DWASM_SERVER=1 .. && make -j$(nproc) && node --inspect gardn-server.js
+      cmake -DWASM_SERVER=0 .. && make -j$(nproc) && ./gardn-server
 
 ports:
   - port: 8080

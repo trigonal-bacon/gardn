@@ -1,4 +1,5 @@
 #include <Client/Socket.hh>
+#include <Client/DOM.hh>
 #include <Client/Game.hh>
 
 #include <Shared/Binary.hh>
@@ -29,6 +30,8 @@ extern "C" {
             std::printf("Disconnected [%d](%s)\n", len, reason);
             Game::disconnect_message = std::format("Disconnected with code {} (\"{}\")", len, reason);
             free(reason);
+            if (len == CloseReason::kOutdated)
+                DOM::reload_page();
         }
         else if (type == 1) {
             Game::socket.ready = 1;

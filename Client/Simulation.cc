@@ -49,7 +49,7 @@ void Simulation::on_tick() {
             if (ent.revived == 1 && ent.revival_burst < 0.1)
                 ent.revival_burst = 1;
             else
-                LERP(ent.revival_burst, 0, amt / 3);
+                ent.revival_burst = lerp(ent.revival_burst, 0, amt / 3);
             if (ent.revival_burst > 0.01)
                 for (uint8_t i = 0; i < 3; ++i)
                     if (frand() < fclamp(ent.revival_burst * Ui::dt * 60 / 1000, 0, 1))

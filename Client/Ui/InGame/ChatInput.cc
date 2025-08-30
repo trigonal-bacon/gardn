@@ -2,6 +2,7 @@
 
 #include <Client/DOM.hh>
 #include <Client/Game.hh>
+#include <Client/Input.hh>
 
 #include <Shared/Config.hh>
 

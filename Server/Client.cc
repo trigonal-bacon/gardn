@@ -152,9 +152,9 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
         case Serverbound::kChatSend: {
             if (!client->alive()) break;
             std::string text;
-            VALIDATE(validator.validate_string(MAX_CHAT_LENGTH));
+            if (client->check_invalid(validator.validate_string(MAX_CHAT_LENGTH))) return;
             reader.read<std::string>(text);
-            VALIDATE(UTF8Parser::is_valid_utf8(text));
+            if (client->check_invalid(UTF8Parser::is_valid_utf8(text))) return;
             // text = UTF8Parser::trunc_string(text, MAX_CHAT_LENGTH);
             if (text.size() == 0) break;
             Simulation *simulation = &client->game->simulation;
