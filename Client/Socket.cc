@@ -5,6 +5,7 @@
 #include <Shared/Binary.hh>
 #include <Shared/Config.hh>
 
+#include <cstring>
 #include <iostream>
 
 #include <emscripten.h>
@@ -28,7 +29,10 @@ extern "C" {
             Game::on_game_screen = 0;
             Game::socket.ready = 0;
             std::printf("Disconnected [%d](%s)\n", len, reason);
-            Game::disconnect_message = std::format("Disconnected with code {} (\"{}\")", len, reason);
+            if (std::strlen(reason))
+                Game::disconnect_message = std::format("Disconnected with code {} (\"{}\")", len, reason);
+            else
+                Game::disconnect_message = std::format("Disconnected with code {}", len);
             free(reason);
             if (len == CloseReason::kOutdated)
                 DOM::reload_page();

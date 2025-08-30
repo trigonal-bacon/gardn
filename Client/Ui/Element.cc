@@ -65,7 +65,7 @@ void Element::render(Renderer &ctx) {
     } else 
         on_render_skip(ctx);
     //event emitter
-    if (Ui::focused == this) {
+    if (Ui::focused == this || Input::is_mobile && touch_id != (uint32_t)-1) {
         uint8_t pressed = 0;
         uint8_t released = 0;
         if (Input::is_mobile) {
@@ -156,10 +156,6 @@ void Element::poll_events() {
         return;
     }
     if (Input::is_mobile) {
-        /*
-        if (touch_id != (uint32_t)-1 && !Input::touches.contains(touch_id))
-            touch_id = (uint32_t)-1;
-        */
         auto iter = Input::touches.find(touch_id);
         if (iter == Input::touches.end()) {
             touch_id = (uint32_t)-1;
@@ -174,8 +170,8 @@ void Element::poll_events() {
         }
         if (Ui::focused == this && touch_id == (uint32_t)-1) Ui::focused = nullptr;
         if (touch_id == (uint32_t)-1) {
-            for (auto iter : Input::touches) {
-                Input::Touch &touch = iter.second;
+            for (auto &iter : Input::touches) {
+                Input::Touch const &touch = iter.second;
                 if (touch.saturated) continue;
                 if (std::abs(touch.x - screen_x) > width * Ui::scale / 2
                 || std::abs(touch.y - screen_y) > height * Ui::scale / 2) continue;
