@@ -164,7 +164,12 @@ void Element::poll_events(ScreenEvent const &event) {
         else {
             Input::Touch const &touch = iter->second;
             if (std::abs(touch.x - screen_x) < width * Ui::scale / 2
-            && std::abs(touch.y - screen_y) < height * Ui::scale / 2) return;
+            && std::abs(touch.y - screen_y) < height * Ui::scale / 2) {
+                if (std::abs(event.x - screen_x) > width * Ui::scale / 2
+                || std::abs(event.y - screen_y) > height * Ui::scale / 2) return;
+                Ui::focused = this;
+                return;
+            }
             touch_id = (uint32_t)-1;
         }
         if (touch_id == (uint32_t)-1) {        

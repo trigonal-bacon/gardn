@@ -79,7 +79,7 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
                 case PetalID::kBubble:
                     if (BitMath::at(player.input, InputFlags::kDefending)) {
                         Vector v(player.x - petal.x, player.y - petal.y);
-                        v.set_magnitude(PLAYER_ACCELERATION * 30);
+                        v.set_magnitude(PLAYER_ACCELERATION * 20);
                         player.velocity += v;
                         sim->request_delete(petal.id);
                     }
