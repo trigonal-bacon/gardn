@@ -4,6 +4,7 @@
 #include <Client/Ui/Extern.hh>
 #include <Client/Ui/StaticText.hh>
 
+#include <Client/Game.hh>
 #include <Client/Input.hh>
 
 #include <Helpers/Bits.hh>
@@ -13,12 +14,11 @@
 using namespace Ui;
 
 MobileJoyStick::MobileJoyStick(float w, float h, float r) : Element(w,h,{}), joystick_radius(r) {
-    style.should_render = [](){ return Input::is_mobile; };
+    style.should_render = [](){ return Input::is_mobile && Game::alive(); };
+    style.no_animation = 1;
 }
 
 void MobileJoyStick::on_render(Renderer &ctx) {
-    if (Input::touches.contains(touch_id))
-        persistent_touch_id = touch_id;
     auto iter = Input::touches.find(persistent_touch_id);
     if (iter != Input::touches.end()) {
         Input::Touch const &touch = iter->second;
@@ -35,7 +35,6 @@ void MobileJoyStick::on_render(Renderer &ctx) {
         Input::game_inputs.x = 0;
         Input::game_inputs.y = 0;
     }
-    
     if (is_pressed) {
         RenderContext c(&ctx);
         ctx.reset_transform();
@@ -48,6 +47,11 @@ void MobileJoyStick::on_render(Renderer &ctx) {
     }
 }
 
+void MobileJoyStick::on_event(uint8_t event) {
+    if (event == UiEvent::kMouseDown)
+        persistent_touch_id = touch_id;
+}
+
 Element *Ui::make_mobile_attack_button() {
     Element *elt = new Ui::Button(200, 200, new Ui::StaticText(50, "A"), 
         [](Element *elt, uint8_t e) {
@@ -56,8 +60,9 @@ Element *Ui::make_mobile_attack_button() {
             else if (e == Ui::kClick)
                 BitMath::unset(Input::game_inputs.flags, InputFlags::kAttacking);
         }, nullptr, { .fill = 0x40000000, .line_width = 0, .round_radius = 50, 
-            .should_render = [](){ return Input::is_mobile; },
-            .h_justify = Style::Right, .v_justify = Style::Bottom
+            .should_render = [](){ return Input::is_mobile && Game::alive(); },
+            .h_justify = Style::Right, .v_justify = Style::Bottom,
+            .no_animation = 1
         }
     );
     elt->x = -400;
@@ -73,12 +78,13 @@ Element *Ui::make_mobile_defend_button() {
             else if (e == Ui::kClick)
                 BitMath::unset(Input::game_inputs.flags, InputFlags::kDefending);
         }, nullptr, { .fill = 0x40000000, .line_width = 0, .round_radius = 50, 
-            .should_render = [](){ return Input::is_mobile; },
-            .h_justify = Style::Right, .v_justify = Style::Bottom
+            .should_render = [](){ return Input::is_mobile && Game::alive(); },
+            .h_justify = Style::Right, .v_justify = Style::Bottom,
+            .no_animation = 1
         }
     );
     elt->x = -200;
-    elt->y = -300;
+    elt->y = -250;
     return elt;
 }
 

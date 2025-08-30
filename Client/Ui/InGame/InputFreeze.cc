@@ -61,6 +61,6 @@ void InputFreeze::on_event(uint8_t event) {
         Input::freeze_input = 1;
 }
 
-void InputFreeze::poll_events() {
-    Element::poll_events();
+void InputFreeze::poll_events(ScreenEvent const &event) {
+    Element::poll_events(event);
 }

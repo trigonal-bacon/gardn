@@ -59,4 +59,5 @@ namespace Game {
     void swap_all_petals();
     void send_chat(std::string const &);
     void on_message(uint8_t *, uint32_t);
+    void poll_ui_event(Ui::ScreenEvent const &);
 };

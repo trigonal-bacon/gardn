@@ -11,7 +11,7 @@ namespace Ui {
 
         virtual void on_render(Renderer &) override;
 
-        virtual void poll_events() override;
+        virtual void poll_events(ScreenEvent const &) override;
     };
 
     class HContainer : public Container {

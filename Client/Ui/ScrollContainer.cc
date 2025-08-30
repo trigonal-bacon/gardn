@@ -64,12 +64,12 @@ void ScrollContainer::refactor() {
     width -= inner_pad;
 }
 
-void ScrollContainer::poll_events() {
+void ScrollContainer::poll_events(ScreenEvent const &event) {
     if (std::abs(Input::mouse_x - screen_x) < width * Ui::scale / 2
     && std::abs(Input::mouse_y - screen_y) < height * Ui::scale / 2) {
         Ui::focused = this;
         for (Element *elt : children)
-            elt->poll_events();
+            elt->poll_events(event);
     }
     else if (Ui::focused == this) {
         Ui::focused = nullptr;

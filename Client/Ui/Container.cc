@@ -29,13 +29,13 @@ void Container::on_render(Renderer &ctx) {
     }
 }
 
-void Container::poll_events() {
+void Container::poll_events(ScreenEvent const &event) {
     if (style.no_polling) return;
-    Element::poll_events();
+    Element::poll_events(event);
     if (Ui::focused != this)
         return;
     for (Element *elt : children)
-        if (elt->visible) elt->poll_events();
+        if (elt->visible) elt->poll_events(event);
 }
 
 HContainer::HContainer(std::vector<Element *> const &elts, float opad, float ipad, Style s) :

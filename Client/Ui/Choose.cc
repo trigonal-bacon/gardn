@@ -40,11 +40,11 @@ void Choose::refactor() {
     height = rendering->height;
 }
 
-void Choose::poll_events() {
+void Choose::poll_events(ScreenEvent const &event) {
     if (style.no_polling) return;
-    Element::poll_events();
+    Element::poll_events(event);
     if (Ui::focused != this)
         return;
-    if (children[0]->visible) children[0]->poll_events();
-    if (children[1]->visible) children[1]->poll_events();
+    if (children[0]->visible) children[0]->poll_events(event);
+    if (children[1]->visible) children[1]->poll_events(event);
 }

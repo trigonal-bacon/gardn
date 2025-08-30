@@ -37,10 +37,10 @@ void Window::on_render(Renderer &ctx) {
     on_render_tooltip(ctx);
 }
 
-void Window::poll_events() {
+void Window::poll_events(ScreenEvent const &event) {
     if (style.no_polling) return;
     for (Element *elt : children)
-        if (elt->visible) elt->poll_events();
+        if (elt->visible) elt->poll_events(event);
     if (Ui::focused == nullptr)
         Ui::focused = this;
 }

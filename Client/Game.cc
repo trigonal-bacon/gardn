@@ -54,6 +54,7 @@ namespace Game {
 using namespace Game;
 
 void Game::init() {
+    Input::is_mobile = check_mobile();
     Storage::retrieve();
     reset();
     title_ui_window.add_child(
@@ -147,7 +148,6 @@ void Game::init() {
         }()
     );
     other_ui_window.style.no_polling = 1;
-    Input::is_mobile = check_mobile();
     socket.connect(WS_URL);
 }
 
@@ -185,6 +185,17 @@ uint8_t Game::should_render_game_ui() {
     return transition_circle > 0 && simulation_ready && simulation.ent_exists(camera_id);
 }
 
+void Game::poll_ui_event(Ui::ScreenEvent const &event) {
+    Ui::focused = nullptr;
+    if (Game::should_render_title_ui())
+        title_ui_window.poll_events(event);
+    if (Game::should_render_game_ui())
+        game_ui_window.poll_events(event);
+    other_ui_window.poll_events(event);
+    if (Ui::focused != nullptr)
+        Ui::focused->focused = 1;
+}
+
 void Game::tick(double time) {
     double tick_start = Debug::get_timestamp();
     Game::timestamp = time;
@@ -219,16 +230,22 @@ void Game::tick(double time) {
         overlevel_timer = 0;
     }
 
+    //event poll
+    if (Input::is_mobile) {
+        for (auto &x : Input::touches) {
+            Input::Touch const &touch = x.second;
+            if (touch.saturated) continue;
+            Game::poll_ui_event({ .id = touch.id, .x = touch.x, .y = touch.y, .press = 1 });
+        }
+    }
+    else {
+        Game::poll_ui_event({ .id = 0, .x = Input::mouse_x, .y = Input::mouse_y, .press = 0 });
+    }
+
     if (in_game())
         transition_circle = fclamp(transition_circle * powf(1.05, Ui::dt * 60 / 1000) + Ui::dt / 5, 0, MAX_TRANSITION_CIRCLE);
     else 
         transition_circle = fclamp(transition_circle / powf(1.05, Ui::dt * 60 / 1000) - Ui::dt / 5, 0, MAX_TRANSITION_CIRCLE);
-
-    if (Game::should_render_title_ui())
-        title_ui_window.poll_events();
-    if (Game::should_render_game_ui())
-        game_ui_window.poll_events();
-    other_ui_window.poll_events();
 
     if (should_render_title_ui()) {
         render_title_screen();

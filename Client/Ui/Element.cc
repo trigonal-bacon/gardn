@@ -65,24 +65,26 @@ void Element::render(Renderer &ctx) {
     } else 
         on_render_skip(ctx);
     //event emitter
-    if (Ui::focused == this || Input::is_mobile && touch_id != (uint32_t)-1) {
+    if (focused) {
         uint8_t pressed = 0;
         uint8_t released = 0;
         if (Input::is_mobile) {
-            pressed = touch_id != (uint32_t)-1 && Input::touches.contains(touch_id);
-            released = !pressed && focus_state != kFocusLost;
+            pressed = Input::touches.contains(touch_id);
+            released = !pressed;// && focus_state != kFocusLost;
+            focused = pressed;
         }
         else {
             pressed = BitMath::at(Input::mouse_buttons_pressed, Input::LeftMouse);
             released = BitMath::at(Input::mouse_buttons_released, Input::LeftMouse);
+            focused = 0;
         }
-        if (released) {
-            focus_state = kClick;
-            on_event(kClick);
-        }
-        else if (pressed) {
+        
+        if (pressed) {
             focus_state = kMouseDown;
             on_event(kMouseDown);
+        } else if (released) {
+            focus_state = kClick;
+            on_event(kClick);
         }
         else if (!Input::is_mobile && focus_state != kMouseDown) {
             focus_state = kMouseHover;
@@ -149,7 +151,7 @@ void Element::refactor() {
         if (elt->visible) elt->refactor();
 }
 
-void Element::poll_events() {
+void Element::poll_events(ScreenEvent const &event) {
     if (style.no_polling) {
         DEBUG_ONLY(assert(Ui::focused != this);)
         touch_id = (uint32_t)-1;
@@ -157,34 +159,29 @@ void Element::poll_events() {
     }
     if (Input::is_mobile) {
         auto iter = Input::touches.find(touch_id);
-        if (iter == Input::touches.end()) {
+        if (iter == Input::touches.end())
             touch_id = (uint32_t)-1;
-        } else {
+        else {
             Input::Touch const &touch = iter->second;
             if (std::abs(touch.x - screen_x) < width * Ui::scale / 2
             && std::abs(touch.y - screen_y) < height * Ui::scale / 2) {
+                if (std::abs(event.x - screen_x) > width * Ui::scale / 2
+                || std::abs(event.y - screen_y) > height * Ui::scale / 2) return;
                 Ui::focused = this;
                 return;
             }
             touch_id = (uint32_t)-1;
         }
-        if (Ui::focused == this && touch_id == (uint32_t)-1) Ui::focused = nullptr;
-        if (touch_id == (uint32_t)-1) {
-            for (auto &iter : Input::touches) {
-                Input::Touch const &touch = iter.second;
-                if (touch.saturated) continue;
-                if (std::abs(touch.x - screen_x) > width * Ui::scale / 2
-                || std::abs(touch.y - screen_y) > height * Ui::scale / 2) continue;
-                Ui::focused = this;
-                touch_id = touch.id;
-            }
+        if (touch_id == (uint32_t)-1) {        
+            if (std::abs(event.x - screen_x) > width * Ui::scale / 2
+            || std::abs(event.y - screen_y) > height * Ui::scale / 2) return;
+            Ui::focused = this;
+            touch_id = event.id;
         }
     } else {
         if (std::abs(Input::mouse_x - screen_x) < width * Ui::scale / 2
         && std::abs(Input::mouse_y - screen_y) < height * Ui::scale / 2)
             Ui::focused = this;
-        else if (Ui::focused == this) 
-            Ui::focused = nullptr;
     }
 }
 

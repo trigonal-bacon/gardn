@@ -34,7 +34,10 @@ static Element *make_changelog_contents() {
     Element *elt = new Ui::VContainer({
         make_date("August 30th 2025"),
         make_entries({
-            "Enabled collision between friendly entities"
+            "Added mobile touch controls",
+            "Enabled collision between friendly entities",
+            "Neutral mobs will now aggro the leader if above level 60",
+            "More bugfixes"
         }),
         make_divider(),
         make_date("August 25th 2025"),
