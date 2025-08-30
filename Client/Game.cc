@@ -141,7 +141,7 @@ void Game::init() {
         }()
     );
     other_ui_window.style.no_polling = 1;
-    Input::is_mobile = 1|check_mobile();
+    Input::is_mobile = check_mobile();
     socket.connect(WS_URL);
 }
 
