@@ -41,6 +41,7 @@ namespace Ui {
     public:
         MobileJoyStick(float, float, float);
         virtual void on_render(Renderer &) override;
+        virtual void on_event(uint8_t) override;
     };
 
     Element *make_leaderboard();

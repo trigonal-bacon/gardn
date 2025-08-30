@@ -60,7 +60,3 @@ void InputFreeze::on_event(uint8_t event) {
     if (event == Ui::kMouseHover || event == Ui::kMouseMove) 
         Input::freeze_input = 1;
 }
-
-void InputFreeze::poll_events() {
-    Element::poll_events();
-}

@@ -17,8 +17,6 @@ MobileJoyStick::MobileJoyStick(float w, float h, float r) : Element(w,h,{}), joy
 }
 
 void MobileJoyStick::on_render(Renderer &ctx) {
-    if (Input::touches.contains(touch_id))
-        persistent_touch_id = touch_id;
     auto iter = Input::touches.find(persistent_touch_id);
     if (iter != Input::touches.end()) {
         Input::Touch const &touch = iter->second;
@@ -35,7 +33,6 @@ void MobileJoyStick::on_render(Renderer &ctx) {
         Input::game_inputs.x = 0;
         Input::game_inputs.y = 0;
     }
-    
     if (is_pressed) {
         RenderContext c(&ctx);
         ctx.reset_transform();
@@ -46,6 +43,11 @@ void MobileJoyStick::on_render(Renderer &ctx) {
         ctx.arc(0, 0, joystick_radius);
         ctx.fill();
     }
+}
+
+void MobileJoyStick::on_event(uint8_t event) {
+    if (event == UiEvent::kMouseDown)
+        persistent_touch_id = touch_id;
 }
 
 Element *Ui::make_mobile_attack_button() {
@@ -78,7 +80,7 @@ Element *Ui::make_mobile_defend_button() {
         }
     );
     elt->x = -200;
-    elt->y = -300;
+    elt->y = -250;
     return elt;
 }
 
