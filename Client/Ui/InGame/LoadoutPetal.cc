@@ -126,8 +126,6 @@ UiLoadoutPetal::UiLoadoutPetal(uint8_t pos) : Element(60, 60),
         float mouse_x, mouse_y;
         uint8_t released;
         if (Input::is_mobile) {
-            if (Input::touches.contains(touch_id))
-                persistent_touch_id = touch_id;
             released = 0;
             auto iter = Input::touches.find(persistent_touch_id);
             if (iter == Input::touches.end()) {
@@ -219,6 +217,8 @@ void UiLoadoutPetal::on_event(uint8_t event) {
     if (Game::alive() && event == kMouseDown && Ui::UiLoadout::petal_selected == nullptr) {
         Ui::UiLoadout::petal_selected = this;
         Ui::UiLoadout::selected_with_keys = MAX_SLOT_COUNT;
+        if (Input::touches.contains(touch_id))
+            persistent_touch_id = touch_id;
     }
     if (event != kFocusLost && last_id != PetalID::kNone && Ui::UiLoadout::petal_selected == nullptr) {
         rendering_tooltip = 1;
