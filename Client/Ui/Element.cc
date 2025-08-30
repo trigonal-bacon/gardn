@@ -163,8 +163,8 @@ void Element::poll_events(ScreenEvent const &event) {
             touch_id = (uint32_t)-1;
         else {
             Input::Touch const &touch = iter->second;
-            if (std::abs(touch.x - screen_x) > width * Ui::scale / 2
-            || std::abs(touch.y - screen_y) > height * Ui::scale / 2) return;
+            if (std::abs(touch.x - screen_x) < width * Ui::scale / 2
+            && std::abs(touch.y - screen_y) < height * Ui::scale / 2) return;
             touch_id = (uint32_t)-1;
         }
         if (touch_id == (uint32_t)-1) {        
