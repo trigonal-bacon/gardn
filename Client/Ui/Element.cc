@@ -69,8 +69,8 @@ void Element::render(Renderer &ctx) {
         uint8_t pressed = 0;
         uint8_t released = 0;
         if (Input::is_mobile) {
-            pressed = touch_id != (uint32_t)-1 && Input::touches.contains(touch_id);
-            released = !pressed && focus_state != kFocusLost;
+            pressed = Input::touches.contains(touch_id);
+            released = !pressed;// && focus_state != kFocusLost;
             focused = pressed;
         }
         else {
@@ -161,8 +161,12 @@ void Element::poll_events(ScreenEvent const &event) {
         auto iter = Input::touches.find(touch_id);
         if (iter == Input::touches.end())
             touch_id = (uint32_t)-1;
-        else
-            return;
+        else {
+            Input::Touch const &touch = iter->second;
+            if (std::abs(touch.x - screen_x) > width * Ui::scale / 2
+            || std::abs(touch.y - screen_y) > height * Ui::scale / 2) return;
+            touch_id = (uint32_t)-1;
+        }
         if (touch_id == (uint32_t)-1) {        
             if (std::abs(event.x - screen_x) > width * Ui::scale / 2
             || std::abs(event.y - screen_y) > height * Ui::scale / 2) return;
