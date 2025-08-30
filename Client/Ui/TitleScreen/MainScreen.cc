@@ -9,8 +9,11 @@
 #include <Client/Debug.hh>
 #include <Client/DOM.hh>
 #include <Client/Game.hh>
+#include <Client/Input.hh>
 
 #include <Shared/Config.hh>
+
+#include <format>
 
 using namespace Ui;
 

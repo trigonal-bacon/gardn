@@ -15,6 +15,7 @@ set(SOURCES
     Process/Chat.cc
     Process/Collision.cc
     Process/Culling.cc
+    Process/Curse.cc
     Process/Flower.cc
     Process/Health.cc
     Process/Motion.cc
@@ -29,16 +30,17 @@ set(SOURCES
     Simulation.cc
     Spawn.cc
     TeamManager.cc
+    ../Helpers/Math.cc
+    ../Helpers/UTF8.cc
+    ../Helpers/Vector.cc
     ../Shared/Arena.cc
     ../Shared/Binary.cc
     ../Shared/Config.cc
     ../Shared/Entity.cc
     ../Shared/EntityDef.cc
-    ../Shared/Helpers.cc
     ../Shared/Map.cc
     ../Shared/Simulation.cc
     ../Shared/StaticData.cc
-    ../Shared/Vector.cc
 )
 
 if(WASM_SERVER)

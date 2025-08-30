@@ -42,14 +42,12 @@ extern "C" {
         Input::mouse_x = x;
         Input::mouse_y = y;
         if (type == 0) {
-            ++Input::num_touches;
-            BIT_SET(Input::mouse_buttons_pressed, button);
-            BIT_SET(Input::mouse_buttons_state, button);
+            BitMath::set(Input::mouse_buttons_pressed, button);
+            BitMath::set(Input::mouse_buttons_state, button);
         }
         else if (type == 2) {
-            --Input::num_touches;
-            BIT_SET(Input::mouse_buttons_released, button);
-            BIT_UNSET(Input::mouse_buttons_state, button);
+            BitMath::set(Input::mouse_buttons_released, button);
+            BitMath::unset(Input::mouse_buttons_state, button);
         }
     }
 
@@ -62,6 +60,21 @@ extern "C" {
         else if (type == 1) Input::keys_held.erase(button);
         //else if (type == 2) Input::keys_pressed_this_tick.push_back(button);
         free(code);
+    }
+
+    void touch_event(float x, float y, uint8_t type, uint32_t id) {
+        std::printf("%d\n", id);
+        if (type == 0) {
+            Input::touches.insert({id, { .id = id, .x = x, .y = y, .saturated = 0 }});
+        } else if (type == 2) {
+            Input::touches.erase(id);
+        } else {
+            auto iter = Input::touches.find(id);
+            if (iter == Input::touches.end()) return;
+            Input::Touch &touch = iter->second;
+            touch.x = x;
+            touch.y = y;
+        }
     }
 
     void wheel_event(float wheel) {
@@ -104,20 +117,20 @@ int setup_inputs() {
             _mouse_event(e.clientX * devicePixelRatio, e.clientY * devicePixelRatio, 2, +!!e.button);
         });
         window.addEventListener("touchstart", (e) => {
-            //e.preventDefault();
-            const t = e.changedTouches[0];
-            _mouse_event(t.clientX * devicePixelRatio, t.clientY * devicePixelRatio, 0, 0);
-        });
+            e.preventDefault();
+            for (const t of e.changedTouches)
+                _touch_event(t.clientX * devicePixelRatio, t.clientY * devicePixelRatio, 0, t.identifier);
+        }, { passive: false });
         window.addEventListener("touchmove", (e) => {
-            //e.preventDefault();
-            const t = e.changedTouches[0];
-            _mouse_event(t.clientX * devicePixelRatio, t.clientY * devicePixelRatio, 1, 0);
-        });
+            e.preventDefault();
+            for (const t of e.changedTouches)
+                _touch_event(t.clientX * devicePixelRatio, t.clientY * devicePixelRatio, 1, t.identifier);
+        }, { passive: false });
         window.addEventListener("touchend", (e) => {
-            //e.preventDefault();
-            const t = e.changedTouches[0];
-            _mouse_event(t.clientX * devicePixelRatio, t.clientY * devicePixelRatio, 2, 0);
-        });
+            e.preventDefault();
+            for (const t of e.changedTouches)
+                _touch_event(t.clientX * devicePixelRatio, t.clientY * devicePixelRatio, 2, t.identifier);
+        }, { passive: false });
         window.addEventListener("paste", (e) => {
             try {
                 const clip = e.clipboardData.getData("text/plain");

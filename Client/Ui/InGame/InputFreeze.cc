@@ -29,11 +29,11 @@ InputFreeze::InputFreeze() : Container({
     style.animate = [&](Element *elt, Renderer &ctx){
         if (!Game::alive()) Input::freeze_input = 0;
         if (Input::freeze_input) {
-            LERP(render_width, parent->width + 40, Ui::lerp_amount * 1.5);
-            LERP(render_height, parent->height + 20, Ui::lerp_amount * 1.5);
+            render_width = lerp(render_width, parent->width + 40, Ui::lerp_amount * 1.5);
+            render_height = lerp(render_height, parent->height + 20, Ui::lerp_amount * 1.5);
         } else {
-            LERP(render_width, children[0]->width, Ui::lerp_amount * 1.5);
-            LERP(render_height, children[0]->height, Ui::lerp_amount * 1.5);
+            render_width = lerp(render_width, children[0]->width, Ui::lerp_amount * 1.5);
+            render_height = lerp(render_height, children[0]->height, Ui::lerp_amount * 1.5);
         }
         if ((fabsf(Input::mouse_x - screen_x) > render_width * Ui::scale / 2 ||
             Ui::window_height - Input::mouse_y > render_height * Ui::scale) &&
@@ -41,7 +41,7 @@ InputFreeze::InputFreeze() : Container({
             Input::freeze_input = 0;
     };
     style.round_radius = 10;
-    style.should_render = [](){ return !Input::keyboard_movement && !Game::is_mobile; };
+    style.should_render = [](){ return !Input::keyboard_movement && !Input::is_mobile; };
 }
 
 void InputFreeze::on_render(Renderer &ctx) {

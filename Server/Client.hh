@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Shared/Binary.hh>
 #include <Shared/EntityDef.hh>
 
 #include <cstdint>
@@ -27,10 +28,14 @@ public:
     Client();
     void init();
     void remove();
-    void disconnect();
+    void disconnect(int = CloseReason::kProtocol, std::string const & = "Protocol Error");
     uint8_t alive();
 
     void send_packet(uint8_t const *, size_t);
+    //takes in a bool expr
+    //if true, packet reading should be terminated
+    //optionally, the client canalso be disconnected
+    bool check_invalid(bool);
     static void on_message(WebSocket *, std::string_view, uint64_t);
     static void on_disconnect(WebSocket *, int, std::string_view);
 };
@@ -43,6 +48,6 @@ public:
     WebSocket(int);
     Client *getUserData();
     void send(uint8_t const *, size_t);
-    void end();
+    void end(int, std::string const &);
 };
 #endif

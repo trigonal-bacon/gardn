@@ -12,8 +12,9 @@ uint8_t INCOMING_PACKET[64 * 1024] = {0};
 uint8_t OUTGOING_PACKET[1 * 1024] = {0};
 
 extern "C" {
-    void on_message(uint8_t type, uint32_t len) {
+    void on_message(uint8_t type, uint32_t len, char *reason) {
         if (type == 0) {
+            std::printf("Connected\n");
             Writer w(INCOMING_PACKET);
             w.write<uint8_t>(Serverbound::kVerify);
             w.write<uint64_t>(VERSION_HASH);
@@ -25,6 +26,9 @@ extern "C" {
         else if (type == 2) {
             Game::on_game_screen = 0;
             Game::socket.ready = 0;
+            std::printf("Disconnected [%d](%s)\n", len, reason);
+            Game::disconnect_message = std::format("Disconnected with code {} (\"{}\")", len, reason);
+            free(reason);
         }
         else if (type == 1) {
             Game::socket.ready = 1;
@@ -42,21 +46,16 @@ void Socket::connect(std::string const url) {
         function connect() {
             let socket = Module.socket = new WebSocket(string);
             socket.binaryType = "arraybuffer";
-            socket.onopen = function()
-            {
-                console.log("Connected");
-                _on_message(0);
+            socket.onopen = function() {
+                _on_message(0, 0, 0);
             };
-            socket.onclose = function(a)
-            {
-                console.log("Disconnected");
-                _on_message(2, a.code);
+            socket.onclose = function(a) {
+                _on_message(2, a.code, stringToNewUTF8(a.reason));
                 setTimeout(connect, 1000);
             };
-            socket.onmessage = function(event)
-            {
+            socket.onmessage = function(event) {
                 HEAPU8.set(new Uint8Array(event.data), $0);
-                _on_message(1, event.data.byteLength);
+                _on_message(1, event.data.byteLength, 0);
             };
         }
         setTimeout(connect, 1000);

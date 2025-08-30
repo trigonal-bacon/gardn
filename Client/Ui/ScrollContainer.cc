@@ -3,13 +3,14 @@
 #include <Client/Ui/Extern.hh>
 #include <Client/Input.hh>
 
-#include <Shared/Helpers.hh>
+#include <Helpers/Bits.hh>
+#include <Helpers/Macros.hh>
 
 using namespace Ui;
 
 ScrollBar::ScrollBar() : Element(8, 100, { .fill = 0x40000000, .round_radius = 4 }) {
     style.animate = [&](Element *elt, Renderer &ctx){
-        if (elt->style.layer && BIT_AT(Input::mouse_buttons_released, Input::LeftMouse))
+        if (elt->style.layer && BitMath::at(Input::mouse_buttons_released, Input::LeftMouse))
             elt->style.layer = 0;
     };
 }
@@ -36,8 +37,8 @@ void ScrollContainer::on_render(Renderer &ctx) {
             lerp_scroll += Input::wheel_delta / ratio;
         if (scroll->style.layer) lerp_scroll += (Input::mouse_y - Input::prev_mouse_y);
         lerp_scroll = fclamp(lerp_scroll, 0, height - scroll->height);
-        LERP(scroll->y, lerp_scroll, Ui::lerp_amount)
-        LERP(content->y, -ratio * lerp_scroll, Ui::lerp_amount);
+        scroll->y = lerp(scroll->y, lerp_scroll, Ui::lerp_amount);
+        content->y = lerp(content->y, -ratio * lerp_scroll, Ui::lerp_amount);
     } else 
         content->y = scroll->y = 0;
     RenderContext c(&ctx);

@@ -1,6 +1,7 @@
 #include <Client/Ui/InGame/Loadout.hh>
 
 #include <Client/Game.hh>
+#include <Client/Input.hh>
 #include <Shared/Entity.hh>
 
 using namespace Ui;
@@ -68,7 +69,7 @@ Element *Ui::make_loadout_backgrounds() {
                 , 10, 15, { .layer = 1 }
             )),
             new Ui::InputFreeze(),
-            new Ui::Element(0,34,{ .should_render = [](){ return Input::keyboard_movement || Game::is_mobile; }})
+            new Ui::Element(0,34,{ .should_render = [](){ return Input::keyboard_movement || Input::is_mobile; }})
         }, 0, 0, { .should_render = [](){ return Game::alive(); } }
     );
     base->style.v_justify = Style::Bottom;

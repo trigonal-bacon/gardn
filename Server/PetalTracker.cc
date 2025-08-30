@@ -1,7 +1,6 @@
 #include <Server/PetalTracker.hh>
 
 #include <Shared/Simulation.hh>
-#include <Shared/Helpers.hh>
 
 using namespace PetalTracker;
 

@@ -2,8 +2,6 @@
 
 #include <Client/StaticData.hh>
 
-#include <Shared/Helpers.hh>
-
 #include <cmath>
 
 void draw_static_petal_single(PetalID::T id, Renderer &ctx) {

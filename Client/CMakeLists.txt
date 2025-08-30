@@ -39,6 +39,7 @@ set(SRCS
     Ui/InGame/LoadoutPetal.cc
     Ui/InGame/LoadoutSlot.cc
     Ui/InGame/Map.cc
+    Ui/InGame/Mobile.cc
     Ui/InGame/OverlevelTimer.cc
     Ui/InGame/Tooltip.cc
     Ui/TitleScreen/Changelog.cc
@@ -59,16 +60,17 @@ set(SRCS
     Ui/StaticText.cc
     Ui/TextInput.cc
     Ui/Window.cc
+    ../Helpers/Math.cc
+    ../Helpers/UTF8.cc
+    ../Helpers/Vector.cc
     ../Shared/Arena.cc
     ../Shared/Binary.cc
     ../Shared/Config.cc
     ../Shared/Entity.cc
     ../Shared/EntityDef.cc
-    ../Shared/Helpers.cc
     ../Shared/Map.cc
     ../Shared/Simulation.cc
     ../Shared/StaticData.cc
-    ../Shared/Vector.cc
 )
 
 set(CMAKE_CXX_COMPILER "em++")
@@ -87,7 +89,7 @@ else()
 endif()
 
 add_link_options(-sEXPORTED_RUNTIME_METHODS=stringToNewUTF8)
-add_link_options(-sEXPORTED_FUNCTIONS=_main,_key_event,_mouse_event,_wheel_event,_clipboard_event,_loop,_on_message)
+add_link_options(-sEXPORTED_FUNCTIONS=_main,_key_event,_mouse_event,_touch_event,_wheel_event,_clipboard_event,_loop,_on_message)
 
 add_executable(gardn-client ${SRCS})
 set(CMAKE_EXECUTABLE_SUFFIX ".js")

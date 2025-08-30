@@ -20,7 +20,7 @@ void Simulation::on_tick() {
             }
             if (ent.has_component(kDrop) || ent.has_component(kWeb) || ent.has_component(kChat)) {
                 if (ent.lifetime < TPS)
-                    LERP(ent.animation, 1, amt * 0.75)
+                    ent.animation = lerp(ent.animation, 1, amt * 0.75);
                 else ent.animation = 1;
             } else {
                 Vector vel(ent.x - prev_x, ent.y - prev_y);
@@ -29,7 +29,7 @@ void Simulation::on_tick() {
             ent.radius.step(amt);
             ent.angle.step_angle(amt);
             if (ent.pending_delete)
-                ent.deletion_animation = fclamp(ent.deletion_animation + Ui::dt / 150, 0, 1);
+                ent.deletion_animation = fclamp(ent.deletion_animation + Ui::dt / 200, 0, 1);
         }
         if (ent.has_component(kCamera)) {
             ent.camera_x.step(amt);
@@ -42,7 +42,7 @@ void Simulation::on_tick() {
             if (ent.damaged == 1 && ent.damage_flash < 0.1)
                 ent.damage_flash = 1;
             else //ent.damage_flash = fclamp(ent.damage_flash - Ui::dt / 150, 0, 1);
-                LERP(ent.damage_flash, 0, amt)
+                ent.damage_flash = lerp(ent.damage_flash, 0, amt);
             if (ent.damaged)
                 ent.last_damaged_time = Game::timestamp;
             ent.damaged.clear();
@@ -56,23 +56,23 @@ void Simulation::on_tick() {
                         Particle::add_revival_particle(ent.x, ent.y, ent.color);
             ent.revived.clear();
             if ((float) ent.health_ratio > 0.999)
-                LERP(ent.healthbar_opacity, 0, amt)
+                ent.healthbar_opacity = lerp(ent.healthbar_opacity, 0, amt);
             else
                 ent.healthbar_opacity = 1;
             if (ent.healthbar_lag < ent.health_ratio)
                 ent.healthbar_lag = ent.health_ratio;
             else if (Game::timestamp - ent.last_damaged_time > 250)
-                LERP(ent.healthbar_lag, ent.health_ratio, amt / 3)
+                ent.healthbar_lag = lerp(ent.healthbar_lag, ent.health_ratio, amt / 3);
         }
         if (ent.has_component(kFlower)) {
-            LERP(ent.eye_x, cosf(ent.eye_angle) * 3, amt);
-            LERP(ent.eye_y, sinf(ent.eye_angle) * 3, amt);
-            if (BIT_AT(ent.face_flags, FaceFlags::kAttacking)
-                || BIT_AT(ent.face_flags, FaceFlags::kPoisoned) 
-                || BIT_AT(ent.face_flags, FaceFlags::kDandelioned)
-                || ent.pending_delete) LERP(ent.mouth, 5, amt)
-            else if (BIT_AT(ent.face_flags, FaceFlags::kDefending)) LERP(ent.mouth, 8, amt)
-            else LERP(ent.mouth, 15, amt)
+            ent.eye_x = lerp(ent.eye_x, cosf(ent.eye_angle) * 3, amt);
+            ent.eye_y = lerp(ent.eye_y, sinf(ent.eye_angle) * 3, amt);
+            if (BitMath::at(ent.face_flags, FaceFlags::kAttacking)
+                || BitMath::at(ent.face_flags, FaceFlags::kPoisoned) 
+                || BitMath::at(ent.face_flags, FaceFlags::kDandelioned)
+                || ent.pending_delete) ent.mouth = lerp(ent.mouth, 5, amt);
+            else if (BitMath::at(ent.face_flags, FaceFlags::kDefending)) ent.mouth = lerp(ent.mouth, 8, amt);
+            else ent.mouth = lerp(ent.mouth, 15, amt);
         }
     });
     for (uint32_t i = 0; i < std::min(arena_info.player_count, LEADERBOARD_SIZE); ++i)

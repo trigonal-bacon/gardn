@@ -13,7 +13,7 @@ uWS::App Server::server = uWS::App({
     .compression = uWS::DISABLED,
     .maxPayloadLength = 1024,
     .idleTimeout = 15,
-    .maxBackpressure = 64 * MAX_PACKET_LEN,
+    .maxBackpressure = 1024 * MAX_PACKET_LEN,
     .closeOnBackpressureLimit = true,
     .resetIdleTimeoutOnSend = false,
     .sendPingsAutomatically = true,
@@ -28,14 +28,13 @@ uWS::App Server::server = uWS::App({
         Client::on_message(ws, message, opCode);
     },
     .dropped = [](WebSocket *ws, std::string_view /*message*/, uWS::OpCode /*opCode*/) {
-        std::cout << "dropped packet, uh oh\n";
+        std::cout << "dropped packet\n";
         Client *client = ws->getUserData();
         if (client == nullptr) {
-            ws->end();
+            ws->end(1006, "Dropped Message");
             return;
         }
         client->disconnect();
-        //ws->end();
         /* A message was dropped due to set maxBackpressure and closeOnBackpressureLimit limit */
     },
     .drain = [](WebSocket */*ws*/) {

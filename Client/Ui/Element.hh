@@ -1,7 +1,8 @@
 #pragma once
 
 #include <Client/Render/Renderer.hh>
-#include <Shared/Helpers.hh>
+
+#include <Helpers/Math.hh>
 
 #include <functional>
 #include <vector>
@@ -44,6 +45,7 @@ namespace Ui {
     protected:
         std::vector<Element *> children;
         Ui::Element *tooltip = nullptr;
+        uint32_t touch_id = (uint32_t)-1;
     public:
         Ui::Element *parent = nullptr;
         float width = 0;

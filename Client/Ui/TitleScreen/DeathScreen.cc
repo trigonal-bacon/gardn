@@ -24,7 +24,7 @@ void DeadFlowerIcon::on_render(Renderer &ctx) {
         PetalData const &data = PETAL_DATA[Game::cached_loadout[i]];
         if (data.count > 0) physical_loadout.push(Game::cached_loadout[i]);
         if (data.attributes.equipment != EquipmentFlags::kNone) 
-            BIT_SET(equip_flags, data.attributes.equipment)
+            BitMath::set(equip_flags, data.attributes.equipment);
     }
     ctx.scale((width / 4) / 25);
     for (uint32_t i = 0; i < physical_loadout.size(); ++i) {

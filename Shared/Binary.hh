@@ -1,15 +1,12 @@
 #pragma once
 
 #include <Shared/EntityDef.hh>
-#include <Shared/Helpers.hh>
 
 #include <cstdint>
 #include <string>
 
 enum Clientbound {
-    kDisconnect,
-    kClientUpdate,
-    kOutdated
+    kClientUpdate
 };
 
 enum Serverbound {
@@ -19,6 +16,12 @@ enum Serverbound {
     kPetalSwap,
     kPetalDelete,
     kChatSend
+};
+
+enum CloseReason {
+    kServer = 4001,
+    kProtocol = 4002,
+    kOutdated = 4003
 };
 
 class Writer {

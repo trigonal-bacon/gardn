@@ -1,5 +1,4 @@
 #include <Shared/Simulation.hh>
-#include <Shared/Helpers.hh>
 
 #ifdef DEBUG
 #include <iostream>
@@ -15,25 +14,24 @@ Simulation::Simulation() SERVER_ONLY(: spatial_hash(this)) {
 
 void Simulation::reset() {
     active_entities.clear();
-    for (EntityID::id_type i = 0; i < ENTITY_CAP; ++i) { 
-        hash_tracker[i] = 0;
-        BIT_UNSET_ARR(entity_tracker, i);
+    hash_tracker = {0};
+    entity_tracker = {0};
+    
+    for (EntityID::id_type i = 0; i < ENTITY_CAP; ++i)
         entities[i].init();
-    }
+
     arena_info.init();
     #ifdef SERVERSIDE
     spatial_hash.refresh(ARENA_WIDTH, ARENA_HEIGHT);
-    for (PetalID::T i = 0; i < PetalID::kNumPetals; ++i)
-        petal_count_tracker[i] = 0;
-    for (uint32_t i = 0; i < MAP_DATA.size(); ++i)
-        zone_mob_counts[i] = 0;
+    petal_count_tracker = {0};
+    zone_mob_counts = {0};
     #endif
 }
 
 Entity &Simulation::alloc_ent() {
     for (EntityID::id_type i = 1; i < ENTITY_CAP; ++i) {
-        if (BIT_AT_ARR(entity_tracker, i)) continue;
-        BIT_SET_ARR(entity_tracker, i);
+        if (BitMath::at_arr(entity_tracker.data(), i)) continue;
+        BitMath::set_arr(entity_tracker.data(), i);
         entities[i].init();
         DEBUG_ONLY(std::cout << "ent_create " << EntityID(i, hash_tracker[i]) << "\n";)
         entities[i].id = EntityID(i, hash_tracker[i]);
@@ -50,16 +48,16 @@ Entity &Simulation::get_ent(EntityID const &id) {
 void Simulation::force_alloc_ent(EntityID const &id) {
     assert(id.id < ENTITY_CAP);
     DEBUG_ONLY(std::cout << "ent_create " << id << "\n";)
-    assert(!BIT_AT_ARR(entity_tracker, id.id));
+    assert(!BitMath::at_arr(entity_tracker.data(), id.id));
     entities[id.id].init();
-    BIT_SET_ARR(entity_tracker, id.id);
+    BitMath::set_arr(entity_tracker.data(), id.id);
     hash_tracker[id.id] = id.hash;
     entities[id.id].id = id;
 }
 
 uint8_t Simulation::ent_exists(EntityID const &id) const {
     DEBUG_ONLY(assert(id.id < ENTITY_CAP);)
-    return BIT_AT_ARR(entity_tracker, id.id) && hash_tracker[id.id] == id.hash;
+    return BitMath::at_arr(entity_tracker.data(), id.id) && hash_tracker[id.id] == id.hash;
 }
 
 uint8_t Simulation::ent_alive(EntityID const &id) const {
@@ -75,14 +73,14 @@ void Simulation::request_delete(EntityID const &id) {
 void Simulation::_delete_ent(EntityID const &id) {
     DEBUG_ONLY(std::cout << "ent_delete " << id << "\n";)
     DEBUG_ONLY(assert(ent_exists(id)));
-    BIT_UNSET_ARR(entity_tracker, id.id);
+    BitMath::unset_arr(entity_tracker.data(), id.id);
     hash_tracker[id.id]++;
 }
 
 void Simulation::tick() {
     active_entities.clear();
     for (EntityID::id_type i = 1; i < ENTITY_CAP; ++i) {
-        if (!BIT_AT_ARR(entity_tracker, i)) continue;
+        if (!BitMath::at_arr(entity_tracker.data(), i)) continue;
         active_entities.push(entities[i].id.id);
     }
     on_tick();
@@ -90,7 +88,7 @@ void Simulation::tick() {
 
 void Simulation::for_each_entity(std::function<void(Simulation *, Entity &)> cb) { \
     for (EntityID::id_type i = 0; i < active_entities.size(); ++i) { \
-        if (!BIT_AT_ARR(entity_tracker, active_entities[i])) continue; \
+        if (!BitMath::at_arr(entity_tracker.data(), active_entities[i])) continue; \
         Entity &ent = entities[active_entities[i]]; \
         cb(this, ent); \
     } \
@@ -100,7 +98,7 @@ void Simulation::for_each_entity(std::function<void(Simulation *, Entity &)> cb)
 template<> \
 void Simulation::for_each<k##name>(std::function<void(Simulation *, Entity &)> cb) { \
     for (EntityID::id_type i = 0; i < active_entities.size(); ++i) { \
-        if (!BIT_AT_ARR(entity_tracker, active_entities[i])) continue; \
+        if (!BitMath::at_arr(entity_tracker.data(), active_entities[i])) continue; \
         Entity &ent = entities[active_entities[i]]; \
         SERVER_ONLY(if (ent.pending_delete) continue;) \
         if (ent.has_component(k##name)) cb(this, ent); \

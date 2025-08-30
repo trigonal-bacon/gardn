@@ -2,6 +2,8 @@
 
 #include <Client/Render/Renderer.hh>
 
+#include <Helpers/Macros.hh>
+
 #include <vector>
 
 using namespace Ui;

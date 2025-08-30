@@ -46,7 +46,7 @@ static struct PlayerBuffs _get_petal_passive_buffs(Simulation *sim, Entity &play
         if (!player.loadout[i].already_spawned) continue;
         if (slot_petal_id == PetalID::kLeaf) 
             buffs.heal += petal_data.attributes.constant_heal / TPS;
-        else if (slot_petal_id == PetalID::kYucca && BIT_AT(player.input, InputFlags::kDefending) && !BIT_AT(player.input, InputFlags::kAttacking)) 
+        else if (slot_petal_id == PetalID::kYucca && BitMath::at(player.input, InputFlags::kDefending) && !BitMath::at(player.input, InputFlags::kAttacking)) 
             buffs.heal += petal_data.attributes.constant_heal / TPS;
         if (slot_petal_id == PetalID::kFaster) 
             buffs.extra_rot += 1.0;
@@ -151,7 +151,7 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
             if (sim->ent_alive(petal_slot.ent_id)) {
                 Entity &petal = sim->get_ent(petal_slot.ent_id);
                 //only do this if petal not despawning
-                if (petal.has_component(kPetal) && !(BIT_AT(petal.flags, EntityFlags::kIsDespawning))) {
+                if (petal.has_component(kPetal) && !(BitMath::at(petal.flags, EntityFlags::kIsDespawning))) {
                     //petal rotation behavior
                     Vector wanting;
                     Vector delta(player.x - petal.x, player.y - petal.y);
@@ -159,7 +159,7 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
                         wanting.unit_normal(2 * M_PI * rot_pos / rotation_count + player.heading_angle);
 
                     float range = player.radius + 40;
-                    if (BIT_AT(player.input, InputFlags::kAttacking)) { 
+                    if (BitMath::at(player.input, InputFlags::kAttacking)) { 
                         if (petal_data.attributes.defend_only == 0) 
                             range = player.radius + 100 + buffs.extra_range; 
                         if (petal.petal_id == PetalID::kWing) {
@@ -168,7 +168,7 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
                             range += wave * 120;
                         }
                     }
-                    else if (BIT_AT(player.input, InputFlags::kDefending)) range = player.radius + 15;
+                    else if (BitMath::at(player.input, InputFlags::kDefending)) range = player.radius + 15;
                     wanting *= range;
                     if (petal_data.attributes.clump_radius > 0) {
                         Vector secondary;
@@ -187,8 +187,8 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
                         mob.set_parent(player.id);
                         mob.set_color(player.color);
                         mob.base_entity = player.id;
-                        BIT_SET(mob.flags, EntityFlags::kDieOnParentDeath)
-                        BIT_SET(mob.flags, EntityFlags::kNoDrops)
+                        BitMath::set(mob.flags, EntityFlags::kDieOnParentDeath);
+                        BitMath::set(mob.flags, EntityFlags::kNoDrops);
                         if (petal_data.attributes.spawn_count == 0) {
                             petal_slot.ent_id = mob.id;
                             sim->request_delete(petal.id);
@@ -203,7 +203,7 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
                     }
                 } else {
                     //if petal is a mob, or detached (IsDespawning)
-                    if (BIT_AT(petal.flags, EntityFlags::kIsDespawning))
+                    if (BitMath::at(petal.flags, EntityFlags::kIsDespawning))
                         petal_slot.ent_id = NULL_ENTITY;
                     if (petal.has_component(kMob))
                         --rot_pos;
@@ -216,9 +216,9 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
         if (petal_data.attributes.clump_radius > 0) ++rot_pos;
         player.set_loadout_reloads(i, min_reload * 255);
     };
-    if (BIT_AT(player.input, InputFlags::kAttacking)) 
+    if (BitMath::at(player.input, InputFlags::kAttacking)) 
         player.set_face_flags(player.face_flags | (1 << FaceFlags::kAttacking));
-    else if (BIT_AT(player.input, InputFlags::kDefending))
+    else if (BitMath::at(player.input, InputFlags::kDefending))
         player.set_face_flags(player.face_flags | (1 << FaceFlags::kDefending));
     if (player.poison_ticks > 0)
         player.set_face_flags(player.face_flags | (1 << FaceFlags::kPoisoned));

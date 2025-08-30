@@ -43,8 +43,8 @@ void Simulation::on_tick() {
     for_each_entity([](Simulation *sim, Entity &ent) {
         if (ent.has_component(kPhysics))
             sim->spatial_hash.insert(ent);
-        if (BIT_AT(ent.flags, EntityFlags::kHasCulling))
-            BIT_SET(ent.flags, EntityFlags::kIsCulled);
+        if (BitMath::at(ent.flags, EntityFlags::kHasCulling))
+            BitMath::set(ent.flags, EntityFlags::kIsCulled);
     });
     for_each<kCamera>(tick_culling_behavior);
     for_each<kFlower>(tick_player_behavior);
@@ -52,6 +52,7 @@ void Simulation::on_tick() {
     for_each<kPetal>(tick_petal_behavior);
     for_each<kHealth>(tick_health_behavior);
     spatial_hash.collide(on_collide);
+    tick_curse_behavior(this);
     for_each<kPhysics>(tick_entity_motion);
     for_each<kSegmented>(tick_segment_behavior);
     for_each<kCamera>(tick_camera_behavior);
@@ -67,7 +68,7 @@ void Simulation::post_tick() {
         ent.reset_protocol();
         ++ent.lifetime;
         ent.chat_sent = NULL_ENTITY;
-        if (BIT_AT(ent.flags, EntityFlags::kIsDespawning)) {
+        if (BitMath::at(ent.flags, EntityFlags::kIsDespawning)) {
             if (ent.despawn_tick == 0) sim->request_delete(ent.id);
             else --ent.despawn_tick;
         }

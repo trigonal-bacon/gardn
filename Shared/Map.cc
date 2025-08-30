@@ -3,7 +3,6 @@
 #ifdef SERVERSIDE
 #include <Server/Spawn.hh>
 #include <Shared/Entity.hh>
-#include <Shared/Helpers.hh>
 #endif
 
 #include <cmath>
@@ -55,7 +54,7 @@ void Map::spawn_random_mob(Simulation *sim, float x, float y) {
             Entity &ent = alloc_mob(sim, s.id, x, y, NULL_ENTITY);
             ent.zone = zone_id;
             ent.immunity_ticks = TPS;
-            BIT_SET(ent.flags, EntityFlags::kSpawnedFromZone);
+            BitMath::set(ent.flags, EntityFlags::kSpawnedFromZone);
             sim->zone_mob_counts[zone_id]++;
             return;
         }

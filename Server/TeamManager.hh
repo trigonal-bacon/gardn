@@ -1,7 +1,8 @@
 #pragma once
 
+#include <Helpers/Array.hh>
+
 #include <Shared/Entity.hh>
-#include <Shared/Helpers.hh>
 #include <Shared/StaticDefinitions.hh>
 
 class Simulation;

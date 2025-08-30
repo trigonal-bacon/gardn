@@ -32,8 +32,22 @@ namespace Ui {
         virtual void on_render(Renderer &) override;
     };
 
+    class MobileJoyStick final : public Element {
+        float joystick_x;
+        float joystick_y;
+        float joystick_radius;
+        uint32_t persistent_touch_id;
+        uint8_t is_pressed;
+    public:
+        MobileJoyStick(float, float, float);
+        virtual void on_render(Renderer &) override;
+    };
+
     Element *make_leaderboard();
     Element *make_level_bar();
     Element *make_minimap();
     Element *make_overlevel_indicator();
+    Element *make_mobile_attack_button();
+    Element *make_mobile_defend_button();
+    Element *make_mobile_joystick();
 }

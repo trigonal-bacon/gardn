@@ -47,7 +47,7 @@ ToggleButton::ToggleButton(float w, uint8_t *t) :
 }
 
 void ToggleButton::on_render(Renderer &ctx) {
-    LERP(lerp_toggle, *toggler, Ui::lerp_amount * 2);
+    lerp_toggle = lerp(lerp_toggle, *toggler, Ui::lerp_amount * 2);
     ctx.set_fill(Renderer::HSV(style.fill, style.stroke_hsv));
     ctx.begin_path();
     ctx.round_rect(-width / 2, -height / 2, width, height, style.round_radius);

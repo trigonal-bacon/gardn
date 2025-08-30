@@ -3,7 +3,7 @@
 #include <Server/EntityFunctions.hh>
 #include <Server/PetalTracker.hh>
 #include <Server/Server.hh>
-#include <Shared/Helpers.hh>
+
 #include <Shared/Map.hh>
 #include <Shared/Simulation.hh>
 #include <Shared/StaticData.hh>
@@ -43,9 +43,9 @@ static Entity &__alloc_mob(Simulation *sim, MobID::T mob_id, float x, float y, E
     mob.friction = DEFAULT_FRICTION;
     mob.mass = (1 + mob.radius / BASE_FLOWER_RADIUS) * (data.attributes.stationary ? 10000 : 1);
     if (mob_id == MobID::kAntHole)
-        BIT_SET(mob.flags, EntityFlags::kNoFriendlyCollision);
+        BitMath::set(mob.flags, EntityFlags::kNoFriendlyCollision);
     if (team == NULL_ENTITY)
-        BIT_SET(mob.flags, EntityFlags::kHasCulling);
+        BitMath::set(mob.flags, EntityFlags::kHasCulling);
         
     mob.add_component(kRelations);
     mob.set_team(team);

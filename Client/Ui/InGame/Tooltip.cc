@@ -5,6 +5,8 @@
 
 #include <Client/StaticData.hh>
 
+#include <format>
+
 using namespace Ui;
 
 Element *Ui::UiLoadout::petal_tooltips[PetalID::kNumPetals] = {nullptr};

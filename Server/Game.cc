@@ -44,7 +44,7 @@ static void _update_client(Simulation *sim, Client *client) {
         uint8_t create = !client->in_view.contains(id);
         writer.write<EntityID>(id);
         writer.write<uint8_t>(create | (ent.pending_delete << 1));
-        ent.write(&writer, BIT_AT(create, 0));
+        ent.write(&writer, BitMath::at(create, 0));
         client->in_view.insert(id);
     }
     writer.write<EntityID>(NULL_ENTITY);

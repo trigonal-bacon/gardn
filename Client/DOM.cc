@@ -1,6 +1,6 @@
 #include <Client/DOM.hh>
 
-#include <Shared/Helpers.hh>
+#include <Helpers/UTF8.hh>
 
 #include <emscripten.h>
 

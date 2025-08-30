@@ -2,6 +2,9 @@
 
 #include <Shared/Binary.hh>
 
+#include <Helpers/Bits.hh>
+#include <Helpers/Macros.hh>
+
 Arena::Arena() {
     init();
 }
@@ -28,14 +31,14 @@ void Arena::reset_protocol() {
 void Arena::set_##name(type const v) { \
     if (name == v) return; \
     name = v; \
-    BIT_SET_ARR(state, k##name); \
+    BitMath::set_arr(state, k##name); \
 }
 #define MULTIPLE(name, type, amt) \
 void Arena::set_##name(uint32_t i, type const v) { \
     if (name[i] == v) return; \
     name[i] = v; \
-    BIT_SET_ARR(state, k##name); \
-    BIT_SET_ARR(state_per_##name, i); \
+    BitMath::set_arr(state, k##name); \
+    BitMath::set_arr(state_per_##name, i); \
 }
 FIELDS_Arena
 #undef SINGLE
@@ -49,11 +52,11 @@ void Arena::write(Writer *writer, uint8_t create) {
         #undef SINGLE
         #undef MULTIPLE
     } else {
-#define SINGLE(name, type) if(BIT_AT_ARR(state, k##name)) { writer->write<uint8_t>(k##name); writer->write<type>(name); }
-#define MULTIPLE(name, type, amt) if(BIT_AT_ARR(state, k##name)) { \
+#define SINGLE(name, type) if(BitMath::at_arr(state, k##name)) { writer->write<uint8_t>(k##name); writer->write<type>(name); }
+#define MULTIPLE(name, type, amt) if(BitMath::at_arr(state, k##name)) { \
     writer->write<uint8_t>(k##name); \
     for (uint32_t n = 0; n < amt; ++n) \
-        if (BIT_AT_ARR(state_per_##name, n)) { writer->write<uint8_t>(n); writer->write<type>(name[n]); } \
+        if (BitMath::at_arr(state_per_##name, n)) { writer->write<uint8_t>(n); writer->write<type>(name[n]); } \
         writer->write<uint8_t>(amt); \
     }
 FIELDS_Arena
@@ -76,16 +79,16 @@ void Arena::read(Reader *reader, uint8_t create) {
                 case kFieldCount: { return; }
                 #define SINGLE(name, type) case k##name: { \
                     reader->read<type>(name); \
-                    BIT_SET_ARR(state, k##name); \
+                    BitMath::set_arr(state, k##name); \
                     break; \
                 }
                 #define MULTIPLE(name, type, amt) case k##name: { \
-                    BIT_SET_ARR(state, k##name); \
+                    BitMath::set_arr(state, k##name); \
                     while(1) { \
                         uint8_t index = reader->read<uint8_t>(); \
                         if (index >= amt) break; \
                         reader->read<type>(name[index]); \
-                        BIT_SET_ARR(state_per_##name, index); \
+                        BitMath::set_arr(state_per_##name, index); \
                     } \
                     break; \
                 }

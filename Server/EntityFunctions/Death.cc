@@ -4,10 +4,8 @@
 #include <Server/Spawn.hh>
 
 #include <Shared/Entity.hh>
-#include <Shared/Helpers.hh>
 #include <Shared/Map.hh>
 #include <Shared/Simulation.hh>
-#include <Shared/Vector.hh>
 
 #include <algorithm>
 #include <iostream>
@@ -51,7 +49,7 @@ static void _add_score(Simulation *sim, EntityID const killer_id, Entity const &
 
 void entity_on_death(Simulation *sim, Entity const &ent) {
     //don't do on_death for any despawned entity
-    uint8_t natural_despawn = BIT_AT(ent.flags, EntityFlags::kIsDespawning) && ent.despawn_tick == 0;
+    uint8_t natural_despawn = BitMath::at(ent.flags, EntityFlags::kIsDespawning) && ent.despawn_tick == 0;
     if (ent.score_reward > 0 && sim->ent_exists(ent.last_damaged_by) && !natural_despawn) {
         EntityID killer_id = sim->get_ent(ent.last_damaged_by).base_entity;
         _add_score(sim, killer_id, ent);
@@ -67,9 +65,9 @@ void entity_on_death(Simulation *sim, Entity const &ent) {
         else camera.set_killed_by("");
     }
     if (ent.has_component(kMob)) {
-        if (BIT_AT(ent.flags, EntityFlags::kSpawnedFromZone))
+        if (BitMath::at(ent.flags, EntityFlags::kSpawnedFromZone))
             Map::remove_mob(sim, ent.zone);
-        if (!natural_despawn && !(BIT_AT(ent.flags, EntityFlags::kNoDrops))) {
+        if (!natural_despawn && !(BitMath::at(ent.flags, EntityFlags::kNoDrops))) {
             struct MobData const &mob_data = MOB_DATA[ent.mob_id];
             std::vector<PetalID::T> success_drops = {};
             StaticArray<float, MAX_DROPS_PER_MOB> const &drop_chances = MOB_DROP_CHANCES[ent.mob_id];
@@ -148,7 +146,7 @@ void entity_on_death(Simulation *sim, Entity const &ent) {
             camera.set_inventory(i, PetalID::kBasic);
         }
     } else if (ent.has_component(kDrop)) {
-        if (BIT_AT(ent.flags, EntityFlags::kIsDespawning))
+        if (BitMath::at(ent.flags, EntityFlags::kIsDespawning))
             PetalTracker::remove_petal(sim, ent.drop_id);
     }
 }
