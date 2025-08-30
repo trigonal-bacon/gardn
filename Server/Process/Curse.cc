@@ -19,7 +19,7 @@ void tick_curse_behavior(Simulation *sim) {
         if (sim->ent_alive(ent.target)) return;
         Entity const &player = sim->get_ent(leader);
         Vector delta(player.x - ent.x, player.y - ent.y);
-        if (delta.magnitude() > 2000) return;
+        if (delta.magnitude() > 1000) return;
         ent.target = leader;
     });
 }

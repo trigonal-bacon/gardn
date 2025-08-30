@@ -63,7 +63,6 @@ extern "C" {
     }
 
     void touch_event(float x, float y, uint8_t type, uint32_t id) {
-        std::printf("%d\n", id);
         if (type == 0) {
             Input::touches.insert({id, { .id = id, .x = x, .y = y, .saturated = 0 }});
         } else if (type == 2) {

@@ -77,8 +77,8 @@ Element *Ui::make_mobile_defend_button() {
             .h_justify = Style::Right, .v_justify = Style::Bottom
         }
     );
-    elt->x = -150;
-    elt->y = -350;
+    elt->x = -200;
+    elt->y = -300;
     return elt;
 }
 
