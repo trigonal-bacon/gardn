@@ -16,6 +16,8 @@ namespace Input {
         uint32_t id;
         float x = 0;
         float y = 0;
+        float dx = 0;
+        float dy = 0;
         uint8_t saturated = 0;
     };
 

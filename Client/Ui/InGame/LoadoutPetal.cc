@@ -9,10 +9,11 @@
 
 using namespace Ui;
 
-UiLoadoutPetal *Ui::UiLoadout::petal_selected = nullptr;
+//UiLoadoutPetal *Ui::UiLoadout::petal_selected = nullptr;
 UiLoadoutPetal *Ui::UiLoadout::petal_slots[2 * MAX_SLOT_COUNT] = {nullptr};
 uint8_t Ui::UiLoadout::selected_with_keys = MAX_SLOT_COUNT;
 double Ui::UiLoadout::last_key_select = 0;
+uint32_t Ui::UiLoadout::num_petals_selected = 0;
 
 void Ui::forward_secondary_select() {
     Ui::UiLoadout::last_key_select = Game::timestamp;
@@ -145,7 +146,7 @@ UiLoadoutPetal::UiLoadoutPetal(uint8_t pos) : Element(60, 60),
             released = BitMath::at(Input::mouse_buttons_released, Input::LeftMouse);
         }
         UiLoadoutSlot *parent_slot = Ui::UiLoadout::petal_backgrounds[curr_pos];
-        if (Ui::UiLoadout::petal_selected == this && Game::alive()) {
+        if (selected && Game::alive()) {
             style.layer = 1;
             uint8_t potential_swap = find_viable_target(mouse_x, mouse_y);
             if (potential_swap != ((uint8_t)-1) && potential_swap != static_to_dynamic(static_pos)) {
@@ -171,8 +172,8 @@ UiLoadoutPetal::UiLoadoutPetal(uint8_t pos) : Element(60, 60),
                 height = lerp(height, parent_slot->height + 10, lerp_amt);
                 ctx.rotate(sin(Game::timestamp / 150) * 0.1);
             }
-            if (released)
-                Ui::UiLoadout::petal_selected = nullptr;
+            //if (released)
+                //Ui::UiLoadout::petal_selected = nullptr;
         } else if (Ui::UiLoadout::selected_with_keys + Game::loadout_count == static_pos && Game::alive()) {
             if (!showed) lerp_amt = 1;
             x = lerp(x, (parent_slot->screen_x - Ui::window_width / 2) / Ui::scale, lerp_amt);
@@ -188,9 +189,13 @@ UiLoadoutPetal::UiLoadoutPetal(uint8_t pos) : Element(60, 60),
             width = lerp(width, parent_slot->width, lerp_amt);
             height = lerp(height, parent_slot->height, lerp_amt);
         }
-        if (!Game::alive())
-            Ui::UiLoadout::petal_selected = nullptr;
+        //if (!Game::alive())
+            //Ui::UiLoadout::petal_selected = nullptr;
         ctx.scale((float) animation);
+        if (released && selected) {
+            --Ui::UiLoadout::num_petals_selected;
+            selected = 0;
+        }
     };
     Ui::UiLoadout::petal_slots[static_pos] = this;
 }
@@ -209,21 +214,22 @@ void UiLoadoutPetal::on_render_skip(Renderer &ctx) {
     else showed = 0;
     curr_pos = 0;
     petal_id = last_id = PetalID::kNone;
-    if (Ui::UiLoadout::petal_selected == this) 
-        Ui::UiLoadout::petal_selected = nullptr;
+    //if (Ui::UiLoadout::petal_selected == this) 
+        //Ui::UiLoadout::petal_selected = nullptr;
 }
 
 void UiLoadoutPetal::on_event(uint8_t event) {
-    if (Game::alive() && event == kMouseDown && Ui::UiLoadout::petal_selected == nullptr) {
-        Ui::UiLoadout::petal_selected = this;
+    if (Game::alive() && event == kMouseDown) {
+        //Ui::UiLoadout::petal_selected = this;
+        selected = 1;
+        ++Ui::UiLoadout::num_petals_selected;
         Ui::UiLoadout::selected_with_keys = MAX_SLOT_COUNT;
         if (Input::touches.contains(touch_id))
             persistent_touch_id = touch_id;
     }
-    if (event != kFocusLost && last_id != PetalID::kNone && Ui::UiLoadout::petal_selected == nullptr) {
+    if (event != kFocusLost && last_id != PetalID::kNone && !focused) {
         rendering_tooltip = 1;
         tooltip = Ui::UiLoadout::petal_tooltips[last_id];
-    } else {
+    } else 
         rendering_tooltip = 0;
-    }
 }

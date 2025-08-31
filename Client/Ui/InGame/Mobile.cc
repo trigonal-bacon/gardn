@@ -89,7 +89,7 @@ Element *Ui::make_mobile_defend_button() {
 }
 
 Element *Ui::make_mobile_joystick() {
-    Element *elt = new Ui::MobileJoyStick(800, 600, 150);
+    Element *elt = new Ui::MobileJoyStick(800, 800, 150);
     elt->style.h_justify = Style::Left;
     return elt;
 }

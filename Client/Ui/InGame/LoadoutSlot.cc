@@ -46,7 +46,7 @@ UiDeleteSlot::UiDeleteSlot() : UiLoadoutSlot(2 * MAX_SLOT_COUNT) {
     style.fill = 0xffcf8888;
     delete_text_opacity.set(0);
     style.animate = [&](Element *, Renderer &) {
-        delete_text_opacity.set(Ui::UiLoadout::petal_selected != nullptr || Ui::UiLoadout::selected_with_keys != MAX_SLOT_COUNT);
+        delete_text_opacity.set(Ui::UiLoadout::num_petals_selected != 0 || Ui::UiLoadout::selected_with_keys != MAX_SLOT_COUNT);
         delete_text_opacity.step(Ui::lerp_amount);
     };
 }
