@@ -68,15 +68,16 @@ public:
             uint32_t len = r.read<uint32_t>();
             std::vector<T> ret(len);
             for (uint32_t i = 0; i < len; ++i)
-                r.read<T>(ret[i]);
+                ret.push_back(r.read<T>());
             return ret;
         }
 
         static void read(Reader &r, std::vector<T> &v) {
             uint32_t len = r.read<uint32_t>();
+            v.clear();
             v.reserve(len);
             for (uint32_t i = 0; i < len; ++i)
-                r.read<T>(v[i]);
+                v.push_back(r.read<T>());
         }
     };
 

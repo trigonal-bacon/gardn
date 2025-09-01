@@ -222,7 +222,7 @@ void Reader::Decoder<std::string>::read(Reader &r, std::string &ref) {
     uint32_t len = r.read<uint32_t>();
     ref.clear();
     ref.reserve(len);
-    for (uint32_t i = 0; i < len; ++i) ref[i] = r.read<uint8_t>();
+    for (uint32_t i = 0; i < len; ++i) ref.push_back(r.read<uint8_t>());
 }
 
 template<>
