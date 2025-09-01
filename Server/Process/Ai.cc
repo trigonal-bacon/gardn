@@ -368,11 +368,17 @@ void tick_ai_behavior(Simulation *sim, Entity &ent) {
                 sim->request_delete(ent.id);
             ent.set_parent(NULL_ENTITY);
         } else {
-            Entity &parent = sim->get_ent(ent.parent);
+            Entity const &parent = sim->get_ent(ent.parent);
             Vector delta(parent.x - ent.x, parent.y - ent.y);
             if (delta.magnitude() > SUMMON_RETREAT_RADIUS) {
                 ent.target = NULL_ENTITY;
                 ent.ai_state = AIState::kReturning;
+            }
+            if (sim->ent_alive(ent.target)) {
+                Entity const &target = sim->get_ent(ent.target);
+                delta = Vector(parent.x - target.x, parent.y - target.y);
+                if (delta.magnitude() > SUMMON_RETREAT_RADIUS)
+                    ent.target = NULL_ENTITY;
             }
         }
     }
