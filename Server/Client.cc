@@ -51,7 +51,6 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
         return;
     }
     if (!client->verified) {
-        std::printf("msize: %d\n", message.size());
         if (client->check_invalid(validator.validate_uint8() && validator.validate_uint64())) return;
         if (reader.read<uint8_t>() != Serverbound::kVerify) {
             client->disconnect();
