@@ -37,12 +37,17 @@ class Entity {
         kFieldCount
     };
     uint32_t components;
-    uint8_t state[div_round_up(kFieldCount, 8)];
-    #define SINGLE(component, name, type);
-    #define MULTIPLE(component, name, type, amt) uint8_t state_per_##name[div_round_up(amt, 8)];
+#define SINGLE(component, name, type) type name;
+#define MULTIPLE(component, name, type, amt) type name[amt];
     PERFIELD
-    #undef SINGLE
-    #undef MULTIPLE
+#undef SINGLE
+#undef MULTIPLE
+    uint8_t state[div_round_up(kFieldCount, 8)];
+#define SINGLE(component, name, type);
+#define MULTIPLE(component, name, type, amt) uint8_t state_per_##name[div_round_up(amt, 8)];
+    PERFIELD
+#undef SINGLE
+#undef MULTIPLE
 public:
     Entity();
     void init();
@@ -53,29 +58,33 @@ public:
     uint32_t lifetime;
     EntityID id;
     uint8_t pending_delete;
-#define SINGLE(component, name, type) type name;
-#define MULTIPLE(component, name, type, amt) type name[amt];
-PERFIELD
+    void add_component(uint32_t);
+    uint8_t has_component(uint32_t) const;
+
+#define SINGLE(component, name, type) type const &get_##name() const;
+#define MULTIPLE(component, name, type, amt) type const &get_##name(uint32_t) const;
+    PERFIELD
 #undef SINGLE
 #undef MULTIPLE
-void add_component(uint32_t);
-uint8_t has_component(uint32_t) const;
+
 #define SINGLE(name, type, reset) type name;
 #define MULTIPLE(name, type, amt, reset) type name[amt];
-PER_EXTRA_FIELD
+    PER_EXTRA_FIELD
 #undef SINGLE
 #undef MULTIPLE
+
 #ifdef SERVERSIDE
     void write(Writer *, uint8_t);
 
     template<bool>
     void write(Writer *);
-    #define SINGLE(component, name, type) void set_##name(type const &);
-    #define MULTIPLE(component, name, type, amt) void set_##name(uint32_t, type const &);
+#define SINGLE(component, name, type) void set_##name(type const &);
+#define MULTIPLE(component, name, type, amt) void set_##name(uint32_t, type const &);
     PERFIELD
-    #undef SINGLE
-    #undef MULTIPLE
+#undef SINGLE
+#undef MULTIPLE
 #else
+    void tick_lerp(float);
     void read(Reader *, uint8_t);
 
     template<bool>

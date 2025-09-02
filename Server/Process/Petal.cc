@@ -10,29 +10,29 @@
 
 void tick_petal_behavior(Simulation *sim, Entity &petal) {
     if (petal.pending_delete) return;
-    if (!sim->ent_alive(petal.parent)) {
+    if (!sim->ent_alive(petal.get_parent())) {
         sim->request_delete(petal.id);
         return;
     }
-    Entity &player = sim->get_ent(petal.parent);
-    struct PetalData const &petal_data = PETAL_DATA[petal.petal_id];
+    Entity &player = sim->get_ent(petal.get_parent());
+    struct PetalData const &petal_data = PETAL_DATA[petal.get_petal_id()];
     if (petal_data.attributes.rotation_style == PetalAttributes::kPassiveRot) {
         //simulate on clientside
-        float rot_amt = petal.petal_id == PetalID::kWing ? 10.0 : 1.0;
-        if (petal.id.id % 2) petal.set_angle(petal.angle + rot_amt / TPS);
-        else petal.set_angle(petal.angle - rot_amt / TPS);
+        float rot_amt = petal.get_petal_id() == PetalID::kWing ? 10.0 : 1.0;
+        if (petal.id.id % 2) petal.set_angle(petal.get_angle() + rot_amt / TPS);
+        else petal.set_angle(petal.get_angle() - rot_amt / TPS);
     } else if (petal_data.attributes.rotation_style == PetalAttributes::kFollowRot && !(BitMath::at(petal.flags, EntityFlags::kIsDespawning))) {
-        Vector delta(petal.x - player.x, petal.y - player.y);
+        Vector delta(petal.get_x() - player.get_x(), petal.get_y() - player.get_y());
         petal.set_angle(delta.angle());
     }
     if (BitMath::at(petal.flags, EntityFlags::kIsDespawning)) {
-        switch (petal.petal_id) {
+        switch (petal.get_petal_id()) {
             case PetalID::kMissile: {
-                petal.acceleration.unit_normal(petal.angle).set_magnitude(4 * PLAYER_ACCELERATION);
+                petal.acceleration.unit_normal(petal.get_angle()).set_magnitude(4 * PLAYER_ACCELERATION);
                 break;
             }
             case PetalID::kMoon: {
-                Vector delta(player.x - petal.x, player.y - petal.y);
+                Vector delta(player.get_x() - petal.get_x(), player.get_y() - petal.get_y());
                 float magnitude = 20000 * PLAYER_ACCELERATION / (delta.x * delta.x + delta.y * delta.y);
                 if (magnitude > PLAYER_ACCELERATION) magnitude = PLAYER_ACCELERATION;
                 delta.set_magnitude(magnitude);
@@ -47,8 +47,8 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
     else if (petal_data.attributes.secondary_reload > 0) {
         if (petal.secondary_reload > petal_data.attributes.secondary_reload * TPS) {
             if (petal_data.attributes.burst_heal > 0 && player.health < player.max_health && player.dandy_ticks == 0) {
-                Vector delta(player.x - petal.x, player.y - petal.y);
-                if (delta.magnitude() < petal.radius) {
+                Vector delta(player.get_x() - petal.get_x(), player.get_y() - petal.get_y());
+                if (delta.magnitude() < petal.get_radius()) {
                     inflict_heal(sim, player, petal_data.attributes.burst_heal);
                     sim->request_delete(petal.id);
                     return;
@@ -56,20 +56,20 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
                 delta.set_magnitude(PLAYER_ACCELERATION * 4);
                 petal.acceleration = delta;
             }
-            switch (petal.petal_id) {
+            switch (petal.get_petal_id()) {
                 case PetalID::kMissile:
                     if (BitMath::at(player.input, InputFlags::kAttacking)) {
-                        petal.acceleration.unit_normal(petal.angle).set_magnitude(4 * PLAYER_ACCELERATION);
+                        petal.acceleration.unit_normal(petal.get_angle()).set_magnitude(4 * PLAYER_ACCELERATION);
                         entity_set_despawn_tick(petal, 3 * TPS);
                     }
                     break;
                 case PetalID::kTriweb:
                 case PetalID::kWeb: {
                     if (BitMath::at(player.input, InputFlags::kAttacking)) {
-                        Vector delta(petal.x - player.x, petal.y - player.y);
+                        Vector delta(petal.get_x() - player.get_x(), petal.get_y() - player.get_y());
                         petal.friction = DEFAULT_FRICTION;
                         float angle = delta.angle();
-                        if (petal.petal_id == PetalID::kTriweb) angle += frand() - 0.5;
+                        if (petal.get_petal_id() == PetalID::kTriweb) angle += frand() - 0.5;
                         petal.acceleration.unit_normal(angle).set_magnitude(30 * PLAYER_ACCELERATION);
                         entity_set_despawn_tick(petal, 0.6 * TPS);
                     } else if (BitMath::at(player.input, InputFlags::kDefending))
@@ -78,7 +78,7 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
                 }
                 case PetalID::kBubble:
                     if (BitMath::at(player.input, InputFlags::kDefending)) {
-                        Vector v(player.x - petal.x, player.y - petal.y);
+                        Vector v(player.get_x() - petal.get_x(), player.get_y() - petal.get_y());
                         v.set_magnitude(PLAYER_ACCELERATION * 20);
                         player.velocity += v;
                         sim->request_delete(petal.id);
@@ -93,7 +93,7 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
                 case PetalID::kPeas:
                 case PetalID::kPoisonPeas:
                     if (BitMath::at(player.input, InputFlags::kAttacking)) {
-                        Vector delta(petal.x - player.x, petal.y - player.y);
+                        Vector delta(petal.get_x() - player.get_x(), petal.get_y() - player.get_y());
                         petal.friction = DEFAULT_FRICTION;
                         petal.acceleration.unit_normal(delta.angle()).set_magnitude(25 * PLAYER_ACCELERATION);
                         entity_set_despawn_tick(petal, 0.25 * TPS);
@@ -101,7 +101,7 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
                     break;
                 case PetalID::kMoon: {
                     if (BitMath::at(player.input, InputFlags::kAttacking)) {
-                        Vector delta(petal.x - player.x, petal.y - player.y);
+                        Vector delta(petal.get_x() - player.get_x(), petal.get_y() - player.get_y());
                         petal.friction = 0;
                         petal.acceleration.unit_normal(delta.angle() + M_PI / 3).set_magnitude(3 * PLAYER_ACCELERATION);
                         entity_set_despawn_tick(petal, 10 * TPS);

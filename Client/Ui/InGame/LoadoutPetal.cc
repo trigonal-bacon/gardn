@@ -108,7 +108,7 @@ UiLoadoutPetal::UiLoadoutPetal(uint8_t pos) : Element(60, 60),
         if (static_pos < Game::loadout_count && Game::alive()) {
             Entity const &player = Game::simulation.get_ent(Game::player_id);
             if (player.get_state_loadout_reloads(static_pos)) {
-                float old = player.loadout_reloads[static_pos] / 255.0f;
+                float old = player.get_loadout_reloads(static_pos) / 255.0f;
                 if (old > reload) reload.set(old);
                 else reload = old;
             }

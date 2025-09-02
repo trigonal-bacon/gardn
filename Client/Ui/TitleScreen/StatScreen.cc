@@ -52,8 +52,8 @@ TitlePetalSlot::TitlePetalSlot(uint8_t p) : Element(50,50,{}), pos(p) {
         if (!Game::simulation.ent_exists(Game::camera_id))
             return false;
         Entity const &camera = Game::simulation.get_ent(Game::camera_id);
-        if (p >= loadout_slots_at_level(camera.respawn_level) + MAX_SLOT_COUNT) return false;
-        return camera.inventory[p] > PetalID::kBasic;
+        if (p >= loadout_slots_at_level(camera.get_respawn_level()) + MAX_SLOT_COUNT) return false;
+        return camera.get_inventory(p) > PetalID::kBasic;
     };
 }
 
@@ -61,7 +61,7 @@ void TitlePetalSlot::on_render(Renderer &ctx) {
     if (!Game::simulation.ent_exists(Game::camera_id))
         return;
     Entity const &camera = Game::simulation.get_ent(Game::camera_id);
-    uint8_t id = camera.inventory[pos];
+    uint8_t id = camera.get_inventory(pos);
     if (id == PetalID::kNone) return;
     ctx.scale(width / 60);
     draw_loadout_background(ctx, id);
@@ -71,7 +71,7 @@ void TitlePetalSlot::on_event(uint8_t event) {
     if (!Game::simulation.ent_exists(Game::camera_id))
         return;
     Entity const &camera = Game::simulation.get_ent(Game::camera_id);
-    uint8_t id = camera.inventory[pos];
+    uint8_t id = camera.get_inventory(pos);
     if (event != kFocusLost && id != PetalID::kNone) {
         rendering_tooltip = 1;
         tooltip = Ui::UiLoadout::petal_tooltips[id];
@@ -89,24 +89,9 @@ Element *Ui::make_stat_screen() {
         new Ui::DynamicText(16, [](){
             return std::format("Level: {}", score_to_level(Game::score));
         }, { .fill = 0xffffffff, .h_justify = Style::Left }),
-        new Ui::HContainer({
-            new StatPetalSlot(0),
-            new StatPetalSlot(1),
-            new StatPetalSlot(2),
-            new StatPetalSlot(3),
-            new StatPetalSlot(4),
-            new StatPetalSlot(5),
-            new StatPetalSlot(6),
-            new StatPetalSlot(7),
-            new StatPetalSlot(8),
-            new StatPetalSlot(9),
-            new StatPetalSlot(10),
-            new StatPetalSlot(11),
-            new StatPetalSlot(12),
-            new StatPetalSlot(13),
-            new StatPetalSlot(14),
-            new StatPetalSlot(15),
-        }, 0, 10)
+        new Ui::HContainer(
+            Ui::make_range(0, 2 * MAX_SLOT_COUNT, [](uint32_t i){ return (Ui::Element *) new StatPetalSlot(i); })
+        , 0, 10)
     }, 20, 7);
     elt->style.animate = [](Element *elt, Renderer &ctx) {
         ctx.translate(0, (1 - elt->animation) * elt->height);

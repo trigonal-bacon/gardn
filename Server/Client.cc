@@ -37,7 +37,7 @@ uint8_t Client::alive() {
     if (game == nullptr) return false;
     Simulation *simulation = &game->simulation;
     return simulation->ent_exists(camera) 
-    && simulation->ent_exists(simulation->get_ent(camera).player);
+    && simulation->ent_exists(simulation->get_ent(camera).get_player());
 }
 
 void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) {
@@ -77,7 +77,7 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
             if (!client->alive()) break;
             Simulation *simulation = &client->game->simulation;
             Entity &camera = simulation->get_ent(client->camera);
-            Entity &player = simulation->get_ent(camera.player);
+            Entity &player = simulation->get_ent(camera.get_player());
             if (client->check_invalid(
                 validator.validate_float() &&
                 validator.validate_float() &&
@@ -106,7 +106,7 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
             if (client->check_invalid(UTF8Parser::is_valid_utf8(name))) return;
             Simulation *simulation = &client->game->simulation;
             Entity &camera = simulation->get_ent(client->camera);
-            Entity &player = alloc_player(simulation, camera.team);
+            Entity &player = alloc_player(simulation, camera.get_team());
             player_spawn(simulation, camera, player);
             player.set_name(name);
             break;
@@ -115,14 +115,14 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
             if (!client->alive()) break;
             Simulation *simulation = &client->game->simulation;
             Entity &camera = simulation->get_ent(client->camera);
-            Entity &player = simulation->get_ent(camera.player);
+            Entity &player = simulation->get_ent(camera.get_player());
             if (client->check_invalid(validator.validate_uint8())) return;
             uint8_t pos = reader.read<uint8_t>();
-            if (pos >= MAX_SLOT_COUNT + player.loadout_count) break;
-            PetalID::T old_id = player.loadout_ids[pos];
+            if (pos >= MAX_SLOT_COUNT + player.get_loadout_count()) break;
+            PetalID::T old_id = player.get_loadout_ids(pos);
             if (old_id != PetalID::kNone && old_id != PetalID::kBasic) {
                 uint8_t rarity = PETAL_DATA[old_id].rarity;
-                player.set_score(player.score + RARITY_TO_XP[rarity]);
+                player.set_score(player.get_score() + RARITY_TO_XP[rarity]);
                 //need to delete if over cap
                 if (player.deleted_petals.size() == player.deleted_petals.capacity())
                     //removes old trashed old petal
@@ -136,14 +136,14 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
             if (!client->alive()) break;
             Simulation *simulation = &client->game->simulation;
             Entity &camera = simulation->get_ent(client->camera);
-            Entity &player = simulation->get_ent(camera.player);
+            Entity &player = simulation->get_ent(camera.get_player());
             if (client->check_invalid(validator.validate_uint8() && validator.validate_uint8())) return;
             uint8_t pos1 = reader.read<uint8_t>();
-            if (pos1 >= MAX_SLOT_COUNT + player.loadout_count) break;
+            if (pos1 >= MAX_SLOT_COUNT + player.get_loadout_count()) break;
             uint8_t pos2 = reader.read<uint8_t>();
-            if (pos2 >= MAX_SLOT_COUNT + player.loadout_count) break;
-            PetalID::T tmp = player.loadout_ids[pos1];
-            player.set_loadout_ids(pos1, player.loadout_ids[pos2]);
+            if (pos2 >= MAX_SLOT_COUNT + player.get_loadout_count()) break;
+            PetalID::T tmp = player.get_loadout_ids(pos1);
+            player.set_loadout_ids(pos1, player.get_loadout_ids(pos2));
             player.set_loadout_ids(pos2, tmp);
             break;
         }

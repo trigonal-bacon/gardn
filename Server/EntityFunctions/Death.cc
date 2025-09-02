@@ -44,7 +44,7 @@ static void _add_score(Simulation *sim, EntityID const killer_id, Entity const &
     if (!sim->ent_exists(killer_id)) return;
     Entity &killer = sim->get_ent(killer_id);
     if (killer.has_component(kScore))
-        killer.set_score(killer.score + target.score_reward);
+        killer.set_score(killer.get_score() + target.score_reward);
 }
 
 void entity_on_death(Simulation *sim, Entity const &ent) {
@@ -54,12 +54,12 @@ void entity_on_death(Simulation *sim, Entity const &ent) {
         EntityID killer_id = sim->get_ent(ent.last_damaged_by).base_entity;
         _add_score(sim, killer_id, ent);
     }
-    if (ent.has_component(kFlower) && sim->ent_alive(ent.parent)) {
-        Entity &camera = sim->get_ent(ent.parent);
+    if (ent.has_component(kFlower) && sim->ent_alive(ent.get_parent())) {
+        Entity &camera = sim->get_ent(ent.get_parent());
         EntityID killer_id = sim->get_ent(ent.last_damaged_by).base_entity;
         if (sim->ent_alive(killer_id)) {
             Entity const &killer = sim->get_ent(killer_id);
-            if (killer.has_component(kName)) camera.set_killed_by(killer.name);
+            if (killer.has_component(kName)) camera.set_killed_by(killer.get_name());
             else camera.set_killed_by("");
         } else if (ent.poison_ticks > 0) camera.set_killed_by("Poison");
         else camera.set_killed_by("");
@@ -68,30 +68,30 @@ void entity_on_death(Simulation *sim, Entity const &ent) {
         if (BitMath::at(ent.flags, EntityFlags::kSpawnedFromZone))
             Map::remove_mob(sim, ent.zone);
         if (!natural_despawn && !(BitMath::at(ent.flags, EntityFlags::kNoDrops))) {
-            struct MobData const &mob_data = MOB_DATA[ent.mob_id];
+            struct MobData const &mob_data = MOB_DATA[ent.get_mob_id()];
             std::vector<PetalID::T> success_drops = {};
-            StaticArray<float, MAX_DROPS_PER_MOB> const &drop_chances = MOB_DROP_CHANCES[ent.mob_id];
+            StaticArray<float, MAX_DROPS_PER_MOB> const &drop_chances = MOB_DROP_CHANCES[ent.get_mob_id()];
             for (uint32_t i = 0; i < mob_data.drops.size(); ++i) 
                 if (frand() < drop_chances[i]) success_drops.push_back(mob_data.drops[i]);
-            _alloc_drops(sim, success_drops, ent.x, ent.y);
+            _alloc_drops(sim, success_drops, ent.get_x(), ent.get_y());
         }
-        if (ent.mob_id == MobID::kAntHole && ent.team == NULL_ENTITY && frand() < DIGGER_SPAWN_CHANCE) { 
+        if (ent.get_mob_id() == MobID::kAntHole && ent.get_team() == NULL_ENTITY && frand() < DIGGER_SPAWN_CHANCE) { 
             EntityID team = NULL_ENTITY;
             if (sim->ent_exists(ent.last_damaged_by))
-                team = sim->get_ent(ent.last_damaged_by).team;
-            alloc_mob(sim, MobID::kDigger, ent.x, ent.y, team);
+                team = sim->get_ent(ent.last_damaged_by).get_team();
+            alloc_mob(sim, MobID::kDigger, ent.get_x(), ent.get_y(), team);
         }
 
     } else if (ent.has_component(kPetal)) {
-        if (ent.petal_id == PetalID::kWeb || ent.petal_id == PetalID::kTriweb)
+        if (ent.get_petal_id() == PetalID::kWeb || ent.get_petal_id() == PetalID::kTriweb)
             alloc_web(sim, 100, ent);
     } else if (ent.has_component(kFlower)) {
         std::vector<PetalID::T> potential = {};
-        for (uint32_t i = 0; i < ent.loadout_count + MAX_SLOT_COUNT; ++i) {
-            DEBUG_ONLY(assert(ent.loadout_ids[i] < PetalID::kNumPetals));
-            PetalTracker::remove_petal(sim, ent.loadout_ids[i]);
-            if (ent.loadout_ids[i] != PetalID::kNone && ent.loadout_ids[i] != PetalID::kBasic && frand() < 0.95)
-                potential.push_back(ent.loadout_ids[i]);
+        for (uint32_t i = 0; i < ent.get_loadout_count() + MAX_SLOT_COUNT; ++i) {
+            DEBUG_ONLY(assert(ent.get_loadout_ids(i) < PetalID::kNumPetals));
+            PetalTracker::remove_petal(sim, ent.get_loadout_ids(i));
+            if (ent.get_loadout_ids(i) != PetalID::kNone && ent.get_loadout_ids(i) != PetalID::kBasic && frand() < 0.95)
+                potential.push_back(ent.get_loadout_ids(i));
         }
         for (uint32_t i = 0; i < ent.deleted_petals.size(); ++i) {
             DEBUG_ONLY(assert(ent.deleted_petals[i] < PetalID::kNumPetals));
@@ -114,16 +114,16 @@ void entity_on_death(Simulation *sim, Entity const &ent) {
             success_drops.push_back(p_id);
             potential.pop_back();
         }
-        _alloc_drops(sim, success_drops, ent.x, ent.y);
+        _alloc_drops(sim, success_drops, ent.get_x(), ent.get_y());
         //if the camera is the one that disconnects
         //no need to re-add the petals to the petal tracker
-        if (!sim->ent_alive(ent.parent))
+        if (!sim->ent_alive(ent.get_parent()))
             return;
-        Entity &camera = sim->get_ent(ent.parent);
+        Entity &camera = sim->get_ent(ent.get_parent());
         //reset all reloads and stuff
         uint32_t num_left = potential.size();
         //set respawn level
-        uint32_t respawn_level = div_round_up(3 * score_to_level(ent.score), 4);
+        uint32_t respawn_level = div_round_up(3 * score_to_level(ent.get_score()), 4);
         if (respawn_level > MAX_LEVEL) respawn_level = MAX_LEVEL;
         camera.set_respawn_level(respawn_level);
         uint32_t max_possible = MAX_SLOT_COUNT + loadout_slots_at_level(respawn_level);
@@ -147,6 +147,6 @@ void entity_on_death(Simulation *sim, Entity const &ent) {
         }
     } else if (ent.has_component(kDrop)) {
         if (BitMath::at(ent.flags, EntityFlags::kIsDespawning))
-            PetalTracker::remove_petal(sim, ent.drop_id);
+            PetalTracker::remove_petal(sim, ent.get_drop_id());
     }
 }

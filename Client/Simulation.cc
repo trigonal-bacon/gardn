@@ -7,66 +7,70 @@
 #include <cmath>
 #include <iostream>
 
+void Entity::tick_lerp(float amt) {
+    if (has_component(kPhysics)) {
+        float prev_x = x;
+        float prev_y = y;
+        if (!pending_delete) {
+            x.step(amt);
+            y.step(amt);
+        }
+        if (has_component(kDrop) || has_component(kWeb)) {
+            if (lifetime < TPS)
+                animation = lerp(animation, 1, amt * 0.75);
+            else animation = 1;
+        } else {
+            Vector vel(x - prev_x, y - prev_y);
+            animation += (1 + 0.75 * vel.magnitude()) * 0.075;
+        }
+        radius.step(amt);
+        angle.step_angle(amt);
+        if (pending_delete)
+            deletion_animation = fclamp(deletion_animation + Ui::dt / 150, 0, 1);
+    }
+    if (has_component(kCamera)) {
+        camera_x.step(amt);
+        camera_y.step(amt);
+        fov.step(amt);
+        Game::respawn_level = respawn_level;
+    }
+    if (has_component(kHealth)) {
+        health_ratio.step(amt);
+        if (damaged == 1 && damage_flash < 0.1 && !pending_delete)
+            damage_flash = 1;
+        else //damage_flash = fclamp(damage_flash - Ui::dt / 150, 0, 1);
+            damage_flash = lerp(damage_flash, 0, amt);
+        if (damaged)
+            last_damaged_time = Game::timestamp;
+        damaged.clear();
+        if ((float) health_ratio > 0.999)
+            healthbar_opacity = lerp(healthbar_opacity, 0, amt);
+        else
+            healthbar_opacity = 1;
+        if (healthbar_lag < health_ratio)
+            healthbar_lag = health_ratio;
+        else if (Game::timestamp - last_damaged_time > 250)
+            healthbar_lag = lerp(healthbar_lag, health_ratio, amt / 3);
+    }
+    if (has_component(kFlower)) {
+        eye_x = lerp(eye_x, cosf(eye_angle) * 3, amt);
+        eye_y = lerp(eye_y, sinf(eye_angle) * 3, amt);
+        if (BitMath::at(face_flags, FaceFlags::kAttacking)
+            || BitMath::at(face_flags, FaceFlags::kPoisoned) 
+            || BitMath::at(face_flags, FaceFlags::kDandelioned)
+            || pending_delete) mouth = lerp(mouth, 5, amt);
+        else if (BitMath::at(face_flags, FaceFlags::kDefending)) mouth = lerp(mouth, 8, amt);
+        else mouth = lerp(mouth, 15, amt);
+    }
+}
+
 void Simulation::on_tick() {
-    double const amt = Ui::lerp_amount;
-    for_each_entity([=](Simulation *sim, Entity &ent) {
-        if (ent.has_component(kPhysics)) {
-            float prev_x = ent.x;
-            float prev_y = ent.y;
-            if (!ent.pending_delete) {
-                ent.x.step(amt);
-                ent.y.step(amt);
-            }
-            if (ent.has_component(kDrop) || ent.has_component(kWeb)) {
-                if (ent.lifetime < TPS)
-                    ent.animation = lerp(ent.animation, 1, amt * 0.75);
-                else ent.animation = 1;
-            } else {
-                Vector vel(ent.x - prev_x, ent.y - prev_y);
-                ent.animation += (1 + 0.75 * vel.magnitude()) * 0.075;
-            }
-            ent.radius.step(amt);
-            ent.angle.step_angle(amt);
-            if (ent.pending_delete)
-                ent.deletion_animation = fclamp(ent.deletion_animation + Ui::dt / 200, 0, 1);
-        }
-        if (ent.has_component(kCamera)) {
-            ent.camera_x.step(amt);
-            ent.camera_y.step(amt);
-            ent.fov.step(amt);
-            Game::respawn_level = ent.respawn_level;
-        }
-        if (ent.has_component(kHealth)) {
-            ent.health_ratio.step(amt);
-            if (ent.damaged == 1 && ent.damage_flash < 0.1)
-                ent.damage_flash = 1;
-            else //ent.damage_flash = fclamp(ent.damage_flash - Ui::dt / 150, 0, 1);
-                ent.damage_flash = lerp(ent.damage_flash, 0, amt);
-            if (ent.damaged)
-                ent.last_damaged_time = Game::timestamp;
-            ent.damaged.clear();
-            if ((float) ent.health_ratio > 0.999)
-                ent.healthbar_opacity = lerp(ent.healthbar_opacity, 0, amt);
-            else
-                ent.healthbar_opacity = 1;
-            if (ent.healthbar_lag < ent.health_ratio)
-                ent.healthbar_lag = ent.health_ratio;
-            else if (Game::timestamp - ent.last_damaged_time > 250)
-                ent.healthbar_lag = lerp(ent.healthbar_lag, ent.health_ratio, amt / 3);
-        }
-        if (ent.has_component(kFlower)) {
-            ent.eye_x = lerp(ent.eye_x, cosf(ent.eye_angle) * 3, amt);
-            ent.eye_y = lerp(ent.eye_y, sinf(ent.eye_angle) * 3, amt);
-            if (BitMath::at(ent.face_flags, FaceFlags::kAttacking)
-                || BitMath::at(ent.face_flags, FaceFlags::kPoisoned) 
-                || BitMath::at(ent.face_flags, FaceFlags::kDandelioned)
-                || ent.pending_delete) ent.mouth = lerp(ent.mouth, 5, amt);
-            else if (BitMath::at(ent.face_flags, FaceFlags::kDefending)) ent.mouth = lerp(ent.mouth, 8, amt);
-            else ent.mouth = lerp(ent.mouth, 15, amt);
-        }
+    for_each_entity([](Simulation *sim, Entity &ent) {
+        ent.tick_lerp(Ui::lerp_amount);
     });
+
     for (uint32_t i = 0; i < std::min(arena_info.player_count, LEADERBOARD_SIZE); ++i)
-        arena_info.scores[i].step(amt);
+        arena_info.scores[i].step(Ui::lerp_amount);
 
     for (uint32_t i = arena_info.player_count; i < LEADERBOARD_SIZE; ++i)
         arena_info.scores[i] = 0;

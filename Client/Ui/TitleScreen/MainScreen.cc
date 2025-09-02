@@ -84,7 +84,7 @@ Element *Ui::make_title_info_box() {
                     .fill = 0xffffffff,
                     .should_render = [](){
                         if (!Game::simulation.ent_exists(Game::camera_id)) return false;
-                        return Game::simulation.get_ent(Game::camera_id).inventory[0] > PetalID::kBasic;
+                        return Game::simulation.get_ent(Game::camera_id).get_inventory(0) > PetalID::kBasic;
                     }
                 })
             }, 0, 0),

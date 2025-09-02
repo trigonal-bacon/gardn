@@ -19,9 +19,9 @@ void SpatialHash::insert(Entity const &ent) {
     //for the uniform grid to work, the max ent radius is GRID_SIZE/2
     //if larger entities are needed, either increase the GRID_SIZE
     //or use SpatialHashCanonical
-    DEBUG_ONLY(assert(ent.radius <= GRID_SIZE / 2);)
-    uint32_t x = fclamp(ent.x, 0, ARENA_WIDTH - 1) / GRID_SIZE;
-    uint32_t y = fclamp(ent.y, 0, ARENA_HEIGHT - 1) / GRID_SIZE;
+    DEBUG_ONLY(assert(ent.get_radius() <= GRID_SIZE / 2);)
+    uint32_t x = fclamp(ent.get_x(), 0, ARENA_WIDTH - 1) / GRID_SIZE;
+    uint32_t y = fclamp(ent.get_y(), 0, ARENA_HEIGHT - 1) / GRID_SIZE;
     cells[x][y].push_back(ent.id);
 }
 
@@ -62,10 +62,10 @@ void SpatialHash::query(float x, float y, float w, float h, std::function<void(S
             std::vector<EntityID> &cell = cells[_x][_y];
             for (uint32_t i = 0; i < cell.size(); ++i) {
                 Entity &ent = simulation->get_ent(cell[i]);
-                if (ent.x + ent.radius < x - w) continue;
-                if (ent.x - ent.radius > x + w) continue;
-                if (ent.y + ent.radius < y - h) continue;
-                if (ent.y - ent.radius > y + h) continue;
+                if (ent.get_x() + ent.get_radius() < x - w) continue;
+                if (ent.get_x() - ent.get_radius() > x + w) continue;
+                if (ent.get_y() + ent.get_radius() < y - h) continue;
+                if (ent.get_y() - ent.get_radius() > y + h) continue;
                 cb(simulation, ent);
             }
         }

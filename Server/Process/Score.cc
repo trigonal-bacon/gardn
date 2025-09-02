@@ -4,5 +4,5 @@
 #include <Shared/Entity.hh>
 
 void tick_score_behavior(Simulation *sim, Entity &ent) {
-    ent.score_reward = ent.score / 2;
+    ent.score_reward = ent.get_score() / 2;
 }

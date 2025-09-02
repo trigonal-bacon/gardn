@@ -68,7 +68,7 @@ bool Map::find_spawn_location(Simulation *sim, float d, Vector &vref) {
         sim->for_each<kFlower>([&](Simulation *, Entity &ent) {
             if (ent.has_component(kMob)) return;
             if (!valid) return;
-            if (Vector(ent.x - vref.x, ent.y - vref.y).magnitude() < d) 
+            if (Vector(ent.get_x() - vref.x, ent.get_y() - vref.y).magnitude() < d) 
                 valid = false;
         });
         if (valid) return true;

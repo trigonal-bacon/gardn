@@ -17,10 +17,10 @@ void render_drop(Renderer &ctx, Entity const &ent) {
     ctx.rotate(M_PI * 2 * ent.deletion_animation);
     ctx.scale(1 - ent.deletion_animation);
     ctx.scale(1 + animation_value * 0.03);
-    ctx.scale(ent.radius / 30);
+    ctx.scale(ent.get_radius() / 30);
     ctx.set_fill(0x40000000);
     ctx.begin_path();
     ctx.round_rect(-33, -33, 66, 66, 4);
     ctx.fill();
-    draw_loadout_background(ctx, ent.drop_id);
+    draw_loadout_background(ctx, ent.get_drop_id());
 }
