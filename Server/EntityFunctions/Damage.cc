@@ -63,12 +63,6 @@ void inflict_damage(Simulation *sim, EntityID const atk_id, EntityID const def_i
     
     if (!sim->ent_alive(atk_id)) return;
 
-    if (type == DamageType::kContact && defender.poison_ticks < attacker.poison_damage.time * TPS) {
-        defender.poison_ticks = attacker.poison_damage.time * TPS;
-        defender.poison_inflicted = attacker.poison_damage.damage / TPS;
-        defender.poison_dealer = atk_id;
-    }
-
     if (defender.slow_ticks < attacker.slow_inflict)
         defender.slow_ticks = attacker.slow_inflict;
     
@@ -90,6 +84,12 @@ void inflict_damage(Simulation *sim, EntityID const atk_id, EntityID const def_i
         if (!sim->ent_alive(defender.target))
             defender.target = atk_id;
         defender.last_damaged_by = atk_id;
+    }
+
+    if (type == DamageType::kContact && defender.poison_ticks < attacker.poison_damage.time * TPS) {
+        defender.poison_ticks = attacker.poison_damage.time * TPS;
+        defender.poison_inflicted = attacker.poison_damage.damage / TPS;
+        defender.poison_dealer = defender.last_damaged_by;
     }
 }
 

@@ -70,7 +70,7 @@ void Element::render(Renderer &ctx) {
         uint8_t released = 0;
         if (Input::is_mobile) {
             pressed = Input::touches.contains(touch_id);
-            released = !pressed;// && focus_state != kFocusLost;
+            released = !pressed;
             focused = pressed;
         }
         else {

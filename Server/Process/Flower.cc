@@ -113,7 +113,7 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
         camera.set_fov(BASE_FOV * (1 - buffs.extra_vision));
     }
 
-    DEBUG_ONLY(assert(player.loadout_count <= MAX_SLOT_COUNT);)
+    DEBUG_ONLY(assert(player.get_loadout_count() <= MAX_SLOT_COUNT);)
     for (uint32_t i = 0; i < player.get_loadout_count(); ++i) {
         LoadoutSlot &slot = player.loadout[i];
         //player.set_loadout_ids(i, slot.id);
