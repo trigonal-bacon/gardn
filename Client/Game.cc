@@ -169,7 +169,7 @@ void Game::reset() {
 uint8_t Game::alive() {
     return socket.ready && simulation_ready
     && simulation.ent_exists(camera_id)
-    && simulation.ent_alive(simulation.get_ent(camera_id).player);
+    && simulation.ent_alive(simulation.get_ent(camera_id).get_player());
 }
 
 uint8_t Game::in_game() {
@@ -216,15 +216,15 @@ void Game::tick(double time) {
     Ui::scale = std::max(a, b);
     if (alive()) {
         on_game_screen = 1;
-        player_id = simulation.get_ent(camera_id).player;
+        player_id = simulation.get_ent(camera_id).get_player();
         Entity const &player = simulation.get_ent(player_id);
-        Game::loadout_count = player.loadout_count;
+        Game::loadout_count = player.get_loadout_count();
         for (uint32_t i = 0; i < MAX_SLOT_COUNT + Game::loadout_count; ++i) {
-            cached_loadout[i] = player.loadout_ids[i];
+            cached_loadout[i] = player.get_loadout_ids(i);
             Game::seen_petals[cached_loadout[i]] = 1;
         }
-        score = player.score;
-        overlevel_timer = player.overlevel_timer;
+        score = player.get_score();
+        overlevel_timer = player.get_overlevel_timer();
     } else {
         player_id = NULL_ENTITY;
         overlevel_timer = 0;

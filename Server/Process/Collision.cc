@@ -8,7 +8,7 @@
 
 static bool _should_interact(Entity const &ent1, Entity const &ent2) {
     if (ent1.pending_delete || ent2.pending_delete) return false;
-    if (!(ent1.team == ent2.team)) return true;
+    if (!(ent1.get_team() == ent2.get_team())) return true;
     if (BitMath::at((ent1.flags | ent2.flags), EntityFlags::kNoFriendlyCollision)) return false;
     if ((ent1.has_component(kMob) || ent1.has_component(kFlower)) &&
         (ent2.has_component(kMob) || ent2.has_component(kFlower))) return true;
@@ -16,14 +16,14 @@ static bool _should_interact(Entity const &ent1, Entity const &ent2) {
 }
 
 static void _pickup_drop(Simulation *sim, Entity &player, Entity &drop) {
-    if (!sim->ent_alive(player.parent)) return;
+    if (!sim->ent_alive(player.get_parent())) return;
     if (drop.immunity_ticks > 0) return;
 
-    for (uint32_t i = 0; i <  player.loadout_count + MAX_SLOT_COUNT; ++i) {
-        if (player.loadout_ids[i] != PetalID::kNone) continue;
-        player.set_loadout_ids(i, drop.drop_id);
-        drop.set_x(player.x);
-        drop.set_y(player.y);
+    for (uint32_t i = 0; i <  player.get_loadout_count() + MAX_SLOT_COUNT; ++i) {
+        if (player.get_loadout_ids(i) != PetalID::kNone) continue;
+        player.set_loadout_ids(i, drop.get_drop_id());
+        drop.set_x(player.get_x());
+        drop.set_y(player.get_y());
         BitMath::unset(drop.flags, EntityFlags::kIsDespawning);
         sim->request_delete(drop.id);
         //peaceful transfer, no petal tracking needed
@@ -59,12 +59,12 @@ static void _cancel_movement(Entity &ent, Vector dir, Vector add) {
 
 void on_collide(Simulation *sim, Entity &ent1, Entity &ent2) {
     //do a distance dependent check first (it's faster)
-    float min_dist = ent1.radius + ent2.radius;
-    if (fabs(ent1.x - ent2.x) > min_dist || fabs(ent1.y - ent2.y) > min_dist) return;
+    float min_dist = ent1.get_radius() + ent2.get_radius();
+    if (fabs(ent1.get_x() - ent2.get_x()) > min_dist || fabs(ent1.get_y() - ent2.get_y()) > min_dist) return;
     //check if collide (distance independent)
     if (!_should_interact(ent1, ent2)) return;
     //finer distance check
-    Vector separation(ent1.x - ent2.x, ent1.y - ent2.y);
+    Vector separation(ent1.get_x() - ent2.get_x(), ent1.get_y() - ent2.get_y());
     float dist = min_dist - separation.magnitude();
     if (dist < 0) return;
     if (NO(kDrop) && NO(kWeb) && NO(kChat)) {
@@ -73,7 +73,7 @@ void on_collide(Simulation *sim, Entity &ent1, Entity &ent2) {
         else
             separation.normalize();
         float ratio = ent2.mass / (ent1.mass + ent2.mass);
-        if (!(ent1.team == ent2.team)) {
+        if (!(ent1.get_team() == ent2.get_team())) {
             if (ent1.has_component(kFlower) && !ent2.has_component(kPetal))
                 _cancel_movement(ent1, separation, ent2.velocity - ent1.velocity);
             else
@@ -92,7 +92,7 @@ void on_collide(Simulation *sim, Entity &ent1, Entity &ent2) {
         _deal_push(ent2, separation*-1, 1 - ratio, dist);
     }
 
-    if (BOTH(kHealth) && !(ent1.team == ent2.team)) {
+    if (BOTH(kHealth) && !(ent1.get_team() == ent2.get_team())) {
         if (ent1.health > 0 && ent2.health > 0) {
             inflict_damage(sim, ent1.id, ent2.id, ent1.damage, DamageType::kContact);
             inflict_damage(sim, ent2.id, ent1.id, ent2.damage, DamageType::kContact);

@@ -64,13 +64,15 @@ extern "C" {
 
     void touch_event(float x, float y, uint8_t type, uint32_t id) {
         if (type == 0) {
-            Input::touches.insert({id, { .id = id, .x = x, .y = y, .saturated = 0 }});
+            Input::touches.insert({id, { .id = id, .x = x, .y = y, .dx = 0, .dy = 0, .saturated = 0 }});
         } else if (type == 2) {
             Input::touches.erase(id);
         } else {
             auto iter = Input::touches.find(id);
             if (iter == Input::touches.end()) return;
             Input::Touch &touch = iter->second;
+            touch.dx = x - touch.x;
+            touch.dy = y - touch.y;
             touch.x = x;
             touch.y = y;
         }

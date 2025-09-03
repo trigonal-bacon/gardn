@@ -44,6 +44,20 @@ uint8_t Entity::has_component(uint32_t comp) const {
     return BitMath::at(components, comp);
 }
 
+#define SINGLE(component, name, type) \
+type const &Entity::get_##name() const { \
+    DEBUG_ONLY(assert(has_component(k##component));) \
+    return name; \
+}
+#define MULTIPLE(component, name, type, amt) \
+type const &Entity::get_##name(uint32_t i) const { \
+    DEBUG_ONLY(assert(has_component(k##component));) \
+    return name[i]; \
+}
+PERFIELD
+#undef SINGLE
+#undef MULTIPLE
+
 #ifdef SERVERSIDE
 #define SINGLE(component, name, type) \
 void Entity::set_##name(type const &v) { \

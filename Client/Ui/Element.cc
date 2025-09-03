@@ -82,7 +82,7 @@ void Element::render(Renderer &ctx) {
         if (pressed) {
             focus_state = kMouseDown;
             on_event(kMouseDown);
-        } else if (released) {
+        } else if (released && focus_state == kMouseDown) {
             focus_state = kClick;
             on_event(kClick);
         }
@@ -91,10 +91,8 @@ void Element::render(Renderer &ctx) {
             on_event(kMouseHover);
         }
     } else if (focus_state != kFocusLost) {
-        if (focus_state == kMouseDown)
-            on_event(kClick);
-        on_event(kFocusLost);
         focus_state = kFocusLost;
+        on_event(kFocusLost);
     }
 }
 
@@ -142,6 +140,7 @@ void Element::on_render_skip(Renderer &ctx) {
     }
     for (Element *elt : children)
         elt->on_render_skip(ctx);
+    focused = 0;
 }
 
 void Element::on_event(uint8_t event) {}
@@ -171,6 +170,7 @@ void Element::poll_events(ScreenEvent const &event) {
                 return;
             }
             touch_id = (uint32_t)-1;
+            focused = 0;
         }
         if (touch_id == (uint32_t)-1) {        
             if (std::abs(event.x - screen_x) > width * Ui::scale / 2

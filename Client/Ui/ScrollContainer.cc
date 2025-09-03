@@ -36,6 +36,13 @@ void ScrollContainer::on_render(Renderer &ctx) {
         && std::abs(Input::mouse_y - screen_y) < height * Ui::scale / 2)
             lerp_scroll += Input::wheel_delta / ratio;
         if (scroll->style.layer) lerp_scroll += (Input::mouse_y - Input::prev_mouse_y);
+        if (Input::is_mobile) {
+            auto iter = Input::touches.find(touch_id);
+            if (iter != Input::touches.end())
+                lerp_scroll -= iter->second.dy;
+            else
+                touch_id = (uint32_t)-1;
+        }
         lerp_scroll = fclamp(lerp_scroll, 0, height - scroll->height);
         scroll->y = lerp(scroll->y, lerp_scroll, Ui::lerp_amount);
         content->y = lerp(content->y, -ratio * lerp_scroll, Ui::lerp_amount);
@@ -65,13 +72,8 @@ void ScrollContainer::refactor() {
 }
 
 void ScrollContainer::poll_events(ScreenEvent const &event) {
-    if (std::abs(Input::mouse_x - screen_x) < width * Ui::scale / 2
-    && std::abs(Input::mouse_y - screen_y) < height * Ui::scale / 2) {
-        Ui::focused = this;
+    Element::poll_events(event);
+    if (Ui::focused == this)
         for (Element *elt : children)
             elt->poll_events(event);
-    }
-    else if (Ui::focused == this) {
-        Ui::focused = nullptr;
-    }
 }

@@ -41,7 +41,7 @@ static Entity &__alloc_mob(Simulation *sim, MobID::T mob_id, float x, float y, E
     mob.set_x(x);
     mob.set_y(y);
     mob.friction = DEFAULT_FRICTION;
-    mob.mass = (1 + mob.radius / BASE_FLOWER_RADIUS) * (data.attributes.stationary ? 10000 : 1);
+    mob.mass = (1 + mob.get_radius() / BASE_FLOWER_RADIUS) * (data.attributes.stationary ? 10000 : 1);
     if (mob_id == MobID::kAntHole)
         BitMath::set(mob.flags, EntityFlags::kNoFriendlyCollision);
     if (team == NULL_ENTITY)
@@ -84,7 +84,7 @@ Entity &alloc_mob(Simulation *sim, MobID::T mob_id, float x, float y, EntityID c
                 MobID::kWorkerAnt, MobID::kWorkerAnt, MobID::kSoldierAnt
             };
             for (MobID::T mob_id : spawns) {
-                Vector rand = Vector::rand(ent.radius * 2);
+                Vector rand = Vector::rand(ent.get_radius() * 2);
                 Entity &ant = __alloc_mob(sim, mob_id, x + rand.x, y + rand.y, team);
                 ant.set_parent(ent.id);
             }
@@ -99,9 +99,9 @@ Entity &alloc_mob(Simulation *sim, MobID::T mob_id, float x, float y, EntityID c
             Entity &seg = __alloc_mob(sim, mob_id, x, y, team);
             seg.add_component(kSegmented);
             seg.seg_head = curr->id;
-            seg.set_angle(curr->angle + frand() * 0.1 - 0.05);
-            seg.set_x(curr->x - (curr->radius + seg.radius) * cosf(seg.angle));
-            seg.set_y(curr->y - (curr->radius + seg.radius) * sinf(seg.angle));
+            seg.set_angle(curr->get_angle() + frand() * 0.1 - 0.05);
+            seg.set_x(curr->get_x() - (curr->get_radius() + seg.get_radius()) * cosf(seg.get_angle()));
+            seg.set_y(curr->get_y() - (curr->get_radius() + seg.get_radius()) * sinf(seg.get_angle()));
             curr = &seg;
         }
         return head;
@@ -141,8 +141,8 @@ Entity &alloc_petal(Simulation *sim, PetalID::T petal_id, Entity const &parent) 
     struct PetalData const &petal_data = PETAL_DATA[petal_id];
     Entity &petal = sim->alloc_ent();
     petal.add_component(kPhysics);
-    petal.set_x(parent.x);
-    petal.set_y(parent.y);
+    petal.set_x(parent.get_x());
+    petal.set_y(parent.get_y());
     petal.set_radius(petal_data.radius);
     if (petal_data.attributes.rotation_style == PetalAttributes::kPassiveRot)
         petal.set_angle(frand() * 2 * M_PI);
@@ -150,7 +150,7 @@ Entity &alloc_petal(Simulation *sim, PetalID::T petal_id, Entity const &parent) 
     petal.friction = DEFAULT_FRICTION * 1.5;
     petal.add_component(kRelations);
     petal.set_parent(parent.id);
-    petal.set_team(parent.team);
+    petal.set_team(parent.get_team());
     petal.add_component(kPetal);
     petal.set_petal_id(petal_id);
     petal.add_component(kHealth);
@@ -169,14 +169,14 @@ Entity &alloc_petal(Simulation *sim, PetalID::T petal_id, Entity const &parent) 
 Entity &alloc_web(Simulation *sim, float radius, Entity const &parent) {
     Entity &web = sim->alloc_ent();
     web.add_component(kPhysics);
-    web.set_x(parent.x);
-    web.set_y(parent.y);
+    web.set_x(parent.get_x());
+    web.set_y(parent.get_y());
     web.set_angle(frand() * 2 * M_PI);
     web.set_radius(radius);
     web.mass = 1.0;
     web.friction = 1.0;
     web.add_component(kRelations);
-    web.set_team(parent.team);
+    web.set_team(parent.get_team());
     web.set_parent(parent.id);
     web.add_component(kWeb);
     entity_set_despawn_tick(web, 10 * TPS);
@@ -199,8 +199,8 @@ Entity &alloc_chat(Simulation *sim, std::string &text, Entity const &parent) {
 void player_spawn(Simulation *sim, Entity &camera, Entity &player) {
     camera.set_player(player.id);
     player.set_parent(camera.id);
-    player.set_color(camera.color);
-    uint32_t power = Map::difficulty_at_level(camera.respawn_level);
+    player.set_color(camera.get_color());
+    uint32_t power = Map::difficulty_at_level(camera.get_respawn_level());
     ZoneDefinition const &zone = MAP_DATA[Map::get_suitable_difficulty_zone(power)];
     float spawn_x = lerp(zone.left, zone.right, frand());
     float spawn_y = lerp(zone.top, zone.bottom, frand());
@@ -208,19 +208,19 @@ void player_spawn(Simulation *sim, Entity &camera, Entity &player) {
     camera.set_camera_y(spawn_y);
     player.set_x(spawn_x);
     player.set_y(spawn_y);
-    player.set_score(level_to_score(camera.respawn_level));
-    player.set_loadout_count(loadout_slots_at_level(camera.respawn_level));
-    player.health = player.max_health = hp_at_level(camera.respawn_level);
-    for (uint32_t i = 0; i < player.loadout_count; ++i) {
-        PetalID::T id = camera.inventory[i];
+    player.set_score(level_to_score(camera.get_respawn_level()));
+    player.set_loadout_count(loadout_slots_at_level(camera.get_respawn_level()));
+    player.health = player.max_health = hp_at_level(camera.get_respawn_level());
+    for (uint32_t i = 0; i < player.get_loadout_count(); ++i) {
+        PetalID::T id = camera.get_inventory(i);
         LoadoutSlot &slot = player.loadout[i];
         player.set_loadout_ids(i, id);
         slot.update_id(sim, id);
         slot.force_reload();
     }
 
-    for (uint32_t i = player.loadout_count; i < player.loadout_count + MAX_SLOT_COUNT; ++i)
-        player.set_loadout_ids(i, camera.inventory[i]);
+    for (uint32_t i = player.get_loadout_count(); i < player.get_loadout_count() + MAX_SLOT_COUNT; ++i)
+        player.set_loadout_ids(i, camera.get_inventory(i));
 
     //peaceful transfer, no petal tracking needed
     for (uint32_t i = 0; i < MAX_SLOT_COUNT * 2; ++i)

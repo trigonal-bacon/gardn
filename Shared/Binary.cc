@@ -5,101 +5,105 @@
 
 static const uint32_t PROTOCOL_FLOAT_SCALE = 64;
 
-Writer::Writer(uint8_t *buf) : at(buf), packet(buf) {}
 
-template<>
-void Writer::write<uint8_t>(uint8_t const &val) {
-    *at = val;
-    ++at;
+Writer::Writer(uint8_t *v) : at(v), packet(v) {}
+
+void Writer::push(uint8_t val) {
+    *at++ = val;
 }
 
 template<>
-void Writer::write<uint16_t>(uint16_t const &val) {
+void Writer::Encoder<uint8_t>::write(Writer &w, uint8_t const &val) {
+    w.push(val);
+}
+
+template<>
+void Writer::Encoder<uint16_t>::write(Writer &w, uint16_t const &val) {
     uint16_t v = val;
-    while (v > 127)
-    {
-        write<uint8_t>((v & 127) | 128);
+    while (v > 127) {
+        w.write<uint8_t>((v & 127) | 128);
         v >>= 7;
     }
-    write<uint8_t>(v);
+    w.write<uint8_t>(v);
 }
 
 template<>
-void Writer::write<uint32_t>(uint32_t const &val) {
+void Writer::Encoder<uint32_t>::write(Writer &w, uint32_t const &val) {
     uint32_t v = val;
-    while (v > 127)
-    {
-        write<uint8_t>((v & 127) | 128);
+    while (v > 127) {
+        w.write<uint8_t>((v & 127) | 128);
         v >>= 7;
     }
-    write<uint8_t>(v);
+    w.write<uint8_t>(v);
 }
 
 template<>
-void Writer::write<uint64_t>(uint64_t const &val) {
+void Writer::Encoder<uint64_t>::write(Writer &w, uint64_t const &val) {
     uint64_t v = val;
-    while (v > 127ll)
-    {
-        write<uint8_t>((v & 127ll) | 128ll);
-        v >>= 7ll;
+    while (v > 127) {
+        w.write<uint8_t>((v & 127) | 128);
+        v >>= 7;
     }
-    write<uint8_t>(v);
+    w.write<uint8_t>(v);
 }
 
 template<>
-void Writer::write<int32_t>(int32_t const &val) {
+void Writer::Encoder<int32_t>::write(Writer &w, int32_t const &val) {
     int32_t v = val;
     uint32_t sign = v < 0;
     if (sign) v *= -1;
     v = (v << 1) | sign;
-    write<uint32_t>(v);
+    w.write<uint64_t>(v);
 }
 
 template<>
-void Writer::write<int64_t>(int64_t const &val) {
+void Writer::Encoder<int64_t>::write(Writer &w, int64_t const &val) {
     int64_t v = val;
     uint32_t sign = v < 0;
     if (sign) v *= -1;
     v = (v << 1) | sign;
-    write<uint64_t>(v);
+    w.write<uint64_t>(v);
 }
 
 template<>
-void Writer::write<float>(float const &v) {
-    write<int64_t>(v * PROTOCOL_FLOAT_SCALE);
+void Writer::Encoder<float>::write(Writer &w, float const &v) {
+    w.write<int64_t>(v * PROTOCOL_FLOAT_SCALE);
 }
 
 template<>
-void Writer::write<double>(double const &v) {
-    write<int64_t>(v * PROTOCOL_FLOAT_SCALE);
+void Writer::Encoder<double>::write(Writer &w, double const &v) {
+    w.write<int64_t>(v * PROTOCOL_FLOAT_SCALE);
 }
 
 template<>
-void Writer::write<EntityID>(EntityID const &id) {
-    write<EntityID::id_type>(id.id);
-    if (id.id) write<EntityID::hash_type>(id.hash);
+void Writer::Encoder<EntityID>::write(Writer &w, EntityID const &id) {
+    w.write<EntityID::id_type>(id.id);
+    if (id.id) w.write<EntityID::hash_type>(id.hash);
 }
 
 template<>
-void Writer::write<std::string>(std::string const &str) {
+void Writer::Encoder<std::string>::write(Writer &w, std::string const &str) {
     uint32_t len = str.size();
-    write<uint32_t>(len);
-    for (uint32_t i = 0; i < len; ++i) write<uint8_t>(str[i]);
+    w.write<uint32_t>(len);
+    for (uint32_t i = 0; i < len; ++i) w.write<uint8_t>(str[i]);
 }
 
 Reader::Reader(uint8_t const *buf) : at(buf), packet(buf) {}
 
-template<>
-uint8_t Reader::read<uint8_t>() {
+uint8_t Reader::next() {
     return *at++;
 }
 
+template<>
+uint8_t Reader::Decoder<uint8_t>::read(Reader &r) {
+    return r.next();
+}
 
 template<>
-uint16_t Reader::read<uint16_t>() {
+uint16_t Reader::Decoder<uint16_t>::read(Reader &r) {
     uint16_t ret = 0;
-    for (uint32_t i = 0; i < 5; ++i) {
-        uint8_t o = read<uint8_t>();
+    for (uint32_t i = 0; i < 3; ++i) {
+        uint8_t o = r.read<uint8_t>();
         ret |= ((o & 127) << (i * 7));
         if (o <= 127) break;
     }
@@ -107,10 +111,10 @@ uint16_t Reader::read<uint16_t>() {
 }
 
 template<>
-uint32_t Reader::read<uint32_t>() {
+uint32_t Reader::Decoder<uint32_t>::read(Reader &r) {
     uint32_t ret = 0;
     for (uint32_t i = 0; i < 5; ++i) {
-        uint8_t o = read<uint8_t>();
+        uint8_t o = r.read<uint8_t>();
         ret |= ((o & 127) << (i * 7));
         if (o <= 127) break;
     }
@@ -118,10 +122,10 @@ uint32_t Reader::read<uint32_t>() {
 }
 
 template<>
-uint64_t Reader::read<uint64_t>() {
+uint64_t Reader::Decoder<uint64_t>::read(Reader &r) {
     uint64_t ret = 0ll;
     for (uint32_t i = 0; i < 10; ++i) {
-        uint8_t o = read<uint8_t>();
+        uint8_t o = r.read<uint8_t>();
         ret |= ((o & 127ll) << (i * 7ll));
         if (o <= 127ll) break;
     }
@@ -129,100 +133,101 @@ uint64_t Reader::read<uint64_t>() {
 }
 
 template<>
-int32_t Reader::read<int32_t>() {
-    uint32_t r = read<uint32_t>();
-    uint32_t s = r & 1;
-    int32_t ret = r >> 1;
+int32_t Reader::Decoder<int32_t>::read(Reader &r) {
+    uint32_t u = r.read<uint32_t>();
+    uint32_t s = u & 1;
+    int32_t ret = u >> 1;
     if (s) ret *= -1;
     return ret;
 }
 
 template<>
-int64_t Reader::read<int64_t>() {
-    uint64_t r = read<uint64_t>();
-    uint32_t s = r & 1;
-    int64_t ret = r >> 1;
+int64_t Reader::Decoder<int64_t>::read(Reader &r) {
+    uint64_t u = r.read<uint64_t>();
+    uint32_t s = u & 1;
+    int64_t ret = u >> 1;
     if (s) ret *= -1;
     return ret;
 }
 
 template<>
-float Reader::read<float>() {
-    return read<int64_t>() / (float) PROTOCOL_FLOAT_SCALE;
+float Reader::Decoder<float>::read(Reader &r) {
+    return r.read<int64_t>() / (float) PROTOCOL_FLOAT_SCALE;
 }
 
 template<>
-double Reader::read<double>() {
-    return read<int64_t>() / (double) PROTOCOL_FLOAT_SCALE;
+double Reader::Decoder<double>::read(Reader &r) {
+    return r.read<int64_t>() / (double) PROTOCOL_FLOAT_SCALE;
 }
 
 template<>
-EntityID Reader::read<EntityID>() {
-    EntityID::id_type id = read<EntityID::id_type>();
-    EntityID::hash_type hash = id ? read<EntityID::hash_type>() : 0;
-    return {id, hash};
+EntityID Reader::Decoder<EntityID>::read(Reader &r) {
+    EntityID::id_type id = r.read<EntityID::id_type>();
+    EntityID::hash_type hash = id ? r.read<EntityID::hash_type>() : 0;
+    return EntityID(id, hash);
 }
 
 template<>
-void Reader::read<uint8_t>(uint8_t &ref) {
-    ref = read<uint8_t>();
+void Reader::Decoder<uint8_t>::read(Reader &r, uint8_t &ref) {
+    ref = r.read<uint8_t>();
 }
 
 template<>
-void Reader::read<uint16_t>(uint16_t &ref) {
-    ref = read<uint16_t>();
+void Reader::Decoder<uint16_t>::read(Reader &r, uint16_t &ref) {
+    ref = r.read<uint16_t>();
 }
 
 template<>
-void Reader::read<uint32_t>(uint32_t &ref) {
-    ref = read<uint32_t>();
+void Reader::Decoder<uint32_t>::read(Reader &r, uint32_t &ref) {
+    ref = r.read<uint32_t>();
 }
 
 template<>
-void Reader::read<uint64_t>(uint64_t &ref) {
-    ref = read<uint64_t>();
+void Reader::Decoder<uint64_t>::read(Reader &r, uint64_t &ref) {
+    ref = r.read<uint64_t>();
 }
 
 template<>
-void Reader::read<int32_t>(int32_t &ref) {
-    ref = read<int32_t>();
+void Reader::Decoder<int32_t>::read(Reader &r, int32_t &ref) {
+    ref = r.read<int32_t>();
 }
 
 template<>
-void Reader::read<int64_t>(int64_t &ref) {
-    ref = read<int64_t>();
+void Reader::Decoder<int64_t>::read(Reader &r, int64_t &ref) {
+    ref = r.read<int64_t>();
 }
 
 template<>
-void Reader::read<float>(float &ref) {
-    ref = read<float>();
+void Reader::Decoder<float>::read(Reader &r, float &ref) {
+    ref = r.read<float>();
 }
 
 template<>
-void Reader::read<double>(double &ref) {
-    ref = read<double>();
+void Reader::Decoder<double>::read(Reader &r, double &ref) {
+    ref = r.read<double>();
 }
 
 template<>
-void Reader::read<LerpFloat>(LerpFloat &ref) {
-    ref.set(read<float>());
+void Reader::Decoder<LerpFloat>::read(Reader &r, LerpFloat &ref) {
+    ref.set(r.read<float>());
 }
 
 template<>
-void Reader::read<EntityID>(EntityID &ref) {
-    ref = read<EntityID>();
+void Reader::Decoder<EntityID>::read(Reader &r, EntityID &ref) {
+    ref = r.read<EntityID>();
 }
 
 template<>
-void Reader::read<std::string>(std::string &ref) {
-    uint32_t len = read<uint32_t>();
+void Reader::Decoder<std::string>::read(Reader &r, std::string &ref) {
+    uint32_t len = r.read<uint32_t>();
     ref.clear();
-    for (uint32_t i = 0; i < len; ++i) ref.push_back(read<uint8_t>());
+    ref.reserve(len);
+    for (uint32_t i = 0; i < len; ++i) ref.push_back(r.read<uint8_t>());
 }
 
 template<>
-void Reader::read<PersistentFlag>(PersistentFlag &ref) {
-    ref.set(read<uint8_t>());
+void Reader::Decoder<PersistentFlag>::read(Reader &r, PersistentFlag &ref) {
+    ref.set(r.read<uint8_t>());
 }
 
 Validator::Validator(uint8_t const *start, uint8_t const *end) : at(start), end(end) {}

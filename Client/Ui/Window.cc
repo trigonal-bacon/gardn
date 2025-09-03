@@ -39,10 +39,9 @@ void Window::on_render(Renderer &ctx) {
 
 void Window::poll_events(ScreenEvent const &event) {
     if (style.no_polling) return;
+    Element::poll_events(event);
     for (Element *elt : children)
         if (elt->visible) elt->poll_events(event);
-    if (Ui::focused == nullptr)
-        Ui::focused = this;
 }
 
 void Window::on_event(uint8_t event) {

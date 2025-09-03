@@ -14,7 +14,7 @@ LevelBar::LevelBar() : Element(300,40) {
     style.animate = [&](Element *elt, Renderer &ctx) {
         if (Game::alive()) {
             Entity &player = Game::simulation.get_ent(Game::player_id);
-            float xp = player.score;
+            float xp = Game::score;
             level = score_to_level(xp);
             xp -= level_to_score(level);
             xp = fclamp(xp / score_to_pass_level(level), 0, 1);
@@ -54,7 +54,7 @@ Element *Ui::make_level_bar() {
             std::string format_string;
             if (Game::alive()) {
                 Entity &player = Game::simulation.get_ent(Game::player_id);
-                uint32_t level = score_to_level(player.score);
+                uint32_t level = score_to_level(Game::score);
                 if (loadout_slots_at_level(level) < MAX_SLOT_COUNT) {
                     level = div_round_up(level + 1, LEVELS_PER_EXTRA_SLOT) * LEVELS_PER_EXTRA_SLOT;
                     if (level > MAX_LEVEL) level = MAX_LEVEL;

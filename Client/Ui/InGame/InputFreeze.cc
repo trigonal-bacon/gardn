@@ -37,7 +37,7 @@ InputFreeze::InputFreeze() : Container({
         }
         if ((fabsf(Input::mouse_x - screen_x) > render_width * Ui::scale / 2 ||
             Ui::window_height - Input::mouse_y > render_height * Ui::scale) &&
-            Ui::UiLoadout::petal_selected == nullptr)
+            Ui::UiLoadout::num_petals_selected == 0)
             Input::freeze_input = 0;
     };
     style.round_radius = 10;

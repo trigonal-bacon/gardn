@@ -14,3 +14,4 @@ void entity_on_death(Simulation *, Entity const &);
 EntityID find_nearest_enemy(Simulation *, Entity const &, float);
 
 void entity_set_despawn_tick(Entity &, game_tick_t);
+void entity_clear_references(Simulation *, Entity &);

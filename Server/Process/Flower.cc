@@ -26,12 +26,12 @@ static struct PlayerBuffs _get_petal_passive_buffs(Simulation *sim, Entity &play
     player.set_equip_flags(0);
     player.damage_reflection = 0;
     player.poison_armor = 0;
-    for (uint32_t i = 0; i < player.loadout_count; ++i) {
+    for (uint32_t i = 0; i < player.get_loadout_count(); ++i) {
         LoadoutSlot const &slot = player.loadout[i];
         PetalID::T slot_petal_id = slot.get_petal_id();
         struct PetalData const &petal_data = PETAL_DATA[slot_petal_id];
         if (petal_data.attributes.equipment != EquipmentFlags::kNone)
-            player.set_equip_flags(player.equip_flags | (1 << petal_data.attributes.equipment));
+            player.set_equip_flags(player.get_equip_flags() | (1 << petal_data.attributes.equipment));
         if (slot_petal_id == PetalID::kAntennae) {
             buffs.extra_vision = fclamp(0.4,buffs.extra_vision,1);
         } else if (slot_petal_id == PetalID::kObserver) {
@@ -68,7 +68,7 @@ static struct PlayerBuffs _get_petal_passive_buffs(Simulation *sim, Entity &play
 
 static uint32_t _get_petal_rotation_count(Simulation *sim, Entity &player) {
     uint32_t count = 0;
-    for (uint8_t i = 0; i < player.loadout_count; ++i) {
+    for (uint8_t i = 0; i < player.get_loadout_count(); ++i) {
         LoadoutSlot const &slot = player.loadout[i];
         struct PetalData const &petal_data = PETAL_DATA[slot.get_petal_id()];
         if (petal_data.attributes.clump_radius > 0)
@@ -91,7 +91,7 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
     PlayerBuffs const buffs = _get_petal_passive_buffs(sim, player);
     float health_ratio = player.health / player.max_health;
     if (!player.has_component(kMob)) {
-        player.max_health = hp_at_level(score_to_level(player.score)) + buffs.extra_health;
+        player.max_health = hp_at_level(score_to_level(player.get_score())) + buffs.extra_health;
         if (buffs.has_cutter) player.damage = BASE_BODY_DAMAGE + 20;
         else player.damage = BASE_BODY_DAMAGE;
     }
@@ -108,18 +108,18 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
     //maybe use delta mode for face flags?
     player.set_face_flags(0);
 
-    if (sim->ent_alive(player.parent)) {
-        Entity &camera = sim->get_ent(player.parent);
+    if (sim->ent_alive(player.get_parent())) {
+        Entity &camera = sim->get_ent(player.get_parent());
         camera.set_fov(BASE_FOV * (1 - buffs.extra_vision));
     }
 
     DEBUG_ONLY(assert(player.loadout_count <= MAX_SLOT_COUNT);)
-    for (uint32_t i = 0; i < player.loadout_count; ++i) {
+    for (uint32_t i = 0; i < player.get_loadout_count(); ++i) {
         LoadoutSlot &slot = player.loadout[i];
         //player.set_loadout_ids(i, slot.id);
         //other way around. loadout_ids should dictate loadout
-        if (slot.get_petal_id() != player.loadout_ids[i] || player.overlevel_timer >= PETAL_DISABLE_DELAY * TPS)
-            slot.update_id(sim, player.loadout_ids[i]);
+        if (slot.get_petal_id() != player.get_loadout_ids(i) || player.get_overlevel_timer() >= PETAL_DISABLE_DELAY * TPS)
+            slot.update_id(sim, player.get_loadout_ids(i));
         PetalID::T slot_petal_id = slot.get_petal_id();
         struct PetalData const &petal_data = PETAL_DATA[slot_petal_id];
         DEBUG_ONLY(assert(petal_data.count <= MAX_PETALS_IN_CLUMP);)
@@ -127,7 +127,7 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
         if (slot_petal_id == PetalID::kNone || petal_data.count == 0)
             continue;
         //if overleveled timer too large
-        if (player.overlevel_timer >= PETAL_DISABLE_DELAY * TPS) {
+        if (player.get_overlevel_timer() >= PETAL_DISABLE_DELAY * TPS) {
             player.set_loadout_reloads(i, 0);
             continue;
         }
@@ -154,21 +154,21 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
                 if (petal.has_component(kPetal) && !(BitMath::at(petal.flags, EntityFlags::kIsDespawning))) {
                     //petal rotation behavior
                     Vector wanting;
-                    Vector delta(player.x - petal.x, player.y - petal.y);
+                    Vector delta(player.get_x() - petal.get_x(), player.get_y() - petal.get_y());
                     if (rotation_count > 0)
                         wanting.unit_normal(2 * M_PI * rot_pos / rotation_count + player.heading_angle);
 
-                    float range = player.radius + 40;
+                    float range = player.get_radius() + 40;
                     if (BitMath::at(player.input, InputFlags::kAttacking)) { 
                         if (petal_data.attributes.defend_only == 0) 
-                            range = player.radius + 100 + buffs.extra_range; 
-                        if (petal.petal_id == PetalID::kWing) {
+                            range = player.get_radius() + 100 + buffs.extra_range; 
+                        if (petal.get_petal_id() == PetalID::kWing) {
                             float wave = sinf((float) petal.lifetime / (0.4 * TPS));
                             wave = wave * wave;
                             range += wave * 120;
                         }
                     }
-                    else if (BitMath::at(player.input, InputFlags::kDefending)) range = player.radius + 15;
+                    else if (BitMath::at(player.input, InputFlags::kDefending)) range = player.get_radius() + 15;
                     wanting *= range;
                     if (petal_data.attributes.clump_radius > 0) {
                         Vector secondary;
@@ -183,9 +183,9 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
                     if (petal_data.attributes.spawns != MobID::kNumMobs &&
                         petal.secondary_reload > sec_reload_ticks) {
                         uint8_t spawn_id = petal_data.attributes.spawns;
-                        Entity &mob = alloc_mob(sim, spawn_id, petal.x, petal.y, petal.team);
+                        Entity &mob = alloc_mob(sim, spawn_id, petal.get_x(), petal.get_y(), petal.get_team());
                         mob.set_parent(player.id);
-                        mob.set_color(player.color);
+                        mob.set_color(player.get_color());
                         mob.base_entity = player.id;
                         BitMath::set(mob.flags, EntityFlags::kDieOnParentDeath);
                         BitMath::set(mob.flags, EntityFlags::kNoDrops);
@@ -217,13 +217,13 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
         player.set_loadout_reloads(i, min_reload * 255);
     };
     if (BitMath::at(player.input, InputFlags::kAttacking)) 
-        player.set_face_flags(player.face_flags | (1 << FaceFlags::kAttacking));
+        player.set_face_flags(player.get_face_flags() | (1 << FaceFlags::kAttacking));
     else if (BitMath::at(player.input, InputFlags::kDefending))
-        player.set_face_flags(player.face_flags | (1 << FaceFlags::kDefending));
+        player.set_face_flags(player.get_face_flags() | (1 << FaceFlags::kDefending));
     if (player.poison_ticks > 0)
-        player.set_face_flags(player.face_flags | (1 << FaceFlags::kPoisoned));
+        player.set_face_flags(player.get_face_flags() | (1 << FaceFlags::kPoisoned));
     if (player.dandy_ticks > 0)
-        player.set_face_flags(player.face_flags | (1 << FaceFlags::kDandelioned));
+        player.set_face_flags(player.get_face_flags() | (1 << FaceFlags::kDandelioned));
     if (buffs.yinyang_count < 8) {
         switch (buffs.yinyang_count % 3) {
             case 0:

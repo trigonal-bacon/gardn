@@ -7,7 +7,7 @@
 #include <cmath>
 
 static bool _yggdrasil_revival_clause(Simulation *sim, Entity &player) {
-    for (uint32_t i = 0; i < player.loadout_count; ++i) {
+    for (uint32_t i = 0; i < player.get_loadout_count(); ++i) {
         if (!player.loadout[i].already_spawned) continue;
         if (player.loadout[i].get_petal_id() != PetalID::kYggdrasil) continue;
         if (frand() > 0.5) continue;
@@ -34,30 +34,18 @@ void inflict_damage(Simulation *sim, EntityID const atk_id, EntityID const def_i
     float damage_dealt = old_health - defender.health;
     //ant hole spawns
     //floor start, ceil end
-    if (defender.has_component(kMob) && defender.mob_id == MobID::kAntHole) {
+    if (defender.has_component(kMob) && defender.get_mob_id() == MobID::kAntHole) {
         uint32_t const num_waves = ANTHOLE_SPAWNS.size() - 1;
         uint32_t start = ceilf((defender.max_health - old_health) / defender.max_health * num_waves);
         uint32_t end = ceilf((defender.max_health - defender.health) / defender.max_health * num_waves);
         if (defender.health <= 0) end = num_waves + 1;
         for (uint32_t i = start; i < end; ++i) {
             for (MobID::T mob_id : ANTHOLE_SPAWNS[i]) {
-                Entity &child = alloc_mob(sim, mob_id, defender.x, defender.y, defender.team);
+                Entity &child = alloc_mob(sim, mob_id, defender.get_x(), defender.get_y(), defender.get_team());
                 child.set_parent(defender.id);
                 child.target = defender.target;
             }
         }
-        /*
-        uint32_t start = old_health * num_spawn_waves / defender.max_health;
-        uint32_t end = ceilf(defender.health * num_spawn_waves / defender.max_health);
-        std::printf("%d,%d,%d\n", start, end, num_spawn_waves);
-        for (uint32_t i = start; i + 1 > end; --i) {
-            for (MobID::T mob_id : ANTHOLE_SPAWNS[num_spawn_waves - i]) {
-                Entity &child = alloc_mob(sim, mob_id, defender.x, defender.y, defender.team);
-                child.set_parent(defender.id);
-                child.target = defender.target;
-            }
-        }
-            */
     }
     // yggdrasil revive clause
     if (defender.health == 0 && defender.has_component(kFlower)) {
@@ -90,7 +78,7 @@ void inflict_damage(Simulation *sim, EntityID const atk_id, EntityID const def_i
     }
     
     if (defender.has_component(kPetal)) {
-        switch (defender.petal_id) {
+        switch (defender.get_petal_id()) {
             case PetalID::kDandelion:
                 attacker.dandy_ticks = 10 * TPS;
                 break;
@@ -101,8 +89,8 @@ void inflict_damage(Simulation *sim, EntityID const atk_id, EntityID const def_i
 
     if (attacker.has_component(kPetal)) {
         if (!sim->ent_alive(defender.target))
-            defender.target = attacker.parent;
-        defender.last_damaged_by = attacker.parent;
+            defender.target = attacker.get_parent();
+        defender.last_damaged_by = attacker.get_parent();
     } else {
         if (!sim->ent_alive(defender.target))
             defender.target = atk_id;
