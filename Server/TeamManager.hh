@@ -14,4 +14,5 @@ public:
     TeamManager(Simulation *);
     void add_team(uint8_t);
     EntityID const get_random_team() const;
+    void tick();
 };

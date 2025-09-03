@@ -3,6 +3,7 @@
 #include <Shared/StaticDefinitions.hh>
 
 #include <cstdint>
+#include <set>
 
 typedef uint16_t game_tick_t;
 
@@ -19,7 +20,8 @@ typedef uint16_t game_tick_t;
     COMPONENT(Web) \
     COMPONENT(Score) \
     COMPONENT(Name) \
-    COMPONENT(Chat)
+    COMPONENT(Chat) \
+    COMPONENT(Dot)
 
 #define PERFIELD \
 FIELDS_Physics \
@@ -33,7 +35,8 @@ FIELDS_Drop \
 FIELDS_Segmented \
 FIELDS_Score \
 FIELDS_Name \
-FIELDS_Chat
+FIELDS_Chat \
+FIELDS_Dot
 
 #define FIELDS_Physics \
 SINGLE(Physics, x, Float) \
@@ -92,6 +95,8 @@ SINGLE(Name, nametag_visible, uint8_t)
 #define FIELDS_Chat \
 SINGLE(Chat, text, std::string)
 
+#define FIELDS_Dot
+
 #ifdef SERVERSIDE
 #define PER_EXTRA_FIELD \
     SINGLE(velocity, Vector, .set(0,0)) \
@@ -138,7 +143,9 @@ SINGLE(Chat, text, std::string)
     SINGLE(deleted_petals, circ_arr_t, ={}) \
     \
     SINGLE(chat_sent, EntityID, =NULL_ENTITY) \
-    SINGLE(chat_pos, uint8_t, =0)
+    SINGLE(chat_pos, uint8_t, =0) \
+    \
+    SINGLE(minimap_dots, std::set<EntityID>, ={})
 #else
 #define PER_EXTRA_FIELD \
     SINGLE(last_damaged_time, double, =0) \

@@ -196,10 +196,24 @@ Entity &alloc_chat(Simulation *sim, std::string &text, Entity const &parent) {
     return chat;
 }
 
+Entity &alloc_dot(Simulation *sim, Entity const &parent) {
+    Entity &dot = sim->alloc_ent();
+    dot.add_component(kPhysics);
+    dot.add_component(kRelations);
+    dot.set_parent(parent.id);
+    dot.set_team(parent.get_team());
+    dot.set_color(parent.get_color());
+    dot.add_component(kDot);
+    return dot;
+}
+
 void player_spawn(Simulation *sim, Entity &camera, Entity &player) {
     camera.set_player(player.id);
     player.set_parent(camera.id);
     player.set_color(camera.get_color());
+    #ifdef GAMEMODE_TDM
+    alloc_dot(sim, player);
+    #endif
     uint32_t power = Map::difficulty_at_level(camera.get_respawn_level());
     ZoneDefinition const &zone = MAP_DATA[Map::get_suitable_difficulty_zone(power)];
     float spawn_x = lerp(zone.left, zone.right, frand());

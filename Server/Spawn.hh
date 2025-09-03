@@ -10,5 +10,6 @@ Entity &alloc_player(Simulation *, EntityID const);
 Entity &alloc_petal(Simulation *, PetalID::T, Entity const &);
 Entity &alloc_web(Simulation *, float, Entity const &);
 Entity &alloc_chat(Simulation *, std::string &, Entity const &);
+Entity &alloc_dot(Simulation *, Entity const &);
 
 void player_spawn(Simulation *, Entity &, Entity &);

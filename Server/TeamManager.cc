@@ -27,3 +27,19 @@ EntityID const TeamManager::get_random_team() const {
     } 
     return teams[min_index];
 }
+
+void TeamManager::tick() {
+    for (EntityID const team_id : teams)
+        simulation->get_ent(team_id).minimap_dots.clear();
+    simulation->for_each_entity([](Simulation *sim, Entity &ent){
+        if (!ent.has_component(kDot)) return;
+        if (sim->ent_alive(ent.get_parent())) {
+            Entity &player = sim->get_ent(ent.get_parent());
+            ent.set_x(player.get_x());
+            ent.set_y(player.get_y());
+        } else
+            sim->request_delete(ent.id);
+        Entity &team = sim->get_ent(ent.get_team());
+        team.minimap_dots.insert(ent.id);
+    });
+}

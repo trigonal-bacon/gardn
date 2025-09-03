@@ -23,16 +23,28 @@ void Minimap::on_render(Renderer &ctx) {
         ctx.draw_text(def.name, { .size = (def.bottom-def.top)/2 });
         ctx.translate(-(def.left+def.right)/2,-(def.top+def.bottom)/2);
     }
-    if (Game::in_game()) {
-        Entity const &camera = Game::simulation.get_ent(Game::camera_id);
-        ctx.set_fill(0xffffe763);
-        ctx.set_stroke(Renderer::HSV(0xffffe763, 0.8));
+    Entity const &camera = Game::simulation.get_ent(Game::camera_id);
+    Game::simulation.for_each<kDot>([&](Simulation *sim, Entity const &ent){
+        if (ent.get_parent() == camera.get_player()) return;
+        RenderContext c(&ctx);
+        ctx.translate(ent.get_x(), ent.get_y());
+        ctx.set_global_alpha(1 - ent.deletion_animation);
+        ctx.scale(1 + 0.5 * ent.deletion_animation);
+        ctx.set_fill(FLOWER_COLORS[ent.get_color()]);
+        ctx.set_stroke(Renderer::HSV(FLOWER_COLORS[ent.get_color()], 0.8));
         ctx.set_line_width(ARENA_WIDTH / 120);
         ctx.begin_path();
-        ctx.arc(camera.get_camera_x(), camera.get_camera_y(), ARENA_WIDTH / 40);
+        ctx.arc(0, 0, ARENA_WIDTH / 40);
         ctx.fill();
         ctx.stroke();
-    }
+    });
+    ctx.set_fill(0xffffe763);
+    ctx.set_stroke(Renderer::HSV(0xffffe763, 0.8));
+    ctx.set_line_width(ARENA_WIDTH / 120);
+    ctx.begin_path();
+    ctx.arc(camera.get_camera_x(), camera.get_camera_y(), ARENA_WIDTH / 40);
+    ctx.fill();
+    ctx.stroke();
 }
 
 Element *Ui::make_minimap() {

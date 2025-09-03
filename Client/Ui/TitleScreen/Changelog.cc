@@ -32,6 +32,11 @@ static Element *make_entries(std::initializer_list<std::string const> contents) 
 
 static Element *make_changelog_contents() {
     Element *elt = new Ui::VContainer({
+        make_date("September 3rd 2025"),
+        make_entries({
+            "Teammates are now displayed on the minimap"
+        }),
+        make_divider(),
         make_date("August 30th 2025"),
         make_entries({
             "Added mobile touch controls",

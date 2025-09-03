@@ -19,12 +19,16 @@ static void _update_client(Simulation *sim, Client *client) {
     Entity &camera = sim->get_ent(client->camera);
     if (sim->ent_exists(camera.get_player())) 
         in_view.insert(camera.get_player());
+    #ifdef GAMEMODE_TDM
+    Entity &team = sim->get_ent(camera.get_team());
+    in_view.insert(team.minimap_dots.begin(), team.minimap_dots.end());
+    #endif
     Writer writer(Server::OUTGOING_PACKET);
     writer.write<uint8_t>(Clientbound::kClientUpdate);
     writer.write<EntityID>(client->camera);
     sim->spatial_hash.query(camera.get_camera_x(), camera.get_camera_y(), 
     960 / camera.get_fov() + 50, 540 / camera.get_fov() + 50, [&](Simulation *, Entity &ent){
-        in_view.insert(ent.id);
+        if (!ent.has_component(kDot)) in_view.insert(ent.id);
     });
 
     for (EntityID const &i: client->in_view) {
@@ -69,6 +73,9 @@ void GameInstance::init() {
 
 void GameInstance::tick() {
     simulation.tick();
+    #ifdef GAMEMODE_TDM
+    team_manager.tick();
+    #endif
     for (Client *client : clients)
         _update_client(&simulation, client);
     simulation.post_tick();
