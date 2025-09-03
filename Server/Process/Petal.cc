@@ -52,22 +52,23 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
                 if (player.health < player.max_health && player.dandy_ticks == 0)
                     potential = player.id;
                 else
-                    sim->spatial_hash.query(player.x, player.y, TEAMMATE_HEAL_RADIUS, TEAMMATE_HEAL_RADIUS, [&](Simulation *sim, Entity &ent){
-                        if (!sim->ent_alive(ent.id)) return;
-                        if (!ent.has_component(kFlower)) return;
-                        if (ent.team != player.team) return;
-                        if (ent.dandy_ticks > 0) return;
-                        float health_ratio = ent.health / ent.max_health;
-                        if (health_ratio >= min_health_ratio) return;
-                        float dist = Vector(ent.x - player.x, ent.y - player.y).magnitude();
-                        if (dist > TEAMMATE_HEAL_RADIUS) return;
-                        potential = ent.id;
-                        min_health_ratio = health_ratio;
-                    });
+                    sim->spatial_hash.query(player.get_x(), player.get_y(),
+                        TEAMMATE_HEAL_RADIUS, TEAMMATE_HEAL_RADIUS, [&](Simulation *sim, Entity &ent){
+                            if (!sim->ent_alive(ent.id)) return;
+                            if (!ent.has_component(kFlower)) return;
+                            if (ent.get_team() != player.get_team()) return;
+                            if (ent.dandy_ticks > 0) return;
+                            float health_ratio = ent.health / ent.max_health;
+                            if (health_ratio >= min_health_ratio) return;
+                            float dist = Vector(ent.get_x() - player.get_x(), ent.get_y() - player.get_y()).magnitude();
+                            if (dist > TEAMMATE_HEAL_RADIUS) return;
+                            potential = ent.id;
+                            min_health_ratio = health_ratio;
+                        });
                 if (potential != NULL_ENTITY) {
                     Entity &ent = sim->get_ent(potential);
-                    Vector delta(ent.x - petal.x, ent.y - petal.y);
-                    if (delta.magnitude() < petal.radius) {
+                    Vector delta(ent.get_x() - petal.get_x(), ent.get_y() - petal.get_y());
+                    if (delta.magnitude() < petal.get_radius()) {
                         inflict_heal(sim, ent, petal_data.attributes.burst_heal);
                         sim->request_delete(petal.id);
                         return;

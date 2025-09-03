@@ -66,7 +66,7 @@ void inflict_damage(Simulation *sim, EntityID const atk_id, EntityID const def_i
     
     if (!sim->ent_alive(atk_id)) return;
 
-    if (!defender.revived) {
+    if (defender.get_revived() == 0) {
         if (type == DamageType::kContact && defender.poison_ticks < attacker.poison_damage.time * TPS) {
             defender.poison_ticks = attacker.poison_damage.time * TPS;
             defender.poison_inflicted = attacker.poison_damage.damage / TPS;

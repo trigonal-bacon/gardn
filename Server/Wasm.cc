@@ -61,14 +61,14 @@ extern "C" {
 
         player.set_score(score);
         player.immunity_ticks = TPS;
-        uint32_t difficulty = MAP_DATA[Map::get_zone_from_pos(player.x, player.y)].difficulty;
+        uint32_t difficulty = MAP_DATA[Map::get_zone_from_pos(player.get_x(), player.get_y())].difficulty;
         uint32_t power = Map::difficulty_at_level(score_to_level(score));
         if (difficulty < power) {
             ZoneDefinition const &zone = MAP_DATA[Map::get_suitable_difficulty_zone(power)];
             player.set_x(0.99 * zone.left + 0.01 * zone.right);
         }
         for (uint32_t i = 0; i < loadout_count + MAX_SLOT_COUNT; ++i) {
-            PetalTracker::remove_petal(sim, player.loadout_ids[i]);
+            PetalTracker::remove_petal(sim, player.get_loadout_ids(i));
             player.set_loadout_ids(i, loadout_ids[i]);
             PetalTracker::add_petal(sim, loadout_ids[i]);
         }

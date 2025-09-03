@@ -175,7 +175,7 @@ void Game::render_game() {
     });
     simulation.for_each<kChat>([](Simulation *sim, Entity const &ent){
         RenderContext context(&renderer);
-        renderer.translate(ent.x, ent.y);
+        renderer.translate(ent.get_x(), ent.get_y());
         renderer.scale(ent.animation);
         render_chat(renderer, ent);
     });

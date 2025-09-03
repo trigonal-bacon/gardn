@@ -109,7 +109,7 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
             Entity &player = alloc_player(simulation, camera.get_team());
             player_spawn(simulation, camera, player);
             player.set_name(name);
-            std::cout << "player_spawn " << name_or_unnamed(player.name)
+            std::cout << "player_spawn " << name_or_unnamed(name)
                 << " <" << +player.id.hash << "," << +player.id.id << ">" << std::endl;
             break;
         }
@@ -159,10 +159,10 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
             if (text.size() == 0) break;
             Simulation *simulation = &client->game->simulation;
             Entity &camera = simulation->get_ent(client->camera);
-            Entity &player = simulation->get_ent(camera.player);
+            Entity &player = simulation->get_ent(camera.get_player());
             if (player.chat_sent != NULL_ENTITY) break;
             player.chat_sent = alloc_chat(simulation, text, player).id;
-            std::cout << "chat " << name_or_unnamed(player.name) << ": " << text << std::endl;
+            std::cout << "chat " << name_or_unnamed(player.get_name()) << ": " << text << std::endl;
             break;
         }
     }

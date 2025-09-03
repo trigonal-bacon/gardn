@@ -189,7 +189,7 @@ Entity &alloc_chat(Simulation *sim, std::string &text, Entity const &parent) {
     chat.set_radius(18 / 2 * text.size());
     chat.add_component(kRelations);
     chat.set_parent(parent.id);
-    chat.set_color(parent.color);
+    chat.set_color(parent.get_color());
     chat.add_component(kChat);
     chat.set_text(text);
     entity_set_despawn_tick(chat, 10 * TPS);

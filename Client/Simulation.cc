@@ -44,7 +44,7 @@ void Entity::tick_lerp(float amt) {
         if (damaged)
             last_damaged_time = Game::timestamp;
         damaged.clear();
-        if (revived == 1 && revival_burst < 0.1)
+        if (revived == 1 && revival_burst < 0.01)
             revival_burst = 1;
         else
             revival_burst = lerp(revival_burst, 0, amt / 3);
