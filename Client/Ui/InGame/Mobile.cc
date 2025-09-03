@@ -65,8 +65,8 @@ Element *Ui::make_mobile_attack_button() {
             .no_animation = 1
         }
     );
-    elt->x = -400;
-    elt->y = -250;
+    elt->x = -350;
+    elt->y = -200;
     return elt;
 }
 
@@ -83,8 +83,8 @@ Element *Ui::make_mobile_defend_button() {
             .no_animation = 1
         }
     );
-    elt->x = -200;
-    elt->y = -300;
+    elt->x = -150;
+    elt->y = -250;
     return elt;
 }
 
