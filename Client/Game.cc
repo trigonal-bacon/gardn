@@ -169,7 +169,7 @@ void Game::reset() {
 uint8_t Game::alive() {
     return socket.ready && simulation_ready
     && simulation.ent_exists(camera_id)
-    && simulation.ent_alive(simulation.get_ent(camera_id).get_player());
+    && simulation.ent_exists(simulation.get_ent(camera_id).get_player());
 }
 
 uint8_t Game::in_game() {

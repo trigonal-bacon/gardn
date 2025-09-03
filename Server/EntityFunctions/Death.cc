@@ -56,8 +56,8 @@ void entity_on_death(Simulation *sim, Entity const &ent) {
     }
     if (ent.has_component(kFlower) && sim->ent_alive(ent.get_parent())) {
         Entity &camera = sim->get_ent(ent.get_parent());
-        EntityID killer_id = sim->get_ent(ent.last_damaged_by).base_entity;
-        if (sim->ent_alive(killer_id)) {
+        if (sim->ent_exists(ent.last_damaged_by)) {
+            EntityID killer_id = sim->get_ent(ent.last_damaged_by).base_entity;
             Entity const &killer = sim->get_ent(killer_id);
             if (killer.has_component(kName)) camera.set_killed_by(killer.get_name());
             else camera.set_killed_by("");

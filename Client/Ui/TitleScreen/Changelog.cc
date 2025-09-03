@@ -34,6 +34,7 @@ static Element *make_changelog_contents() {
     Element *elt = new Ui::VContainer({
         make_date("September 3rd 2025"),
         make_entries({
+            "Buffed Bone",
             "Teammates are now displayed on the minimap"
         }),
         make_divider(),

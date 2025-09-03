@@ -70,7 +70,7 @@ void inflict_damage(Simulation *sim, EntityID const atk_id, EntityID const def_i
         if (type == DamageType::kContact && defender.poison_ticks < attacker.poison_damage.time * TPS) {
             defender.poison_ticks = attacker.poison_damage.time * TPS;
             defender.poison_inflicted = attacker.poison_damage.damage / TPS;
-            defender.poison_dealer = atk_id;
+            defender.poison_dealer = attacker.base_entity;
         }
 
         if (defender.slow_ticks < attacker.slow_inflict)
