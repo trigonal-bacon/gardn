@@ -83,7 +83,7 @@ void inflict_damage(Simulation *sim, EntityID const atk_id, EntityID const def_i
     } else {
         if (!sim->ent_alive(defender.target))
             defender.target = atk_id;
-        defender.last_damaged_by = atk_id;
+        defender.last_damaged_by = attacker.base_entity;
     }
 
     if (type == DamageType::kContact && defender.poison_ticks < attacker.poison_damage.time * TPS) {
