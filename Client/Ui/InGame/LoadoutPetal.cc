@@ -5,7 +5,6 @@
 #include <Client/Input.hh>
 
 #include <cmath>
-#include <iostream>
 
 using namespace Ui;
 
@@ -118,7 +117,7 @@ UiLoadoutPetal::UiLoadoutPetal(uint8_t pos) : Element(60, 60),
         }
         else
             reload = 0;
-        if (petal_id == PetalID::kNone) return false;
+        if (last_id == PetalID::kNone) return false;
         return true;
     };
     style.animate = [&](Element *elt, Renderer &ctx) {
@@ -204,6 +203,7 @@ UiLoadoutPetal::UiLoadoutPetal(uint8_t pos) : Element(60, 60),
 }
 
 void UiLoadoutPetal::on_render(Renderer &ctx) {
+    if (last_id == PetalID::kNone) return;
     ctx.scale(width / 60);
     if (static_pos < Game::loadout_count && PETAL_DATA[last_id].count != 0)
         draw_loadout_background(ctx, last_id, (float) reload);
@@ -224,8 +224,9 @@ void UiLoadoutPetal::on_render_skip(Renderer &ctx) {
 void UiLoadoutPetal::on_event(uint8_t event) {
     if (Game::alive() && event == kMouseDown) {
         //Ui::UiLoadout::petal_selected = this;
+        if (!selected)
+            ++Ui::UiLoadout::num_petals_selected;
         selected = 1;
-        ++Ui::UiLoadout::num_petals_selected;
         Ui::UiLoadout::selected_with_keys = MAX_SLOT_COUNT;
         if (Input::touches.contains(touch_id))
             persistent_touch_id = touch_id;

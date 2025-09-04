@@ -120,6 +120,8 @@ void Element::on_render_tooltip(Renderer &ctx) {
         ctx.reset_transform();
         if (screen_x < (tooltip->width / 2 + 10) * Ui::scale)
             ctx.translate((tooltip->width / 2 + 10) * Ui::scale, screen_y);
+        else if (screen_x > Ui::window_width - (tooltip->width / 2 + 10) * Ui::scale)
+            ctx.translate(Ui::window_width - (tooltip->width / 2 + 10) * Ui::scale, screen_y);
         else ctx.translate(screen_x, screen_y);
         ctx.scale(Ui::scale);
         ctx.translate(0, -(height + tooltip->height) / 2 - 5);

@@ -39,7 +39,7 @@ void ScrollContainer::on_render(Renderer &ctx) {
         if (Input::is_mobile) {
             auto iter = Input::touches.find(touch_id);
             if (iter != Input::touches.end())
-                lerp_scroll -= iter->second.dy;
+                lerp_scroll -= iter->second.dy / ratio;
             else
                 touch_id = (uint32_t)-1;
         }
