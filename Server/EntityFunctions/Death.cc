@@ -50,15 +50,12 @@ static void _add_score(Simulation *sim, EntityID const killer_id, Entity const &
 void entity_on_death(Simulation *sim, Entity const &ent) {
     //don't do on_death for any despawned entity
     uint8_t natural_despawn = BitMath::at(ent.flags, EntityFlags::kIsDespawning) && ent.despawn_tick == 0;
-    if (ent.score_reward > 0 && sim->ent_exists(ent.last_damaged_by) && !natural_despawn) {
-        EntityID killer_id = sim->get_ent(ent.last_damaged_by).base_entity;
-        _add_score(sim, killer_id, ent);
-    }
+    if (ent.score_reward > 0 && !natural_despawn)
+        _add_score(sim, ent.last_damaged_by, ent);
     if (ent.has_component(kFlower) && sim->ent_alive(ent.get_parent())) {
         Entity &camera = sim->get_ent(ent.get_parent());
         if (sim->ent_exists(ent.last_damaged_by)) {
-            EntityID killer_id = sim->get_ent(ent.last_damaged_by).base_entity;
-            Entity const &killer = sim->get_ent(killer_id);
+            Entity const &killer = sim->get_ent(ent.last_damaged_by);
             if (killer.has_component(kName)) camera.set_killed_by(killer.get_name());
             else camera.set_killed_by("");
         } else if (ent.poison_ticks > 0) camera.set_killed_by("Poison");
