@@ -15,7 +15,6 @@ void tick_curse_behavior(Simulation *sim) {
     });
     if (!sim->ent_alive(leader)) return;
     sim->for_each<kMob>([=](Simulation *sim, Entity &ent) {
-        //if (sim->ent_alive(ent.parent)) return;
         if (!(ent.get_team() == NULL_ENTITY)) return;
         if (sim->ent_alive(ent.target)) return;
         Entity const &player = sim->get_ent(leader);

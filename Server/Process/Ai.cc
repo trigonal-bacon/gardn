@@ -386,6 +386,8 @@ void tick_ai_behavior(Simulation *sim, Entity &ent) {
         ent.ai_tick = 0;
         return;
     }
+    if (!sim->ent_alive(ent.target) && sim->ent_alive(ent.last_damaged_by))
+        ent.target = ent.last_damaged_by;
     switch(ent.get_mob_id()) {
         case MobID::kBabyAnt:            
         case MobID::kLadybug:

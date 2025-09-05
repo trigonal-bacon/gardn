@@ -5,7 +5,6 @@
 #include <Client/Input.hh>
 
 #include <cmath>
-#include <iostream>
 
 using namespace Ui;
 
@@ -76,15 +75,18 @@ static uint8_t dynamic_to_static(uint8_t dynamic_pos) {
 
 
 static uint8_t find_viable_target(float x, float y) {
+    float min_dist = 10000;
+    uint8_t min_index = -1;
     for (uint8_t i = 0; i < 2 * MAX_SLOT_COUNT + 1; ++i) {
         UiLoadoutSlot *slot = Ui::UiLoadout::petal_backgrounds[i];
-        if (slot != nullptr && slot->visible &&
-        fabsf(x - slot->screen_x) < slot->width * Ui::scale / 2 &&
-        fabsf(y - slot->screen_y) < slot->height * Ui::scale / 2) {
-            return i;
-        }
+        float dist = std::max(fabsf(x - slot->screen_x), fabsf(y - slot->screen_y));
+        if (dist >= (slot->width + 20) * Ui::scale / 2) continue;
+        if (dist >= min_dist) continue;
+        min_dist = dist;
+        min_index = i;
+        if (dist <= slot->width * Ui::scale / 2) break;
     }
-    return (uint8_t)-1;
+    return min_index;
 }
 
 UiLoadoutPetal::UiLoadoutPetal(uint8_t pos) : Element(60, 60), 
@@ -115,7 +117,7 @@ UiLoadoutPetal::UiLoadoutPetal(uint8_t pos) : Element(60, 60),
         }
         else
             reload = 0;
-        if (petal_id == PetalID::kNone) return false;
+        if (last_id == PetalID::kNone) return false;
         return true;
     };
     style.animate = [&](Element *elt, Renderer &ctx) {
@@ -201,6 +203,7 @@ UiLoadoutPetal::UiLoadoutPetal(uint8_t pos) : Element(60, 60),
 }
 
 void UiLoadoutPetal::on_render(Renderer &ctx) {
+    if (last_id == PetalID::kNone) return;
     ctx.scale(width / 60);
     if (static_pos < Game::loadout_count && PETAL_DATA[last_id].count != 0)
         draw_loadout_background(ctx, last_id, (float) reload);
@@ -221,13 +224,14 @@ void UiLoadoutPetal::on_render_skip(Renderer &ctx) {
 void UiLoadoutPetal::on_event(uint8_t event) {
     if (Game::alive() && event == kMouseDown) {
         //Ui::UiLoadout::petal_selected = this;
+        if (!selected)
+            ++Ui::UiLoadout::num_petals_selected;
         selected = 1;
-        ++Ui::UiLoadout::num_petals_selected;
         Ui::UiLoadout::selected_with_keys = MAX_SLOT_COUNT;
         if (Input::touches.contains(touch_id))
             persistent_touch_id = touch_id;
     }
-    if (event != kFocusLost && last_id != PetalID::kNone && !focused) {
+    if (event != kFocusLost && last_id != PetalID::kNone && (!focused || Input::is_mobile)) {
         rendering_tooltip = 1;
         tooltip = Ui::UiLoadout::petal_tooltips[last_id];
     } else 

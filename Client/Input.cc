@@ -37,6 +37,8 @@ void Input::reset() {
     Input::prev_mouse_x = Input::mouse_x;
     Input::prev_mouse_y = Input::mouse_y;
     Input::wheel_delta = 0;
-    for (auto &iter : Input::touches)
+    for (auto &iter : Input::touches) {
         iter.second.saturated = 1;
+        iter.second.dx = iter.second.dy = 0;
+    }
 }
