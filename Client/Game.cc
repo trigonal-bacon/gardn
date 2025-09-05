@@ -99,13 +99,13 @@ void Game::init() {
         Ui::make_loadout_backgrounds()
     );
     game_ui_window.add_child(
+        Ui::make_mobile_joystick()
+    );
+    game_ui_window.add_child(
         Ui::make_mobile_attack_button()
     );
     game_ui_window.add_child(
         Ui::make_mobile_defend_button()
-    );
-    game_ui_window.add_child(
-        Ui::make_mobile_joystick()
     );
     for (uint8_t i = 0; i < MAX_SLOT_COUNT * 2; ++i) game_ui_window.add_child(new Ui::UiLoadoutPetal(i));
     game_ui_window.add_child(

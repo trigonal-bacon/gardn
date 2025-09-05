@@ -66,10 +66,10 @@ void inflict_damage(Simulation *sim, EntityID const atk_id, EntityID const def_i
     if (defender.slow_ticks < attacker.slow_inflict)
         defender.slow_ticks = attacker.slow_inflict;
     
-    if (defender.has_component(kPetal)) {
-        switch (defender.get_petal_id()) {
+    if (attacker.has_component(kPetal)) {
+        switch (attacker.get_petal_id()) {
             case PetalID::kDandelion:
-                attacker.dandy_ticks = 10 * TPS;
+                defender.dandy_ticks = 10 * TPS;
                 break;
             default:
                 break;
@@ -78,13 +78,13 @@ void inflict_damage(Simulation *sim, EntityID const atk_id, EntityID const def_i
 
     if (attacker.has_component(kPetal)) {
         if (!sim->ent_alive(defender.target))
-            defender.target = attacker.get_parent();
-        defender.last_damaged_by = attacker.get_parent();
+            defender.target = attacker.base_entity;
+        
     } else {
         if (!sim->ent_alive(defender.target))
             defender.target = atk_id;
-        defender.last_damaged_by = attacker.base_entity;
     }
+    defender.last_damaged_by = attacker.base_entity;
 
     if (type == DamageType::kContact && defender.poison_ticks < attacker.poison_damage.time * TPS) {
         defender.poison_ticks = attacker.poison_damage.time * TPS;

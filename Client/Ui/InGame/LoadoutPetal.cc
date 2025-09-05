@@ -102,6 +102,8 @@ UiLoadoutPetal::UiLoadoutPetal(uint8_t pos) : Element(60, 60),
             Entity const &player = Game::simulation.get_ent(Game::player_id);
             if (no_change_ticks == 0 || player.get_state_loadout_ids(static_pos)) {
                 no_change_ticks = 0;
+                if (petal_id == PetalID::kNone)
+                    x = y = 0;
                 petal_id = Game::cached_loadout[static_pos];
                 if (petal_id != PetalID::kNone && petal_id < PetalID::kNumPetals)
                     last_id = petal_id;
@@ -212,7 +214,7 @@ void UiLoadoutPetal::on_render(Renderer &ctx) {
 }
 
 void UiLoadoutPetal::on_render_skip(Renderer &ctx) {
-    x = y = 0;
+    //x = y = 0;
     if (Game::alive()) showed = 1;
     else showed = 0;
     curr_pos = 0;
@@ -231,7 +233,7 @@ void UiLoadoutPetal::on_event(uint8_t event) {
         if (Input::touches.contains(touch_id))
             persistent_touch_id = touch_id;
     }
-    if (event != kFocusLost && last_id != PetalID::kNone && (!focused || Input::is_mobile)) {
+    if (event != kFocusLost && (!selected || Input::is_mobile) && last_id != PetalID::kNone) {
         rendering_tooltip = 1;
         tooltip = Ui::UiLoadout::petal_tooltips[last_id];
     } else 
