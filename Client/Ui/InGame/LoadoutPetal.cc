@@ -57,8 +57,10 @@ void Ui::ui_swap_petals(uint8_t static_pos1, uint8_t static_pos2) {
     UiLoadoutPetal *a1 = Ui::UiLoadout::petal_slots[static_pos1];
     UiLoadoutPetal *a2 = Ui::UiLoadout::petal_slots[static_pos2];
     if (a1->petal_id == a2->petal_id) return;
-    Game::cached_loadout[static_pos1] = a2->petal_id;
-    Game::cached_loadout[static_pos2] = a1->petal_id;
+    //Game::cached_loadout[static_pos1] = a2->petal_id;
+    //Game::cached_loadout[static_pos2] = a1->petal_id;
+    a2->petal_id = Game::cached_loadout[static_pos1];
+    a1->petal_id = Game::cached_loadout[static_pos2];
     a1->static_pos = static_pos2;
     a2->static_pos = static_pos1;
     Ui::UiLoadout::petal_slots[static_pos1] = a2;
@@ -102,8 +104,6 @@ UiLoadoutPetal::UiLoadoutPetal(uint8_t pos) : Element(60, 60),
             Entity const &player = Game::simulation.get_ent(Game::player_id);
             if (no_change_ticks == 0 || player.get_state_loadout_ids(static_pos)) {
                 no_change_ticks = 0;
-                if (petal_id == PetalID::kNone)
-                    x = y = 0;
                 petal_id = Game::cached_loadout[static_pos];
                 if (petal_id != PetalID::kNone && petal_id < PetalID::kNumPetals)
                     last_id = petal_id;
@@ -214,7 +214,7 @@ void UiLoadoutPetal::on_render(Renderer &ctx) {
 }
 
 void UiLoadoutPetal::on_render_skip(Renderer &ctx) {
-    //x = y = 0;
+    x = y = 0;
     if (Game::alive()) showed = 1;
     else showed = 0;
     curr_pos = 0;
