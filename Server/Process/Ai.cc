@@ -328,7 +328,7 @@ static void tick_digger(Simulation *sim, Entity &ent) {
             v *= -1;
         }
         ent.acceleration = v;
-        ent.set_eye_angle(v.angle());
+        ent.set_angle(v.angle());
         return;
     } else {
         if (!(ent.target == NULL_ENTITY)) {
@@ -338,7 +338,7 @@ static void tick_digger(Simulation *sim, Entity &ent) {
         ent.target = find_nearest_enemy(sim, ent, ent.detection_radius + ent.get_radius());
         switch(ent.ai_state) {
             case AIState::kIdle: {
-                ent.set_eye_angle(frand() * M_PI * 2);
+                ent.set_angle(frand() * M_PI * 2);
                 ent.ai_state = AIState::kIdleMoving;
                 ent.ai_tick = 0;
                 break;
@@ -346,7 +346,7 @@ static void tick_digger(Simulation *sim, Entity &ent) {
             case AIState::kIdleMoving: {
                 if (ent.ai_tick > 5 * TPS)
                     ent.ai_state = AIState::kIdle;
-                ent.acceleration.unit_normal(ent.get_eye_angle()).set_magnitude(PLAYER_ACCELERATION);
+                ent.acceleration.unit_normal(ent.get_angle()).set_magnitude(PLAYER_ACCELERATION);
                 break;
             }
             case AIState::kReturning: {

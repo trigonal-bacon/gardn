@@ -23,16 +23,15 @@ void Minimap::on_render(Renderer &ctx) {
         ctx.draw_text(def.name, { .size = (def.bottom-def.top)/2 });
         ctx.translate(-(def.left+def.right)/2,-(def.top+def.bottom)/2);
     }
-    if (Game::in_game()) {
-        Entity const &camera = Game::simulation.get_ent(Game::camera_id);
-        ctx.set_fill(0xffffe763);
-        ctx.set_stroke(Renderer::HSV(0xffffe763, 0.8));
-        ctx.set_line_width(ARENA_WIDTH / 120);
-        ctx.begin_path();
-        ctx.arc(camera.get_camera_x(), camera.get_camera_y(), ARENA_WIDTH / 40);
-        ctx.fill();
-        ctx.stroke();
-    }
+    if (!Game::simulation.ent_exists(Game::camera_id)) return;
+    Entity const &camera = Game::simulation.get_ent(Game::camera_id);
+    ctx.set_fill(0xffffe763);
+    ctx.set_stroke(Renderer::HSV(0xffffe763, 0.8));
+    ctx.set_line_width(ARENA_WIDTH / 120);
+    ctx.begin_path();
+    ctx.arc(camera.get_camera_x(), camera.get_camera_y(), ARENA_WIDTH / 40);
+    ctx.fill();
+    ctx.stroke();
 }
 
 Element *Ui::make_minimap() {

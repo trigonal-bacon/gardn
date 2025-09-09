@@ -208,7 +208,6 @@ void Game::tick(double time) {
     double a = Ui::window_width / 1920;
     double b = Ui::window_height / 1080;
     Ui::scale = std::max(a, b);
-    if (Input::is_mobile) Ui::scale *= 1.33;
     if (alive()) {
         on_game_screen = 1;
         player_id = simulation.get_ent(camera_id).get_player();

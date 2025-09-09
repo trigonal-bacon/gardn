@@ -99,8 +99,10 @@ Element *Ui::make_title_info_box() {
             return Game::respawn_level > 1 ? 1 : 0;
         }
     );
-    elt->x = 0;
-    elt->y = 270;
+    elt->style.animate = [](Element *elt, Renderer &ctx) {
+        elt->x = 0;
+        elt->y = 270;
+    };
     return elt;
 }
 

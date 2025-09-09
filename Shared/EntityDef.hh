@@ -54,7 +54,6 @@ SINGLE(Relations, parent, EntityID) \
 SINGLE(Relations, color, uint8_t)
 
 #define FIELDS_Flower \
-SINGLE(Flower, eye_angle, float) \
 SINGLE(Flower, overlevel_timer, float) \
 SINGLE(Flower, loadout_count, uint8_t) \
 SINGLE(Flower, face_flags, uint8_t) \

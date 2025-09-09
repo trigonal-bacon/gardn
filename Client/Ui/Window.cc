@@ -3,6 +3,7 @@
 #include <Client/Ui/Extern.hh>
 
 #include <Client/Game.hh>
+#include <Client/Input.hh>
 
 #include <cmath>
 

@@ -24,8 +24,8 @@ void Particle::tick_title(Renderer &ctx, double dt) {
             continue;
         }
         RenderContext c(&ctx);
-        part.x += part.x_velocity * (dt / 1000);
-        part.angle += dt / 1000;
+        part.x += part.x_velocity * (dt / 1000) * Ui::scale;
+        part.angle += dt / 1000 * Ui::scale;
         ctx.translate(part.x, part.y + 12.5 * sin(Game::timestamp / 500 + part.sin_offset));
         ctx.scale(Ui::scale * part.radius);
         if (PETAL_DATA[part.id].attributes.rotation_style == PetalAttributes::kPassiveRot)

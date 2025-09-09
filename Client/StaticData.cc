@@ -7,7 +7,7 @@ std::array<uint32_t, RarityID::kNumRarities> const RARITY_COLORS = {
  }; // 0xffff2b75, 0xfff70fb6};
 
 std::array<uint32_t, ColorID::kNumColors> const FLOWER_COLORS = {
-    0xffffe763, 0xff999999, 0xff789cf5, 0xffec6869
+    0xffffe763, 0xff999999, 0xff689ce2, 0xffec6869
 };
 
 std::array<char const *, RarityID::kNumRarities> const RARITY_NAMES = {
