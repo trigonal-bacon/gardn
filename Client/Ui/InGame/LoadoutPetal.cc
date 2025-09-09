@@ -57,8 +57,10 @@ void Ui::ui_swap_petals(uint8_t static_pos1, uint8_t static_pos2) {
     UiLoadoutPetal *a1 = Ui::UiLoadout::petal_slots[static_pos1];
     UiLoadoutPetal *a2 = Ui::UiLoadout::petal_slots[static_pos2];
     if (a1->petal_id == a2->petal_id) return;
-    Game::cached_loadout[static_pos1] = a2->petal_id;
-    Game::cached_loadout[static_pos2] = a1->petal_id;
+    //Game::cached_loadout[static_pos1] = a2->petal_id;
+    //Game::cached_loadout[static_pos2] = a1->petal_id;
+    a2->petal_id = Game::cached_loadout[static_pos1];
+    a1->petal_id = Game::cached_loadout[static_pos2];
     a1->static_pos = static_pos2;
     a2->static_pos = static_pos1;
     Ui::UiLoadout::petal_slots[static_pos1] = a2;
@@ -231,7 +233,7 @@ void UiLoadoutPetal::on_event(uint8_t event) {
         if (Input::touches.contains(touch_id))
             persistent_touch_id = touch_id;
     }
-    if (event != kFocusLost && last_id != PetalID::kNone && (!focused || Input::is_mobile)) {
+    if (event != kFocusLost && (!selected || Input::is_mobile) && last_id != PetalID::kNone) {
         rendering_tooltip = 1;
         tooltip = Ui::UiLoadout::petal_tooltips[last_id];
     } else 
