@@ -4,11 +4,38 @@
 
 #include <Helpers/Bits.hh>
 
+#include <functional>
+
+static void draw_eyes(Renderer &ctx, FlowerRenderAttributes attributes, std::function<void(void)> draw) {
+    {
+        RenderContext context(&ctx);
+        if (!BitMath::at(attributes.face_flags, FaceFlags::kDeveloper))
+            ctx.translate(-7, -5);
+        else {
+            ctx.translate(-10, -10);
+            ctx.scale(-1);
+        }
+        draw();
+    }
+    {
+        RenderContext context(&ctx);
+        if (!BitMath::at(attributes.face_flags, FaceFlags::kDeveloper))
+            ctx.translate(7, -5);
+        else
+            ctx.translate(10, 8);
+        draw();
+    }
+}
+
 void draw_static_flower(Renderer &ctx, FlowerRenderAttributes attributes) {
+    ctx.scale(attributes.radius / 25);
     if (BitMath::at(attributes.equip_flags, EquipmentFlags::kCutter)) {
         RenderContext context(&ctx);
-        ctx.scale(attributes.radius / 25);
         ctx.rotate(attributes.cutter_angle);
+        ctx.set_fill(0xff111111);
+        ctx.begin_path();
+        ctx.arc(0, 0, 27.5);
+        ctx.fill();
         draw_static_petal_single(PetalID::kCutter, ctx);
     }
     uint32_t base_color = FLOWER_COLORS[attributes.color];
@@ -20,10 +47,17 @@ void draw_static_flower(Renderer &ctx, FlowerRenderAttributes attributes) {
     ctx.set_fill(base_color);
     ctx.set_line_width(3);
     ctx.begin_path();
-    ctx.arc(0, 0, attributes.radius);
+    if (!BitMath::at(attributes.face_flags, FaceFlags::kDeveloper))
+        ctx.arc(0, 0, 25);
+    else {
+        ctx.move_to(25, 0);
+        ctx.qcurve_to(15, 35, 0, 25);
+        ctx.qcurve_to(-25, 15, -25, 0);
+        ctx.qcurve_to(-25, -35, 0, -25);
+        ctx.qcurve_to(18, -25, 25, 0);
+    }
     ctx.fill();
     ctx.stroke();
-    ctx.scale(attributes.radius / 25);
     {
         RenderContext context(&ctx);
         ctx.set_fill(0xff222222);
@@ -32,52 +66,63 @@ void draw_static_flower(Renderer &ctx, FlowerRenderAttributes attributes) {
             float const len = 4;
             ctx.set_stroke(0xff222222);
             ctx.set_line_width(3);
-            ctx.begin_path();
-            ctx.move_to(-7-len, -5-len);
-            ctx.line_to(-7+len,-5+len);
-            ctx.move_to(-7+len,-5-len);
-            ctx.line_to(-7-len,-5+len);
-            ctx.move_to(7-len, -5-len);
-            ctx.line_to(7+len,-5+len);
-            ctx.move_to(7+len,-5-len);
-            ctx.line_to(7-len,-5+len);
+            draw_eyes(ctx, attributes, [&](){
+                ctx.move_to(-len, -len);
+                ctx.line_to(len,len);
+                ctx.move_to(len,-len);
+                ctx.line_to(-len,len);
+            });
             ctx.stroke();
         } else if (BitMath::at(attributes.face_flags, FaceFlags::kSquareEyes)) {
-            ctx.rect(-7-3.25, -5-6.5, 6.5, 13);
-            ctx.rect(7-3.25, -5-6.5, 6.5, 13);
+            draw_eyes(ctx, attributes, [&](){
+                ctx.rect(-3.25, -6.5, 6.5, 13);
+            });
             ctx.fill();
             ctx.begin_path();
-            ctx.rect(-7-3, -5-6, 6, 12);
-            ctx.rect(7-3, -5-6, 6, 12);
+            draw_eyes(ctx, attributes, [&](){
+                ctx.rect(-3, -6, 6, 12);
+            });
             ctx.clip();
             ctx.set_fill(0xffffffff);
             ctx.begin_path();
-            ctx.rect(-7 + attributes.eye_x-3, -5 + attributes.eye_y-3, 6, 6);
-            ctx.rect(7 + attributes.eye_x-3, -5 + attributes.eye_y-3, 6, 6);
+            draw_eyes(ctx, attributes, [&](){
+                ctx.rect(attributes.eye_x-3, attributes.eye_y-3, 6, 6);
+            });
             ctx.fill();
         } else {
-            ctx.ellipse(-7, -5, 3.25, 6.5);
-            ctx.ellipse(7, -5, 3.25, 6.5);
+            draw_eyes(ctx, attributes, [&](){
+                ctx.ellipse(0, 0, 3.25, 6.5);
+            });
             ctx.fill();
             ctx.begin_path();
-            ctx.ellipse(-7, -5, 3, 6);
-            ctx.ellipse(7, -5, 3, 6);
+            draw_eyes(ctx, attributes, [&](){
+                ctx.ellipse(0, 0, 3, 6);
+            });
             ctx.clip();
             ctx.set_fill(0xffffffff);
             ctx.begin_path();
-            ctx.arc(-7 + attributes.eye_x, -5 + attributes.eye_y, 3);
-            ctx.arc(7 + attributes.eye_x, -5 + attributes.eye_y, 3);
+            draw_eyes(ctx, attributes, [&](){
+                ctx.arc(attributes.eye_x, attributes.eye_y, 3);
+            });
             ctx.fill();
         }
+    }
+    if (!BitMath::at(attributes.face_flags, FaceFlags::kDeveloper))
+        ctx.translate(0, 10);
+    else {
+        ctx.translate(-8, 7);
+        ctx.rotate(M_PI / 5);
     }
     ctx.set_stroke(0xff222222);
     ctx.set_line_width(1.5);
     ctx.round_line_cap();
     ctx.begin_path();
-    ctx.move_to(-6, 10);
-    ctx.qcurve_to(0, attributes.mouth, 6, 10);
+    ctx.move_to(-6, 0);
+    ctx.qcurve_to(0, attributes.mouth - 10, 6, 0);
     ctx.stroke();
-    if (!BitMath::at(attributes.face_flags, FaceFlags::kDeadEyes) && attributes.mouth <= 8 && BitMath::at(attributes.face_flags, FaceFlags::kAttacking))
+    ctx.translate(0, -10);
+    if (!BitMath::at(attributes.face_flags, FaceFlags::kDeadEyes) && !BitMath::at(attributes.face_flags, FaceFlags::kDeveloper) &&
+        attributes.mouth <= 8 && BitMath::at(attributes.face_flags, FaceFlags::kAttacking))
     {
         RenderContext context(&ctx);
         ctx.translate(0, -attributes.mouth - 8);

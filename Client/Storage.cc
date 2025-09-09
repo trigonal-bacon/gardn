@@ -170,6 +170,13 @@ void Storage::retrieve() {
             Game::nickname = reader.read<std::string>();
         }
     }
+    {
+        uint32_t len = StorageProtocol::retrieve("dev", sizeof(uint32_t) * MAX_DEV_PWD_LENGTH + 4);
+        if (len > 0 && len <= sizeof(uint32_t) * MAX_DEV_PWD_LENGTH + 4) {
+            Decoder reader(&StorageProtocol::buffer[0]);
+            Game::dev_password = reader.read<std::string>();
+        }
+    }
     #ifdef DEBUG
     for (MobID::T i = 0; i < MobID::kNumMobs; ++i) Game::seen_mobs[i] = 1;
     for (PetalID::T i = PetalID::kBasic; i < PetalID::kNumPetals; ++i) Game::seen_petals[i] = 1;

@@ -20,6 +20,7 @@ namespace Game {
     extern EntityID camera_id;
     extern EntityID player_id;
     extern std::string nickname;
+    extern std::string dev_password;
     extern std::string disconnect_message;
     extern std::array<uint8_t, PetalID::kNumPetals> seen_petals;
     extern std::array<uint8_t, MobID::kNumMobs> seen_mobs;

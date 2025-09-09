@@ -27,6 +27,7 @@ namespace Game {
     EntityID camera_id;
     EntityID player_id;
     std::string nickname;
+    std::string dev_password;
     std::string disconnect_message;
     std::array<uint8_t, PetalID::kNumPetals> seen_petals;
     std::array<uint8_t, MobID::kNumMobs> seen_mobs;

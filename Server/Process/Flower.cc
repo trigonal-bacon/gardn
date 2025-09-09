@@ -224,6 +224,8 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
         player.set_face_flags(player.get_face_flags() | (1 << FaceFlags::kPoisoned));
     if (player.dandy_ticks > 0)
         player.set_face_flags(player.get_face_flags() | (1 << FaceFlags::kDandelioned));
+    if (player.dev)
+        player.set_face_flags(player.get_face_flags() | (1 << FaceFlags::kDeveloper));
     if (buffs.yinyang_count < 8) {
         switch (buffs.yinyang_count % 3) {
             case 0:

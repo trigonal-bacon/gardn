@@ -162,7 +162,8 @@ namespace FaceFlags {
         kPoisoned,
         kDandelioned,
         kDeadEyes,
-        kSquareEyes
+        kSquareEyes,
+        kDeveloper
     };
 };
 

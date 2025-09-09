@@ -110,6 +110,7 @@ SINGLE(Chat, text, std::string)
     SINGLE(heading_angle, float, =0) \
     SINGLE(input, uint8_t, =0) \
     SINGLE(player_count, uint32_t, =0) \
+    SINGLE(dev, uint8_t, =0) \
     \
     SINGLE(slow_ticks, game_tick_t, =0) \
     SINGLE(slow_inflict, game_tick_t, =0) \

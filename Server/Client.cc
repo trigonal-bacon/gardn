@@ -100,16 +100,20 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
         case Serverbound::kClientSpawn: {
             if (client->alive()) break;
             //check string length
-            std::string name;
+            std::string name, pwd;
             if (client->check_invalid(validator.validate_string(MAX_NAME_LENGTH))) return;
+            if (client->check_invalid(validator.validate_string(MAX_DEV_PWD_LENGTH))) return;
             reader.read<std::string>(name);
+            reader.read<std::string>(pwd);
             if (client->check_invalid(UTF8Parser::is_valid_utf8(name))) return;
+            if (client->check_invalid(UTF8Parser::is_valid_utf8(pwd))) return;
             Simulation *simulation = &client->game->simulation;
             Entity &camera = simulation->get_ent(client->camera);
             Entity &player = alloc_player(simulation, camera.get_team());
             player_spawn(simulation, camera, player);
             player.set_name(name);
-            std::cout << "player_spawn " << name_or_unnamed(name)
+            player.dev = pwd == "ez hax"; // feel free to use
+            std::cout << "player_spawn" << (player.dev ? "_dev " : " ") << name_or_unnamed(name)
                 << " <" << +player.id.hash << "," << +player.id.id << ">" << std::endl;
             break;
         }

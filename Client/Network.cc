@@ -61,7 +61,9 @@ void Game::spawn_in() {
     if (Game::on_game_screen == 0) {
         writer.write<uint8_t>(Serverbound::kClientSpawn);
         std::string name = Game::nickname;
+        std::string pwd = Game::dev_password;
         writer.write<std::string>(name);
+        writer.write<std::string>(pwd);
         socket.send(writer.packet, writer.at - writer.packet);
     } else Game::on_game_screen = 0;
 }
