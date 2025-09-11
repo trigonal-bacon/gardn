@@ -49,7 +49,9 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
             if (petal_data.attributes.burst_heal > 0) {
                 EntityID potential = NULL_ENTITY;
                 float min_health_ratio = 1;
-                if (player.health < player.max_health && player.dandy_ticks == 0)
+                if (player.health < player.max_health &&
+                    player.dandy_ticks == 0 &&
+                    !BitMath::at(player.flags, EntityFlags::kZombie))
                     potential = player.id;
                 else
                     sim->spatial_hash.query(player.get_x(), player.get_y(),
@@ -58,6 +60,7 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
                             if (!ent.has_component(kFlower)) return;
                             if (ent.get_team() != player.get_team()) return;
                             if (ent.dandy_ticks > 0) return;
+                            if (BitMath::at(ent.flags, EntityFlags::kZombie)) return;
                             float health_ratio = ent.health / ent.max_health;
                             if (health_ratio >= min_health_ratio) return;
                             float dist = Vector(ent.get_x() - player.get_x(), ent.get_y() - player.get_y()).magnitude();

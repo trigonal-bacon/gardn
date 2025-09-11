@@ -26,7 +26,7 @@ public:
     uint8_t verified = 0;
     uint8_t seen_arena = 0;
     Client();
-    void init();
+    void init(uint64_t);
     void remove();
     void disconnect(int = CloseReason::kProtocol, std::string const & = "Protocol Error");
     uint8_t alive();

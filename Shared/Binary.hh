@@ -23,7 +23,8 @@ enum Serverbound {
 enum CloseReason {
     kServer = 4001,
     kProtocol = 4002,
-    kOutdated = 4003
+    kOutdated = 4003,
+    kRecovered = 4004
 };
 
 class Writer {

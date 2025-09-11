@@ -44,6 +44,8 @@ namespace Game {
     extern uint8_t show_chat;
     extern std::string chat_text;
 
+    extern uint64_t recovery_id;
+
     void init();
     void reset();
     uint8_t alive();

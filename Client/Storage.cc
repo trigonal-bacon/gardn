@@ -71,6 +71,17 @@ namespace StorageProtocol {
     }
 
     template<>
+    void Encoder::write<uint64_t>(uint64_t const &val) {
+        uint64_t v = val;
+        while (v > 127)
+        {
+            write<uint8_t>((v & 127) | 128);
+            v >>= 7;
+        }
+        write<uint8_t>(v);
+    }
+
+    template<>
     void Encoder::write<std::string>(std::string const &str) {
         uint32_t len = str.size();
         write<uint32_t>(len);
@@ -93,6 +104,17 @@ namespace StorageProtocol {
             uint8_t o = read<uint8_t>();
             ret |= ((o & 127) << (i * 7));
             if (o <= 127) break;
+        }
+        return ret;
+    }
+
+    template<>
+    uint64_t Decoder::read<uint64_t>() {
+        uint64_t ret = 0ll;
+        for (uint32_t i = 0; i < 10; ++i) {
+            uint8_t o = read<uint8_t>();
+            ret |= ((o & 127ll) << (i * 7ll));
+            if (o <= 127ll) break;
         }
         return ret;
     }
@@ -126,7 +148,8 @@ public:
     X(1, Game::seen_mobs) \
     X(2, Game::seen_petals) \
     X(3, Input::keyboard_movement) \
-    X(4, Input::movement_helper)
+    X(4, Input::movement_helper) \
+    X(5, Game::recovery_id)
 
 #define X(ct, name) static auto checker_##ct = MutationObserver(name);
 STORED
@@ -171,6 +194,13 @@ void Storage::retrieve() {
         }
     }
     {
+        uint32_t len = StorageProtocol::retrieve("recovery_id", 10);
+        if (len > 0) {
+            Decoder reader(&StorageProtocol::buffer[0]);
+            Game::recovery_id = reader.read<uint64_t>();
+        }
+    }
+    {
         uint32_t len = StorageProtocol::retrieve("dev", sizeof(uint32_t) * MAX_DEV_PWD_LENGTH + 4);
         if (len > 0 && len <= sizeof(uint32_t) * MAX_DEV_PWD_LENGTH + 4) {
             Decoder reader(&StorageProtocol::buffer[0]);
@@ -212,5 +242,10 @@ void Storage::set() {
             Input::movement_helper | (Input::keyboard_movement << 1)
         );
         StorageProtocol::store("settings", writer.at - writer.base);
+    }
+    {
+        Encoder writer(&StorageProtocol::buffer[0]);
+        writer.write<uint64_t>(Game::recovery_id);
+        StorageProtocol::store("recovery_id", writer.at - writer.base);
     }
 }

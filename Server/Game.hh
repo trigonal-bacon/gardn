@@ -16,6 +16,6 @@ public:
     GameInstance();
     void init();
     void tick();
-    void add_client(Client *);
+    void add_client(Client *, uint64_t);
     void remove_client(Client *);
 };

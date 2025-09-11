@@ -7,6 +7,7 @@
 #include <cmath>
 
 static bool _yggdrasil_revival_clause(Simulation *sim, Entity &player) {
+    if (BitMath::at(player.flags, EntityFlags::kZombie)) return false;
     for (uint32_t i = 0; i < player.get_loadout_count(); ++i) {
         if (!player.loadout[i].already_spawned) continue;
         if (player.loadout[i].get_petal_id() != PetalID::kYggdrasil) continue;
@@ -93,5 +94,6 @@ void inflict_heal(Simulation *sim, Entity &ent, float amt) {
     DEBUG_ONLY(assert(ent.has_component(kHealth));)
     if (ent.pending_delete || ent.health <= 0) return;
     if (ent.dandy_ticks > 0) return;
+    if (BitMath::at(ent.flags, EntityFlags::kZombie)) return;
     ent.health = fclamp(ent.health + amt, 0, ent.max_health);
 }

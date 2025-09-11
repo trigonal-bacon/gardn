@@ -50,6 +50,8 @@ namespace Game {
 
     uint8_t show_chat = 0;
     std::string chat_text;
+
+    uint64_t recovery_id = 0;
 }
 
 using namespace Game;
@@ -231,6 +233,8 @@ void Game::tick(double time) {
         player_id = NULL_ENTITY;
         overlevel_timer = 0;
     }
+    if (simulation.ent_exists(camera_id))
+        Game::recovery_id = simulation.get_ent(camera_id).get_recovery_id();
 
     //event poll
     if (Input::is_mobile) {

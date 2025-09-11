@@ -151,7 +151,8 @@ namespace EntityFlags {
         kSpawnedFromZone,
         kNoDrops,
         kHasCulling,
-        kIsCulled
+        kIsCulled,
+        kZombie
     };
 };
 

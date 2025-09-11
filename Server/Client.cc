@@ -17,9 +17,9 @@ constexpr std::array<uint32_t, RarityID::kNumRarities> RARITY_TO_XP = { 2, 10, 5
 
 Client::Client() : game(nullptr) {}
 
-void Client::init() {
+void Client::init(uint64_t recovery_id) {
     DEBUG_ONLY(assert(game == nullptr);)
-    Server::game.add_client(this);    
+    Server::game.add_client(this, recovery_id);
 }
 
 void Client::remove() {
@@ -51,7 +51,11 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
         return;
     }
     if (!client->verified) {
-        if (client->check_invalid(validator.validate_uint8() && validator.validate_uint64())) return;
+        if (client->check_invalid(
+            validator.validate_uint8() &&
+            validator.validate_uint64() &&
+            validator.validate_uint64()
+        )) return;
         if (reader.read<uint8_t>() != Serverbound::kVerify) {
             client->disconnect();
             return;
@@ -61,11 +65,11 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
             return;
         }
         client->verified = 1;
-        client->init();
+        client->init(reader.read<uint64_t>());
         return;
     }
     if (client->game == nullptr) {
-        client->disconnect();
+        client->disconnect(CloseReason::kServer, "Server Error");
         return;
     }
     if (client->check_invalid(validator.validate_uint8())) return;

@@ -5,6 +5,8 @@
 #include <cstdint>
 #include <set>
 
+class Client;
+
 typedef uint16_t game_tick_t;
 
 #define PERCOMPONENT \
@@ -51,7 +53,8 @@ MULTIPLE(Camera, inventory, PetalID::T, 2 * MAX_SLOT_COUNT) \
 SINGLE(Camera, killed_by, std::string) \
 SINGLE(Camera, camera_x, Float) \
 SINGLE(Camera, camera_y, Float) \
-SINGLE(Camera, fov, Float) 
+SINGLE(Camera, fov, Float) \
+SINGLE(Camera, recovery_id, uint64_t)
 
 #define FIELDS_Relations \
 SINGLE(Relations, team, EntityID) \
@@ -142,6 +145,7 @@ SINGLE(Chat, text, std::string)
     SINGLE(despawn_tick, game_tick_t, =0) \
     SINGLE(secondary_reload, game_tick_t, =0) \
     SINGLE(deleted_petals, circ_arr_t, ={}) \
+    SINGLE(client, Client *, =nullptr) \
     \
     SINGLE(chat_sent, EntityID, =NULL_ENTITY) \
     SINGLE(chat_pos, uint8_t, =0) \

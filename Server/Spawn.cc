@@ -207,6 +207,31 @@ Entity &alloc_dot(Simulation *sim, Entity const &parent) {
     return dot;
 }
 
+Entity &alloc_camera(Simulation *sim, TeamManager &team_manager) {
+    Entity &ent = sim->alloc_ent();
+    ent.add_component(kCamera);
+    ent.add_component(kRelations);
+    #ifdef GAMEMODE_TDM
+    EntityID team = team_manager.get_random_team();
+    ent.set_team(team);
+    ent.set_color(sim->get_ent(team).get_color());
+    ++sim->get_ent(team).player_count;
+    #else
+    ent.set_team(ent.id);
+    ent.set_color(ColorID::kYellow); 
+    #endif
+    
+    ent.set_fov(BASE_FOV);
+    ent.set_respawn_level(1);
+    for (uint32_t i = 0; i < loadout_slots_at_level(ent.get_respawn_level()); ++i)
+        ent.set_inventory(i, PetalID::kBasic);
+    if (frand() < 0.001 && PetalTracker::get_count(sim, PetalID::kUniqueBasic) == 0)
+        ent.set_inventory(0, PetalID::kUniqueBasic);
+    for (uint32_t i = 0; i < loadout_slots_at_level(ent.get_respawn_level()); ++i)
+        PetalTracker::add_petal(sim, ent.get_inventory(i));
+    return ent;
+}
+
 void player_spawn(Simulation *sim, Entity &camera, Entity &player) {
     camera.set_player(player.id);
     player.set_parent(camera.id);

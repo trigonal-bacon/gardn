@@ -1,5 +1,7 @@
 #include <Server/Process.hh>
 
+#include <Server/PetalTracker.hh>
+
 #include <Shared/Entity.hh>
 #include <Shared/Map.hh>
 #include <Shared/Simulation.hh>
@@ -8,6 +10,7 @@
 void tick_camera_behavior(Simulation *sim, Entity &ent) {
     if (sim->ent_exists(ent.get_player())) {
         Entity &player = sim->get_ent(ent.get_player());
+        BitMath::unset(player.flags, EntityFlags::kZombie);
         ent.set_camera_x(player.get_x());
         ent.set_camera_y(player.get_y());
         player.set_loadout_count(loadout_slots_at_level(score_to_level(player.get_score())));
@@ -29,6 +32,25 @@ void tick_camera_behavior(Simulation *sim, Entity &ent) {
             Entity &viewer = sim->get_ent(ent.last_damaged_by);
             ent.set_camera_x(viewer.get_x());
             ent.set_camera_y(viewer.get_y());
+        }
+    }
+    if (BitMath::at(ent.flags, EntityFlags::kIsDespawning)) {
+        if (sim->ent_alive(ent.get_player())) {
+            Entity &player = sim->get_ent(ent.get_player());
+            BitMath::set(player.flags, EntityFlags::kZombie);
+            player.input = 0;
+            player.acceleration.set(0, 0);
+            float dmg = player.max_health / (60 * TPS);
+            player.health = fclamp(player.health - dmg, 0, player.max_health);
+        }
+        if (ent.despawn_tick == 0) {
+            if (sim->ent_exists(ent.get_team()))
+                --sim->get_ent(ent.get_team()).player_count;
+            if (sim->ent_exists(ent.get_player()))
+                sim->request_delete(ent.get_player());
+            for (uint32_t i = 0; i < 2 * MAX_SLOT_COUNT; ++i)
+                PetalTracker::remove_petal(sim, ent.get_inventory(i));
+            sim->request_delete(ent.id);
         }
     }
 }

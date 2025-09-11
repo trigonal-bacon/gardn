@@ -1,8 +1,10 @@
 #include <Server/Game.hh>
 
 #include <Server/Client.hh>
+#include <Server/EntityFunctions.hh>
 #include <Server/PetalTracker.hh>
 #include <Server/Server.hh>
+#include <Server/Spawn.hh>
 
 #include <Shared/Binary.hh>
 #include <Shared/Entity.hh>
@@ -81,35 +83,30 @@ void GameInstance::tick() {
     simulation.post_tick();
 }
 
-void GameInstance::add_client(Client *client) {
+void GameInstance::add_client(Client *client, uint64_t recovery_id) {
     DEBUG_ONLY(assert(client->game != this);)
     if (client->game != nullptr)
         client->game->remove_client(client);
     client->game = this;
     clients.insert(client);
-    Entity &ent = simulation.alloc_ent();
-    ent.add_component(kCamera);
-    ent.add_component(kRelations);
-    #ifdef GAMEMODE_TDM
-    EntityID team = team_manager.get_random_team();
-    ent.set_team(team);
-    ent.set_color(simulation.get_ent(team).get_color());
-    ++simulation.get_ent(team).player_count;
-    #else
-    ent.set_team(ent.id);
-    ent.set_color(ColorID::kYellow); 
-    #endif
-    
-    ent.set_fov(BASE_FOV);
-    ent.set_respawn_level(1);
-    for (uint32_t i = 0; i < loadout_slots_at_level(ent.get_respawn_level()); ++i)
-        ent.set_inventory(i, PetalID::kBasic);
-    if (frand() < 0.001 && PetalTracker::get_count(&simulation, PetalID::kUniqueBasic) == 0)
-        ent.set_inventory(0, PetalID::kUniqueBasic);
-    for (uint32_t i = 0; i < loadout_slots_at_level(ent.get_respawn_level()); ++i)
-        PetalTracker::add_petal(&simulation, ent.get_inventory(i));
-    client->camera = ent.id;
-    client->seen_arena = 0;
+    EntityID camera_id = NULL_ENTITY;
+    simulation.for_each<kCamera>([&](Simulation *sim, Entity &ent){
+        if (ent.get_recovery_id() == recovery_id) {
+            assert(camera_id == NULL_ENTITY);
+            camera_id = ent.id;
+        }
+    });
+    if (camera_id == NULL_ENTITY) {
+        Entity &camera = alloc_camera(&simulation, team_manager);
+        camera.set_recovery_id((static_cast<uint64_t>(std::time(0)) << 32) | std::rand());
+        client->camera = camera.id;
+    } else
+        client->camera = camera_id;
+    Entity &camera = simulation.get_ent(client->camera);
+    BitMath::unset(camera.flags, EntityFlags::kIsDespawning);
+    if (camera.client != nullptr)
+        camera.client->disconnect(CloseReason::kRecovered, "Session Recovered");
+    camera.client = client;
 }
 
 void GameInstance::remove_client(Client *client) {
@@ -117,13 +114,8 @@ void GameInstance::remove_client(Client *client) {
     clients.erase(client);
     if (simulation.ent_exists(client->camera)) {
         Entity &c = simulation.get_ent(client->camera);
-        if (simulation.ent_exists(c.get_team()))
-            --simulation.get_ent(c.get_team()).player_count;
-        if (simulation.ent_exists(c.get_player()))
-            simulation.request_delete(c.get_player());
-        for (uint32_t i = 0; i < 2 * MAX_SLOT_COUNT; ++i)
-            PetalTracker::remove_petal(&simulation, c.get_inventory(i));
-        simulation.request_delete(client->camera);
+        entity_set_despawn_tick(c, 60 * TPS);
+        c.client = nullptr;
     }
     client->game = nullptr;
 }
