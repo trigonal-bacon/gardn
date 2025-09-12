@@ -78,6 +78,10 @@ void LerpFloat::step_angle(float amt) {
     lerp_value = angle_lerp(lerp_value, value, amt);
 }
 
+float LerpFloat::anchor() const {
+    return value;
+}
+
 SeedGenerator::SeedGenerator(uint32_t s) : seed(s) {}
 
 float SeedGenerator::next() {

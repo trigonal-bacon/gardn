@@ -27,6 +27,7 @@ public:
     operator float() const;
     void step(float);
     void step_angle(float);
+    float anchor() const;
 };
 
 class SeedGenerator {

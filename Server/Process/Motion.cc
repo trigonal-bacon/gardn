@@ -20,10 +20,6 @@ void tick_entity_motion(Simulation *sim, Entity &ent) {
         ent.set_x(fclamp(ent.get_x(), ent.get_radius(), ARENA_WIDTH - ent.get_radius()));
         ent.set_y(fclamp(ent.get_y(), ent.get_radius(), ARENA_HEIGHT - ent.get_radius()));
     }
-    if (ent.has_component(kFlower)) {
-        if (ent.acceleration.x != 0 || ent.acceleration.y != 0)
-            ent.set_angle(ent.acceleration.angle());
-    }
     //ent.acceleration.set(0,0);
     ent.collision_velocity.set(0,0);
     ent.speed_ratio = 1;

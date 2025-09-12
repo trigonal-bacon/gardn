@@ -53,8 +53,9 @@ void Entity::tick_lerp(float amt) {
             healthbar_lag = lerp(healthbar_lag, health_ratio, amt / 3);
     }
     if (has_component(kFlower)) {
-        eye_x = lerp(eye_x, cosf(angle) * 2, amt);
-        eye_y = lerp(eye_y, sinf(angle) * 4, amt);
+        float eye_angle = angle.anchor();
+        eye_x = lerp(eye_x, cosf(eye_angle) * 2, amt);
+        eye_y = lerp(eye_y, sinf(eye_angle) * 4, amt);
         if (BitMath::at(face_flags, FaceFlags::kAttacking)
             || BitMath::at(face_flags, FaceFlags::kPoisoned) 
             || BitMath::at(face_flags, FaceFlags::kDandelioned)
