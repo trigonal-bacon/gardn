@@ -10,7 +10,6 @@
 void tick_camera_behavior(Simulation *sim, Entity &ent) {
     if (sim->ent_exists(ent.get_player())) {
         Entity &player = sim->get_ent(ent.get_player());
-        BitMath::unset(player.flags, EntityFlags::kZombie);
         ent.set_camera_x(player.get_x());
         ent.set_camera_y(player.get_y());
         player.set_loadout_count(loadout_slots_at_level(score_to_level(player.get_score())));
@@ -25,6 +24,14 @@ void tick_camera_behavior(Simulation *sim, Entity &ent) {
                 player.set_overlevel_timer(player.get_overlevel_timer() - 0.1);
             else player.set_overlevel_timer(0);
         }
+        if (BitMath::at(ent.flags, EntityFlags::kIsDespawning)) {
+            BitMath::set(player.flags, EntityFlags::kZombie);
+            player.input = 0;
+            player.acceleration.set(0, 0);
+            float dmg = player.max_health / (60 * TPS);
+            player.health = fclamp(player.health - dmg, 0, player.max_health);
+        } else
+            BitMath::unset(player.flags, EntityFlags::kZombie);
     } else {
         ent.set_player(NULL_ENTITY);
         ent.set_fov(BASE_FOV * 0.9);
@@ -34,23 +41,13 @@ void tick_camera_behavior(Simulation *sim, Entity &ent) {
             ent.set_camera_y(viewer.get_y());
         }
     }
-    if (BitMath::at(ent.flags, EntityFlags::kIsDespawning)) {
-        if (sim->ent_alive(ent.get_player())) {
-            Entity &player = sim->get_ent(ent.get_player());
-            BitMath::set(player.flags, EntityFlags::kZombie);
-            player.input = 0;
-            player.acceleration.set(0, 0);
-            float dmg = player.max_health / (60 * TPS);
-            player.health = fclamp(player.health - dmg, 0, player.max_health);
-        }
-        if (ent.despawn_tick == 0) {
-            if (sim->ent_exists(ent.get_team()))
-                --sim->get_ent(ent.get_team()).player_count;
-            if (sim->ent_exists(ent.get_player()))
-                sim->request_delete(ent.get_player());
-            for (uint32_t i = 0; i < 2 * MAX_SLOT_COUNT; ++i)
-                PetalTracker::remove_petal(sim, ent.get_inventory(i));
-            sim->request_delete(ent.id);
-        }
+    if (BitMath::at(ent.flags, EntityFlags::kIsDespawning) && ent.despawn_tick == 0) {
+        if (sim->ent_exists(ent.get_team()))
+            --sim->get_ent(ent.get_team()).player_count;
+        if (sim->ent_exists(ent.get_player()))
+            sim->request_delete(ent.get_player());
+        for (uint32_t i = 0; i < 2 * MAX_SLOT_COUNT; ++i)
+            PetalTracker::remove_petal(sim, ent.get_inventory(i));
+        sim->request_delete(ent.id);
     }
 }

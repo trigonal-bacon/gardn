@@ -116,8 +116,10 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
             Entity &player = alloc_player(simulation, camera.get_team());
             player_spawn(simulation, camera, player);
             player.set_name(name);
-            player.dev = pwd == "ez hax"; // feel free to use
-            std::cout << "player_spawn" << (player.dev ? "_dev " : " ") << name_or_unnamed(name)
+            uint8_t dev = pwd == "ez hax"; // feel free to use
+            camera.set_dev(dev);
+            player.set_dev(dev);
+            std::cout << "player_spawn" << (dev ? "_dev " : " ") << name_or_unnamed(name)
                 << " <" << +player.id.hash << "," << +player.id.id << ">" << std::endl;
             break;
         }

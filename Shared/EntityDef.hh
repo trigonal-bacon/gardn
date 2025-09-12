@@ -59,7 +59,8 @@ SINGLE(Camera, recovery_id, uint64_t)
 #define FIELDS_Relations \
 SINGLE(Relations, team, EntityID) \
 SINGLE(Relations, parent, EntityID) \
-SINGLE(Relations, color, uint8_t)
+SINGLE(Relations, color, uint8_t) \
+SINGLE(Relations, dev, uint8_t)
 
 #define FIELDS_Flower \
 SINGLE(Flower, eye_angle, float) \
@@ -113,7 +114,6 @@ SINGLE(Chat, text, std::string)
     SINGLE(heading_angle, float, =0) \
     SINGLE(input, uint8_t, =0) \
     SINGLE(player_count, uint32_t, =0) \
-    SINGLE(dev, uint8_t, =0) \
     \
     SINGLE(slow_ticks, game_tick_t, =0) \
     SINGLE(slow_inflict, game_tick_t, =0) \

@@ -95,13 +95,13 @@ void Particle::add_unique_particle(float x, float y) {
     game_particles.push_back(std::move(part));
 }
 
-void Particle::add_revival_particle(float x, float y, uint8_t color) {
+void Particle::add_revival_particle(float x, float y) {
     GameParticleEntity part;
     part.x = x;
     part.y = y;
     part.radius = 4;
     part.opacity = 1;
-    part.color = FLOWER_COLORS[color];
+    part.color = 0xffffe763;
     Vector rand = Vector::rand(150);
     part.x_velocity = rand.x;
     part.y_velocity = rand.y;

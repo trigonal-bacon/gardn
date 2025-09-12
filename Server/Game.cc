@@ -30,7 +30,7 @@ static void _update_client(Simulation *sim, Client *client) {
     writer.write<EntityID>(client->camera);
     sim->spatial_hash.query(camera.get_camera_x(), camera.get_camera_y(), 
     960 / camera.get_fov() + 50, 540 / camera.get_fov() + 50, [&](Simulation *, Entity &ent){
-        if (!ent.has_component(kDot)) in_view.insert(ent.id);
+        in_view.insert(ent.id);
     });
 
     for (EntityID const &i: client->in_view) {
@@ -103,10 +103,10 @@ void GameInstance::add_client(Client *client, uint64_t recovery_id) {
     } else
         client->camera = camera_id;
     Entity &camera = simulation.get_ent(client->camera);
-    BitMath::unset(camera.flags, EntityFlags::kIsDespawning);
     if (camera.client != nullptr)
         camera.client->disconnect(CloseReason::kRecovered, "Session Recovered");
     camera.client = client;
+    BitMath::unset(camera.flags, EntityFlags::kIsDespawning);
 }
 
 void GameInstance::remove_client(Client *client) {

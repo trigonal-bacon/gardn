@@ -44,14 +44,14 @@ void Entity::tick_lerp(float amt) {
         if (damaged)
             last_damaged_time = Game::timestamp;
         damaged.clear();
-        if (revived == 1 && revival_burst < 0.01)
+        if (revived == 1 && revival_burst < 0.1)
             revival_burst = 1;
         else
             revival_burst = lerp(revival_burst, 0, amt / 3);
-        if (revival_burst > 0.01)
+        if (revival_burst > 0.1)
             for (uint8_t i = 0; i < 3; ++i)
                 if (frand() < fclamp(revival_burst * Ui::dt * 60 / 1000, 0, 1))
-                    Particle::add_revival_particle(x, y, color);
+                    Particle::add_revival_particle(x, y);
         revived.clear();
         if ((float) health_ratio > 0.999)
             healthbar_opacity = lerp(healthbar_opacity, 0, amt);

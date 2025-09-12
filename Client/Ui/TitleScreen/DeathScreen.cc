@@ -43,7 +43,15 @@ void DeadFlowerIcon::on_render(Renderer &ctx) {
         RenderContext c(&ctx);
         ctx.rotate(-0.2);
         float flower_radius = width / 3;
-        draw_static_flower(ctx, { .radius = 25, .mouth = 5, .face_flags = (1<<FaceFlags::kDeadEyes), .equip_flags = equip_flags });
+        uint8_t face_flags = 1<<FaceFlags::kDeadEyes;
+        uint8_t color = 0;
+        if (Game::simulation.ent_exists(Game::camera_id)) {
+            Entity &camera = Game::simulation.get_ent(Game::camera_id);
+            color = camera.get_color();
+            if (camera.get_dev())
+                BitMath::set(face_flags, FaceFlags::kDeveloper);
+        }
+        draw_static_flower(ctx, { .radius = 25, .mouth = 5, .face_flags = face_flags, .equip_flags = equip_flags, .color = color });
     }
     for (uint32_t i = 0; i < physical_loadout.size(); ++i) {
         float angle = 2 * M_PI * i / physical_loadout.size() + 0.5;
@@ -82,6 +90,6 @@ Element *Ui::make_death_main_screen() {
         new Ui::StaticText(14, "(or press ENTER to continue)")
     }, 0, 10, { .animate = [](Element *elt, Renderer &ctx) {
         ctx.translate(0, (elt->animation - 1) * ctx.height * 0.6);
-    }, .should_render = [](){ return !Game::alive() && Game::should_render_game_ui(); } });
+    }, .should_render = [](){ return !Game::alive() && Game::socket.ready && Game::should_render_game_ui(); } });
     return container;
 }
