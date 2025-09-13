@@ -87,6 +87,15 @@ extern "C" {
         free(clipboard);
     }
 
+    void blur_event() {
+        BitMath::set(Input::mouse_buttons_released, Input::LeftMouse);
+        BitMath::set(Input::mouse_buttons_released, Input::RightMouse);
+        BitMath::unset(Input::mouse_buttons_state, Input::LeftMouse);
+        BitMath::unset(Input::mouse_buttons_state, Input::RightMouse);
+        Input::keys_held.clear();
+        Input::touches.clear();
+    }
+
     void loop(double d, float width, float height) {
         Game::renderer.width = width;
         Game::renderer.height = height;
@@ -118,17 +127,22 @@ int setup_inputs() {
             _mouse_event(e.clientX * devicePixelRatio, e.clientY * devicePixelRatio, 2, +!!e.button);
         });
         window.addEventListener("touchstart", (e) => {
-            e.preventDefault();
+            // e.preventDefault();
             for (const t of e.changedTouches)
                 _touch_event(t.clientX * devicePixelRatio, t.clientY * devicePixelRatio, 0, t.identifier);
         }, { passive: false });
         window.addEventListener("touchmove", (e) => {
-            e.preventDefault();
+            // e.preventDefault();
             for (const t of e.changedTouches)
                 _touch_event(t.clientX * devicePixelRatio, t.clientY * devicePixelRatio, 1, t.identifier);
         }, { passive: false });
         window.addEventListener("touchend", (e) => {
-            e.preventDefault();
+            // e.preventDefault();
+            for (const t of e.changedTouches)
+                _touch_event(t.clientX * devicePixelRatio, t.clientY * devicePixelRatio, 2, t.identifier);
+        }, { passive: false });
+        window.addEventListener("touchcancel", (e) => {
+            // e.preventDefault();
             for (const t of e.changedTouches)
                 _touch_event(t.clientX * devicePixelRatio, t.clientY * devicePixelRatio, 2, t.identifier);
         }, { passive: false });
@@ -142,6 +156,9 @@ int setup_inputs() {
         window.addEventListener("wheel", (e) => {
             //e.preventDefault();
             _wheel_event(e.deltaY);
+        });
+        window.addEventListener("blur", (e) => {
+            _blur_event();
         });
     });
     return 0;

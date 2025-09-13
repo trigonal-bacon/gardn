@@ -26,6 +26,7 @@ namespace Game {
     extern std::array<uint8_t, MobID::kNumMobs> seen_mobs;
     
     extern double timestamp;
+    extern double scale;
     
     extern double score;
     extern float overlevel_timer;

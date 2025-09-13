@@ -34,6 +34,7 @@ namespace Game {
     std::array<PetalID::T, 2 * MAX_SLOT_COUNT> cached_loadout = {PetalID::kNone};
 
     double timestamp = 0;
+    double scale = 1;
 
     double score = 0;
     float overlevel_timer = 0;
@@ -65,6 +66,10 @@ void Game::init() {
             Ui::Element *elt = new Ui::StaticText(60, "the gardn project");
             elt->x = 0;
             elt->y = -270;
+            if (Input::is_mobile) {
+                elt->style.v_justify = Ui::Style::Top;
+                elt->y = 30;
+            }
             return elt;
         }()
     );
@@ -147,6 +152,8 @@ void Game::init() {
                 .v_justify = Ui::Style::Top
             });
             elt->y = 50;
+            if (Input::is_mobile)
+                elt->y = 115;
             return elt;
         }()
     );
@@ -216,7 +223,7 @@ void Game::tick(double time) {
     Ui::focused = nullptr;
     double a = Ui::window_width / 1920;
     double b = Ui::window_height / 1080;
-    Ui::scale = std::max(a, b);
+    Game::scale = Ui::scale = std::max(a, b);
     if (Input::is_mobile) Ui::scale *= 1.33;
     if (alive()) {
         on_game_screen = 1;
@@ -327,23 +334,25 @@ void Game::tick(double time) {
     other_ui_window.render(renderer);
 
     //no rendering past this point
-    if (!Input::is_mobile) {
-        if (Input::keyboard_movement) {
-            if (!Game::show_chat) {
-                Input::game_inputs.x = 300 * (Input::keys_held.contains('D') - Input::keys_held.contains('A') + Input::keys_held.contains(39) - Input::keys_held.contains(37));
-                Input::game_inputs.y = 300 * (Input::keys_held.contains('S') - Input::keys_held.contains('W') + Input::keys_held.contains(40) - Input::keys_held.contains(38));
-            } else
-                Input::game_inputs.x = Input::game_inputs.y = 0;
-        } else {
-            Input::game_inputs.x = (Input::mouse_x - renderer.width / 2) / Ui::scale;
-            Input::game_inputs.y = (Input::mouse_y - renderer.height / 2) / Ui::scale;
+    if (alive()) {
+        if (!Input::is_mobile) {
+            if (Input::keyboard_movement) {
+                if (!Game::show_chat) {
+                    Input::game_inputs.x = 300 * (Input::keys_held.contains('D') - Input::keys_held.contains('A') + Input::keys_held.contains(39) - Input::keys_held.contains(37));
+                    Input::game_inputs.y = 300 * (Input::keys_held.contains('S') - Input::keys_held.contains('W') + Input::keys_held.contains(40) - Input::keys_held.contains(38));
+                } else
+                    Input::game_inputs.x = Input::game_inputs.y = 0;
+            } else {
+                Input::game_inputs.x = (Input::mouse_x - renderer.width / 2) / Ui::scale;
+                Input::game_inputs.y = (Input::mouse_y - renderer.height / 2) / Ui::scale;
+            }
+            uint8_t attack = (!Game::show_chat && Input::keys_held.contains(' ')) || BitMath::at(Input::mouse_buttons_state, Input::LeftMouse);
+            uint8_t defend = (!Game::show_chat && Input::keys_held.contains('\x10')) || BitMath::at(Input::mouse_buttons_state, Input::RightMouse);
+            Input::game_inputs.flags = (attack << InputFlags::kAttacking) | (defend << InputFlags::kDefending);
         }
-        uint8_t attack = (!Game::show_chat && Input::keys_held.contains(' ')) || BitMath::at(Input::mouse_buttons_state, Input::LeftMouse);
-        uint8_t defend = (!Game::show_chat && Input::keys_held.contains('\x10')) || BitMath::at(Input::mouse_buttons_state, Input::RightMouse);
-        Input::game_inputs.flags = (attack << InputFlags::kAttacking) | (defend << InputFlags::kDefending);
-    }
-
-    if (socket.ready && alive()) send_inputs();
+        send_inputs();
+    } else
+        Input::game_inputs = {};
 
     if (Input::keys_held_this_tick.contains(';'))
         show_debug = !show_debug;

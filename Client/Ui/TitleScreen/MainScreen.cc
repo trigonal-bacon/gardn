@@ -106,6 +106,10 @@ Element *Ui::make_title_info_box() {
     );
     elt->x = 0;
     elt->y = 270;
+    if (Input::is_mobile) {
+        elt->style.v_justify = Ui::Style::Bottom;
+        elt->y = -30;
+    }
     return elt;
 }
 
