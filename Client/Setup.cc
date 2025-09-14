@@ -58,7 +58,6 @@ extern "C" {
             Input::keys_held_this_tick.insert(button);
         }
         else if (type == 1) Input::keys_held.erase(button);
-        //else if (type == 2) Input::keys_pressed_this_tick.push_back(button);
         free(code);
     }
 
@@ -118,17 +117,18 @@ int setup_inputs() {
             _mouse_event(e.clientX * devicePixelRatio, e.clientY * devicePixelRatio, 2, +!!e.button);
         });
         window.addEventListener("touchstart", (e) => {
-            e.preventDefault();
             for (const t of e.changedTouches)
                 _touch_event(t.clientX * devicePixelRatio, t.clientY * devicePixelRatio, 0, t.identifier);
         }, { passive: false });
         window.addEventListener("touchmove", (e) => {
-            e.preventDefault();
             for (const t of e.changedTouches)
                 _touch_event(t.clientX * devicePixelRatio, t.clientY * devicePixelRatio, 1, t.identifier);
         }, { passive: false });
         window.addEventListener("touchend", (e) => {
-            e.preventDefault();
+            for (const t of e.changedTouches)
+                _touch_event(t.clientX * devicePixelRatio, t.clientY * devicePixelRatio, 2, t.identifier);
+        }, { passive: false });
+        window.addEventListener("touchcancel", (e) => {
             for (const t of e.changedTouches)
                 _touch_event(t.clientX * devicePixelRatio, t.clientY * devicePixelRatio, 2, t.identifier);
         }, { passive: false });
@@ -140,7 +140,6 @@ int setup_inputs() {
             };
         }, { capture: true });
         window.addEventListener("wheel", (e) => {
-            //e.preventDefault();
             _wheel_event(e.deltaY);
         });
     });
