@@ -130,9 +130,11 @@ void DOM::reload_page() {
 
 void DOM::toggle_fullscreen() {
     EM_ASM({
-        if (!document.fullscreenElement)
-            document.documentElement.requestFullscreen();
-        else
-            document.exitFullscreen();
+        try {
+            if (!document.fullscreenElement)
+                document.documentElement.requestFullscreen();
+            else
+                document.exitFullscreen();
+        } catch {}
     });
 }
