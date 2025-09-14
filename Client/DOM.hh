@@ -13,4 +13,5 @@ namespace DOM {
     void element_focus(char const *);
     void open_page(char const *);
     void reload_page();
+    void toggle_fullscreen();
 }

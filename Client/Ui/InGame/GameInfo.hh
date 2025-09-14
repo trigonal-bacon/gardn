@@ -50,5 +50,8 @@ namespace Ui {
     Element *make_overlevel_indicator();
     Element *make_mobile_attack_button();
     Element *make_mobile_defend_button();
+    Element *make_mobile_swap_all_button();
+    Element *make_mobile_chat_button();
+    Element *make_mobile_fullscreen_button();
     Element *make_mobile_joystick();
 }

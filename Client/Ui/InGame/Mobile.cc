@@ -4,6 +4,7 @@
 #include <Client/Ui/Extern.hh>
 #include <Client/Ui/StaticText.hh>
 
+#include <Client/DOM.hh>
 #include <Client/Game.hh>
 #include <Client/Input.hh>
 
@@ -77,14 +78,62 @@ Element *Ui::make_mobile_defend_button() {
                 BitMath::set(Input::game_inputs.flags, InputFlags::kDefending);
             else if (e == Ui::kClick)
                 BitMath::unset(Input::game_inputs.flags, InputFlags::kDefending);
-        }, nullptr, { .fill = 0x40000000, .line_width = 0, .round_radius = 50, 
+        }, nullptr, { .fill = 0x40000000, .line_width = 0, .round_radius = 37.5, 
             .should_render = [](){ return Input::is_mobile && Game::alive(); },
             .h_justify = Style::Right, .v_justify = Style::Bottom,
             .no_animation = 1
         }
     );
     elt->x = -150;
-    elt->y = -250;
+    elt->y = -200;
+    return elt;
+}
+
+Element *Ui::make_mobile_swap_all_button() {
+    Element *elt = new Ui::Button(50, 50, new Ui::StaticText(12.5, "X"), 
+        [](Element *elt, uint8_t e) {
+            if (e == Ui::kClick)
+                Game::swap_all_petals();
+        }, nullptr, { .fill = 0x40000000, .line_width = 0, .round_radius = 12.5, 
+            .should_render = [](){ return Input::is_mobile && Game::alive(); },
+            .h_justify = Style::Right, .v_justify = Style::Bottom,
+            .no_animation = 1
+        }
+    );
+    elt->x = -50;
+    elt->y = -200;
+    return elt;
+}
+
+Element *Ui::make_mobile_chat_button() {
+    Element *elt = new Ui::Button(50, 50, new Ui::StaticText(12.5, "C"), 
+        [](Element *elt, uint8_t e) {
+            if (e == Ui::kClick)
+                Input::toggle_chat = true;
+        }, nullptr, { .fill = 0x40000000, .line_width = 0, .round_radius = 12.5, 
+            .should_render = [](){ return Input::is_mobile && Game::alive(); },
+            .h_justify = Style::Right, .v_justify = Style::Bottom,
+            .no_animation = 1
+        }
+    );
+    elt->x = -50;
+    elt->y = -275;
+    return elt;
+}
+
+Element *Ui::make_mobile_fullscreen_button() {
+    Element *elt = new Ui::Button(50, 50, new Ui::StaticText(12.5, "F"), 
+        [](Element *elt, uint8_t e) {
+            if (e == Ui::kClick)
+                DOM::toggle_fullscreen();
+        }, nullptr, { .fill = 0x40000000, .line_width = 0, .round_radius = 12.5, 
+            .should_render = [](){ return Input::is_mobile && Game::alive(); },
+            .h_justify = Style::Right, .v_justify = Style::Bottom,
+            .no_animation = 1
+        }
+    );
+    elt->x = -50;
+    elt->y = -350;
     return elt;
 }
 

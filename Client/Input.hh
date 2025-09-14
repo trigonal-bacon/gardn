@@ -40,6 +40,7 @@ namespace Input {
     extern uint8_t movement_helper;
     extern uint8_t keyboard_movement;
     extern uint8_t is_mobile;
+    extern uint8_t toggle_chat;
     //use these for game inputs that can be held down
     extern std::unordered_set<char> keys_held;
     extern std::unordered_set<char> keys_held_this_tick;

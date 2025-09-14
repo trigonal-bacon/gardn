@@ -1,5 +1,7 @@
 #include <Client/DOM.hh>
 
+#include <Client/Input.hh>
+
 #include <Helpers/UTF8.hh>
 
 #include <emscripten.h>
@@ -21,9 +23,27 @@ void DOM::create_text_input(char const *name, uint32_t max_len) {
         elem.style["padding-left"] = "5px";
         elem.maxLength = ($1).toString();
         elem.setAttribute("spellcheck", "false");
+        if ($2) {
+            elem.addEventListener("keydown", e => {
+                if (e.key === "Enter" && !e.repeat) {
+                    e.stopPropagation();
+                    _key_event(stringToNewUTF8(e.key), 0);
+                    elem.blur();
+                }
+            });
+            elem.addEventListener("keyup", e => {
+                if (e.key === "Enter" && !e.repeat) {
+                    e.stopPropagation();
+                    _key_event(stringToNewUTF8(e.key), 1);
+                }
+            });
+            elem.addEventListener("blur", () => {
+                _blur_event(1);
+            });
+        }
         document.body.appendChild(elem);
     },
-    name, max_len * 2);
+    name, max_len, Input::is_mobile);
 }
 
 void DOM::element_show(char const *name)
@@ -105,5 +125,14 @@ void DOM::reload_page() {
     EM_ASM({
         window.onbeforeunload = null;
         window.location.reload();
+    });
+}
+
+void DOM::toggle_fullscreen() {
+    EM_ASM({
+        if (!document.fullscreenElement)
+            document.documentElement.requestFullscreen();
+        else
+            document.exitFullscreen();
     });
 }

@@ -87,13 +87,17 @@ extern "C" {
         free(clipboard);
     }
 
-    void blur_event() {
-        BitMath::set(Input::mouse_buttons_released, Input::LeftMouse);
-        BitMath::set(Input::mouse_buttons_released, Input::RightMouse);
-        BitMath::unset(Input::mouse_buttons_state, Input::LeftMouse);
-        BitMath::unset(Input::mouse_buttons_state, Input::RightMouse);
-        Input::keys_held.clear();
-        Input::touches.clear();
+    void blur_event(uint8_t type) {
+        if (type == 0) {
+            BitMath::set(Input::mouse_buttons_released, Input::LeftMouse);
+            BitMath::set(Input::mouse_buttons_released, Input::RightMouse);
+            BitMath::unset(Input::mouse_buttons_state, Input::LeftMouse);
+            BitMath::unset(Input::mouse_buttons_state, Input::RightMouse);
+            Input::keys_held.clear();
+            Input::touches.clear();
+        } else if (type == 1) {
+            Game::show_chat = false;
+        }
     }
 
     void loop(double d, float width, float height) {
@@ -158,7 +162,7 @@ int setup_inputs() {
             _wheel_event(e.deltaY);
         });
         window.addEventListener("blur", (e) => {
-            _blur_event();
+            _blur_event(0);
         });
     });
     return 0;

@@ -112,12 +112,6 @@ void Game::init() {
     game_ui_window.add_child(
         Ui::make_mobile_joystick()
     );
-    game_ui_window.add_child(
-        Ui::make_mobile_attack_button()
-    );
-    game_ui_window.add_child(
-        Ui::make_mobile_defend_button()
-    );
     for (uint8_t i = 0; i < MAX_SLOT_COUNT * 2; ++i) game_ui_window.add_child(new Ui::UiLoadoutPetal(i));
     game_ui_window.add_child(
         Ui::make_leaderboard()
@@ -127,6 +121,21 @@ void Game::init() {
     );
     game_ui_window.add_child(
         Ui::make_stat_screen()
+    );
+    game_ui_window.add_child(
+        Ui::make_mobile_attack_button()
+    );
+    game_ui_window.add_child(
+        Ui::make_mobile_defend_button()
+    );
+    game_ui_window.add_child(
+        Ui::make_mobile_swap_all_button()
+    );
+    game_ui_window.add_child(
+        Ui::make_mobile_chat_button()
+    );
+    game_ui_window.add_child(
+        Ui::make_mobile_fullscreen_button()
     );
     game_ui_window.add_child(
         Ui::make_chat_input()
@@ -356,8 +365,12 @@ void Game::tick(double time) {
 
     if (Input::keys_held_this_tick.contains(';'))
         show_debug = !show_debug;
-    if (Input::keys_held_this_tick.contains('\r') && !Game::alive())
-        Game::spawn_in();
+    if (Input::keys_held_this_tick.contains('\r')) {
+        if (!Game::alive())
+            Game::spawn_in();
+        else
+            Input::toggle_chat = true;
+    }
 
     //clearing operations
     simulation.post_tick();

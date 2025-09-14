@@ -32,6 +32,12 @@ static Element *make_entries(std::initializer_list<std::string const> contents) 
 
 static Element *make_changelog_contents() {
     Element *elt = new Ui::VContainer({
+        make_date("September 14th 2025"),
+        make_entries({
+            "Added more mobile buttons",
+            "Fixed nickname input on mobile"
+        }),
+        make_divider(),
         make_date("September 11th 2025"),
         make_entries({
             "Players can now rejoin the game for up to 1 minute after leaving"

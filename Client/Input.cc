@@ -16,6 +16,7 @@ namespace Input {
     uint8_t movement_helper = 0;
     uint8_t keyboard_movement = 0;
     uint8_t is_mobile = 0;
+    uint8_t toggle_chat = 0;
     std::unordered_set<char> keys_held;
     std::unordered_set<char> keys_held_this_tick;
     std::unordered_map<uint32_t, Touch> touches;
