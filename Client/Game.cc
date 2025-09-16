@@ -249,6 +249,7 @@ void Game::tick(double time) {
         player_id = NULL_ENTITY;
         overlevel_timer = 0;
     }
+    if (in_game()) Ui::panel_open = Ui::Panel::kNone;
     if (simulation.ent_exists(camera_id))
         Game::recovery_id = simulation.get_ent(camera_id).get_recovery_id();
 

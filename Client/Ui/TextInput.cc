@@ -32,3 +32,8 @@ void TextInput::on_render(Renderer &ctx) {
 void TextInput::on_render_skip(Renderer &ctx) {
     DOM::element_hide(name.c_str());
 }
+
+void TextInput::on_event(uint8_t event) {
+    if (event == kClick)
+        DOM::element_focus(name.c_str());
+}

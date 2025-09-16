@@ -32,7 +32,10 @@ Element *Ui::make_title_input_box() {
                         }),
                         new Ui::Button(110, 36, 
                             new Ui::StaticText(25, "Spawn"), 
-                            [](Element *elt, uint8_t e){ if (e == Ui::kClick) Game::spawn_in(); },
+                            [](Element *elt, uint8_t e){
+                                if (e == Ui::kMouseDown) DOM::blur();
+                                if (e == Ui::kClick) Game::spawn_in();
+                            },
                             [](){ return Game::in_game() != 0; },
                             { .fill = 0xff1dd129, .line_width = 5, .round_radius = 3 }
                         )

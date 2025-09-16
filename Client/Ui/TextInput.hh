@@ -15,5 +15,6 @@ namespace Ui {
 
         virtual void on_render(Renderer &) override;
         virtual void on_render_skip(Renderer &) override;
+        virtual void on_event(uint8_t) override;
     };
 }

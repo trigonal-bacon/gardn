@@ -108,7 +108,9 @@ Element *Ui::make_mobile_swap_all_button() {
 Element *Ui::make_mobile_chat_button() {
     Element *elt = new Ui::Button(50, 50, new Ui::StaticText(12.5, "C"), 
         [](Element *elt, uint8_t e) {
-            if (e == Ui::kClick)
+            if (e == Ui::kMouseDown)
+                DOM::blur();
+            else if (e == Ui::kClick)
                 Input::toggle_chat = true;
         }, nullptr, { .fill = 0x40000000, .line_width = 0, .round_radius = 12.5, 
             .should_render = [](){ return Input::is_mobile && Game::alive(); },

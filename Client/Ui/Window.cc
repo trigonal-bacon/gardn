@@ -2,6 +2,7 @@
 
 #include <Client/Ui/Extern.hh>
 
+#include <Client/DOM.hh>
 #include <Client/Game.hh>
 
 #include <cmath>
@@ -48,5 +49,6 @@ void Window::on_event(uint8_t event) {
     if (event == Ui::kMouseDown) {
         Ui::panel_open = Ui::Panel::kNone;
         Game::show_chat = false;
+        DOM::blur();
     }
 }

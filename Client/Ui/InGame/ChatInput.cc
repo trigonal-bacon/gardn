@@ -11,7 +11,7 @@ using namespace Ui;
 ChatInput::ChatInput(std::string &r, float w, float h, uint32_t m, Style s) : TextInput(r, w, h, m, s) {}
 
 void ChatInput::on_render(Renderer &ctx) {
-    if (animation > 0.99 || Input::is_mobile) {
+    if (animation > 0.99) {
         if (Input::keys_held_this_tick.contains(27)) // esc
             Game::show_chat = false;
         else if (Input::toggle_chat) {
@@ -20,10 +20,10 @@ void ChatInput::on_render(Renderer &ctx) {
             ref.clear();
         }
     }
-    Input::toggle_chat = false;
     TextInput::on_render(ctx);
-    if (style.should_render())
+    if (!Input::is_mobile || (Input::toggle_chat && Game::show_chat))
         DOM::element_focus(name.c_str());
+    Input::toggle_chat = false;
 }
 
 void ChatInput::on_render_skip(Renderer &ctx) {
@@ -32,7 +32,6 @@ void ChatInput::on_render_skip(Renderer &ctx) {
         Game::show_chat = true;
         DOM::update_text(name.c_str(), ref, max);
     }
-    Input::toggle_chat = false;
     TextInput::on_render_skip(ctx);
 }
 

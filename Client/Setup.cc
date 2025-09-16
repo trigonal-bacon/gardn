@@ -87,17 +87,13 @@ extern "C" {
         free(clipboard);
     }
 
-    void blur_event(uint8_t type) {
-        if (type == 0) {
-            BitMath::set(Input::mouse_buttons_released, Input::LeftMouse);
-            BitMath::set(Input::mouse_buttons_released, Input::RightMouse);
-            BitMath::unset(Input::mouse_buttons_state, Input::LeftMouse);
-            BitMath::unset(Input::mouse_buttons_state, Input::RightMouse);
-            Input::keys_held.clear();
-            Input::touches.clear();
-        } else if (type == 1) {
-            Game::show_chat = false;
-        }
+    void blur_event() {
+        BitMath::set(Input::mouse_buttons_released, Input::LeftMouse);
+        BitMath::set(Input::mouse_buttons_released, Input::RightMouse);
+        BitMath::unset(Input::mouse_buttons_state, Input::LeftMouse);
+        BitMath::unset(Input::mouse_buttons_state, Input::RightMouse);
+        Input::keys_held.clear();
+        Input::touches.clear();
     }
 
     void loop(double d, float width, float height) {
@@ -131,22 +127,22 @@ int setup_inputs() {
             _mouse_event(e.clientX * devicePixelRatio, e.clientY * devicePixelRatio, 2, +!!e.button);
         });
         window.addEventListener("touchstart", (e) => {
-            // e.preventDefault();
+            e.preventDefault();
             for (const t of e.changedTouches)
                 _touch_event(t.clientX * devicePixelRatio, t.clientY * devicePixelRatio, 0, t.identifier);
         }, { passive: false });
         window.addEventListener("touchmove", (e) => {
-            // e.preventDefault();
+            e.preventDefault();
             for (const t of e.changedTouches)
                 _touch_event(t.clientX * devicePixelRatio, t.clientY * devicePixelRatio, 1, t.identifier);
         }, { passive: false });
         window.addEventListener("touchend", (e) => {
-            // e.preventDefault();
+            e.preventDefault();
             for (const t of e.changedTouches)
                 _touch_event(t.clientX * devicePixelRatio, t.clientY * devicePixelRatio, 2, t.identifier);
         }, { passive: false });
         window.addEventListener("touchcancel", (e) => {
-            // e.preventDefault();
+            e.preventDefault();
             for (const t of e.changedTouches)
                 _touch_event(t.clientX * devicePixelRatio, t.clientY * devicePixelRatio, 2, t.identifier);
         }, { passive: false });
@@ -162,7 +158,7 @@ int setup_inputs() {
             _wheel_event(e.deltaY);
         });
         window.addEventListener("blur", (e) => {
-            _blur_event(0);
+            _blur_event();
         });
     });
     return 0;
@@ -172,9 +168,9 @@ void main_loop() {
     EM_ASM({
         function loop(time)
         {
-            Module.canvas.width = innerWidth * devicePixelRatio;
-            Module.canvas.height = innerHeight * devicePixelRatio;
-            _loop(time, innerWidth * devicePixelRatio, innerHeight * devicePixelRatio);
+            Module.canvas.width = document.documentElement.clientWidth * devicePixelRatio;
+            Module.canvas.height = document.documentElement.clientHeight * devicePixelRatio;
+            _loop(time, Module.canvas.width, Module.canvas.height);
             requestAnimationFrame(loop);
         };
         requestAnimationFrame(loop);
@@ -184,8 +180,6 @@ void main_loop() {
 int setup_canvas() {
     EM_ASM({
         Module.canvas = document.getElementById("canvas");
-        Module.canvas.width = innerWidth * devicePixelRatio;
-        Module.canvas.height = innerHeight * devicePixelRatio;
         Module.canvas.oncontextmenu = function() { return false; };
         window.onbeforeunload = function(e) { return "Are you sure?"; };
         Module.ctxs = [];

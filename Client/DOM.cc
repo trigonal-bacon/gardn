@@ -20,30 +20,24 @@ void DOM::create_text_input(char const *name, uint32_t max_len) {
         elem.style.background = "transparent";
         elem.style.border = "none";
         elem.style.outline = "none";
-        elem.style["padding-left"] = "5px";
         elem.maxLength = ($1).toString();
         elem.setAttribute("spellcheck", "false");
-        if ($2) {
-            elem.addEventListener("keydown", e => {
-                if (e.key === "Enter" && !e.repeat) {
-                    e.stopPropagation();
-                    _key_event(stringToNewUTF8(e.key), 0);
-                    elem.blur();
-                }
-            });
-            elem.addEventListener("keyup", e => {
-                if (e.key === "Enter" && !e.repeat) {
-                    e.stopPropagation();
-                    _key_event(stringToNewUTF8(e.key), 1);
-                }
-            });
-            elem.addEventListener("blur", () => {
-                _blur_event(1);
-            });
-        }
+        elem.addEventListener("keydown", e => {
+            if (e.key === "Enter" && !e.repeat) {
+                e.stopPropagation();
+                _key_event(stringToNewUTF8(e.key), 0);
+                elem.blur();
+            }
+        });
+        elem.addEventListener("keyup", e => {
+            if (e.key === "Enter" && !e.repeat) {
+                e.stopPropagation();
+                _key_event(stringToNewUTF8(e.key), 1);
+            }
+        });
         document.body.appendChild(elem);
     },
-    name, max_len, Input::is_mobile);
+    name, max_len);
 }
 
 void DOM::element_show(char const *name)
@@ -76,9 +70,10 @@ void DOM::update_pos_and_dimension(char const *name, float x, float y, float w, 
             const elem = document.getElementById(name);
             elem.style.left = ($1 - $3 / 2) / devicePixelRatio + "px";
             elem.style.top = ($2 - $4 / 2) / devicePixelRatio + "px";
-            elem.style.width = ($3 / devicePixelRatio - 10) + "px";
+            elem.style.width = ($3 / devicePixelRatio - $4 / devicePixelRatio * 0.2) + "px";
             elem.style.height = $4 / devicePixelRatio + "px";
             elem.style["font-size"] = $4 / devicePixelRatio * 0.66 + "px";
+            elem.style["padding-left"] = $4 / devicePixelRatio * 0.1 + "px";
         },
         name, x, y, w, h);
 }
@@ -111,6 +106,13 @@ void DOM::element_focus(char const *name) {
         const elem = document.getElementById(name);
         elem.focus();
     }, name);
+}
+
+void DOM::blur() {
+    EM_ASM({
+        if (document.activeElement)
+            document.activeElement.blur();
+    });
 }
 
 void DOM::open_page(char const *url) {

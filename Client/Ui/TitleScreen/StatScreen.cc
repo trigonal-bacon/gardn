@@ -97,7 +97,7 @@ Element *Ui::make_stat_screen() {
         ctx.translate(0, (1 - elt->animation) * elt->height);
     };
     elt->style.should_render = [](){
-        return !Game::alive() && Game::should_render_game_ui();
+        return !Game::alive() && Game::socket.ready && Game::should_render_game_ui();
     };
     elt->animation.set(0);
     elt->style.h_justify = Style::Left;
