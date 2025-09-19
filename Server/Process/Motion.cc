@@ -10,8 +10,7 @@ void tick_entity_motion(Simulation *sim, Entity &ent) {
         --ent.slow_ticks;
     }
     ent.velocity *= (1 - ent.friction);
-    ent.acceleration *= ent.speed_ratio;
-    ent.velocity += ent.acceleration;
+    ent.velocity += (ent.acceleration * ent.speed_ratio);
     ent.set_x(ent.get_x() + ent.velocity.x + ent.collision_velocity.x);
     ent.set_y(ent.get_y() + ent.velocity.y + ent.collision_velocity.y);
     ent.collision_velocity *= 0.5;

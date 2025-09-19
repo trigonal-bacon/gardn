@@ -19,7 +19,7 @@ static void _alloc_drops(Simulation *sim, std::vector<PetalID::T> &success_drops
     for (size_t i = count; i > 0; --i) {
         PetalID::T drop_id = success_drops[i - 1];
         if (PETAL_DATA[drop_id].rarity == RarityID::kUnique && PetalTracker::get_count(sim, drop_id) > 0) {
-            success_drops[i] = success_drops[count - 1];
+            success_drops[i - 1] = success_drops[count - 1];
             --count;
             success_drops.pop_back();
             PetalTracker::remove_petal(sim, drop_id);
