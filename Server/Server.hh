@@ -3,6 +3,7 @@
 #include <Server/Game.hh>
 
 #include <set>
+#include <csignal>
 
 class Client;
 
@@ -22,7 +23,11 @@ namespace Server {
     extern uint8_t OUTGOING_PACKET[MAX_PACKET_LEN];
     extern GameInstance game;
     extern WebSocketServer server;
+    extern volatile sig_atomic_t is_draining;
+    extern bool is_stopping;
+    extern uint32_t player_count;
     extern void init();
     extern void run();
     extern void tick();
+    extern void stop();
 };

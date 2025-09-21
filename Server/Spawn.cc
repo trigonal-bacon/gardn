@@ -208,6 +208,7 @@ Entity &alloc_dot(Simulation *sim, Entity const &parent) {
 }
 
 Entity &alloc_camera(Simulation *sim, TeamManager &team_manager) {
+    ++Server::player_count;
     Entity &ent = sim->alloc_ent();
     ent.add_component(kCamera);
     ent.add_component(kRelations);

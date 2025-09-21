@@ -33,7 +33,7 @@ Entity &Simulation::alloc_ent() {
         if (BitMath::at_arr(entity_tracker.data(), i)) continue;
         BitMath::set_arr(entity_tracker.data(), i);
         entities[i].init();
-        DEBUG_ONLY(std::cout << "ent_create " << EntityID(i, hash_tracker[i]) << "\n";)
+        // DEBUG_ONLY(std::cout << "ent_create " << EntityID(i, hash_tracker[i]) << "\n";)
         entities[i].id = EntityID(i, hash_tracker[i]);
         return entities[i];
     }
@@ -47,7 +47,7 @@ Entity &Simulation::get_ent(EntityID const &id) {
 
 void Simulation::force_alloc_ent(EntityID const &id) {
     assert(id.id < ENTITY_CAP);
-    DEBUG_ONLY(std::cout << "ent_create " << id << "\n";)
+    // DEBUG_ONLY(std::cout << "ent_create " << id << "\n";)
     assert(!BitMath::at_arr(entity_tracker.data(), id.id));
     entities[id.id].init();
     BitMath::set_arr(entity_tracker.data(), id.id);
@@ -71,7 +71,7 @@ void Simulation::request_delete(EntityID const &id) {
 }
 
 void Simulation::_delete_ent(EntityID const &id) {
-    DEBUG_ONLY(std::cout << "ent_delete " << id << "\n";)
+    // DEBUG_ONLY(std::cout << "ent_delete " << id << "\n";)
     DEBUG_ONLY(assert(ent_exists(id)));
     BitMath::unset_arr(entity_tracker.data(), id.id);
     hash_tracker[id.id]++;

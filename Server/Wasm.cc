@@ -36,16 +36,20 @@ extern "C" {
         delete iter->second;
     }
 
-    void tick() {
-        Server::tick();
-    }
-
     void on_message(int ws_id, uint32_t len) {
         auto iter = WS_MAP.find(ws_id);
         //WebSocket *ws = WS_MAP[ws_id];
         if (iter == WS_MAP.end()) return;
         std::string_view message(reinterpret_cast<char const *>(INCOMING_BUFFER), len);
         Client::on_message(iter->second, message, 0);
+    }
+
+    void tick() {
+        Server::tick();
+    }
+
+    void sigusr2() {
+        Server::is_draining = true;
     }
 
     bool restore_player(EntityID::hash_type hash, EntityID::id_type id, uint32_t score, PetalID::T *loadout_ids) {
@@ -116,6 +120,7 @@ WebSocketServer::WebSocketServer() {
         server.listen($0, function() {
             console.log("Server running at http://localhost:"+$0);
         });
+        Module.server = server;
         
         const wss = new WSS.Server({ "server": server });
         Module.ws_connections = {};
@@ -140,11 +145,38 @@ WebSocketServer::WebSocketServer() {
     }, SERVER_PORT, INCOMING_BUFFER, MAX_BUFFER_LEN);
 }
 
-void Server::run() {
+void Server::init() {
     EM_ASM({
         globalThis.Module = Module;
-        setInterval(_tick, $0);
+        process.on("SIGUSR2", () => {
+            _sigusr2();
+        });
+        process.on("exit", () => {
+            console.log("exiting...");
+        });
+    });
+    Server::game.init();
+    Server::run();
+}
+
+void Server::run() {
+    EM_ASM({
+        Module.tickInterval = setInterval(_tick, $0);
     }, 1000 / TPS);
+}
+
+void Server::stop() {
+    if (Server::is_stopping) return;
+    Server::is_stopping = true;
+    std::cout << "stopping...\n";
+    EM_ASM({
+        Module.server.close();
+        for (const ws_id in Module.ws_connections) {
+            const ws = Module.ws_connections[ws_id];
+            ws.close(1001, "Shutting Down");
+        }
+        clearInterval(Module.tickInterval);
+    });
 }
 
 void Client::send_packet(uint8_t const *packet, size_t size) {

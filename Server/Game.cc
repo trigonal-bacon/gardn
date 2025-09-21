@@ -97,6 +97,10 @@ void GameInstance::add_client(Client *client, uint64_t recovery_id) {
         }
     });
     if (camera_id == NULL_ENTITY) {
+        if (Server::is_draining) {
+            client->disconnect(CloseReason::kOutdated, "Outdated Version");
+            return;
+        }
         Entity &camera = alloc_camera(&simulation, team_manager);
         camera.set_recovery_id((static_cast<uint64_t>(std::time(0)) << 32) | std::rand());
         client->camera = camera.id;

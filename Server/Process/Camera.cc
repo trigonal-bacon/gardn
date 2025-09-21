@@ -1,6 +1,7 @@
 #include <Server/Process.hh>
 
 #include <Server/PetalTracker.hh>
+#include <Server/Server.hh>
 
 #include <Shared/Entity.hh>
 #include <Shared/Map.hh>
@@ -42,6 +43,7 @@ void tick_camera_behavior(Simulation *sim, Entity &ent) {
         }
     }
     if (BitMath::at(ent.flags, EntityFlags::kIsDespawning) && ent.despawn_tick == 0) {
+        --Server::player_count;
         if (sim->ent_exists(ent.get_team()))
             --sim->get_ent(ent.get_team()).player_count;
         if (sim->ent_exists(ent.get_player()))
