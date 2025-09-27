@@ -1,6 +1,7 @@
 #include <Client/Game.hh>
 
 #include <Client/Debug.hh>
+#include <Client/DOM.hh>
 #include <Client/Input.hh>
 #include <Client/Particle.hh>
 #include <Client/Setup.hh>
@@ -9,6 +10,7 @@
 #include <Shared/Config.hh>
 
 #include <cmath>
+#include <format>
 
 static double g_last_time = 0;
 float const MAX_TRANSITION_CIRCLE = 2500;
@@ -59,6 +61,7 @@ using namespace Game;
 
 void Game::init() {
     Input::is_mobile = check_mobile();
+    DOM::cache_client();
     Storage::retrieve();
     reset();
     title_ui_window.add_child(
@@ -167,7 +170,7 @@ void Game::init() {
         }()
     );
     other_ui_window.style.no_polling = 1;
-    socket.connect(WS_URL);
+    socket.connect(std::format("{}?v={}", WS_URL, VERSION_HASH));
 }
 
 void Game::reset() {

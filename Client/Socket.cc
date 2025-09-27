@@ -31,12 +31,12 @@ extern "C" {
             Game::socket.ready = 0;
             std::printf("Disconnected [%d](%s)\n", len, reason);
             if (std::strlen(reason))
-                Game::disconnect_message = std::format("Disconnected with code {} (\"{}\")", len, reason);
+                Game::disconnect_message = std::format("Disconnected with code {} ({})", len, reason);
             else
                 Game::disconnect_message = std::format("Disconnected with code {}", len);
             free(reason);
             if (len == CloseReason::kOutdated)
-                DOM::reload_page();
+                DOM::update_client();
         }
         else if (type == 1) {
             Game::socket.ready = 1;

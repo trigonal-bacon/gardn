@@ -123,11 +123,20 @@ void DOM::open_page(char const *url) {
     }, url);
 }
 
-void DOM::reload_page() {
+void DOM::update_client() {
     EM_ASM({
+        delete window.localStorage["version_hash"];
         window.onbeforeunload = null;
-        window.location.reload();
+        setTimeout(() => {
+            window.location.reload();
+        }, 500);
     });
+}
+
+void DOM::cache_client() {
+    EM_ASM({
+        window.localStorage["version_hash"] = $0.toString();
+    }, VERSION_HASH);
 }
 
 void DOM::toggle_fullscreen() {

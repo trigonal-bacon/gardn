@@ -47,9 +47,13 @@
     <div id="font-loader" style="font-family: Ubuntu;">hello!</div>
     <canvas id="canvas" width="0" height="0"></canvas>
     <script>
+        const versionHash = '';
+        const v = localStorage['version_hash'] || versionHash;
+        var Module = {};
+        Module.locateFile = (file, prefix) => prefix + file + '?v=' + v;
         document.addEventListener("DOMContentLoaded", () => {
             const script = document.createElement('script');
-            script.src = 'gardn-client.js';
+            script.src = 'gardn-client.js?v=' + v;
             script.async = true;
             document.body.appendChild(script);
         });

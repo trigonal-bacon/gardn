@@ -10,7 +10,7 @@ tasks:
       ../emsdk/emsdk install latest && \
       ../emsdk/emsdk activate latest && \
       cmake -S Client -B Client/build -DDEBUG=1 -DUSE_CODEPOINT_LEN=1 \
-          -DSERVER_URL="${GITPOD_WORKSPACE_URL/'https://'/'wss://9001-'}"
+          -DWS_URL="${GITPOD_WORKSPACE_URL/'https://'/'wss://9001-'}"
     command: |
       source ../emsdk/emsdk_env.sh && \
       cd Client/build && \

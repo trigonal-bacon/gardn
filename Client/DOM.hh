@@ -13,6 +13,7 @@ namespace DOM {
     void element_focus(char const *);
     void blur();
     void open_page(char const *);
-    void reload_page();
+    void update_client();
+    void cache_client();
     void toggle_fullscreen();
 }
