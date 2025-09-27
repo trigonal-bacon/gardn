@@ -32,6 +32,12 @@ static Element *make_entries(std::initializer_list<std::string const> contents) 
 
 static Element *make_changelog_contents() {
     Element *elt = new Ui::VContainer({
+        make_date("September 27th 2025"),
+        make_entries({
+            "Game updates are now seamless for players",
+            "Multiple servers may exist at the same time"
+        }),
+        make_divider(),
         make_date("September 14th 2025"),
         make_entries({
             "Added more mobile buttons",
