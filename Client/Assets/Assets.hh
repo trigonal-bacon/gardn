@@ -7,7 +7,7 @@
 
 struct FlowerRenderAttributes {
     float radius = 25;
-    float eye_x = 3;
+    float eye_x = 2;
     float eye_y = 0;
     float mouth = 15;
     float cutter_angle = 0;

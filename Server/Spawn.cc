@@ -151,6 +151,7 @@ Entity &alloc_petal(Simulation *sim, PetalID::T petal_id, Entity const &parent) 
     petal.add_component(kRelations);
     petal.set_parent(parent.id);
     petal.set_team(parent.get_team());
+    petal.set_color(parent.get_color());
     petal.add_component(kPetal);
     petal.set_petal_id(petal_id);
     petal.add_component(kHealth);
@@ -178,6 +179,7 @@ Entity &alloc_web(Simulation *sim, float radius, Entity const &parent) {
     web.add_component(kRelations);
     web.set_team(parent.get_team());
     web.set_parent(parent.id);
+    web.set_color(parent.get_color());
     web.add_component(kWeb);
     entity_set_despawn_tick(web, 10 * TPS);
     return web;

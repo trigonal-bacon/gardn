@@ -63,7 +63,6 @@ SINGLE(Relations, color, uint8_t) \
 SINGLE(Relations, dev, uint8_t)
 
 #define FIELDS_Flower \
-SINGLE(Flower, eye_angle, float) \
 SINGLE(Flower, overlevel_timer, float) \
 SINGLE(Flower, loadout_count, uint8_t) \
 SINGLE(Flower, face_flags, uint8_t) \
@@ -157,7 +156,7 @@ SINGLE(Chat, text, std::string)
     SINGLE(healthbar_lag, float, =0) \
     SINGLE(healthbar_opacity, float, =0) \
     SINGLE(deletion_animation, float, =0) \
-    SINGLE(eye_x, float, =3) \
+    SINGLE(eye_x, float, =2) \
     SINGLE(eye_y, float, =0) \
     SINGLE(mouth, float, =15) \
     SINGLE(animation, float, =0) \

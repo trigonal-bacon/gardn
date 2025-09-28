@@ -58,7 +58,6 @@ extern "C" {
             Input::keys_held_this_tick.insert(button);
         }
         else if (type == 1) Input::keys_held.erase(button);
-        //else if (type == 2) Input::keys_pressed_this_tick.push_back(button);
         free(code);
     }
 
@@ -154,7 +153,6 @@ int setup_inputs() {
             };
         }, { capture: true });
         window.addEventListener("wheel", (e) => {
-            //e.preventDefault();
             _wheel_event(e.deltaY);
         });
         window.addEventListener("blur", (e) => {

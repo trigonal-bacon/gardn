@@ -23,6 +23,7 @@ void Minimap::on_render(Renderer &ctx) {
         ctx.draw_text(def.name, { .size = (def.bottom-def.top)/2 });
         ctx.translate(-(def.left+def.right)/2,-(def.top+def.bottom)/2);
     }
+    if (!Game::simulation.ent_exists(Game::camera_id)) return;
     Entity const &camera = Game::simulation.get_ent(Game::camera_id);
     Game::simulation.for_each<kDot>([&](Simulation *sim, Entity const &ent){
         if (ent.get_parent() == camera.get_player()) return;

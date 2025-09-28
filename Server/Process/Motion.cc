@@ -10,8 +10,7 @@ void tick_entity_motion(Simulation *sim, Entity &ent) {
         --ent.slow_ticks;
     }
     ent.velocity *= (1 - ent.friction);
-    ent.acceleration *= ent.speed_ratio;
-    ent.velocity += ent.acceleration;
+    ent.velocity += (ent.acceleration * ent.speed_ratio);
     ent.set_x(ent.get_x() + ent.velocity.x + ent.collision_velocity.x);
     ent.set_y(ent.get_y() + ent.velocity.y + ent.collision_velocity.y);
     ent.collision_velocity *= 0.5;
@@ -19,10 +18,6 @@ void tick_entity_motion(Simulation *sim, Entity &ent) {
     if (!ent.has_component(kPetal) && !ent.has_component(kWeb) && !ent.has_component(kChat)) {
         ent.set_x(fclamp(ent.get_x(), ent.get_radius(), ARENA_WIDTH - ent.get_radius()));
         ent.set_y(fclamp(ent.get_y(), ent.get_radius(), ARENA_HEIGHT - ent.get_radius()));
-    }
-    if (ent.has_component(kFlower)) {
-        if (ent.acceleration.x != 0 || ent.acceleration.y != 0)
-            ent.set_eye_angle(ent.acceleration.angle());
     }
     //ent.acceleration.set(0,0);
     ent.collision_velocity.set(0,0);

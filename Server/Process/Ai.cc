@@ -328,17 +328,18 @@ static void tick_digger(Simulation *sim, Entity &ent) {
             v *= -1;
         }
         ent.acceleration = v;
-        ent.set_eye_angle(v.angle());
+        ent.set_angle(v.angle());
         return;
     } else {
         if (!(ent.target == NULL_ENTITY)) {
             ent.ai_state = AIState::kIdle;
             ent.ai_tick = 0;
+            ent.target = NULL_ENTITY;
         }
         ent.target = find_nearest_enemy(sim, ent, ent.detection_radius + ent.get_radius());
         switch(ent.ai_state) {
             case AIState::kIdle: {
-                ent.set_eye_angle(frand() * M_PI * 2);
+                ent.set_angle(frand() * M_PI * 2);
                 ent.ai_state = AIState::kIdleMoving;
                 ent.ai_tick = 0;
                 break;
@@ -346,7 +347,7 @@ static void tick_digger(Simulation *sim, Entity &ent) {
             case AIState::kIdleMoving: {
                 if (ent.ai_tick > 5 * TPS)
                     ent.ai_state = AIState::kIdle;
-                ent.acceleration.unit_normal(ent.get_eye_angle()).set_magnitude(PLAYER_ACCELERATION);
+                ent.acceleration.unit_normal(ent.get_angle()).set_magnitude(PLAYER_ACCELERATION);
                 break;
             }
             case AIState::kReturning: {
@@ -448,11 +449,12 @@ void tick_ai_behavior(Simulation *sim, Entity &ent) {
             break;
         case MobID::kDigger:
             tick_digger(sim, ent);
+            break;
         default:
             break;
     }
     //wall avoidance
-    if (ent.target == NULL_ENTITY) {
+    if (!sim->ent_alive(ent.target)) {
         if (ent.get_x() - ent.get_radius() <= 0 && angle_within(ent.get_angle(), M_PI, M_PI / 2))
             ent.set_angle(M_PI - ent.get_angle());
         if (ent.get_x() + ent.get_radius() >= ARENA_WIDTH && angle_within(ent.get_angle(), 0, M_PI / 2))

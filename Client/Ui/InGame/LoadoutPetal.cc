@@ -49,7 +49,6 @@ static uint8_t static_to_dynamic(uint8_t static_pos) {
 void Ui::ui_delete_petal(uint8_t static_pos) {
     Game::delete_petal(static_pos);
     Ui::UiLoadout::petal_slots[static_pos]->curr_pos = 2 * MAX_SLOT_COUNT;
-    Game::cached_loadout[static_pos] = PetalID::kNone;
 }
 
 void Ui::ui_swap_petals(uint8_t static_pos1, uint8_t static_pos2) {
@@ -57,8 +56,6 @@ void Ui::ui_swap_petals(uint8_t static_pos1, uint8_t static_pos2) {
     UiLoadoutPetal *a1 = Ui::UiLoadout::petal_slots[static_pos1];
     UiLoadoutPetal *a2 = Ui::UiLoadout::petal_slots[static_pos2];
     if (a1->petal_id == a2->petal_id) return;
-    //Game::cached_loadout[static_pos1] = a2->petal_id;
-    //Game::cached_loadout[static_pos2] = a1->petal_id;
     a2->petal_id = Game::cached_loadout[static_pos1];
     a1->petal_id = Game::cached_loadout[static_pos2];
     a1->static_pos = static_pos2;
@@ -119,7 +116,7 @@ UiLoadoutPetal::UiLoadoutPetal(uint8_t pos) : Element(60, 60),
         }
         else
             reload = 0;
-        if (last_id == PetalID::kNone) return false;
+        if ((no_change_ticks == 0 && petal_id == PetalID::kNone) || last_id == PetalID::kNone) return false;
         return true;
     };
     style.animate = [&](Element *elt, Renderer &ctx) {

@@ -23,6 +23,7 @@ static void draw_eyes(Renderer &ctx, FlowerRenderAttributes attributes, std::fun
             ctx.translate(7, -5);
         else
             ctx.translate(10, 8);
+        ctx.move_to(0, 0);
         draw();
     }
 }
@@ -61,10 +62,11 @@ void draw_static_flower(Renderer &ctx, FlowerRenderAttributes attributes) {
     {
         RenderContext context(&ctx);
         ctx.set_fill(0xff222222);
+        ctx.set_stroke(0xff222222);
+        ctx.set_line_width(1);
         ctx.begin_path();
         if (BitMath::at(attributes.face_flags, FaceFlags::kDeadEyes)) {
             float const len = 4;
-            ctx.set_stroke(0xff222222);
             ctx.set_line_width(3);
             draw_eyes(ctx, attributes, [&](){
                 ctx.move_to(-len, -len);
@@ -75,13 +77,10 @@ void draw_static_flower(Renderer &ctx, FlowerRenderAttributes attributes) {
             ctx.stroke();
         } else if (BitMath::at(attributes.face_flags, FaceFlags::kSquareEyes)) {
             draw_eyes(ctx, attributes, [&](){
-                ctx.rect(-3.25, -6.5, 6.5, 13);
-            });
-            ctx.fill();
-            ctx.begin_path();
-            draw_eyes(ctx, attributes, [&](){
                 ctx.rect(-3, -6, 6, 12);
             });
+            ctx.fill();
+            ctx.stroke();
             ctx.clip();
             ctx.set_fill(0xffffffff);
             ctx.begin_path();
@@ -91,13 +90,10 @@ void draw_static_flower(Renderer &ctx, FlowerRenderAttributes attributes) {
             ctx.fill();
         } else {
             draw_eyes(ctx, attributes, [&](){
-                ctx.ellipse(0, 0, 3.25, 6.5);
-            });
-            ctx.fill();
-            ctx.begin_path();
-            draw_eyes(ctx, attributes, [&](){
                 ctx.ellipse(0, 0, 3, 6);
             });
+            ctx.fill();
+            ctx.stroke();
             ctx.clip();
             ctx.set_fill(0xffffffff);
             ctx.begin_path();

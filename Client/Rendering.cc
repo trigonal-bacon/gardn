@@ -149,7 +149,8 @@ void Game::render_game() {
         if (ent.get_mob_id() != MobID::kAntHole) return;
         RenderContext context(&renderer);
         renderer.translate(ent.get_x(), ent.get_y());
-        renderer.rotate(ent.get_angle());
+        if (!ent.has_component(kFlower))
+            renderer.rotate(ent.get_angle());
         _apply_damage_filter(renderer, ent);
         render_mob(renderer, ent);
     });
@@ -157,14 +158,14 @@ void Game::render_game() {
         if (ent.get_mob_id() == MobID::kAntHole) return;
         RenderContext context(&renderer);
         renderer.translate(ent.get_x(), ent.get_y());
-        renderer.rotate(ent.get_angle());
+        if (!ent.has_component(kFlower))
+            renderer.rotate(ent.get_angle());
         _apply_damage_filter(renderer, ent);
         render_mob(renderer, ent);
     });
     simulation.for_each<kFlower>([](Simulation *sim, Entity const &ent){
         RenderContext context(&renderer);
         renderer.translate(ent.get_x(), ent.get_y());
-        renderer.rotate(ent.get_angle());
         _apply_damage_filter(renderer, ent);
         render_flower(renderer, ent);
     });
