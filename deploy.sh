@@ -44,10 +44,9 @@ if [[ "$WASM_SERVER" -eq 1 ]]; then
 else
     ./gardn-server &
 fi
-PID=$!
 
 sleep 3
-kill -0 "$PID"
+kill -0 $!
 
 cp ../../Client/public/* ../../Client/build/gardn-client.* .
 sed -i "s/const versionHash = '';/const versionHash = '$VERSION_HASH';/" index.html
@@ -57,13 +56,13 @@ echo "'$VERSION_HASH' '$SERVER_PORT';" > "$NGINX_FILE"
 echo "default '$SERVER_PORT';" > nginx/default.conf
 nginx -s reload
 
-(
-    tail --pid "$PID" -f /dev/null
-    rm -f "$NGINX_FILE"
-    nginx -s reload
-) &
-
 if [[ -f "$PID_FILE" ]]; then
     kill -s SIGUSR2 "$(cat "$PID_FILE")" || true
 fi
-echo "$PID" > "$PID_FILE"
+echo $! > "$PID_FILE"
+
+(
+    tail --pid $! -f /dev/null
+    rm -f "$NGINX_FILE"
+    nginx -s reload
+) &

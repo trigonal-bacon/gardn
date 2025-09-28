@@ -230,7 +230,7 @@ Entity &alloc_camera(Simulation *sim, TeamManager &team_manager) {
         ent.set_inventory(i, PetalID::kBasic);
     if (frand() < 0.001 && PetalTracker::get_count(sim, PetalID::kUniqueBasic) == 0)
         ent.set_inventory(0, PetalID::kUniqueBasic);
-    for (uint32_t i = 0; i < loadout_slots_at_level(ent.get_respawn_level()); ++i)
+    for (uint32_t i = 0; i < 2 * MAX_SLOT_COUNT; ++i)
         PetalTracker::add_petal(sim, ent.get_inventory(i));
     return ent;
 }

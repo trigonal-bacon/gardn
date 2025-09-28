@@ -26,6 +26,7 @@ static struct PlayerBuffs _get_petal_passive_buffs(Simulation *sim, Entity &play
     player.set_equip_flags(0);
     player.damage_reflection = 0;
     player.poison_armor = 0;
+    if (player.get_overlevel_timer() >= PETAL_DISABLE_DELAY * TPS) return buffs;
     for (uint32_t i = 0; i < player.get_loadout_count(); ++i) {
         LoadoutSlot const &slot = player.loadout[i];
         PetalID::T slot_petal_id = slot.get_petal_id();
@@ -124,7 +125,7 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
         struct PetalData const &petal_data = PETAL_DATA[slot_petal_id];
         DEBUG_ONLY(assert(petal_data.count <= MAX_PETALS_IN_CLUMP);)
 
-        if (slot_petal_id == PetalID::kNone || petal_data.count == 0)
+        if (slot_petal_id == PetalID::kNone)
             continue;
         //if overleveled timer too large
         if (player.get_overlevel_timer() >= PETAL_DISABLE_DELAY * TPS) {

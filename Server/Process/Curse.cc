@@ -16,6 +16,7 @@ void tick_curse_behavior(Simulation *sim) {
     if (!sim->ent_alive(leader)) return;
     sim->for_each<kMob>([=](Simulation *sim, Entity &ent) {
         if (!(ent.get_team() == NULL_ENTITY)) return;
+        if (ent.get_mob_id() == MobID::kAntHole) return;
         if (sim->ent_alive(ent.target)) return;
         Entity const &player = sim->get_ent(leader);
         Vector delta(player.get_x() - ent.get_x(), player.get_y() - ent.get_y());

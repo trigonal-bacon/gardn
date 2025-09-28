@@ -118,7 +118,11 @@ void GameInstance::remove_client(Client *client) {
     clients.erase(client);
     if (simulation.ent_exists(client->camera)) {
         Entity &c = simulation.get_ent(client->camera);
+        #ifdef DEBUG
+        entity_set_despawn_tick(c, 0);
+        #else
         entity_set_despawn_tick(c, 60 * TPS);
+        #endif
         c.client = nullptr;
     }
     client->game = nullptr;

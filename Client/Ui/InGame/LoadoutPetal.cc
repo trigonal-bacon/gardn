@@ -204,7 +204,7 @@ UiLoadoutPetal::UiLoadoutPetal(uint8_t pos) : Element(60, 60),
 void UiLoadoutPetal::on_render(Renderer &ctx) {
     if (last_id == PetalID::kNone) return;
     ctx.scale(width / 60);
-    if (static_pos < Game::loadout_count && PETAL_DATA[last_id].count != 0)
+    if (static_pos < Game::loadout_count)
         draw_loadout_background(ctx, last_id, (float) reload);
     else
         draw_loadout_background(ctx, last_id);
