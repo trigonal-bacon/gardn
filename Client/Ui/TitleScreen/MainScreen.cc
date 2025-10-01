@@ -13,6 +13,7 @@
 
 #include <Shared/Config.hh>
 
+#include <chrono>
 #include <format>
 
 using namespace Ui;
@@ -193,6 +194,10 @@ Element *Ui::make_panel_buttons() {
 
 Element *Ui::make_debug_stats() {
     Element *elt = new Ui::VContainer({
+        new Ui::DynamicText(12, [](){
+            using namespace std::chrono;
+            return std::format("Build {:%b %d %Y %T}", time_point<system_clock, seconds>{seconds{VERSION_HASH}});
+        }, { .fill = 0xffffffff, .h_justify = Style::Right }),
         new Ui::DynamicText(12, [](){
             float pxls = 0;
             for (Renderer *r : Renderer::renderers) pxls += r->width * r->height;

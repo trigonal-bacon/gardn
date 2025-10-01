@@ -37,7 +37,7 @@ void Element::render(Renderer &ctx) {
     float curr_animation = (float) animation;
     visible = curr_animation > 0.01;
     #ifdef DEBUG
-    if (visible) {
+    if (visible && Game::show_debug) {
         RenderContext context(&ctx);
         if (focus_state != kFocusLost)
             ctx.set_stroke(0x80ff0000);

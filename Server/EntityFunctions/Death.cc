@@ -74,9 +74,12 @@ void entity_on_death(Simulation *sim, Entity const &ent) {
         }
         if (ent.get_mob_id() == MobID::kAntHole && ent.get_team() == NULL_ENTITY && frand() < DIGGER_SPAWN_CHANCE) { 
             EntityID team = NULL_ENTITY;
-            if (sim->ent_exists(ent.last_damaged_by))
+            uint8_t dev = 0;
+            if (sim->ent_exists(ent.last_damaged_by)) {
                 team = sim->get_ent(ent.last_damaged_by).get_team();
-            alloc_mob(sim, MobID::kDigger, ent.get_x(), ent.get_y(), team);
+                dev = sim->get_ent(ent.last_damaged_by).get_dev();
+            }
+            alloc_mob(sim, MobID::kDigger, ent.get_x(), ent.get_y(), team).set_dev(dev);
         }
 
     } else if (ent.has_component(kPetal)) {

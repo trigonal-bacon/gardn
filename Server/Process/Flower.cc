@@ -125,10 +125,8 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
         struct PetalData const &petal_data = PETAL_DATA[slot_petal_id];
         DEBUG_ONLY(assert(petal_data.count <= MAX_PETALS_IN_CLUMP);)
 
-        if (slot_petal_id == PetalID::kNone)
-            continue;
         //if overleveled timer too large
-        if (player.get_overlevel_timer() >= PETAL_DISABLE_DELAY * TPS) {
+        if (slot_petal_id == PetalID::kNone || player.get_overlevel_timer() >= PETAL_DISABLE_DELAY * TPS) {
             player.set_loadout_reloads(i, 0);
             continue;
         }

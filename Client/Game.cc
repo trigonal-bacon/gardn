@@ -252,7 +252,6 @@ void Game::tick(double time) {
         player_id = NULL_ENTITY;
         overlevel_timer = 0;
     }
-    if (in_game()) Ui::panel_open = Ui::Panel::kNone;
     if (simulation.ent_exists(camera_id))
         Game::recovery_id = simulation.get_ent(camera_id).get_recovery_id();
 
@@ -277,8 +276,10 @@ void Game::tick(double time) {
         render_title_screen();
         Particle::tick_title(renderer, Ui::dt);
         title_ui_window.render(renderer);
-    } else
+    } else {
+        Ui::panel_open = Ui::Panel::kNone;
         title_ui_window.on_render_skip(renderer);
+    }
 
     if (should_render_game_ui()) {
         RenderContext c(&renderer);
