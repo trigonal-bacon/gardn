@@ -2,7 +2,13 @@
 
 #include <Client/StaticData.hh>
 
+#include <Helpers/Bits.hh>
+#include <Helpers/Math.hh>
+
 #include <cmath>
+
+#define SET_BASE_COLOR(set_color) { if (!BitMath::at(flags, 0)) base_color = set_color; else { base_color = FLOWER_COLORS[attr.color]; } }
+
 
 void draw_static_petal_single(PetalID::T id, Renderer &ctx) {
     float r = PETAL_DATA[id].radius;
@@ -30,6 +36,29 @@ void draw_static_petal_single(PetalID::T id, Renderer &ctx) {
             ctx.fill();
             ctx.stroke();
             break;
+        case PetalID::kSoil: {
+    uint32_t base_color = 0xff695118; 
+    SeedGenerator gen(std::floor(r) * 1951264 + 295726);
+    ctx.set_fill(base_color);
+    ctx.set_stroke(Renderer::HSV(base_color, 0.8));
+    ctx.set_line_width(5);
+    ctx.round_line_cap();
+    ctx.round_line_join();
+    ctx.begin_path();
+    float deflection = r * 0.1;
+    ctx.move_to(r + gen.binext() * deflection, gen.binext() * deflection);
+    uint32_t sides = 7 + r / 10;
+    for (uint32_t i = 1; i < sides; ++i) {
+        float angle = 2 * M_PI * i / sides;
+        ctx.line_to(cosf(angle) * r + gen.binext() * deflection,
+                    sinf(angle) * r + gen.binext() * deflection);
+    }
+    ctx.close_path();
+    ctx.fill();
+    ctx.stroke();
+    break;
+}
+
         case PetalID::kHeavy:
             ctx.set_fill(0xffaaaaaa);
             ctx.set_stroke(0xff888888);
@@ -73,6 +102,232 @@ void draw_static_petal_single(PetalID::T id, Renderer &ctx) {
             ctx.qcurve_to(0,-1.5,7.5,0);
             ctx.stroke();
             break;
+        case PetalID::kBasil: 
+        ctx.scale(r / 17.5);
+        ctx.translate(-51, -50);
+            ctx.set_fill(0xff288034);
+ctx.begin_path();
+ctx.move_to(54.63, 46.61);
+ctx.qcurve_to(45.99, 36.79, 53.57, 29.45);
+ctx.qcurve_to(57.05, 26.08, 66.86, 22.68);
+ctx.qcurve_to(67.70, 22.39, 68.09, 22.25);
+ctx.qcurve_to(68.26, 22.19, 68.43, 22.15);
+ctx.qcurve_to(68.60, 22.11, 68.77, 22.08);
+ctx.qcurve_to(69.30, 22.04, 69.47, 22.05);
+ctx.qcurve_to(71.28, 22.65, 71.42, 22.76);
+ctx.qcurve_to(71.56, 22.86, 71.69, 22.98);
+ctx.qcurve_to(72.44, 23.95, 72.51, 24.11);
+ctx.qcurve_to(72.59, 24.27, 72.65, 24.43);
+ctx.qcurve_to(72.80, 24.85, 72.84, 25.30);
+ctx.qcurve_to(72.87, 25.71, 72.96, 26.60);
+ctx.qcurve_to(73.95, 36.93, 72.33, 41.50);
+ctx.qcurve_to(68.82, 51.44, 56.28, 47.67);
+ctx.qcurve_to(55.81, 47.53, 55.39, 47.26);
+ctx.qcurve_to(54.97, 46.99, 54.63, 46.61);
+ctx.move_to(60.00, 41.89);
+ctx.line_to(57.32, 44.25);
+ctx.line_to(58.35, 40.83);
+ctx.qcurve_to(64.36, 42.64, 65.60, 39.12);
+ctx.qcurve_to(66.69, 36.04, 65.85, 27.28);
+ctx.qcurve_to(65.76, 26.37, 65.72, 25.94);
+ctx.line_to(69.28, 25.62);
+ctx.line_to(70.47, 28.99);
+ctx.qcurve_to(70.06, 29.13, 69.19, 29.43);
+ctx.qcurve_to(60.88, 32.31, 58.54, 34.58);
+ctx.qcurve_to(55.85, 37.18, 60.00, 41.89);
+ctx.fill();
+
+ctx.set_fill(0xff319e40);
+ctx.begin_path();
+ctx.move_to(57.32, 44.25);
+ctx.bcurve_to(47.01, 32.54, 61.60, 28.33, 69.28, 25.62);
+ctx.bcurve_to(70.01, 33.73, 72.25, 48.75, 57.32, 44.25);
+ctx.fill();
+
+ctx.set_fill(0xff288034);
+ctx.begin_path();
+ctx.move_to(56.26, 48.16);
+ctx.qcurve_to(69.09, 45.59, 71.66, 55.82);
+ctx.qcurve_to(72.84, 60.52, 70.88, 70.71);
+ctx.qcurve_to(70.71, 71.59, 70.63, 72.00);
+ctx.qcurve_to(70.60, 72.17, 70.55, 72.34);
+ctx.qcurve_to(70.37, 72.83, 70.29, 72.99);
+ctx.qcurve_to(70.21, 73.15, 70.11, 73.29);
+ctx.qcurve_to(70.02, 73.44, 69.91, 73.58);
+ctx.qcurve_to(69.55, 73.96, 69.42, 74.08);
+ctx.qcurve_to(69.28, 74.19, 69.14, 74.29);
+ctx.qcurve_to(68.99, 74.39, 68.84, 74.47);
+ctx.qcurve_to(68.03, 74.80, 67.86, 74.84);
+ctx.qcurve_to(67.69, 74.87, 67.51, 74.89);
+ctx.qcurve_to(66.64, 74.89, 66.46, 74.85);
+ctx.qcurve_to(66.03, 74.77, 65.62, 74.58);
+ctx.qcurve_to(65.24, 74.41, 64.43, 74.04);
+ctx.qcurve_to(54.99, 69.73, 51.84, 66.05);
+ctx.qcurve_to(44.99, 58.03, 54.52, 49.06);
+ctx.qcurve_to(54.88, 48.72, 55.33, 48.49);
+ctx.qcurve_to(55.77, 48.26, 56.26, 48.16);
+ctx.move_to(57.67, 55.17);
+ctx.line_to(56.97, 51.67);
+ctx.line_to(59.41, 54.27);
+ctx.qcurve_to(54.84, 58.57, 57.27, 61.41);
+ctx.qcurve_to(59.39, 63.89, 67.39, 67.54);
+ctx.qcurve_to(68.22, 67.92, 68.62, 68.10);
+ctx.line_to(67.12, 71.34);
+ctx.line_to(63.61, 70.69);
+ctx.qcurve_to(63.69, 70.26, 63.86, 69.36);
+ctx.qcurve_to(65.52, 60.72, 64.73, 57.56);
+ctx.qcurve_to(63.82, 53.93, 57.67, 55.17);
+ctx.fill();
+
+ctx.set_fill(0xff319e40);
+ctx.begin_path();
+ctx.move_to(56.97, 51.67);
+ctx.bcurve_to(72.26, 48.60, 68.62, 63.34, 67.12, 71.34);
+ctx.bcurve_to(59.73, 67.92, 45.60, 62.35, 56.97, 51.67);
+ctx.fill();
+
+ctx.set_fill(0xff288034);
+ctx.begin_path();
+ctx.move_to(54.10, 48.80);
+ctx.qcurve_to(49.92, 61.20, 39.78, 58.30);
+ctx.qcurve_to(35.12, 56.97, 27.27, 50.18);
+ctx.qcurve_to(26.59, 49.59, 26.28, 49.32);
+ctx.qcurve_to(26.14, 49.21, 26.02, 49.08);
+ctx.qcurve_to(25.69, 48.68, 25.59, 48.53);
+ctx.qcurve_to(25.50, 48.38, 25.42, 48.23);
+ctx.qcurve_to(25.34, 48.07, 25.27, 47.91);
+ctx.qcurve_to(25.21, 47.74, 25.16, 47.58);
+ctx.qcurve_to(25.12, 47.41, 25.08, 47.23);
+ctx.qcurve_to(25.05, 47.06, 25.04, 46.89);
+ctx.qcurve_to(25.03, 46.71, 25.03, 46.54);
+ctx.qcurve_to(25.03, 46.36, 25.06, 46.19);
+ctx.qcurve_to(25.08, 46.01, 25.11, 45.84);
+ctx.qcurve_to(25.15, 45.67, 25.21, 45.50);
+ctx.qcurve_to(25.26, 45.34, 25.33, 45.17);
+ctx.qcurve_to(25.40, 45.01, 25.49, 44.86);
+ctx.qcurve_to(26.18, 43.95, 26.54, 43.69);
+ctx.qcurve_to(26.88, 43.45, 27.61, 42.93);
+ctx.qcurve_to(36.06, 36.91, 40.83, 36.02);
+ctx.qcurve_to(51.20, 34.10, 54.20, 46.84);
+ctx.qcurve_to(54.31, 47.32, 54.29, 47.82);
+ctx.qcurve_to(54.26, 48.32, 54.10, 48.80);
+ctx.move_to(47.34, 46.51);
+ctx.line_to(50.72, 47.66);
+ctx.line_to(47.24, 48.47);
+ctx.qcurve_to(45.81, 42.36, 42.13, 43.05);
+ctx.qcurve_to(38.92, 43.64, 31.76, 48.75);
+ctx.qcurve_to(31.01, 49.28, 30.66, 49.53);
+ctx.line_to(28.60, 46.61);
+ctx.line_to(30.92, 43.90);
+ctx.qcurve_to(31.25, 44.18, 31.94, 44.78);
+ctx.qcurve_to(38.60, 50.54, 41.74, 51.43);
+ctx.qcurve_to(45.33, 52.46, 47.34, 46.51);
+ctx.fill();
+
+ctx.set_fill(0xff319e40);
+ctx.begin_path();
+ctx.move_to(50.72, 47.66);
+ctx.bcurve_to(45.73, 62.44, 34.79, 51.91, 28.60, 46.61);
+ctx.bcurve_to(35.26, 41.92, 47.15, 32.47, 50.72, 47.66);
+ctx.fill();
+
+ctx.set_fill(0xff288034);
+ctx.begin_path();
+ctx.move_to(55.58, 43.32);
+ctx.qcurve_to(56.78, 35.52, 64.12, 29.92);
+ctx.qcurve_to(64.21, 29.86, 64.29, 29.80);
+ctx.qcurve_to(64.38, 29.75, 64.48, 29.70);
+ctx.qcurve_to(64.57, 29.66, 64.67, 29.62);
+ctx.qcurve_to(64.77, 29.58, 64.87, 29.56);
+ctx.qcurve_to(65.18, 29.50, 65.29, 29.49);
+ctx.qcurve_to(66.92, 30.09, 66.99, 30.17);
+ctx.qcurve_to(67.06, 30.25, 67.12, 30.33);
+ctx.qcurve_to(67.19, 30.41, 67.24, 30.50);
+ctx.qcurve_to(67.30, 30.59, 67.34, 30.69);
+ctx.qcurve_to(67.39, 30.78, 67.43, 30.88);
+ctx.qcurve_to(67.47, 30.98, 67.49, 31.08);
+ctx.qcurve_to(67.52, 31.18, 67.53, 31.29);
+ctx.qcurve_to(67.55, 31.39, 67.56, 31.50);
+ctx.qcurve_to(60.76, 37.88, 59.82, 43.98);
+ctx.qcurve_to(59.80, 44.08, 59.78, 44.18);
+ctx.qcurve_to(59.68, 44.48, 59.63, 44.58);
+ctx.qcurve_to(59.59, 44.67, 59.53, 44.76);
+ctx.qcurve_to(59.21, 45.18, 59.13, 45.25);
+ctx.qcurve_to(58.51, 45.64, 58.41, 45.67);
+ctx.qcurve_to(58.31, 45.71, 58.21, 45.73);
+ctx.qcurve_to(58.11, 45.76, 58.00, 45.77);
+ctx.qcurve_to(57.90, 45.79, 57.79, 45.79);
+ctx.qcurve_to(57.48, 45.78, 57.37, 45.77);
+ctx.qcurve_to(57.27, 45.75, 57.17, 45.73);
+ctx.qcurve_to(56.87, 45.63, 56.77, 45.58);
+ctx.move_to(58.63, 50.63);
+ctx.qcurve_to(64.79, 55.57, 65.97, 64.72);
+ctx.qcurve_to(65.98, 64.83, 65.99, 64.93);
+ctx.qcurve_to(65.99, 65.04, 65.98, 65.14);
+ctx.qcurve_to(65.60, 66.22, 65.54, 66.30);
+ctx.qcurve_to(65.48, 66.39, 65.40, 66.46);
+ctx.qcurve_to(65.33, 66.54, 65.25, 66.61);
+ctx.qcurve_to(65.17, 66.68, 65.09, 66.74);
+ctx.qcurve_to(65.00, 66.80, 64.91, 66.85);
+ctx.qcurve_to(64.82, 66.91, 64.72, 66.95);
+ctx.qcurve_to(64.22, 67.11, 64.12, 67.12);
+ctx.qcurve_to(64.01, 67.13, 63.91, 67.14);
+ctx.qcurve_to(63.18, 67.04, 63.08, 67.00);
+ctx.qcurve_to(62.98, 66.96, 62.89, 66.91);
+ctx.qcurve_to(62.30, 66.48, 62.23, 66.40);
+ctx.qcurve_to(62.16, 66.32, 62.10, 66.24);
+ctx.qcurve_to(62.04, 66.15, 61.98, 66.06);
+ctx.qcurve_to(61.93, 65.97, 61.89, 65.87);
+ctx.qcurve_to(61.73, 65.37, 61.72, 65.27);
+ctx.qcurve_to(60.76, 57.83, 55.95, 53.97);
+ctx.qcurve_to(55.87, 53.91, 55.79, 53.83);
+ctx.qcurve_to(55.72, 53.76, 55.65, 53.68);
+ctx.qcurve_to(55.58, 53.60, 55.52, 53.51);
+ctx.qcurve_to(55.46, 53.42, 55.41, 53.33);
+ctx.qcurve_to(55.36, 53.24, 55.32, 53.14);
+ctx.qcurve_to(55.15, 52.43, 55.15, 52.32);
+ctx.qcurve_to(55.17, 52.01, 55.19, 51.91);
+ctx.qcurve_to(55.21, 51.80, 55.24, 51.70);
+ctx.qcurve_to(55.34, 51.40, 55.39, 51.31);
+ctx.qcurve_to(55.44, 51.22, 55.50, 51.13);
+ctx.qcurve_to(55.56, 51.04, 55.62, 50.96);
+ctx.qcurve_to(55.69, 50.88, 55.76, 50.80);
+ctx.qcurve_to(56.17, 50.47, 56.26, 50.42);
+ctx.qcurve_to(56.95, 50.18, 57.06, 50.17);
+ctx.qcurve_to(57.16, 50.16, 57.27, 50.16);
+ctx.qcurve_to(57.37, 50.16, 57.48, 50.17);
+ctx.qcurve_to(57.58, 50.17, 57.69, 50.19);
+ctx.qcurve_to(57.79, 50.21, 57.89, 50.24);
+ctx.qcurve_to(58.37, 50.45, 58.46, 50.51);
+ctx.qcurve_to(58.55, 50.56, 58.63, 50.63);
+ctx.move_to(50.78, 49.62);
+ctx.qcurve_to(43.42, 52.48, 34.91, 48.92);
+ctx.qcurve_to(34.81, 48.88, 34.72, 48.83);
+ctx.qcurve_to(34.63, 48.78, 34.54, 48.72);
+ctx.qcurve_to(34.45, 48.67, 34.37, 48.60);
+ctx.qcurve_to(34.14, 48.38, 34.07, 48.30);
+ctx.qcurve_to(34.01, 48.22, 33.95, 48.13);
+ctx.qcurve_to(33.89, 48.04, 33.84, 47.95);
+ctx.qcurve_to(33.79, 47.86, 33.75, 47.76);
+ctx.qcurve_to(33.71, 47.66, 33.68, 47.56);
+ctx.qcurve_to(33.65, 47.46, 33.63, 47.36);
+ctx.qcurve_to(33.59, 47.04, 33.59, 46.94);
+ctx.qcurve_to(34.15, 45.50, 34.22, 45.43);
+ctx.qcurve_to(34.30, 45.35, 34.38, 45.29);
+ctx.qcurve_to(34.46, 45.22, 34.55, 45.16);
+ctx.qcurve_to(34.64, 45.10, 34.73, 45.05);
+ctx.qcurve_to(34.82, 45.00, 34.92, 44.96);
+ctx.qcurve_to(35.02, 44.92, 35.12, 44.89);
+ctx.qcurve_to(35.22, 44.86, 35.32, 44.84);
+ctx.qcurve_to(36.46, 44.93, 36.56, 44.97);
+ctx.qcurve_to(43.48, 47.86, 49.23, 45.62);
+ctx.qcurve_to(49.33, 45.59, 49.43, 45.56);
+ctx.qcurve_to(49.53, 45.53, 49.63, 45.51);
+ctx.qcurve_to(49.95, 45.48, 50.05, 45.48);
+ctx.qcurve_to(51.07, 49.48, 50.98, 49.53);
+ctx.qcurve_to(50.88, 49.58, 50.78, 49.62);
+ctx.fill();
+        break;
         case PetalID::kRose:
         case PetalID::kDahlia:
             ctx.set_fill(0xffff94c9);
@@ -134,6 +389,66 @@ void draw_static_petal_single(PetalID::T id, Renderer &ctx) {
             ctx.fill();
             ctx.stroke();
             break;
+//         case PetalID::kWax: {
+//        uint32_t base_color = 0xfff7ce2f;   
+//     SeedGenerator gen(std::floor(r) * 1951264 + 295726);
+//     ctx.set_fill(base_color);
+//     ctx.set_stroke(Renderer::HSV(base_color, 0.8));
+//     ctx.set_line_width(10);
+//     ctx.round_line_cap();
+//     ctx.round_line_join();
+//     ctx.begin_path();
+//     float deflection = r * 0.1;
+//     ctx.move_to(r + gen.binext() * deflection, gen.binext() * deflection);
+//     uint32_t sides = 6;
+//     for (uint32_t i = 1; i < sides; ++i) {
+//         float angle = 2 * M_PI * i / sides;
+//         ctx.line_to(cosf(angle) * r + gen.binext() * deflection,
+//                     sinf(angle) * r + gen.binext() * deflection);
+//     }
+//     ctx.close_path();
+//     ctx.fill();
+//     ctx.stroke();
+//     break;
+// }
+        case PetalID::kWax: {
+    uint32_t base_color = 0xfff7ce2f;
+    float start = (float)M_PI / 6.0f; // flat side down
+    ctx.set_fill(base_color);
+    ctx.set_stroke(Renderer::HSV(base_color, 0.8f));
+    ctx.set_line_width(r / 5);
+    ctx.round_line_cap();
+    ctx.round_line_join();
+    ctx.begin_path();
+    ctx.move_to(cosf(start) * r, sinf(start) * r);
+    for (uint32_t i = 1; i < 6; ++i) {
+        float angle = start + i * (float)M_PI / 3.0f;
+        ctx.line_to(cosf(angle) * r, sinf(angle) * r);
+    }
+    ctx.close_path();
+    ctx.fill();
+    ctx.stroke();
+    break;
+}
+        case PetalID::kHoney: {
+    uint32_t base_color = 0xfff7ce2f; // same palette as Wax
+    float start = (float)M_PI / 6.0f; // flat side down
+    ctx.set_fill(base_color);
+    ctx.set_stroke(Renderer::HSV(base_color, 0.8f));
+    ctx.set_line_width(3);
+    ctx.round_line_cap();
+    ctx.round_line_join();
+    ctx.begin_path();
+    ctx.move_to(cosf(start) * r, sinf(start) * r);
+    for (uint32_t i = 1; i < 6; ++i) {
+        float angle = start + i * (float)M_PI / 3.0f;
+        ctx.line_to(cosf(angle) * r, sinf(angle) * r);
+    }
+    ctx.close_path();
+    ctx.fill();
+    ctx.stroke();
+    break;
+}
         case PetalID::kBubble:
             ctx.begin_path();
             ctx.arc(0,0,r);
@@ -149,6 +464,7 @@ void draw_static_petal_single(PetalID::T id, Renderer &ctx) {
             ctx.set_fill(0x59ffffff);
             ctx.fill();
             break;
+        case PetalID::kTriFaster:
         case PetalID::kFaster:
             ctx.set_fill(0xfffeffc9);
             ctx.set_stroke(0xffcecfa3);
@@ -227,6 +543,7 @@ void draw_static_petal_single(PetalID::T id, Renderer &ctx) {
             ctx.stroke();
             break;
         }
+        //case PetalID::kEntennae:
         case PetalID::kAntennae: {
             ctx.round_line_cap();
             ctx.round_line_join();
@@ -295,6 +612,7 @@ void draw_static_petal_single(PetalID::T id, Renderer &ctx) {
             ctx.arc(0,0,8);
             ctx.fill();
             break;
+        case PetalID::kFatPeas:
         case PetalID::kPoisonPeas:
             ctx.set_fill(0xffce76db);
             ctx.set_stroke(0xffa760b1);

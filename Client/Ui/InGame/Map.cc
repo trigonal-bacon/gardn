@@ -40,7 +40,7 @@ void Minimap::on_render(Renderer &ctx) {
         ctx.stroke();
     });
     ctx.set_fill(0xffffe763);
-    ctx.set_stroke(Renderer::HSV(0xffffe763, 0.8));
+    ctx.set_stroke(Renderer::HSV(0xffffe763, 1.0));
     ctx.set_line_width(ARENA_WIDTH / 120);
     ctx.begin_path();
     ctx.arc(camera.get_camera_x(), camera.get_camera_y(), ARENA_WIDTH / 40);
@@ -50,13 +50,13 @@ void Minimap::on_render(Renderer &ctx) {
 
 Element *Ui::make_minimap() {
     Element *elt = new Ui::VContainer({
-        new Ui::StaticText(20, "Minimap"),
+        new Ui::StaticText(25, "Map"),
         new Ui::Minimap(300)
     }, 20, 10, { 
         .should_render = [](){ return Game::should_render_game_ui(); },
         .h_justify = Style::Right,
         .v_justify = Style::Bottom
     });
-    elt->y = -65;
+    elt->y = -75;
     return elt;
 }

@@ -22,7 +22,7 @@ Element *Ui::make_title_input_box() {
     Ui::Element *title = new Ui::VContainer({
         new Ui::Element(0, 60),
         new Ui::Choose(
-            new Ui::StaticText(40, "Connecting..."),
+            new Ui::StaticText(60, "Connecting..."),
             new Ui::VContainer({
                 new Ui::VContainer({
                     new Ui::StaticText(20, "This pretty little flower is called..."),
@@ -58,7 +58,7 @@ Element *Ui::make_title_input_box() {
             [](){ return Game::socket.ready; }
         ),
         new Ui::Element(0,20),
-        new Ui::StaticText(16, "open-source florr.io pvp clone"),
+        new Ui::StaticText(16, "legacy florr.io"),
     }, 0, 0, { .animate = [](Element *elt, Renderer &ctx){}, .should_render = [](){ return Game::should_render_title_ui(); } });
     return title;
 }
@@ -71,14 +71,16 @@ Element *Ui::make_title_info_box() {
                 new Ui::Element(0,5),
                 new Ui::StaticText(16, "Use mouse to move"),
                 new Ui::StaticText(16, "Right click to attack"),
-                new Ui::StaticText(16, "Left click to defend")
+                new Ui::StaticText(16, "Left click to defend"),
+                new Ui::StaticText(16, "Press enter to chat")
             }, 0, 5, { .no_animation = 1 }),
             new Ui::VContainer({
                 new Ui::StaticText(35, "How to play"),
                 new Ui::Element(0,5),
                 new Ui::StaticText(16, "Use WASD or arrow keys to move"),
                 new Ui::StaticText(16, "SPACE to attack"),
-                new Ui::StaticText(16, "SHIFT to defend")
+                new Ui::StaticText(16, "SHIFT to defend"),
+                new Ui::StaticText(16, "Press enter to chat")
             }, 0, 5, { .no_animation = 1 }),
             [](){
                 return Input::keyboard_movement;
@@ -237,9 +239,9 @@ Element *Ui::make_debug_stats() {
 
 Element *Ui::make_link_buttons() {
     Element *elt = new Ui::HContainer({
-        new Ui::Button(50, 50, 
+        new Ui::Button(35, 35, 
             new Ui::StaticIcon([](Element *elt, Renderer &ctx){
-                ctx.scale(elt->width / 58);
+                ctx.scale(elt->width / 60);
                 ctx.translate(-29, -22);
                 ctx.set_fill(0xfff1f1f1);
                 ctx.begin_path();
@@ -271,51 +273,12 @@ Element *Ui::make_link_buttons() {
                 ctx.bcurve_to(41.60, 18.37, 43.93, 20.99, 43.88, 24.18);
                 ctx.bcurve_to(43.84, 27.38, 41.58, 29.98, 38.66, 29.98);
                 ctx.fill();
-            }, 40, 40),
+            }, 30, 30),
             [](Element *elt, uint8_t e){
-                if (e == Ui::kClick) DOM::open_page("https://discord.gg/Ghwxd8nJnN");
+                if (e == Ui::kClick) DOM::open_page("https://discord.gg/florr");
             },
             nullptr,
-            { .fill = 0xff5865f2, .line_width = 4, .round_radius = 4 }
-        ),
-        new Ui::Button(50, 50, 
-            new Ui::StaticIcon([](Element *elt, Renderer &ctx){
-                ctx.scale(elt->width / 20);
-                ctx.set_fill(0xfff1f1f1);
-                ctx.begin_path();
-                ctx.move_to(0.00, -10.00);
-                ctx.bcurve_to(5.52, -10.00, 10.00, -5.41, 10.00, 0.25);
-                ctx.bcurve_to(10.00, 4.78, 7.14, 8.62, 3.17, 9.98);
-                ctx.bcurve_to(2.66, 10.08, 2.48, 9.76, 2.48, 9.49);
-                ctx.bcurve_to(2.48, 9.15, 2.49, 8.05, 2.49, 6.67);
-                ctx.bcurve_to(2.49, 5.72, 2.17, 5.09, 1.81, 4.78);
-                ctx.bcurve_to(4.04, 4.52, 6.38, 3.66, 6.38, -0.28);
-                ctx.bcurve_to(6.38, -1.40, 5.99, -2.32, 5.35, -3.03);
-                ctx.bcurve_to(5.45, -3.29, 5.80, -4.34, 5.25, -5.75);
-                ctx.bcurve_to(5.25, -5.75, 4.41, -6.02, 2.50, -4.70);
-                ctx.bcurve_to(1.71, -4.92, 0.85, -5.04, 0.00, -5.04);
-                ctx.bcurve_to(-0.85, -5.04, -1.71, -4.92, -2.50, -4.70);
-                ctx.bcurve_to(-4.41, -6.02, -5.25, -5.75, -5.25, -5.75);
-                ctx.bcurve_to(-5.80, -4.34, -5.45, -3.29, -5.35, -3.03);
-                ctx.bcurve_to(-5.99, -2.32, -6.38, -1.40, -6.38, -0.28);
-                ctx.bcurve_to(-6.38, 3.65, -4.05, 4.53, -1.82, 4.79);
-                ctx.bcurve_to(-2.11, 5.04, -2.37, 5.49, -2.46, 6.16);
-                ctx.bcurve_to(-3.03, 6.42, -4.48, 6.87, -5.37, 5.30);
-                ctx.bcurve_to(-5.37, 5.30, -5.90, 4.32, -6.90, 4.25);
-                ctx.bcurve_to(-6.90, 4.25, -7.88, 4.23, -6.97, 4.87);
-                ctx.bcurve_to(-6.97, 4.87, -6.32, 5.18, -5.86, 6.37);
-                ctx.bcurve_to(-5.86, 6.37, -5.27, 8.20, -2.49, 7.58);
-                ctx.bcurve_to(-2.49, 8.44, -2.48, 9.24, -2.48, 9.49);
-                ctx.bcurve_to(-2.48, 9.76, -2.66, 10.08, -3.16, 9.98);
-                ctx.bcurve_to(-7.13, 8.63, -10.00, 4.78, -10.00, 0.25);
-                ctx.bcurve_to(-10.00, -5.41, -5.52, -10.00, 0.00, -10.00);
-                ctx.fill();
-            }, 40, 40),
-            [](Element *elt, uint8_t e){
-                if (e == Ui::kClick) DOM::open_page("https://github.com/maxnest0x0/gardn");
-            },
-            nullptr,
-            { .fill = 0xff333333, .line_width = 4, .round_radius = 4 }
+            { .fill = 0xff7289da, .line_width = 4, .round_radius = 4 }
         )
     }, 10, 10, { .h_justify = Style::Right, .v_justify = Style::Top });
     return elt;

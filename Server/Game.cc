@@ -7,6 +7,7 @@
 #include <Server/Spawn.hh>
 
 #include <Shared/Binary.hh>
+#include <Server/Bot.hh>
 #include <Shared/Entity.hh>
 #include <Shared/Map.hh>
 
@@ -64,6 +65,30 @@ static void _update_client(Simulation *sim, Client *client) {
 
 GameInstance::GameInstance() : simulation(), clients(), team_manager(&simulation) {}
 
+void GameInstance::spawn_bots(uint32_t count) {
+    for (uint32_t i = 0; i < count; ++i) {
+        // Create a self-team camera
+        Entity &cam = simulation.alloc_ent();
+        cam.add_component(kCamera);
+        cam.add_component(kRelations);
+        cam.set_team(cam.id);
+        cam.set_color(ColorID::kYellow);
+        cam.set_fov(BASE_FOV);
+        cam.set_respawn_level(1);
+        // Seed some basics for tracking
+        for (uint32_t s = 0; s < loadout_slots_at_level(cam.get_respawn_level()); ++s) {
+            cam.set_inventory(s, PetalID::kBasic);
+            PetalTracker::add_petal(&simulation, cam.get_inventory(s));
+        }
+        // Create player and spawn
+        Entity &player = alloc_player(&simulation, cam.get_team());
+        ensure_bot_name(&simulation, player);
+        player_spawn(&simulation, cam, player);
+        // Track bot by its camera (so we can respawn players if they die)
+        bots.push_back(cam.id);
+    }
+}
+
 void GameInstance::init() {
     for (uint32_t i = 0; i < ENTITY_CAP / 2; ++i)
         Map::spawn_random_mob(&simulation, frand() * ARENA_WIDTH, frand() * ARENA_HEIGHT);
@@ -71,6 +96,7 @@ void GameInstance::init() {
     team_manager.add_team(ColorID::kBlue);
     team_manager.add_team(ColorID::kRed);
     #endif
+    spawn_bots(8); // bots
 }
 
 void GameInstance::tick() {
@@ -78,6 +104,25 @@ void GameInstance::tick() {
     #ifdef GAMEMODE_TDM
     team_manager.tick();
     #endif
+
+    // Tick bots and auto-respawn their players if missing
+    for (auto it = bots.begin(); it != bots.end(); ) {
+        if (!simulation.ent_exists(*it)) { it = bots.erase(it); continue; }
+        Entity &cam = simulation.get_ent(*it);
+        if (!cam.has_component(kCamera)) { ++it; continue; }
+        if (simulation.ent_exists(cam.get_player())) {
+            Entity &p = simulation.get_ent(cam.get_player());
+            if (p.has_component(kFlower)) {
+                tick_bot_player_behavior(&simulation, p);
+            }
+        } else {
+            // Respawn a new player for this bot camera
+            Entity &p = alloc_player(&simulation, cam.get_team());
+            ensure_bot_name(&simulation, p);
+            player_spawn(&simulation, cam, p);
+        }
+            ++it;
+    }
     for (Client *client : clients)
         _update_client(&simulation, client);
     simulation.post_tick();
@@ -90,12 +135,18 @@ void GameInstance::add_client(Client *client, uint64_t recovery_id) {
     client->game = this;
     clients.insert(client);
     EntityID camera_id = NULL_ENTITY;
-    simulation.for_each<kCamera>([&](Simulation *sim, Entity &ent){
-        if (ent.get_recovery_id() == recovery_id) {
-            assert(camera_id == NULL_ENTITY);
-            camera_id = ent.id;
-        }
-    });
+
+    // Only attempt recovery when a non-zero recovery ID was supplied.
+    if (recovery_id != 0) {
+        simulation.for_each<kCamera>([&](Simulation *sim, Entity &ent){
+            if (ent.get_recovery_id() == recovery_id) {
+                // If this assert still triggers, it means two ents share the same recovery_id.
+                assert(camera_id == NULL_ENTITY);
+                camera_id = ent.id;
+            }
+        });
+    }
+
     if (camera_id == NULL_ENTITY) {
         if (Server::is_draining) {
             client->disconnect(CloseReason::kOutdated, "Outdated Version");
@@ -112,6 +163,7 @@ void GameInstance::add_client(Client *client, uint64_t recovery_id) {
     camera.client = client;
     BitMath::unset(camera.flags, EntityFlags::kIsDespawning);
 }
+
 
 void GameInstance::remove_client(Client *client) {
     DEBUG_ONLY(assert(client->game == this);)

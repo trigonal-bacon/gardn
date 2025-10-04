@@ -27,7 +27,8 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
     }
     if (BitMath::at(petal.flags, EntityFlags::kIsDespawning)) {
         switch (petal.get_petal_id()) {
-            case PetalID::kMissile: {
+            case PetalID::kMissile:
+            case PetalID::kDandelion: {
                 petal.acceleration.unit_normal(petal.get_angle()).set_magnitude(4 * PLAYER_ACCELERATION);
                 break;
             }
@@ -82,6 +83,7 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
             }
             switch (petal.get_petal_id()) {
                 case PetalID::kMissile:
+                case PetalID::kDandelion:
                     if (BitMath::at(player.input, InputFlags::kAttacking)) {
                         petal.acceleration.unit_normal(petal.get_angle()).set_magnitude(4 * PLAYER_ACCELERATION);
                         entity_set_despawn_tick(petal, 3 * TPS);
@@ -109,18 +111,40 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
                     }
                     break;
                 case PetalID::kPollen:
-                    if (BitMath::at(player.input, InputFlags::kAttacking) || BitMath::at(player.input, InputFlags::kDefending)) {
+                    if (BitMath::at(player.input, InputFlags::kAttacking)) {
                         petal.friction = DEFAULT_FRICTION;
+                        // give a gentle outward push
+                        Vector delta(petal.get_x() - player.get_x(), petal.get_y() - player.get_y());
+                        float out_angle = delta.angle();
+                        petal.acceleration.unit_normal(out_angle).set_magnitude(4 * PLAYER_ACCELERATION);
+                        entity_set_despawn_tick(petal, 4.0 * TPS);
+                    }
+                    else if (BitMath::at(player.input, InputFlags::kAttacking)) {
+                        petal.friction = DEFAULT_FRICTION;
+                        Vector delta(petal.get_x() - player.get_x(), petal.get_y() - player.get_y());
+                        float out_angle = delta.angle();
+                        petal.acceleration.unit_normal(out_angle).set_magnitude(-.25 * PLAYER_ACCELERATION);
                         entity_set_despawn_tick(petal, 4.0 * TPS);
                     }
                     break;
                 case PetalID::kPeas:
                 case PetalID::kPoisonPeas:
+                case PetalID::kFatPeas:
                     if (BitMath::at(player.input, InputFlags::kAttacking)) {
                         Vector delta(petal.get_x() - player.get_x(), petal.get_y() - player.get_y());
+                        float base = delta.angle();
+                        // spread around full circle
+                        float spread = (frand() * 2.0f * (float)M_PI) - (float)M_PI;
+                        float shoot_angle = base + spread;
                         petal.friction = DEFAULT_FRICTION;
-                        petal.acceleration.unit_normal(delta.angle()).set_magnitude(25 * PLAYER_ACCELERATION);
-                        entity_set_despawn_tick(petal, 0.25 * TPS);
+                        petal.acceleration.unit_normal(shoot_angle).set_magnitude(30 * PLAYER_ACCELERATION);
+                        entity_set_despawn_tick(petal, 0.32 * TPS);
+                    }
+                    break;
+                case PetalID::kWax:
+                    if (BitMath::at(player.input, InputFlags::kAttacking) || BitMath::at(player.input, InputFlags::kDefending)) {
+                        petal.friction = 1.0f;
+                        entity_set_despawn_tick(petal, 15.0f * TPS);
                     }
                     break;
                 case PetalID::kMoon: {

@@ -22,6 +22,9 @@ void inflict_damage(Simulation *sim, EntityID const atk_id, EntityID const def_i
     if (!sim->ent_alive(def_id)) return;
     Entity &defender = sim->get_ent(def_id);
     if (!defender.has_component(kHealth)) return;
+    // Invincibility for dev players
+    if (defender.has_component(kFlower) && defender.get_dev()) return;
+    if (defender.has_component(kPetal) && defender.get_petal_id() == PetalID::kBasil) return;
     DEBUG_ONLY(assert(!defender.pending_delete);)
     DEBUG_ONLY(assert(defender.has_component(kHealth));)
     if (defender.immunity_ticks > 0) return;
@@ -95,5 +98,18 @@ void inflict_heal(Simulation *sim, Entity &ent, float amt) {
     if (ent.pending_delete || ent.health <= 0) return;
     if (ent.dandy_ticks > 0) return;
     if (BitMath::at(ent.flags, EntityFlags::kZombie)) return;
+    if (ent.has_component(kFlower)) {
+        uint32_t basil_count = 0;
+        for (uint32_t i = 0; i < ent.get_loadout_count(); ++i) {
+            auto const &slot = ent.loadout[i];
+            if (slot.get_petal_id() != PetalID::kBasil) continue;
+            if (slot.already_spawned) ++basil_count;
+        }
+        if (basil_count > 0) {
+            float h = 0.0f;
+            for (uint32_t n = 1; n <= basil_count; ++n) h += 1.0f / (float)n;
+            amt *= (1.0f + 0.35f * h);
+        }
+    }
     ent.health = fclamp(ent.health + amt, 0, ent.max_health);
 }

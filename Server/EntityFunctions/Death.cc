@@ -110,7 +110,8 @@ void entity_on_death(Simulation *sim, Entity const &ent) {
             numDrops = 3;
         for (uint32_t i = 0; i < numDrops; ++i) {
             PetalID::T p_id = potential.back();
-            if (PETAL_DATA[p_id].rarity >= RarityID::kRare && frand() < 0.05) p_id = PetalID::kPollen;
+            if (PETAL_DATA[p_id].rarity >= RarityID::kRare && frand() < 0.01) p_id = PetalID::kPollen;
+            else if (PETAL_DATA[p_id].rarity >= PetalID::kBasic && frand() < 0.000001) p_id = PetalID::kUniqueBasic;
             success_drops.push_back(p_id);
             potential.pop_back();
         }

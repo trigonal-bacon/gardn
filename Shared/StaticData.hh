@@ -62,7 +62,9 @@ inline std::array const MAP_DATA = std::to_array<struct ZoneDefinition>({
             { MobID::kScorpion, 50000 },
             { MobID::kLadybug, 50000 },
             { MobID::kDesertCentipede, 10000 },
-            { MobID::kAntHole, 2000 },
+            { MobID::kWorkerAnt, 10000 },
+            { MobID::kFireAntSoldier, 10000 },
+            { MobID::kFireAntHole, 6000 },
             { MobID::kShinyLadybug, 1000 },
             { MobID::kSquare, 1 }
         },
@@ -85,6 +87,7 @@ inline std::array const MAP_DATA = std::to_array<struct ZoneDefinition>({
             { MobID::kBeetle, 50000 },
             { MobID::kLadybug, 50000 },
             { MobID::kCentipede, 10000 },
+            { MobID::kSoldierAnt, 10000 },
             { MobID::kEvilCentipede, 10000 },
             { MobID::kMassiveBeetle, 2000 },
             { MobID::kAntHole, 2000 },
@@ -97,7 +100,7 @@ inline std::array const MAP_DATA = std::to_array<struct ZoneDefinition>({
     {
         .left = 30000,
         .top = 0,
-        .right = 40000,
+        .right = 35000,
         .bottom = 4000,
         .density = 1,
         .drop_multiplier = 0.025,
@@ -113,10 +116,36 @@ inline std::array const MAP_DATA = std::to_array<struct ZoneDefinition>({
             { MobID::kSquare, 1 }
         },
         .difficulty = 3,
-        .color = 0xff777777,
+        .color = 0xff4D5E56,
         .name = "???"
+    },
+    {
+        .left = 35000,
+        .top = 0,
+        .right = 37500,
+        .bottom = 4000,
+        .density = 2,
+        .drop_multiplier = 0.025,
+        .spawns = {
+            { MobID::kDarkLadybug, 90000 },
+            { MobID::kBeetle, 90000 },
+            { MobID::kHornet, 130000 },
+            { MobID::kSpider, 120000 },
+            { MobID::kBoulder, 50000 },
+            { MobID::kEvilCentipede, 10000 },
+            { MobID::kMassiveBeetle, 5000 },
+            { MobID::kAntHole, 5000 },
+            { MobID::kMoraine, 250 },
+            //{ MobID::kAhole, 150 },
+            { MobID::kFatDarkLadybug, 250 },
+            { MobID::kSquare, 1 }
+        },
+        .difficulty = 4,
+        .color = 0xff4D5E56,
+        .name = "!!!"
     }
 });
+
 
 std::array const ANTHOLE_SPAWNS = std::to_array<StaticArray<MobID::T, 3>>({
     {MobID::kBabyAnt},

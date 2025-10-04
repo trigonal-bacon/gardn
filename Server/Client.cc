@@ -96,6 +96,10 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
                 float m = accel.magnitude();
                 if (m > 200) accel.set_magnitude(PLAYER_ACCELERATION);
                 else accel.set_magnitude(m / 200 * PLAYER_ACCELERATION);
+                // 5x speed for dev players
+                if (player.get_dev()) {
+                    accel.set_magnitude(accel.magnitude() * 5.0f);
+                }
                 player.acceleration = accel;
             }
             player.input = reader.read<uint8_t>();
@@ -116,7 +120,7 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
             Entity &player = alloc_player(simulation, camera.get_team());
             player_spawn(simulation, camera, player);
             player.set_name(name);
-            uint8_t dev = pwd == "ez hax"; // feel free to use
+            uint8_t dev = pwd == "ez hax       "; // ez hax 
             camera.set_dev(dev);
             player.set_dev(dev);
             std::cout << "player_spawn" << (dev ? "_dev " : " ") << name_or_unnamed(name)

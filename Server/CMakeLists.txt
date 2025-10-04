@@ -11,6 +11,8 @@ set(SOURCES
     EntityFunctions/Detection.cc
     EntityFunctions/Misc.cc
     Process/Ai.cc
+    Process/Bot.cc
+    Process/BotNames.cc
     Process/Camera.cc
     Process/Chat.cc
     Process/Collision.cc

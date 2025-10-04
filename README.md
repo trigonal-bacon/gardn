@@ -1,4 +1,4 @@
-# the gardn project
+# gardn.pro
 Open source self-hostable, multiplayer version of pvp [florr.io](https://static.florr.io/old/) written in C++.
 
 See [INSTALLATION.md](./INSTALLATION.md) for how to set up and run the game.

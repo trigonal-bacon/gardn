@@ -34,7 +34,7 @@ void LevelBar::on_render(Renderer &ctx) {
     ctx.move_to(-width / 2, 0);
     ctx.line_to(width / 2, 0);
     ctx.stroke();
-    ctx.set_stroke(0xfff9e496);
+    ctx.set_stroke(0xFFE2F15B);
     ctx.set_line_width(height * 0.8);
     ctx.begin_path();
     ctx.move_to(-width / 2, 0);
