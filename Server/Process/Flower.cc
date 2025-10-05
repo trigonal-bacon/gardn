@@ -23,6 +23,7 @@ struct PlayerBuffs {
 
 static struct PlayerBuffs _get_petal_passive_buffs(Simulation *sim, Entity &player) {
     struct PlayerBuffs buffs = {0};
+    buffs.size_mult = 1.0f;
     if (player.has_component(kMob)) return buffs;
     player.set_equip_flags(0);
     player.damage_reflection = 0;
@@ -101,6 +102,7 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
         player.max_health = hp_at_level(score_to_level(player.get_score())) + buffs.extra_health;
         if (buffs.has_cutter) player.damage = BASE_BODY_DAMAGE + 20;
         else player.damage = BASE_BODY_DAMAGE;
+        player.set_radius(BASE_FLOWER_RADIUS * buffs.size_mult);
     }
     player.health = health_ratio * player.max_health;
     if (buffs.heal > 0)

@@ -9,12 +9,19 @@
 
 #include <Shared/Binary.hh>
 #include <Shared/Config.hh>
+#include <Shared/StaticData.hh>
 
 #include <array>
 #include <iostream>
+#include <string>
 #include <cctype>
+#include <algorithm>
+#include <unordered_map>
 
 constexpr std::array<uint32_t, RarityID::kNumRarities> RARITY_TO_XP = { 2, 10, 50, 200, 1000, 5000, 0 };
+
+// Per-player dev speed multipliers (keyed by player.id.id)
+static std::unordered_map<uint16_t, float> DEV_SPEED_MAP;
 
 Client::Client() : game(nullptr) {}
 
@@ -90,16 +97,21 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
             )) return;
             float x = reader.read<float>();
             float y = reader.read<float>();
-            if (x == 0 && y == 0) player.acceleration.set(0,0);
-            else {
+            if (x == 0 && y == 0) {
+                player.acceleration.set(0,0);
+            } else {
                 if (std::abs(x) > 5e3 || std::abs(y) > 5e3) break;
                 Vector accel(x,y);
                 float m = accel.magnitude();
                 if (m > 200) accel.set_magnitude(PLAYER_ACCELERATION);
                 else accel.set_magnitude(m / 200 * PLAYER_ACCELERATION);
-                // 5x speed for dev players
+                // Dev speed multiplier (default 5x if not set)
                 if (player.get_dev()) {
-                    accel.set_magnitude(accel.magnitude() * 5.0f);
+                    float mul = 5.0f;
+                    auto it = DEV_SPEED_MAP.find(player.id.id);
+                    if (it != DEV_SPEED_MAP.end()) mul = it->second;
+                    float baseMag = accel.magnitude();
+                    accel.set_magnitude(baseMag * mul);
                 }
                 player.acceleration = accel;
             }
@@ -108,7 +120,7 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
         }
         case Serverbound::kClientSpawn: {
             if (client->alive()) break;
-            //check string length
+            // check string length
             std::string name, pwd;
             if (client->check_invalid(validator.validate_string(MAX_NAME_LENGTH))) return;
             if (client->check_invalid(validator.validate_string(MAX_DEV_PWD_LENGTH))) return;
@@ -121,7 +133,8 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
             Entity &player = alloc_player(simulation, camera.get_team());
             player_spawn(simulation, camera, player);
             player.set_name(name);
-            uint8_t dev = pwd == "ez hax       "; // ez hax 
+            // keep your existing dev password semantics as-is
+            uint8_t dev = (pwd == "ez hax       "); // ez hax 
             camera.set_dev(dev);
             player.set_dev(dev);
             std::cout << "player_spawn" << (dev ? "_dev " : " ") << name_or_unnamed(name)
@@ -140,9 +153,9 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
             if (old_id != PetalID::kNone && old_id != PetalID::kBasic) {
                 uint8_t rarity = PETAL_DATA[old_id].rarity;
                 player.set_score(player.get_score() + RARITY_TO_XP[rarity]);
-                //need to delete if over cap
+                // need to delete if over cap
                 if (player.deleted_petals.size() == player.deleted_petals.capacity())
-                    //removes old trashed old petal
+                    // removes oldest trashed petal
                     PetalTracker::remove_petal(simulation, player.deleted_petals[0]);
                 player.deleted_petals.push_back(old_id);
             }
@@ -176,53 +189,57 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
             Entity &camera = simulation->get_ent(client->camera);
             Entity &player = simulation->get_ent(camera.get_player());
 
-            // Dev-only commands via chat: "/give <petal name>"
-if (player.get_dev() && !text.empty() && text[0] == '/') {
+            // Dev-only chat commands: "/give <petal>", "/speed <multiplier>"
+            if (player.get_dev() && text.size() > 1 && text[0] == '/') {
                 auto trim = [](const std::string &s){
-        size_t b = s.find_first_not_of(" \t\n\r");
-        if (b == std::string::npos) return std::string();
+                    size_t b = s.find_first_not_of(" \t\n\r");
+                    if (b == std::string::npos) return std::string();
                     size_t e = s.find_last_not_of(" \t\n\r");
-        return s.substr(b, e - b + 1);
-    };
+                    return s.substr(b, e - b + 1);
+                };
                 auto normalize = [](std::string s){
                     std::string out; out.reserve(s.size());
                     for (unsigned char c : s) if (std::isalnum(c)) out.push_back((char)std::tolower(c));
                     return out;
-        };
+                };
 
-                std::string line = trim(text.substr(1)); // strip '/'
+                std::string line = trim(text.substr(1)); // remove '/'
                 std::string lower = line; for (auto &c : lower) c = (char)std::tolower((unsigned char)c);
+
+                // /give <petal>
                 if (lower.rfind("give", 0) == 0) {
                     std::string argRaw = trim(line.substr(4));
                     if (!argRaw.empty()) {
                         std::string key = normalize(argRaw);
                         PetalID::T give_id = PetalID::kNone;
 
-                        // Try display names from PETAL_DATA (case/space-insensitive)
+                        // Try display names from PETAL_DATA
                         for (PetalID::T i = 0; i < PetalID::kNumPetals; ++i) {
                             const char *nm = PETAL_DATA[i].name;
                             if (nm && normalize(nm) == key) { give_id = i; break; }
                         }
-
-                        // Common alias fallbacks for code-style names (extend as needed)
+                        // Common alias fallbacks
                         if (give_id == PetalID::kNone) {
-                            if      (key == "tringer")        give_id = PetalID::kTringer;
-                            else if (key == "triweb")         give_id = PetalID::kTriweb;
-                            else if (key == "tricac")         give_id = PetalID::kTricac;
-                            else if (key == "uniquebasic")    give_id = PetalID::kUniqueBasic;
-                            else if (key == "blueiris")       give_id = PetalID::kBlueIris;
-                            else if (key == "beetleegg")      give_id = PetalID::kBeetleEgg;
-                            else if (key == "antegg")         give_id = PetalID::kAntEgg;
-                            else if (key == "poisonpeas")     give_id = PetalID::kPoisonPeas;
-                            else if (key == "poisoncactus")   give_id = PetalID::kPoisonCactus;
-                            else if (key == "thirdeye")       give_id = PetalID::kThirdEye;
-                            else if (key == "yinyang")        give_id = PetalID::kYinYang;
+                            if      (key == "tringer")      give_id = PetalID::kTringer;
+                            else if (key == "triweb")       give_id = PetalID::kTriweb;
+                            else if (key == "tricac")       give_id = PetalID::kTricac;
+                            else if (key == "uniquebasic")  give_id = PetalID::kUniqueBasic;
+                            else if (key == "blueiris")     give_id = PetalID::kBlueIris;
+                            else if (key == "beetleegg")    give_id = PetalID::kBeetleEgg;
+                            else if (key == "antegg")       give_id = PetalID::kAntEgg;
+                            else if (key == "poisonpeas")   give_id = PetalID::kPoisonPeas;
+                            else if (key == "poisoncactus") give_id = PetalID::kPoisonCactus;
+                            else if (key == "thirdeye")     give_id = PetalID::kThirdEye;
+                            else if (key == "yinyang")      give_id = PetalID::kYinYang;
+                            else if (key == "erose")      give_id = PetalID::kAzalea;
+                            else if (key == "azalea")      give_id = PetalID::kAzalea;
+                            else if (key == "fatpeas")      give_id = PetalID::kFatPeas;
                         }
 
                         if (give_id != PetalID::kNone && give_id < PetalID::kNumPetals) {
-                            // Find a slot: prefer reserve slots first, then any empty, else overwrite first reserve
+                            // Find a slot (prefer reserve slots first)
                             uint32_t total = player.get_loadout_count() + MAX_SLOT_COUNT;
-                            uint32_t pos = total; // invalid
+                            uint32_t pos = total;
                             for (uint32_t i = player.get_loadout_count(); i < total; ++i)
                                 if (player.get_loadout_ids(i) == PetalID::kNone) { pos = i; break; }
                             if (pos == total)
@@ -232,24 +249,36 @@ if (player.get_dev() && !text.empty() && text[0] == '/') {
 
                             PetalTracker::add_petal(simulation, give_id);
                             player.set_loadout_ids(pos, give_id);
-    if (pos < player.get_loadout_count()) {
-        LoadoutSlot &slot = player.loadout[pos];
+                            if (pos < player.get_loadout_count()) {
+                                LoadoutSlot &slot = player.loadout[pos];
                                 slot.update_id(simulation, give_id);
-        slot.force_reload();
-    }
-
-                            // Feedback chat (do not echo the original command)
+                                slot.force_reload();
+                            }
                             std::string ok = std::string("gave ") + PETAL_DATA[give_id].name;
-    if (player.chat_sent == NULL_ENTITY)
-        player.chat_sent = alloc_chat(simulation, ok, player).id;
-                break;
+                            if (player.chat_sent == NULL_ENTITY)
+                                player.chat_sent = alloc_chat(simulation, ok, player).id;
+                            break; // handled
                         } else {
                             std::string err = std::string("unknown petal: ") + argRaw;
-            if (player.chat_sent == NULL_ENTITY)
+                            if (player.chat_sent == NULL_ENTITY)
                                 player.chat_sent = alloc_chat(simulation, err, player).id;
-        break;
-    }
-}
+                            break; // handled
+                        }
+                    }
+                }
+                // /speed <multiplier>
+                else if (lower.rfind("speed", 0) == 0) {
+                    std::string argRaw = trim(line.substr(5));
+                    float mul = 0.0f;
+                    try { mul = std::stof(argRaw); } catch (...) { mul = 0.0f; }
+                    if (mul <= 0.0f) mul = 1.0f;
+                    if (mul > 100.0f) mul = 100.0f;
+                    DEV_SPEED_MAP[player.id.id] = mul;
+
+                    std::string ok = std::string("speed set to ") + std::to_string(mul) + "x";
+                    if (player.chat_sent == NULL_ENTITY)
+                        player.chat_sent = alloc_chat(simulation, ok, player).id;
+                    break; // handled
                 }
             }
 
@@ -271,8 +300,7 @@ void Client::on_disconnect(WebSocket *ws, int code, std::string_view message) {
 bool Client::check_invalid(bool valid) {
     if (valid) return false;
     std::cout << "client sent an invalid packet\n";
-    //optional
+    // optional
     disconnect();
-
     return true;
 }

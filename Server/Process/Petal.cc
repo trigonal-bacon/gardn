@@ -119,7 +119,7 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
                         petal.acceleration.unit_normal(out_angle).set_magnitude(4 * PLAYER_ACCELERATION);
                         entity_set_despawn_tick(petal, 4.0 * TPS);
                     }
-                    else if (BitMath::at(player.input, InputFlags::kAttacking)) {
+                    else if (BitMath::at(player.input, InputFlags::kDefending)) {
                         petal.friction = DEFAULT_FRICTION;
                         Vector delta(petal.get_x() - player.get_x(), petal.get_y() - player.get_y());
                         float out_angle = delta.angle();
@@ -130,7 +130,7 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
                 case PetalID::kPeas:
                 case PetalID::kPoisonPeas:
                 case PetalID::kFatPeas:
-                    if (BitMath::at(player.input, InputFlags::kAttacking)) {
+                    if (BitMath::at(player.input, InputFlags::kAttacking || player.input, InputFlags::kDefending)) {
                         Vector delta(petal.get_x() - player.get_x(), petal.get_y() - player.get_y());
                         float base = delta.angle();
                         // spread around full circle

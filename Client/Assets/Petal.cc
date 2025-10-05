@@ -465,6 +465,14 @@ ctx.fill();
             ctx.fill();
             break;
         case PetalID::kTriFaster:
+        ctx.set_fill(0xfffeffc9);
+            ctx.set_stroke(0xffcecfa3);
+            ctx.set_line_width(5);
+            ctx.begin_path();
+            ctx.arc(0,0,r);
+            ctx.fill();
+            ctx.stroke();
+            break;
         case PetalID::kFaster:
             ctx.set_fill(0xfffeffc9);
             ctx.set_stroke(0xffcecfa3);

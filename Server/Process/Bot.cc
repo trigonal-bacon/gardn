@@ -31,8 +31,8 @@ static inline uint8_t bot_kind(Entity const &player) {
 
 // Minimum zone difficulty based on level
 static inline uint32_t min_difficulty_for_level(uint32_t lvl) {
-    if (lvl >= 45) return 3;   // no Easy/Med/Hard
-    if (lvl >= 30) return 2;   // no Easy/Med
+    if (lvl >= 20) return 3;   // no Easy/Med/Hard
+    if (lvl >= 12) return 2;   // no Easy/Med
     if (lvl >= 5) return 1;   // no Easy
     return 0;
 }

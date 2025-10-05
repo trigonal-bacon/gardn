@@ -40,7 +40,7 @@ inline std::array const MAP_DATA = std::to_array<struct ZoneDefinition>({
             { MobID::kBabyAnt, 25000 },
             { MobID::kCentipede, 10000 },
             { MobID::kBoulder, 10000 },
-            { MobID::kMassiveLadybug, 200 },
+            { MobID::kMassiveLadybug, 100 },
             { MobID::kSquare, 1 }
         },
         .difficulty = 0,
@@ -127,7 +127,7 @@ inline std::array const MAP_DATA = std::to_array<struct ZoneDefinition>({
         .density = 2,
         .drop_multiplier = 0.025,
         .spawns = {
-            { MobID::kDarkLadybug, 90000 },
+            { MobID::kDarkLadybug, 80000 },
             { MobID::kBeetle, 90000 },
             { MobID::kHornet, 130000 },
             { MobID::kSpider, 120000 },
