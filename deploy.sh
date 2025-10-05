@@ -7,7 +7,7 @@ WASM_SERVER=${WASM_SERVER:-1}
 TDM=${TDM:-0}
 GENERAL_SPATIAL_HASH=1
 USE_CODEPOINT_LEN=${USE_CODEPOINT_LEN:-1}
-WS_URL=${WS_URL:-'ws://localhost:9002'}
+WS_URL=${WS_URL:-'ws://143.110.207.106:9002'}
 VERSION_HASH=${VERSION_HASH:-$(date +%s)}
 SERVER_PORT=${SERVER_PORT:-$(python3 -c 'import socket; s = socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()')}
 

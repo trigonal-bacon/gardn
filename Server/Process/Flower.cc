@@ -61,7 +61,7 @@ static struct PlayerBuffs _get_petal_passive_buffs(Simulation *sim, Entity &play
         else if (slot_petal_id == PetalID::kSoil) {
             buffs.extra_health += 45;
             buffs.size_mult += 1.20f;
-        else if (slot_petal_id == PetalID::kPoisonCactus) {
+        } else if (slot_petal_id == PetalID::kPoisonCactus) {
             buffs.extra_health += 20;
             buffs.is_poisonous = 1;
         } else if (slot_petal_id == PetalID::kSalt) {
