@@ -14,6 +14,7 @@ struct PlayerBuffs {
     float heal;
     float extra_vision;
     float extra_health;
+    float size_mult;
     uint8_t yinyang_count;
     uint8_t is_poisonous : 1;
     uint8_t has_cutter : 1;
@@ -50,11 +51,16 @@ static struct PlayerBuffs _get_petal_passive_buffs(Simulation *sim, Entity &play
         else if (slot_petal_id == PetalID::kYucca && BitMath::at(player.input, InputFlags::kDefending) && !BitMath::at(player.input, InputFlags::kAttacking)) 
             buffs.heal += petal_data.attributes.constant_heal / TPS;
         if (slot_petal_id == PetalID::kFaster) 
-            buffs.extra_rot += 1.0;
+            buffs.extra_rot += 1.2;
+        else if (slot_petal_id == PetalID::kTriFaster) 
+            buffs.extra_rot += 2.5;
         else if (slot_petal_id == PetalID::kCactus) 
             buffs.extra_health += 20;
         else if (slot_petal_id == PetalID::kTricac) 
             buffs.extra_health += 60;
+        else if (slot_petal_id == PetalID::kSoil) {
+            buffs.extra_health += 45;
+            buffs.size_mult += 1.20f;
         else if (slot_petal_id == PetalID::kPoisonCactus) {
             buffs.extra_health += 20;
             buffs.is_poisonous = 1;

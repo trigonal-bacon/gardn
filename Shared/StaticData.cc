@@ -191,10 +191,10 @@ std::array<struct PetalData, PetalID::kNumPetals> const PETAL_DATA = {{
         .name = "Fastest",
         .description = "Triplicātus!",
         .health = 5.0,
-        .damage = 7.0,
+        .damage = 14.0,
         .radius = 7.0,
         .reload = 0.5,
-        .count = 3,
+        .count = 1,
         .rarity = RarityID::kLegendary,
         .attributes = {
             .clump_radius = 7
@@ -665,7 +665,7 @@ std::array<struct PetalData, PetalID::kNumPetals> const PETAL_DATA = {{
         .attributes = {}
     },
     {
-        .name = "Yggdrasil",
+        .name = "A dried leaf from the Yggdrasil tree. Rumored to be able to bring the fallen back to life",
         .description = "Something incredibly rare and useless",
         .health = 1.0,
         .damage = 0.0,

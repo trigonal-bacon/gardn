@@ -17,9 +17,9 @@ PID_FILE='gardn-server.pid'
 NGINX_FILE="nginx/$VERSION_HASH.conf"
 
 # Optional: pull latest code
-if [[ "$PULL" -eq 1 ]]; then
-    git pull --ff-only
-fi
+# if [[ "$PULL" -eq 1 ]]; then
+#     git pull --ff-only
+# fi
 
 # Kill existing process on port 9002 if any
 PID_TO_KILL=$(lsof -ti :9002 || true)

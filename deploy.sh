@@ -16,9 +16,9 @@ JOBS=${JOBS:-1}
 PID_FILE='gardn-server.pid'
 NGINX_FILE="nginx/$VERSION_HASH.conf"
 
-if [[ "$PULL" -eq 1 ]]; then
-    git pull --ff-only
-fi
+# if [[ "$PULL" -eq 1 ]]; then
+#     git pull --ff-only
+# fi
 
 cmake -S Client -B Client/build \
     "-DDEBUG=$DEBUG" \
@@ -35,7 +35,7 @@ cmake -S Server -B Server/build \
     "-DUSE_CODEPOINT_LEN=$USE_CODEPOINT_LEN" \
     "-DVERSION_HASH=$VERSION_HASH" \
     "-DSERVER_PORT=$SERVER_PORT"
-make -C Server/build "-j$JOBS"
+make -C Server/build "-j$JOBS" 
 
 cd Server/build
 

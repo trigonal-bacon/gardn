@@ -32,52 +32,52 @@ static Element *make_entries(std::initializer_list<std::string const> contents) 
 
 static Element *make_changelog_contents() {
     Element *elt = new Ui::VContainer({
-        make_date("September 27th 2025"),
+        make_date("September 20th 2025"),
         make_entries({
-            "Game updates are now seamless for players",
-            "Multiple servers may exist at the same time"
+            "Huge update!",
+            "Added a ton of new mobs and petals!",
+            "Completely reworked lots of high-rarity petals!",
+            "You can now press enter to chat with other players",
+            "You can now press K to toggle between movement states in-game",
+            "Huge Balance/QOL changes and more!",
+            "The first person to reach 100,000 score wins FREE NITRO!" 
         }),
         make_divider(),
-        make_date("September 14th 2025"),
+        make_date("September 6th 2025"),
         make_entries({
-            "Added more mobile buttons",
-            "Fixed nickname input on mobile"
-        }),
-        make_divider(),
-        make_date("September 11th 2025"),
-        make_entries({
-            "Players can now rejoin the game for up to 1 minute after leaving"
-        }),
-        make_divider(),
-        make_date("September 3rd 2025"),
-        make_entries({
-            "Buffed Bone",
-            "Teammates are now displayed on the minimap"
+            "More bufixes",
+            "The event is now over, thank you to everybody who played!",
+            "Changed UI slightly"
         }),
         make_divider(),
         make_date("August 30th 2025"),
         make_entries({
             "Added mobile touch controls",
-            "Enabled collision between friendly entities",
-            "Neutral mobs will now aggro the leader if above level 60",
-            "More bugfixes"
+            "Neutral mobs will now aggro the leader if above level 50",
+            "More bugfixes",
+            "Game is in an event GameMode! All drops are 5X as common!"
+        }),
+        make_divider(),
+        make_date("August 28th 2025"),
+        make_entries({
+            "Made some UI improvements",
+            "Added a petal tracker for Legendary, Mythic, and Unique petals in our Discord",
+            "Disconnect reasons now display on your Client"
         }),
         make_divider(),
         make_date("August 25th 2025"),
         make_entries({
-            "Buffed Peas",
-            "Reworked Yggdrasil",
-            "Rose and Dahlia can now heal teammates (including Diggers!)"
+            "Made Anti-Chinese propaganda bannable",
+            "Added a two new mobs. You can find them in the new !!! zone",
+            "Some QOL and balance changes",
+            "Created an official Discord server. You can join it at discord.gg/florr"
         }),
         make_divider(),
-        make_date("August 20th 2025"),
+        make_date("August 30th 2025"),
         make_entries({
-            "Added chat"
-        }),
-        make_divider(),
-        make_date("August 14th 2025"),
-        make_entries({
-            "Added ability to manually restore score and petals for players who leave the game without dying"
+            "Added mobile touch controls",
+            "Neutral mobs will now aggro the leader if above level 60",
+            "More bugfixes"
         }),
         make_divider(),
         make_date("August 10th 2025"),
@@ -85,11 +85,6 @@ static Element *make_changelog_contents() {
             "Added TDM",
             "Made some faster mobs slower",
             "Various bugfixes"
-        }),
-        make_divider(),
-        make_date("August 4th 2025"),
-        make_entries({
-            "Increased max slot number to 12"
         }),
         make_divider(),
         make_date("July 31st 2025"),

@@ -145,6 +145,9 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
                     if (BitMath::at(player.input, InputFlags::kAttacking) || BitMath::at(player.input, InputFlags::kDefending)) {
                         petal.friction = 1.0f;
                         entity_set_despawn_tick(petal, 15.0f * TPS);
+                    } else {
+                        petal.friction = 1.0f;
+                        entity_set_despawn_tick(petal, 15.0 * TPS);
                     }
                     break;
                 case PetalID::kMoon: {

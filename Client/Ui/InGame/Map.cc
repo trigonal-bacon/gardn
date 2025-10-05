@@ -57,6 +57,6 @@ Element *Ui::make_minimap() {
         .h_justify = Style::Right,
         .v_justify = Style::Bottom
     });
-    elt->y = -75;
+    elt->y = -55;
     return elt;
 }
