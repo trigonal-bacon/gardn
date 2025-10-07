@@ -8,6 +8,7 @@
 #include <Shared/Config.hh>
 
 using namespace Game;
+#include <string>
 
 void Game::on_message(uint8_t *ptr, uint32_t len) {
     Reader reader(ptr);
@@ -33,6 +34,14 @@ void Game::on_message(uint8_t *ptr, uint32_t len) {
                 curr_id = reader.read<EntityID>();
             }
             simulation.arena_info.read(&reader, reader.read<uint8_t>());
+            break;
+        }
+        case Clientbound::kAnnouncement: {
+            // Read string and display as a larger top-of-screen message
+            std::string msg;
+            reader.read<std::string>(msg);
+            Game::disconnect_message = msg; // reuse UI banner slot
+            Game::on_game_screen = 0;       // ensure title overlay visible
             break;
         }
         default:

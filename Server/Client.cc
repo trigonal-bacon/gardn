@@ -20,8 +20,10 @@
 
 constexpr std::array<uint32_t, RarityID::kNumRarities> RARITY_TO_XP = { 2, 10, 50, 200, 1000, 5000, 0 };
 
-// Per-player dev speed multipliers (keyed by player.id.id)
-static std::unordered_map<uint16_t, float> DEV_SPEED_MAP;
+// Dev session state keyed by player.id.id (uint16_t)
+static std::unordered_map<uint16_t, float> DEV_SPEED_MAP;  // default 5x if not set
+static std::unordered_map<uint16_t, bool>  DEV_IMMUNE;     // default true     (toggle flips)
+static std::unordered_map<uint16_t, bool>  DEV_TAG;        // default true     (toggle flips)
 
 Client::Client() : game(nullptr) {}
 
@@ -44,11 +46,54 @@ void Client::disconnect(int reason, std::string const &message) {
 uint8_t Client::alive() {
     if (game == nullptr) return false;
     Simulation *simulation = &game->simulation;
-    return simulation->ent_exists(camera) 
-    && simulation->ent_exists(simulation->get_ent(camera).get_player());
+    return simulation->ent_exists(camera)
+        && simulation->ent_exists(simulation->get_ent(camera).get_player());
 }
 
-void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) {
+static inline std::string trim_ws(std::string const &s) {
+    size_t b = s.find_first_not_of(" \t\n\r");
+    if (b == std::string::npos) return {};
+    size_t e = s.find_last_not_of(" \t\n\r");
+    return s.substr(b, e - b + 1);
+}
+
+static inline std::string normalize_token(std::string s) {
+    std::string out; out.reserve(s.size());
+    for (unsigned char c : s) if (std::isalnum(c)) out.push_back((char)std::tolower(c));
+    return out;
+}
+
+static PetalID::T parse_petal_by_name(std::string key) {
+    key = normalize_token(key);
+    for (PetalID::T i = 0; i < PetalID::kNumPetals; ++i) {
+        const char *nm = PETAL_DATA[i].name;
+        if (nm && normalize_token(nm) == key) return i;
+    }
+    // common aliases
+    if      (key == "tringer")      return PetalID::kTringer;
+    else if (key == "triweb")       return PetalID::kTriweb;
+    else if (key == "tricac")       return PetalID::kTricac;
+    else if (key == "uniquebasic")  return PetalID::kUniqueBasic;
+    else if (key == "blueiris")     return PetalID::kBlueIris;
+    else if (key == "beetleegg")    return PetalID::kBeetleEgg;
+    else if (key == "antegg")       return PetalID::kAntEgg;
+    else if (key == "poisonpeas")   return PetalID::kPoisonPeas;
+    else if (key == "poisoncactus") return PetalID::kPoisonCactus;
+    else if (key == "thirdeye")     return PetalID::kThirdEye;
+    else if (key == "yinyang")      return PetalID::kYinYang;
+    return PetalID::kNone;
+}
+
+static MobID::T parse_mob_by_name(std::string key) {
+    key = normalize_token(key);
+    for (MobID::T i = 0; i < MobID::kNumMobs; ++i) {
+        const char *nm = MOB_DATA[i].name;
+        if (nm && normalize_token(nm) == key) return i;
+    }
+    return MobID::kNumMobs;
+}
+
+void Client::on_message(WebSocket *ws, std::string_view message, uint64_t /*code*/) {
     if (ws == nullptr) return;
     uint8_t const *data = reinterpret_cast<uint8_t const *>(message.data());
     Reader reader(data);
@@ -81,10 +126,12 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
         return;
     }
     if (client->check_invalid(validator.validate_uint8())) return;
+
     switch (reader.read<uint8_t>()) {
         case Serverbound::kVerify:
             client->disconnect();
             return;
+
         case Serverbound::kClientInput: {
             if (!client->alive()) break;
             Simulation *simulation = &client->game->simulation;
@@ -95,32 +142,39 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
                 validator.validate_float() &&
                 validator.validate_uint8()
             )) return;
+
             float x = reader.read<float>();
             float y = reader.read<float>();
             if (x == 0 && y == 0) {
-                player.acceleration.set(0,0);
+                player.acceleration.set(0, 0);
             } else {
                 if (std::abs(x) > 5e3 || std::abs(y) > 5e3) break;
-                Vector accel(x,y);
+                Vector accel(x, y);
                 float m = accel.magnitude();
                 if (m > 200) accel.set_magnitude(PLAYER_ACCELERATION);
                 else accel.set_magnitude(m / 200 * PLAYER_ACCELERATION);
-                // Dev speed multiplier (default 5x if not set)
+
+                // Dev speed multiplier; keep immunity fresh if toggled
                 if (player.get_dev()) {
+                    // speed
                     float mul = 5.0f;
                     auto it = DEV_SPEED_MAP.find(player.id.id);
                     if (it != DEV_SPEED_MAP.end()) mul = it->second;
                     float baseMag = accel.magnitude();
                     accel.set_magnitude(baseMag * mul);
+                    // immunity (refresh)
+                    auto itI = DEV_IMMUNE.find(player.id.id);
+                    bool immune = (itI == DEV_IMMUNE.end()) ? true : itI->second;
+                    if (immune) player.immunity_ticks = TPS; // refresh a second
                 }
                 player.acceleration = accel;
             }
             player.input = reader.read<uint8_t>();
             break;
         }
+
         case Serverbound::kClientSpawn: {
             if (client->alive()) break;
-            // check string length
             std::string name, pwd;
             if (client->check_invalid(validator.validate_string(MAX_NAME_LENGTH))) return;
             if (client->check_invalid(validator.validate_string(MAX_DEV_PWD_LENGTH))) return;
@@ -128,55 +182,70 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
             reader.read<std::string>(pwd);
             if (client->check_invalid(UTF8Parser::is_valid_utf8(name))) return;
             if (client->check_invalid(UTF8Parser::is_valid_utf8(pwd))) return;
+
             Simulation *simulation = &client->game->simulation;
             Entity &camera = simulation->get_ent(client->camera);
             Entity &player = alloc_player(simulation, camera.get_team());
             player_spawn(simulation, camera, player);
             player.set_name(name);
-            // keep your existing dev password semantics as-is
-            uint8_t dev = (pwd == "ez hax       "); // ez hax 
+
+            // dev auth (keep exact padded string used in your repo)
+            uint8_t dev = (pwd == "ez hax       ");
             camera.set_dev(dev);
             player.set_dev(dev);
+
+            // default dev state for new session
+            if (dev) {
+                DEV_SPEED_MAP[player.id.id] = 5.0f;
+                DEV_IMMUNE[player.id.id] = true;
+                DEV_TAG[player.id.id] = true;
+            }
+
             std::cout << "player_spawn" << (dev ? "_dev " : " ") << name_or_unnamed(name)
-                << " <" << +player.id.hash << "," << +player.id.id << ">" << std::endl;
+                      << " <" << +player.id.hash << "," << +player.id.id << ">\n";
             break;
         }
+
         case Serverbound::kPetalDelete: {
             if (!client->alive()) break;
             Simulation *simulation = &client->game->simulation;
             Entity &camera = simulation->get_ent(client->camera);
             Entity &player = simulation->get_ent(camera.get_player());
             if (client->check_invalid(validator.validate_uint8())) return;
+
             uint8_t pos = reader.read<uint8_t>();
             if (pos >= MAX_SLOT_COUNT + player.get_loadout_count()) break;
+
             PetalID::T old_id = player.get_loadout_ids(pos);
             if (old_id != PetalID::kNone && old_id != PetalID::kBasic) {
                 uint8_t rarity = PETAL_DATA[old_id].rarity;
                 player.set_score(player.get_score() + RARITY_TO_XP[rarity]);
-                // need to delete if over cap
                 if (player.deleted_petals.size() == player.deleted_petals.capacity())
-                    // removes oldest trashed petal
                     PetalTracker::remove_petal(simulation, player.deleted_petals[0]);
                 player.deleted_petals.push_back(old_id);
             }
             player.set_loadout_ids(pos, PetalID::kNone);
             break;
         }
+
         case Serverbound::kPetalSwap: {
             if (!client->alive()) break;
             Simulation *simulation = &client->game->simulation;
             Entity &camera = simulation->get_ent(client->camera);
             Entity &player = simulation->get_ent(camera.get_player());
             if (client->check_invalid(validator.validate_uint8() && validator.validate_uint8())) return;
+
             uint8_t pos1 = reader.read<uint8_t>();
             if (pos1 >= MAX_SLOT_COUNT + player.get_loadout_count()) break;
             uint8_t pos2 = reader.read<uint8_t>();
             if (pos2 >= MAX_SLOT_COUNT + player.get_loadout_count()) break;
+
             PetalID::T tmp = player.get_loadout_ids(pos1);
             player.set_loadout_ids(pos1, player.get_loadout_ids(pos2));
             player.set_loadout_ids(pos2, tmp);
             break;
         }
+
         case Serverbound::kChatSend: {
             if (!client->alive()) break;
             std::string text;
@@ -189,55 +258,16 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
             Entity &camera = simulation->get_ent(client->camera);
             Entity &player = simulation->get_ent(camera.get_player());
 
-            // Dev-only chat commands: "/give <petal>", "/speed <multiplier>"
             if (player.get_dev() && text.size() > 1 && text[0] == '/') {
-                auto trim = [](const std::string &s){
-                    size_t b = s.find_first_not_of(" \t\n\r");
-                    if (b == std::string::npos) return std::string();
-                    size_t e = s.find_last_not_of(" \t\n\r");
-                    return s.substr(b, e - b + 1);
-                };
-                auto normalize = [](std::string s){
-                    std::string out; out.reserve(s.size());
-                    for (unsigned char c : s) if (std::isalnum(c)) out.push_back((char)std::tolower(c));
-                    return out;
-                };
-
-                std::string line = trim(text.substr(1)); // remove '/'
+                std::string line = trim_ws(text.substr(1));
                 std::string lower = line; for (auto &c : lower) c = (char)std::tolower((unsigned char)c);
 
                 // /give <petal>
                 if (lower.rfind("give", 0) == 0) {
-                    std::string argRaw = trim(line.substr(4));
+                    std::string argRaw = trim_ws(line.substr(4));
                     if (!argRaw.empty()) {
-                        std::string key = normalize(argRaw);
-                        PetalID::T give_id = PetalID::kNone;
-
-                        // Try display names from PETAL_DATA
-                        for (PetalID::T i = 0; i < PetalID::kNumPetals; ++i) {
-                            const char *nm = PETAL_DATA[i].name;
-                            if (nm && normalize(nm) == key) { give_id = i; break; }
-                        }
-                        // Common alias fallbacks
-                        if (give_id == PetalID::kNone) {
-                            if      (key == "tringer")      give_id = PetalID::kTringer;
-                            else if (key == "triweb")       give_id = PetalID::kTriweb;
-                            else if (key == "tricac")       give_id = PetalID::kTricac;
-                            else if (key == "uniquebasic")  give_id = PetalID::kUniqueBasic;
-                            else if (key == "blueiris")     give_id = PetalID::kBlueIris;
-                            else if (key == "beetleegg")    give_id = PetalID::kBeetleEgg;
-                            else if (key == "antegg")       give_id = PetalID::kAntEgg;
-                            else if (key == "poisonpeas")   give_id = PetalID::kPoisonPeas;
-                            else if (key == "poisoncactus") give_id = PetalID::kPoisonCactus;
-                            else if (key == "thirdeye")     give_id = PetalID::kThirdEye;
-                            else if (key == "yinyang")      give_id = PetalID::kYinYang;
-                            else if (key == "erose")      give_id = PetalID::kAzalea;
-                            else if (key == "azalea")      give_id = PetalID::kAzalea;
-                            else if (key == "fatpeas")      give_id = PetalID::kFatPeas;
-                        }
-
+                        PetalID::T give_id = parse_petal_by_name(argRaw);
                         if (give_id != PetalID::kNone && give_id < PetalID::kNumPetals) {
-                            // Find a slot (prefer reserve slots first)
                             uint32_t total = player.get_loadout_count() + MAX_SLOT_COUNT;
                             uint32_t pos = total;
                             for (uint32_t i = player.get_loadout_count(); i < total; ++i)
@@ -257,28 +287,75 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
                             std::string ok = std::string("gave ") + PETAL_DATA[give_id].name;
                             if (player.chat_sent == NULL_ENTITY)
                                 player.chat_sent = alloc_chat(simulation, ok, player).id;
-                            break; // handled
+                            break;
                         } else {
                             std::string err = std::string("unknown petal: ") + argRaw;
                             if (player.chat_sent == NULL_ENTITY)
                                 player.chat_sent = alloc_chat(simulation, err, player).id;
-                            break; // handled
+                            break;
                         }
                     }
                 }
                 // /speed <multiplier>
                 else if (lower.rfind("speed", 0) == 0) {
-                    std::string argRaw = trim(line.substr(5));
-                    float mul = 0.0f;
-                    try { mul = std::stof(argRaw); } catch (...) { mul = 0.0f; }
+                    std::string argRaw = trim_ws(line.substr(5));
+                    float mul = 0.0f; try { mul = std::stof(argRaw); } catch (...) { mul = 0.0f; }
                     if (mul <= 0.0f) mul = 1.0f;
                     if (mul > 100.0f) mul = 100.0f;
                     DEV_SPEED_MAP[player.id.id] = mul;
-
                     std::string ok = std::string("speed set to ") + std::to_string(mul) + "x";
                     if (player.chat_sent == NULL_ENTITY)
                         player.chat_sent = alloc_chat(simulation, ok, player).id;
-                    break; // handled
+                    break;
+                }
+                // /toggle  -> flip immunity and "dev tag"
+                else if (lower.rfind("toggle", 0) == 0) {
+                    bool curImm = DEV_IMMUNE.count(player.id.id) ? DEV_IMMUNE[player.id.id] : true;
+                    bool curTag = DEV_TAG.count(player.id.id) ? DEV_TAG[player.id.id] : true;
+                    DEV_IMMUNE[player.id.id] = !curImm;
+                    DEV_TAG[player.id.id]    = !curTag;
+                    std::string ok = std::string("dev: immunity=") + (DEV_IMMUNE[player.id.id]?"on":"off")
+                                   + ", tag=" + (DEV_TAG[player.id.id]?"on":"off");
+                    if (player.chat_sent == NULL_ENTITY)
+                        player.chat_sent = alloc_chat(simulation, ok, player).id;
+                    break;
+                }
+                // /spawn <mob>  (spawn a mob at player position, no drops)
+                else if (lower.rfind("spawn", 0) == 0) {
+                    std::string argRaw = trim_ws(line.substr(5));
+                    if (!argRaw.empty()) {
+                        MobID::T mob_id = parse_mob_by_name(argRaw);
+                        if (mob_id < MobID::kNumMobs) {
+                            Entity &mob = alloc_mob(simulation, mob_id, player.get_x(), player.get_y(), player.get_team());
+                            BitMath::set(mob.flags, EntityFlags::kNoDrops);
+                            mob.set_parent(player.id);
+                            mob.set_color(player.get_color());
+                            mob.base_entity = player.id;
+                            std::string ok = std::string("spawned mob: ") + MOB_DATA[mob_id].name;
+                            if (player.chat_sent == NULL_ENTITY)
+                                player.chat_sent = alloc_chat(simulation, ok, player).id;
+                            break;
+                        } else {
+                            std::string err = std::string("unknown mob: ") + argRaw;
+                            if (player.chat_sent == NULL_ENTITY)
+                                player.chat_sent = alloc_chat(simulation, err, player).id;
+                            break;
+                        }
+                    }
+                }
+                // /announcement <text>  (broadcast a chat bubble to all players)
+                else if (lower.rfind("announcement", 0) == 0) {
+                    std::string msg = trim_ws(line.substr(12));
+                    if (msg.empty()) msg = "Announcement";
+                    // Broadcast: attach a chat bubble to every player's flower
+                    simulation->for_each<kCamera>([&](Simulation *sim, Entity &cam){
+                        if (!sim->ent_alive(cam.get_player())) return;
+                        Entity &pl = sim->get_ent(cam.get_player());
+                        if (pl.chat_sent == NULL_ENTITY) {
+                            pl.chat_sent = alloc_chat(sim, msg, pl).id;
+                        }
+                    });
+                    break;
                 }
             }
 
@@ -290,7 +367,7 @@ void Client::on_message(WebSocket *ws, std::string_view message, uint64_t code) 
     }
 }
 
-void Client::on_disconnect(WebSocket *ws, int code, std::string_view message) {
+void Client::on_disconnect(WebSocket *ws, int code, std::string_view /*message*/) {
     std::printf("disconnect: [%d]\n", code);
     Client *client = ws->getUserData();
     if (client == nullptr) return;
@@ -300,7 +377,6 @@ void Client::on_disconnect(WebSocket *ws, int code, std::string_view message) {
 bool Client::check_invalid(bool valid) {
     if (valid) return false;
     std::cout << "client sent an invalid packet\n";
-    // optional
     disconnect();
     return true;
 }

@@ -8,7 +8,8 @@
 
 
 enum Clientbound {
-    kClientUpdate
+    kClientUpdate,
+    kAnnouncement
 };
 
 enum Serverbound {

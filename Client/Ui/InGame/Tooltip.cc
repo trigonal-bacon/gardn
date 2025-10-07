@@ -197,7 +197,7 @@ static void make_petal_tooltip(PetalID::T id) {
     if (positive(derived_armor)) {
         rows.push_back(
             new Ui::HContainer({
-                new Ui::StaticText(12, "Armor: ", { .fill = 0xffcde23b, .h_justify = Style::Left }),
+                new Ui::StaticText(12, "Damage Reduction: ", { .fill = 0xffcde23b, .h_justify = Style::Left }),
                 new Ui::StaticText(12, format_number(derived_armor), { .fill = 0xffffffff, .h_justify = Style::Left })
             }, 0, 0, { .h_justify = Style::Left })
         );

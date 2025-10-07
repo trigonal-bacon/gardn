@@ -130,7 +130,7 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
                 case PetalID::kPeas:
                 case PetalID::kPoisonPeas:
                 case PetalID::kFatPeas:
-                    if (BitMath::at(player.input, InputFlags::kAttacking || player.input, InputFlags::kDefending)) {
+                    if (BitMath::at(player.input, InputFlags::kAttacking)) {
                         Vector delta(petal.get_x() - player.get_x(), petal.get_y() - player.get_y());
                         float base = delta.angle();
                         // spread around full circle

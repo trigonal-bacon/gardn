@@ -159,5 +159,10 @@ void draw_static_flower(Renderer &ctx, FlowerRenderAttributes attributes) {
         RenderContext g(&ctx);
         ctx.translate(0, -35);
         draw_static_petal(PetalID::kAntennae, ctx);
+    } else if (BitMath::at(attributes.equip_flags, EquipmentFlags::kCrown))
+    {
+        RenderContext g(&ctx);
+        ctx.translate(-50, -50);
+        draw_static_petal(PetalID::kCrown, ctx);
     }
 }

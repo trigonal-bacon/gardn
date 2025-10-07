@@ -18,7 +18,10 @@ void tick_health_behavior(Simulation *sim, Entity &ent) {
         ent.poison_dealer = NULL_ENTITY;
     }
     if (ent.dandy_ticks > 0) --ent.dandy_ticks;
-    if (ent.health <= 0) sim->request_delete(ent.id);
+    if (ent.health <= 0) {
+    if (!BitMath::at(ent.flags, EntityFlags::kZombie))
+        sim->request_delete(ent.id);
+    }
     if (ent.max_health == 0) return;
     if (ent.has_component(kFlower))
         ent.set_health_ratio(ent.health / ent.max_health);

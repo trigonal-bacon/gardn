@@ -97,6 +97,34 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
     if (player.pending_delete) return;
     DEBUG_ONLY(assert(player.max_health > 0);)
     PlayerBuffs const buffs = _get_petal_passive_buffs(sim, player);
+
+    // Crown equipment summons undead beetles near player
+if (player.get_equip_flags() & (1 << EquipmentFlags::kCrown)) {
+        static const game_tick_t crown_interval = TPS * 0.5; // every 3s
+    if (player.secondary_reload >= crown_interval) {
+        player.secondary_reload = 0;
+        for (int i = 0; i < 2; ++i) {
+            float angle = frand() * 2 * M_PI;
+            float dist = 80.0f + frand() * 120.0f;
+            float sx = player.get_x() + cosf(angle) * dist;
+            float sy = player.get_y() + sinf(angle) * dist;
+
+            // spawn undead beetle
+            Entity &mob = alloc_mob(sim, MobID::kBeetle, sx, sy, player.get_team());
+            mob.set_parent(player.id);
+            mob.set_color(player.get_color());
+            mob.base_entity = player.id;
+            BitMath::set(mob.flags, EntityFlags::kNoDrops);
+            BitMath::set(mob.flags, EntityFlags::kZombie);
+            mob.health = 0;
+            mob.max_health = 0;
+                entity_set_despawn_tick(mob, 8 * TPS); // 5 seconds lifetime
+        }
+    } else {
+        ++player.secondary_reload;
+    }
+}
+
     float health_ratio = player.health / player.max_health;
     if (!player.has_component(kMob)) {
         player.max_health = hp_at_level(score_to_level(player.get_score())) + buffs.extra_health;

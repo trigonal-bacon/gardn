@@ -155,11 +155,12 @@ void Game::init() {
     other_ui_window.add_child(
         [](){ 
             Ui::Element *elt = new Ui::HContainer({
-                new Ui::DynamicText(16, [](){ return Game::disconnect_message; })
+                // Larger banner for announcements/disconnects
+                new Ui::DynamicText(24, [](){ return Game::disconnect_message; })
             }, 5, 5, { 
                 .fill = 0x40000000, 
                 .should_render = [](){
-                    return !Game::socket.ready && Game::disconnect_message != "";
+                    return Game::disconnect_message != "";
                 },
                 .v_justify = Ui::Style::Top
             });

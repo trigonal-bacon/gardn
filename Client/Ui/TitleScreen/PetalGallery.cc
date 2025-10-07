@@ -27,7 +27,7 @@ void GalleryPetal::on_render(Renderer &ctx) {
 }
 
 void GalleryPetal::on_event(uint8_t event) {
-    if (event != kFocusLost && id != PetalID::kNone && Game::seen_petals[id]) {
+    if (event != kFocusLost && id != PetalID::kNone && id != PetalID::kCrown && Game::seen_petals[id]) {
         rendering_tooltip = 1;
         tooltip = Ui::UiLoadout::petal_tooltips[id];
     } else
@@ -58,9 +58,13 @@ void PetalsCollectedIndicator::on_render(Renderer &ctx) {
 static Element *make_scroll() {
     Element *elt = new Ui::VContainer({}, 10, 10, {});
 
-    PetalID::T id_list[PetalID::kNumPetals];
-    for (PetalID::T i = 0; i < PetalID::kNumPetals; ++i)
-        id_list[i] = i;
+    PetalID::T id_list[PetalID::kNumPetals - 1]; // -1 for crown
+    uint8_t count = 0;
+    for (PetalID::T i = 0; i < PetalID::kNumPetals; ++i) {
+        if (i != PetalID::kCrown) { 
+            id_list[count++] = i;
+        }
+    }
     std::sort(id_list, id_list + PetalID::kNumPetals, [](PetalID::T a, PetalID::T b){
         if (a == PetalID::kNone) return true;
         if (b == PetalID::kNone) return false;

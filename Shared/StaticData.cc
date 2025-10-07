@@ -192,7 +192,7 @@ std::array<struct PetalData, PetalID::kNumPetals> const PETAL_DATA = {{
         .description = "Triplicātus!",
         .health = 5.0,
         .damage = 7.0,
-        .radius = 14.0,
+        .radius = 12.0,
         .reload = 0.5,
         .count = 1,
         .rarity = RarityID::kLegendary,
@@ -370,8 +370,8 @@ std::array<struct PetalData, PetalID::kNumPetals> const PETAL_DATA = {{
     {
         .name = "Peas",
         .description = "4 in 1 deal, now with a secret ingredient: poison",
-        .health = 10.0,
-        .damage = 2.0,
+        .health = 5.0,
+        .damage = 4.0,
         .radius = 7.0,
         .reload = 2.0,
         .count = 4,
@@ -382,17 +382,17 @@ std::array<struct PetalData, PetalID::kNumPetals> const PETAL_DATA = {{
             .defend_only = 1,
             .poison_damage = {
                 .damage = 20.0,
-                .time = 0.5
+                .time = 1.0
             }
         }
     },
     {
     .name = "Peas",
     .description = "Easy peasy",
-    .health = 10.0,
-    .damage = 2.0,
+    .health = 5.0,
+    .damage = 4.0,
     .radius = 12.0,
-    .reload = 1.8,
+    .reload = 2,
     .count = 4,
     .rarity = RarityID::kLegendary,
     .attributes = {
@@ -695,7 +695,7 @@ std::array<struct PetalData, PetalID::kNumPetals> const PETAL_DATA = {{
         .name = "Bone",
         .description = "Sturdy",
         .health = 15.0,
-        .damage = 12.0,
+        .damage = 8.0,
         .radius = 12.0,
         .reload = 2.5,
         .count = 1,
@@ -786,7 +786,20 @@ std::array<struct PetalData, PetalID::kNumPetals> const PETAL_DATA = {{
             .rotation_style = PetalAttributes::kFollowRot,
             .icon_angle = (float)(M_PI / 6)
         }
-    }
+    },
+    {
+    .name = "Crown",
+    .description = "Beetle",
+    .health = 0.0,
+    .damage = 0.0,
+    .radius = 12.0,
+    .reload = 0.0,
+    .count = 0,
+    .rarity = RarityID::kUnique,
+    .attributes = {
+        .equipment = EquipmentFlags::kCrown
+        }
+    },
 }};
 
 std::array<struct MobData, MobID::kNumMobs> const MOB_DATA = {{

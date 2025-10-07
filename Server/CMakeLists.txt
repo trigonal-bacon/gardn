@@ -25,6 +25,7 @@ set(SOURCES
     Process/Score.cc
     Process/Segment.cc
     Client.cc
+    DevState.cc
     Game.cc
     Main.cc
     PetalTracker.cc

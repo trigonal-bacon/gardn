@@ -83,6 +83,7 @@ namespace PetalID {
         kBasil,
         kHoney,
         kWax,
+        kCrown,
         kNumPetals
     };
 };
@@ -187,6 +188,7 @@ namespace EquipmentFlags {
         kAntennae,
         kObserver,
         kCutter,
+        kCrown,
         kNone
     };
 };
