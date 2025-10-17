@@ -3,6 +3,7 @@
 #include <Server/Client.hh>
 #include <Server/PetalTracker.hh>
 #include <Server/Server.hh>
+#include <Server/Spawn.hh>
 
 #include <Shared/Binary.hh>
 #include <Shared/Entity.hh>

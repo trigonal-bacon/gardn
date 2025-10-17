@@ -26,12 +26,16 @@ void tick_camera_behavior(Simulation *sim, Entity &ent) {
             else player.set_overlevel_timer(0);
         }
     } else {
+        if (BitMath::at(ent.flags, EntityFlags::kCPUControlled)) {
+            //temp: cpu cameras die
+            return sim->request_delete(ent.id);
+        }
         ent.set_player(NULL_ENTITY);
         ent.set_fov(BASE_FOV * 0.9);
         if (sim->ent_exists(ent.last_damaged_by)){
-            Entity &viewer = sim->get_ent(ent.last_damaged_by);
-            ent.set_camera_x(viewer.get_x());
-            ent.set_camera_y(viewer.get_y());
+            Entity &spectating = sim->get_ent(ent.last_damaged_by);
+            ent.set_camera_x(spectating.get_x());
+            ent.set_camera_y(spectating.get_y());
         }
     }
 }

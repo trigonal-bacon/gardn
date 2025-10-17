@@ -182,7 +182,9 @@ std::array<struct PetalData, PetalID::kNumPetals> const PETAL_DATA = {{
         .reload = 0.5,
         .count = 1,
         .rarity = RarityID::kRare,
-        .attributes = {}
+        .attributes = {
+            .extra_rotation_speed = 1.0
+        }
     },
     {
         .name = "Rock",
@@ -204,7 +206,9 @@ std::array<struct PetalData, PetalID::kNumPetals> const PETAL_DATA = {{
         .reload = 1.0,
         .count = 1,
         .rarity = RarityID::kRare,
-        .attributes = {}
+        .attributes = {
+            .extra_health = 20
+        }
     },
     {
         .name = "Web",
@@ -271,6 +275,7 @@ std::array<struct PetalData, PetalID::kNumPetals> const PETAL_DATA = {{
         .count = 1,
         .rarity = RarityID::kRare,
         .attributes = {
+            .slow_inflict_seconds = 2,
             .icon_angle = 0.7,
             .poison_damage = {
                 .damage = 5.0,
@@ -455,7 +460,8 @@ std::array<struct PetalData, PetalID::kNumPetals> const PETAL_DATA = {{
         .reload = 0.0,
         .count = 0,
         .rarity = RarityID::kLegendary,
-        .attributes = { 
+        .attributes = {
+            .vision_factor = 0.6,
             .equipment = EquipmentFlags::kAntennae 
         }
     },
@@ -470,6 +476,7 @@ std::array<struct PetalData, PetalID::kNumPetals> const PETAL_DATA = {{
         .rarity = RarityID::kLegendary,
         .attributes = {
             .clump_radius = 10,
+            .extra_health = 40,
         }
     },
     {
@@ -492,7 +499,8 @@ std::array<struct PetalData, PetalID::kNumPetals> const PETAL_DATA = {{
         .reload = 0.0,
         .count = 0,
         .rarity = RarityID::kMythic,
-        .attributes = { 
+        .attributes = {
+            .extra_range = 75,
             .equipment = EquipmentFlags::kThirdEye
         }
     },
@@ -505,7 +513,8 @@ std::array<struct PetalData, PetalID::kNumPetals> const PETAL_DATA = {{
         .reload = 0.0,
         .count = 0,
         .rarity = RarityID::kMythic,
-        .attributes = { 
+        .attributes = {
+            .vision_factor = 0.25,
             .equipment = EquipmentFlags::kObserver
         }
     },
@@ -519,6 +528,7 @@ std::array<struct PetalData, PetalID::kNumPetals> const PETAL_DATA = {{
         .count = 1,
         .rarity = RarityID::kEpic,
         .attributes = {
+            .extra_health = 20,
             .poison_damage = {
                 .damage = 1.0,
                 .time = 5.0
@@ -534,7 +544,9 @@ std::array<struct PetalData, PetalID::kNumPetals> const PETAL_DATA = {{
         .reload = 2.5,
         .count = 1,
         .rarity = RarityID::kRare,
-        .attributes = {}
+        .attributes = {
+            .damage_reflection = 0.25
+        }
     },
     {
         .name = "Basic",
@@ -584,6 +596,7 @@ std::array<struct PetalData, PetalID::kNumPetals> const PETAL_DATA = {{
         .count = 1,
         .rarity = RarityID::kEpic,
         .attributes = {
+            .poison_armor = 5,
             .icon_angle = 0.1
         }
     },
@@ -597,7 +610,8 @@ std::array<struct PetalData, PetalID::kNumPetals> const PETAL_DATA = {{
         .count = 0,
         .rarity = RarityID::kEpic,
         .attributes = { 
-            .equipment = EquipmentFlags::kCutter 
+            .extra_body_damage = 15,
+            .equipment = EquipmentFlags::kCutter
         }
     },
     {
@@ -642,12 +656,13 @@ std::array<struct PetalData, PetalID::kNumPetals> const PETAL_DATA = {{
         .name = "Bone",
         .description = "Sturdy",
         .health = 12.0,
-        .damage = 12.0,
+        .damage = 15.0,
         .radius = 12.0,
         .reload = 2.5,
         .count = 1,
         .rarity = RarityID::kLegendary,
         .attributes = {
+            .armor = 8,
             .icon_angle = 1
         }
     },
