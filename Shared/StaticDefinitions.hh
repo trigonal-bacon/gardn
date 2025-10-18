@@ -75,6 +75,7 @@ namespace PetalID {
         kBone,
         kYucca,
         kCorn,
+        kGoldenLeaf,
         kNumPetals
     };
 };
@@ -209,10 +210,13 @@ struct PetalAttributes {
     float extra_range = 0;
     float extra_health = 0;
     float damage_reflection = 0;
+    float extra_damage_factor = 1;
+    float extra_reload_factor = 1;
+    struct PoisonDamage poison_damage;
     uint8_t defend_only = 0;
     float icon_angle = 0;
+    uint8_t split_projectile = 0;
     uint8_t rotation_style = kPassiveRot;
-    struct PoisonDamage poison_damage;
     uint8_t spawns = MobID::kNumMobs;
     uint8_t spawn_count = 0;
     uint8_t equipment = EquipmentFlags::kNone;

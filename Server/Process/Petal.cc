@@ -28,15 +28,12 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
     if (BitMath::at(petal.flags, EntityFlags::kIsDespawning)) {
         switch (petal.get_petal_id()) {
             case PetalID::kMissile: {
-                petal.acceleration.unit_normal(petal.get_angle()).set_magnitude(4 * PLAYER_ACCELERATION);
+                petal.acceleration.unit_normal(petal.get_angle()).set_magnitude(1.5 * PLAYER_ACCELERATION);
                 break;
             }
-            case PetalID::kMoon: {
-                Vector delta(player.get_x() - petal.get_x(), player.get_y() - petal.get_y());
-                float magnitude = 20000 * PLAYER_ACCELERATION / (delta.x * delta.x + delta.y * delta.y);
-                if (magnitude > PLAYER_ACCELERATION) magnitude = PLAYER_ACCELERATION;
-                delta.set_magnitude(magnitude);
-                petal.acceleration.set(delta.x, delta.y);
+            case PetalID::kPoisonPeas:
+            case PetalID::kPeas: {
+                petal.acceleration.unit_normal(petal.heading_angle).set_magnitude(2.0 * PLAYER_ACCELERATION);
                 break;
             }
             default:
@@ -59,8 +56,9 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
             switch (petal.get_petal_id()) {
                 case PetalID::kMissile:
                     if (BitMath::at(player.input, InputFlags::kAttacking)) {
-                        petal.acceleration.unit_normal(petal.get_angle()).set_magnitude(4 * PLAYER_ACCELERATION);
-                        entity_set_despawn_tick(petal, 3 * TPS);
+                        petal.velocity.unit_normal(petal.get_angle()).set_magnitude(20 * PLAYER_ACCELERATION);
+                        petal.friction = DEFAULT_FRICTION;
+                        entity_set_despawn_tick(petal, 2.5 * TPS);
                     }
                     break;
                 case PetalID::kTriweb:
@@ -93,21 +91,26 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
                 case PetalID::kPeas:
                 case PetalID::kPoisonPeas:
                     if (BitMath::at(player.input, InputFlags::kAttacking)) {
-                        Vector delta(petal.get_x() - player.get_x(), petal.get_y() - player.get_y());
+                        float spray_angle = frand() * 2 * M_PI;
                         petal.friction = DEFAULT_FRICTION;
-                        petal.acceleration.unit_normal(delta.angle()).set_magnitude(25 * PLAYER_ACCELERATION);
-                        entity_set_despawn_tick(petal, 0.25 * TPS);
+                        petal.velocity.unit_normal(spray_angle).set_magnitude(20 * PLAYER_ACCELERATION);
+                        petal.set_split_projectile(0);
+                        petal.heading_angle = spray_angle;
+                        entity_set_despawn_tick(petal, 1.0 * TPS);
+                        for (uint32_t i = 1; i < petal_data.count; ++i) {
+                            Entity &new_petal = alloc_petal(sim, petal.get_petal_id(), player);
+                            new_petal.friction = DEFAULT_FRICTION;
+                            new_petal.set_x(petal.get_x());
+                            new_petal.set_y(petal.get_y());
+                            new_petal.set_split_projectile(0);
+                            new_petal.heading_angle = spray_angle + (2 * M_PI * i) / petal_data.count;
+                            new_petal.velocity
+                                .unit_normal(new_petal.heading_angle)
+                                .set_magnitude(20 * PLAYER_ACCELERATION);
+                            entity_set_despawn_tick(new_petal, 1.0 * TPS);
+                        }
                     }
                     break;
-                case PetalID::kMoon: {
-                    if (BitMath::at(player.input, InputFlags::kAttacking)) {
-                        Vector delta(petal.get_x() - player.get_x(), petal.get_y() - player.get_y());
-                        petal.friction = 0;
-                        petal.acceleration.unit_normal(delta.angle() + M_PI / 3).set_magnitude(3 * PLAYER_ACCELERATION);
-                        entity_set_despawn_tick(petal, 10 * TPS);
-                    }
-                    break;
-                }
                 default:
                     break;
             }

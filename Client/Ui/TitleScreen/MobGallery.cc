@@ -73,12 +73,12 @@ static Element *make_mob_stat_container(MobID::T id) {
     if (attrs.poison_damage.damage > 0) {
         stats.push_back(new Ui::HContainer({
             new Ui::StaticText(12, "Poison:", { .fill = 0xffce76db }),
-            new Ui::StaticText(12, format_number(attrs.poison_damage.damage * attrs.poison_damage.time) + "(" + format_number(attrs.poison_damage.damage) + "/s)")
+            new Ui::StaticText(12, format_number(attrs.poison_damage.damage * attrs.poison_damage.time) + " (" + format_number(attrs.poison_damage.damage) + "/s)")
         }, 0, 5, { .h_justify = Style::Left }));
     }
     stats.push_back(new Ui::HContainer({
         new Ui::StaticText(12, "XP:", { .fill = 0xff7777ff }),
-        new Ui::StaticText(12, format_number(mob_data.xp))
+        new Ui::StaticText(12, format_score(mob_data.xp))
     }, 0, 5, { .h_justify = Style::Left }));
     return new Ui::VContainer(stats, 0, 2, { .h_justify = Style::Left });
 }

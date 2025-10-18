@@ -5,11 +5,33 @@
 
 #include <Client/StaticData.hh>
 
+#include <Client/Game.hh>
+
 #include <format>
 
 using namespace Ui;
 
 Element *Ui::UiLoadout::petal_tooltips[PetalID::kNumPetals] = {nullptr};
+
+static float get_reload_factor() {
+    if (!Game::alive()) return 1;
+    float factor = 1;
+    Entity &player = Game::simulation.get_ent(Game::player_id);
+    for (uint32_t i = 0; i < player.get_loadout_count(); ++i) {
+        factor *= PETAL_DATA[player.get_loadout_ids(i)].attributes.extra_reload_factor;
+    }
+    return factor;
+}
+
+static float get_damage_factor() {
+    if (!Game::alive()) return 1;
+    float factor = 1;
+    Entity &player = Game::simulation.get_ent(Game::player_id);
+    for (uint32_t i = 0; i < player.get_loadout_count(); ++i) {
+        factor *= PETAL_DATA[player.get_loadout_ids(i)].attributes.extra_damage_factor;
+    }
+    return factor;
+}
 
 static Ui::Element *make_petal_stat_container(PetalID::T id) {
     std::vector<Ui::Element *> stats;
@@ -24,7 +46,9 @@ static Ui::Element *make_petal_stat_container(PetalID::T id) {
     if (petal_data.damage > 0) {
         stats.push_back(new Ui::HContainer({
             new Ui::StaticText(12, "Damage:", { .fill = 0xffff7777 }),
-            new Ui::StaticText(12, format_score(petal_data.damage))
+            new Ui::DynamicText(12, [&](){
+                return format_score(petal_data.damage * get_damage_factor());
+            })
         }, 0, 5, { .h_justify = Style::Left }));
     }
     if (attrs.armor > 0) {
@@ -103,14 +127,17 @@ static Ui::Element *make_petal_stat_container(PetalID::T id) {
 }
 
 static void make_petal_tooltip(PetalID::T id) {
-    std::string rld_str = PETAL_DATA[id].reload == 0 ? "" :
-        PETAL_DATA[id].attributes.secondary_reload == 0 ? std::format("{:.1f}s ⟳", PETAL_DATA[id].reload) : 
-        std::format("{:.1f} + {:.1f}s ⟳", PETAL_DATA[id].reload, PETAL_DATA[id].attributes.secondary_reload);
     Element *tooltip = new Ui::VContainer({
         #ifdef DEBUG
         new Ui::HFlexContainer(
             new Ui::StaticText(20, PETAL_DATA[id].name, { .fill = 0xffffffff, .h_justify = Style::Left }),
-            new Ui::StaticText(16, rld_str, { .fill = 0xffffffff, .v_justify = Style::Top }),
+            new Ui::DynamicText(16, [=](){
+                float reload = PETAL_DATA[id].reload * get_reload_factor();
+                std::string rld_str = reload == 0 ? "" :
+                    PETAL_DATA[id].attributes.secondary_reload == 0 ? std::format("{:.1f}s ⟳", reload) : 
+                    std::format("{:.1f} + {:.1f}s ⟳", reload, PETAL_DATA[id].attributes.secondary_reload);
+                return rld_str;
+            }, { .fill = 0xffffffff, .v_justify = Style::Top }),
             5, 10, {}
         ),
         #else

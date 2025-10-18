@@ -55,9 +55,15 @@ void draw_static_petal_single(PetalID::T id, Renderer &ctx) {
             ctx.stroke();
             break;
         }
-        case PetalID::kLeaf:
-            ctx.set_fill(0xff39b54a);
-            ctx.set_stroke(0xff2e933c);
+        case PetalID::kGoldenLeaf:
+        case PetalID::kLeaf: 
+            if (id == PetalID::kLeaf) {
+                ctx.set_fill(0xff39b54a);
+                ctx.set_stroke(0xff2e933c);
+            } else {
+                ctx.set_fill(0xffebeb34);
+                ctx.set_stroke(0xffbebe2a);
+            }
             ctx.set_line_width(3);
             ctx.round_line_cap();
             ctx.round_line_join();

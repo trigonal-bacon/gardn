@@ -62,7 +62,8 @@ MULTIPLE(Flower, loadout_ids, PetalID::T, 2 * MAX_SLOT_COUNT) \
 MULTIPLE(Flower, loadout_reloads, uint8_t, MAX_SLOT_COUNT)
 
 #define FIELDS_Petal \
-SINGLE(Petal, petal_id, PetalID::T)
+SINGLE(Petal, petal_id, PetalID::T) \
+SINGLE(Petal, split_projectile, uint8_t)
 
 #define FIELDS_Health \
 SINGLE(Health, health_ratio, Float) \

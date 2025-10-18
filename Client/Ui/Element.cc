@@ -36,6 +36,7 @@ void Element::render(Renderer &ctx) {
     else animation.step(Ui::lerp_amount);
     float curr_animation = (float) animation;
     visible = curr_animation > 0.01;
+    /*
     #ifdef DEBUG
     if (visible) {
         RenderContext context(&ctx);
@@ -49,6 +50,7 @@ void Element::render(Renderer &ctx) {
         ctx.stroke();
     }
     #endif
+    */
     if (visible) {
         style.animate(this, ctx);
         //get abs x, y;
@@ -117,6 +119,7 @@ void Element::on_render_tooltip(Renderer &ctx) {
     if (tooltip_animation < 0.01 && !rendering_tooltip)
         tooltip = nullptr;
     if (tooltip != nullptr) {
+        tooltip->refactor();
         ctx.reset_transform();
         if (screen_x < (tooltip->width / 2 + 10) * Ui::scale)
             ctx.translate((tooltip->width / 2 + 10) * Ui::scale, screen_y);

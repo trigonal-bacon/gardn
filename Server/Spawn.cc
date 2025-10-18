@@ -154,6 +154,7 @@ Entity &alloc_petal(Simulation *sim, PetalID::T petal_id, Entity const &parent) 
     petal.set_color(parent.get_color());
     petal.add_component(kPetal);
     petal.set_petal_id(petal_id);
+    petal.set_split_projectile(petal_data.attributes.split_projectile);
     petal.add_component(kHealth);
     petal.health = petal.max_health = petal_data.health;
     petal.damage = petal_data.damage;
