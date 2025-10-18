@@ -62,5 +62,5 @@ void LoadoutSlot::force_reload() {
 }
 
 uint32_t LoadoutSlot::size() const {
-    return PETAL_DATA[id].count;
+    return std::min(static_cast<uint32_t>(PETAL_DATA[id].count), MAX_PETALS_IN_CLUMP);
 }

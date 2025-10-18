@@ -1010,7 +1010,7 @@ std::array<struct MobData, MobID::kNumMobs> const MOB_DATA = {{
         .health = {25.0},
         .damage = 10.0,
         .radius = {30.0},
-        .xp = 3,
+        .xp = 30,
         .drops = {
             PetalID::kDahlia, PetalID::kWing, PetalID::kBubble, PetalID::kYggdrasil
         },
@@ -1038,7 +1038,7 @@ std::array<struct MobData, MobID::kNumMobs> const MOB_DATA = {{
         .health = {250.0},
         .damage = 25.0,
         .radius = {40.0},
-        .xp = 1,
+        .xp = 0,
         .drops = {
             PetalID::kCutter
         },

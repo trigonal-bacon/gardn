@@ -128,7 +128,7 @@ void entity_on_death(Simulation *sim, Entity const &ent) {
         if (respawn_level > MAX_LEVEL) respawn_level = MAX_LEVEL;
         camera.set_respawn_level(respawn_level);
         uint32_t max_possible = MAX_SLOT_COUNT + loadout_slots_at_level(respawn_level);
-        if (num_left > max_possible) num_left = max_possible;
+        num_left = std::min(num_left, max_possible);
         //fill petals
         for (uint32_t i = 0; i < 2 * MAX_SLOT_COUNT; ++i)
             camera.set_inventory(i, PetalID::kNone); //force reset
