@@ -154,13 +154,19 @@ Entity &alloc_petal(Simulation *sim, PetalID::T petal_id, Entity const &parent) 
     petal.set_color(parent.get_color());
     petal.add_component(kPetal);
     petal.set_petal_id(petal_id);
+    petal.set_split_projectile(petal_data.attributes.split_projectile);
     petal.add_component(kHealth);
     petal.health = petal.max_health = petal_data.health;
     petal.damage = petal_data.damage;
     petal.set_health_ratio(1);
     petal.poison_damage = petal_data.attributes.poison_damage;
+<<<<<<< HEAD
     if (petal_id == PetalID::kPincer) petal.slow_inflict = TPS * 1.5;
     if (petal_id == PetalID::kBone) petal.armor = 10;
+=======
+    petal.armor = petal_data.attributes.armor;
+    petal.slow_inflict = TPS * petal_data.attributes.slow_inflict_seconds;
+>>>>>>> upstream/master
 
     if (parent.id == NULL_ENTITY) petal.base_entity = petal.id;
     else petal.base_entity = parent.id;
@@ -185,6 +191,7 @@ Entity &alloc_web(Simulation *sim, float radius, Entity const &parent) {
     return web;
 }
 
+<<<<<<< HEAD
 Entity &alloc_chat(Simulation *sim, std::string &text, Entity const &parent) {
     Entity &chat = sim->alloc_ent();
     chat.add_component(kPhysics);
@@ -231,6 +238,31 @@ Entity &alloc_camera(Simulation *sim, TeamManager &team_manager) {
     if (frand() < 0.000001 && PetalTracker::get_count(sim, PetalID::kUniqueBasic) == 0)
         ent.set_inventory(0, PetalID::kUniqueBasic);
     for (uint32_t i = 0; i < 2 * MAX_SLOT_COUNT; ++i)
+=======
+Entity &alloc_cpu_camera(Simulation *sim, EntityID const team) {
+    Entity &ent = sim->alloc_ent();
+    ent.add_component(kCamera);
+    ent.add_component(kRelations);
+
+    ent.set_fov(BASE_FOV);
+    ent.set_respawn_level(frand() * 30);
+    ent.set_team(team);
+    ent.set_color(ColorID::kGray);
+    
+    //need to auto add to petaltracker
+    std::vector<PetalID::T> const inventory = {
+        PetalID::kRose, PetalID::kBasic, PetalID::kBasic, 
+        PetalID::kRose, PetalID::kBasic, PetalID::kBasic,
+        PetalID::kRose, PetalID::kBasic, PetalID::kBasic
+    };
+
+    for (uint32_t i = 0; i < loadout_slots_at_level(ent.get_respawn_level()); ++i)
+        ent.set_inventory(i, inventory[i]);
+    
+    if (frand() < 0.001 && PetalTracker::get_count(sim, PetalID::kUniqueBasic) == 0)
+        ent.set_inventory(0, PetalID::kUniqueBasic);
+    for (uint32_t i = 0; i < loadout_slots_at_level(ent.get_respawn_level()); ++i)
+>>>>>>> upstream/master
         PetalTracker::add_petal(sim, ent.get_inventory(i));
     return ent;
 }

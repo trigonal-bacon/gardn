@@ -22,7 +22,7 @@ static void calculate_leaderboard(Simulation *sim) {
     });
     uint32_t num = players.size();
     sim->arena_info.set_player_count(num);
-    if (num > LEADERBOARD_SIZE) num = LEADERBOARD_SIZE;
+    num = std::min(num, LEADERBOARD_SIZE);
     for (uint32_t i = 0; i < num; ++i) {
         sim->arena_info.set_names(i, players[i]->get_name());
         sim->arena_info.set_scores(i, players[i]->get_score());
@@ -48,6 +48,7 @@ void Simulation::on_tick() {
     for_each<kCamera>(tick_culling_behavior);
     for_each<kFlower>(tick_player_behavior);
     for_each<kMob>(tick_ai_behavior);
+    for_each<kCamera>(tick_player_ai_behavior);
     for_each<kPetal>(tick_petal_behavior);
     for_each<kHealth>(tick_health_behavior);
     spatial_hash.collide(on_collide);

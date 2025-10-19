@@ -37,12 +37,16 @@ void tick_camera_behavior(Simulation *sim, Entity &ent) {
         } else
             BitMath::unset(player.flags, EntityFlags::kZombie);
     } else {
+        if (BitMath::at(ent.flags, EntityFlags::kCPUControlled)) {
+            //temp: cpu cameras die
+            return sim->request_delete(ent.id);
+        }
         ent.set_player(NULL_ENTITY);
         ent.set_fov(BASE_FOV * 0.9);
         if (sim->ent_exists(ent.last_damaged_by)){
-            Entity &viewer = sim->get_ent(ent.last_damaged_by);
-            ent.set_camera_x(viewer.get_x());
-            ent.set_camera_y(viewer.get_y());
+            Entity &spectating = sim->get_ent(ent.last_damaged_by);
+            ent.set_camera_x(spectating.get_x());
+            ent.set_camera_y(spectating.get_y());
         }
     }
     if (BitMath::at(ent.flags, EntityFlags::kIsDespawning) && ent.despawn_tick == 0) {

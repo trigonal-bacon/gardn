@@ -79,11 +79,15 @@ namespace PetalID {
         kBone,
         kYucca,
         kCorn,
+<<<<<<< HEAD
         kSoil,
         kBasil,
         kHoney,
         kWax,
         kCrown,
+=======
+        kGoldenLeaf,
+>>>>>>> upstream/master
         kNumPetals
     };
 };
@@ -166,7 +170,11 @@ namespace EntityFlags {
         kNoDrops,
         kHasCulling,
         kIsCulled,
+<<<<<<< HEAD
         kZombie
+=======
+        kCPUControlled
+>>>>>>> upstream/master
     };
 };
 
@@ -216,10 +224,23 @@ struct PetalAttributes {
     float constant_heal = 0;
     float burst_heal = 0;
     float mass = 0.1;
+    float armor = 0;
+    float poison_armor = 0;
+    float dandelion_inflict_seconds = 0;
+    float slow_inflict_seconds = 0;
+    float vision_factor = 1;
+    float extra_body_damage = 0;
+    float extra_rotation_speed = 0;
+    float extra_range = 0;
+    float extra_health = 0;
+    float damage_reflection = 0;
+    float extra_damage_factor = 1;
+    float extra_reload_factor = 1;
+    struct PoisonDamage poison_damage;
     uint8_t defend_only = 0;
     float icon_angle = 0;
+    uint8_t split_projectile = 0;
     uint8_t rotation_style = kPassiveRot;
-    struct PoisonDamage poison_damage;
     uint8_t spawns = MobID::kNumMobs;
     uint8_t spawn_count = 0;
     uint8_t equipment = EquipmentFlags::kNone;

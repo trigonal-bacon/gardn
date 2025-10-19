@@ -103,6 +103,7 @@ HFlexContainer::HFlexContainer(Element *l, Element *r, float opad, float ipad, S
 }
 
 void HFlexContainer::refactor() {
+    Container::refactor();
     width = children[0]->width + inner_pad + children[1]->width;
     height = fmax(children[0]->height, children[1]->height);
 }

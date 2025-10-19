@@ -9,6 +9,7 @@
 #include <cmath>
 
 struct PlayerBuffs {
+<<<<<<< HEAD
     float extra_rot;
     float extra_range;
     float heal;
@@ -19,6 +20,19 @@ struct PlayerBuffs {
     uint8_t is_poisonous : 1;
     uint8_t has_cutter : 1;
     uint8_t equip_flags;
+=======
+    float extra_rot = 0;
+    float extra_range = 0;
+    float heal = 0;
+    float vision_factor = 1;
+    float extra_health = 0;
+    float extra_damage = 0;
+    float damage_factor = 1;
+    float reload_factor = 1;
+    uint8_t yinyang_count = 0;
+    uint8_t is_poisonous = 0;
+    uint8_t equip_flags = 0;
+>>>>>>> upstream/master
 };
 
 static struct PlayerBuffs _get_petal_passive_buffs(Simulation *sim, Entity &player) {
@@ -33,23 +47,21 @@ static struct PlayerBuffs _get_petal_passive_buffs(Simulation *sim, Entity &play
         LoadoutSlot const &slot = player.loadout[i];
         PetalID::T slot_petal_id = slot.get_petal_id();
         struct PetalData const &petal_data = PETAL_DATA[slot_petal_id];
-        if (petal_data.attributes.equipment != EquipmentFlags::kNone)
-            player.set_equip_flags(player.get_equip_flags() | (1 << petal_data.attributes.equipment));
-        if (slot_petal_id == PetalID::kAntennae) {
-            buffs.extra_vision = fclamp(0.4,buffs.extra_vision,1);
-        } else if (slot_petal_id == PetalID::kObserver) {
-            buffs.extra_vision = 0.75;
-        } else if (slot_petal_id == PetalID::kThirdEye) {
-            buffs.extra_range = 75;
-        } else if (slot_petal_id == PetalID::kCutter) {
-            buffs.has_cutter = 1;
-        } else if (slot_petal_id == PetalID::kYinYang) {
+        struct PetalAttributes const &attrs = petal_data.attributes;
+        if (attrs.equipment != EquipmentFlags::kNone)
+            player.set_equip_flags(player.get_equip_flags() | (1 << attrs.equipment));
+        buffs.vision_factor = std::min(buffs.vision_factor, attrs.vision_factor);
+        buffs.extra_range = std::fmax(attrs.extra_range, buffs.extra_range);
+        buffs.extra_damage = std::fmax(buffs.extra_damage, attrs.extra_body_damage);
+        buffs.damage_factor *= attrs.extra_damage_factor;
+        buffs.reload_factor *= attrs.extra_reload_factor;
+        if (slot_petal_id == PetalID::kYinYang)
             ++buffs.yinyang_count;
-        }
         if (!player.loadout[i].already_spawned) continue;
         if (slot_petal_id == PetalID::kLeaf) 
-            buffs.heal += petal_data.attributes.constant_heal / TPS;
+            buffs.heal += attrs.constant_heal / TPS;
         else if (slot_petal_id == PetalID::kYucca && BitMath::at(player.input, InputFlags::kDefending) && !BitMath::at(player.input, InputFlags::kAttacking)) 
+<<<<<<< HEAD
             buffs.heal += petal_data.attributes.constant_heal / TPS;
         if (slot_petal_id == PetalID::kFaster) 
             buffs.extra_rot += 1.2;
@@ -64,11 +76,18 @@ static struct PlayerBuffs _get_petal_passive_buffs(Simulation *sim, Entity &play
             buffs.size_mult += 1.20f;
         } else if (slot_petal_id == PetalID::kPoisonCactus) {
             buffs.extra_health += 20;
+=======
+            buffs.heal += attrs.constant_heal / TPS;
+        buffs.extra_rot += attrs.extra_rotation_speed;
+        buffs.extra_health += attrs.extra_health;
+        player.damage_reflection = std::fmax(player.damage_reflection, attrs.damage_reflection);
+        player.poison_armor = std::fmax(player.poison_armor, attrs.poison_armor / TPS);
+        if (slot_petal_id == PetalID::kPoisonCactus)
+>>>>>>> upstream/master
             buffs.is_poisonous = 1;
-        } else if (slot_petal_id == PetalID::kSalt) {
-            player.damage_reflection = 0.25;
-        } else if (slot_petal_id == PetalID::kLotus) {
-            player.poison_armor = 3.5f / TPS;
+        if (slot_petal_id == PetalID::kGoldenLeaf) {
+            buffs.damage_factor *= 1.2;
+            buffs.reload_factor *= 1.2;
         }
     }
     return buffs;
@@ -128,9 +147,13 @@ if (player.get_equip_flags() & (1 << EquipmentFlags::kCrown)) {
     float health_ratio = player.health / player.max_health;
     if (!player.has_component(kMob)) {
         player.max_health = hp_at_level(score_to_level(player.get_score())) + buffs.extra_health;
+<<<<<<< HEAD
         if (buffs.has_cutter) player.damage = BASE_BODY_DAMAGE + 20;
         else player.damage = BASE_BODY_DAMAGE;
         player.set_radius(BASE_FLOWER_RADIUS * buffs.size_mult);
+=======
+        player.damage = BASE_BODY_DAMAGE + buffs.extra_damage;
+>>>>>>> upstream/master
     }
     player.health = health_ratio * player.max_health;
     if (buffs.heal > 0)
@@ -147,7 +170,7 @@ if (player.get_equip_flags() & (1 << EquipmentFlags::kCrown)) {
 
     if (sim->ent_alive(player.get_parent())) {
         Entity &camera = sim->get_ent(player.get_parent());
-        camera.set_fov(BASE_FOV * (1 - buffs.extra_vision));
+        camera.set_fov(BASE_FOV * buffs.vision_factor);
     }
 
     DEBUG_ONLY(assert(player.get_loadout_count() <= MAX_SLOT_COUNT);)
@@ -171,12 +194,13 @@ if (player.get_equip_flags() & (1 << EquipmentFlags::kCrown)) {
             LoadoutPetal &petal_slot = slot.petals[j];
             if (!sim->ent_alive(petal_slot.ent_id)) {
                 petal_slot.ent_id = NULL_ENTITY;
-                game_tick_t reload_time = (petal_data.reload * TPS);
+                game_tick_t reload_time = (petal_data.reload * TPS) * buffs.reload_factor;
                 if (!slot.already_spawned) reload_time += TPS;
                 float this_reload = reload_time == 0 ? 1 : (float) petal_slot.reload / reload_time;
                 min_reload = std::min(min_reload, this_reload);
                 if (petal_slot.reload >= reload_time) {
                     petal_slot.ent_id = alloc_petal(sim, slot_petal_id, player).id;
+                    sim->get_ent(petal_slot.ent_id).damage *= buffs.damage_factor;
                     petal_slot.reload = 0;
                     slot.already_spawned = 1;
                 } 
@@ -203,7 +227,8 @@ if (player.get_equip_flags() & (1 << EquipmentFlags::kCrown)) {
                             range += wave * 120;
                         }
                     }
-                    else if (BitMath::at(player.input, InputFlags::kDefending)) range = player.get_radius() + 15;
+                    else if (BitMath::at(player.input, InputFlags::kDefending)) 
+                        range = player.get_radius() + 15;
                     wanting *= range;
                     if (petal_data.attributes.clump_radius > 0) {
                         Vector secondary;

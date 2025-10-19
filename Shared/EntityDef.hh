@@ -71,7 +71,8 @@ MULTIPLE(Flower, loadout_ids, PetalID::T, 2 * MAX_SLOT_COUNT) \
 MULTIPLE(Flower, loadout_reloads, uint8_t, MAX_SLOT_COUNT)
 
 #define FIELDS_Petal \
-SINGLE(Petal, petal_id, PetalID::T)
+SINGLE(Petal, petal_id, PetalID::T) \
+SINGLE(Petal, split_projectile, uint8_t)
 
 #define FIELDS_Health \
 SINGLE(Health, health_ratio, Float) \
@@ -111,14 +112,19 @@ SINGLE(Chat, text, std::string)
     \
     MULTIPLE(loadout, LoadoutSlot, MAX_SLOT_COUNT, .reset()) \
     SINGLE(heading_angle, float, =0) \
-    SINGLE(input, uint8_t, =0) \
     SINGLE(player_count, uint32_t, =0) \
+    SINGLE(flags, uint16_t, =0) \
+    SINGLE(input, uint8_t, =0) \
     \
     SINGLE(slow_ticks, game_tick_t, =0) \
     SINGLE(slow_inflict, game_tick_t, =0) \
     SINGLE(immunity_ticks, game_tick_t, =0) \
     SINGLE(dandy_ticks, game_tick_t, =0) \
     SINGLE(poison_ticks, game_tick_t, =0) \
+    SINGLE(despawn_tick, game_tick_t, =0) \
+    SINGLE(secondary_reload, game_tick_t, =0) \
+    SINGLE(ai_tick, game_tick_t, =0) \
+    \
     SINGLE(poison_inflicted, float, =0) \
     SINGLE(poison_dealer, EntityID, =NULL_ENTITY) \
     SINGLE(poison_damage, PoisonDamage, ={}) \
@@ -135,12 +141,11 @@ SINGLE(Chat, text, std::string)
     SINGLE(target, EntityID, =NULL_ENTITY) \
     SINGLE(seg_head, EntityID, =NULL_ENTITY) \
     SINGLE(detection_radius, float, =0) \
-    SINGLE(ai_tick, game_tick_t, =0) \
     SINGLE(ai_state, uint8_t, =0) \
     \
     SINGLE(zone, uint8_t, =0) \
-    SINGLE(flags, uint8_t, =0) \
     SINGLE(deletion_tick, uint8_t, =0) \
+<<<<<<< HEAD
     SINGLE(despawn_tick, game_tick_t, =0) \
     SINGLE(secondary_reload, game_tick_t, =0) \
     SINGLE(deleted_petals, circ_arr_t, ={}) \
@@ -150,6 +155,9 @@ SINGLE(Chat, text, std::string)
     SINGLE(chat_pos, uint8_t, =0) \
     \
     SINGLE(minimap_dots, std::set<EntityID>, ={})
+=======
+    SINGLE(deleted_petals, circ_arr_t, ={})
+>>>>>>> upstream/master
 #else
 #define PER_EXTRA_FIELD \
     SINGLE(last_damaged_time, double, =0) \

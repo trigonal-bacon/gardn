@@ -11,7 +11,7 @@ namespace Ui {
         uint8_t position;
         UiLoadoutSlot(uint8_t);
 
-        virtual void on_render(Renderer &ctx) override;
+        virtual void on_render(Renderer &) override;
     };
 
     class UiDeleteSlot final : public UiLoadoutSlot {

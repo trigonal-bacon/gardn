@@ -122,3 +122,9 @@ std::string format_score(float score) {
     if (score < 1000000) return std::format("{:.1f}k", score / 1000);
     return std::format("{:.1f}m", score / 1000000);
 }
+
+std::string format_number(float num) {
+    if (num < 0.1) return std::format("{:.2f}", num);
+    if (num < 1) return std::format("{:.1f}", num);
+    return format_score(num);
+}

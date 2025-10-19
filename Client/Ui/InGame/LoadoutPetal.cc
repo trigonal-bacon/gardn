@@ -8,7 +8,6 @@
 
 using namespace Ui;
 
-//UiLoadoutPetal *Ui::UiLoadout::petal_selected = nullptr;
 UiLoadoutPetal *Ui::UiLoadout::petal_slots[2 * MAX_SLOT_COUNT] = {nullptr};
 uint8_t Ui::UiLoadout::selected_with_keys = MAX_SLOT_COUNT;
 double Ui::UiLoadout::last_key_select = 0;

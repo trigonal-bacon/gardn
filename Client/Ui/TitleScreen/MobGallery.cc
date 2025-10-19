@@ -58,6 +58,31 @@ static Element *make_mob_drops(MobID::T id) {
     return elt;
 }
 
+static Element *make_mob_stat_container(MobID::T id) {
+    std::vector<Ui::Element *> stats;
+    struct MobData const &mob_data = MOB_DATA[id];
+    struct MobAttributes const &attrs = mob_data.attributes;
+    stats.push_back(new Ui::HContainer({
+        new Ui::StaticText(12, "Health:", { .fill = 0xff77ff77 }),
+        new Ui::StaticText(12, mob_data.health.to_string())
+    }, 0, 5, { .h_justify = Style::Left }));
+    stats.push_back(new Ui::HContainer({
+        new Ui::StaticText(12, "Damage:", { .fill = 0xffff7777 }),
+        new Ui::StaticText(12, format_number(mob_data.damage))
+    }, 0, 5, { .h_justify = Style::Left }));
+    if (attrs.poison_damage.damage > 0) {
+        stats.push_back(new Ui::HContainer({
+            new Ui::StaticText(12, "Poison:", { .fill = 0xffce76db }),
+            new Ui::StaticText(12, format_number(attrs.poison_damage.damage * attrs.poison_damage.time) + " (" + format_number(attrs.poison_damage.damage) + "/s)")
+        }, 0, 5, { .h_justify = Style::Left }));
+    }
+    stats.push_back(new Ui::HContainer({
+        new Ui::StaticText(12, "XP:", { .fill = 0xff7777ff }),
+        new Ui::StaticText(12, format_score(mob_data.xp))
+    }, 0, 5, { .h_justify = Style::Left }));
+    return new Ui::VContainer(stats, 0, 2, { .h_justify = Style::Left });
+}
+
 static Element *make_mob_card(MobID::T id) {
     Element *elt = new Ui::VContainer({
         new Ui::Element(300,0),
@@ -72,9 +97,7 @@ static Element *make_mob_card(MobID::T id) {
             10, 10
         ),
         new Ui::Element(0,10),
-        DEBUG_ONLY(new Ui::StaticText(14, "Health: " + MOB_DATA[id].health.to_string(), { .fill = 0xffffff90, .h_justify = Style::Left }),)
-        DEBUG_ONLY(new Ui::StaticText(14, "Damage: " + format_score(MOB_DATA[id].damage), { .fill = 0xffffff90, .h_justify = Style::Left }),)
-        DEBUG_ONLY(new Ui::StaticText(14, "Radius: " + MOB_DATA[id].radius.to_string(), { .fill = 0xffffff90, .h_justify = Style::Left }),)
+        DEBUG_ONLY(make_mob_stat_container(id),)
         new Ui::Element(0,10),
         make_mob_drops(id)
     }, 10, 0, { .fill = 0x33000000, .stroke_hsv = 1, .line_width = 3, .round_radius = 6, .v_justify = Style::Top, .no_animation = 1 });
