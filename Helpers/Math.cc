@@ -125,6 +125,6 @@ std::string format_score(float score) {
 
 std::string format_number(float num) {
     if (num < 0.1) return std::format("{:.2f}", num);
-    if (num < 1) return std::format("{:.1f}", num);
+    if (num < 10 && num != std::floorf(num)) return std::format("{:.1f}", num);
     return format_score(num);
 }

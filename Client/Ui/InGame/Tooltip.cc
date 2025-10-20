@@ -34,63 +34,69 @@ static float get_damage_factor() {
 }
 
 static Ui::Element *make_petal_stat_container(PetalID::T id) {
-    std::vector<Ui::Element *> stats;
+    std::vector<Ui::Element *> stats = {new Ui::Element(0,10)};
     struct PetalData const &petal_data = PETAL_DATA[id];
     struct PetalAttributes const &attrs = petal_data.attributes;
     if (petal_data.health > 0) {
         stats.push_back(new Ui::HContainer({
             new Ui::StaticText(12, "Health:", { .fill = 0xff77ff77 }),
-            new Ui::StaticText(12, format_score(petal_data.health))
+            new Ui::StaticText(12, format_number(petal_data.health))
         }, 0, 5, { .h_justify = Style::Left }));
     }
     if (petal_data.damage > 0) {
         stats.push_back(new Ui::HContainer({
             new Ui::StaticText(12, "Damage:", { .fill = 0xffff7777 }),
             new Ui::DynamicText(12, [&](){
-                return format_score(petal_data.damage * get_damage_factor());
+                return format_number(petal_data.damage * get_damage_factor());
             })
         }, 0, 5, { .h_justify = Style::Left }));
     }
     if (attrs.armor > 0) {
         stats.push_back(new Ui::HContainer({
             new Ui::StaticText(12, "Armor:", { .fill = 0xff777777 }),
-            new Ui::StaticText(12, format_score(attrs.armor))
+            new Ui::StaticText(12, format_number(attrs.armor))
+        }, 0, 5, { .h_justify = Style::Left }));
+    }
+    if (attrs.damage_reflection > 0) {
+        stats.push_back(new Ui::HContainer({
+            new Ui::StaticText(12, "Damage Reflection:", { .fill = 0xff777777 }),
+            new Ui::StaticText(12, format_pct(attrs.damage_reflection * 100))
         }, 0, 5, { .h_justify = Style::Left }));
     }
     if (attrs.constant_heal > 0) {
         stats.push_back(new Ui::HContainer({
             new Ui::StaticText(12, "Heal:", { .fill = 0xffff96cb }),
-            new Ui::StaticText(12, format_score(attrs.constant_heal) + "/s")
+            new Ui::StaticText(12, format_number(attrs.constant_heal) + "/s")
         }, 0, 5, { .h_justify = Style::Left }));
     }
     if (attrs.burst_heal > 0) {
         stats.push_back(new Ui::HContainer({
             new Ui::StaticText(12, "Heal:", { .fill = 0xffff96cb }),
-            new Ui::StaticText(12, format_score(attrs.burst_heal))
+            new Ui::StaticText(12, format_number(attrs.burst_heal))
         }, 0, 5, { .h_justify = Style::Left }));
     }
     if (attrs.poison_damage.damage > 0) {
         stats.push_back(new Ui::HContainer({
             new Ui::StaticText(12, "Poison:", { .fill = 0xffce76db }),
-            new Ui::StaticText(12, format_score(attrs.poison_damage.time * attrs.poison_damage.damage) + " (" + format_number(attrs.poison_damage.damage) + "/s)")
+            new Ui::StaticText(12, format_number(attrs.poison_damage.time * attrs.poison_damage.damage) + " (" + format_number(attrs.poison_damage.damage) + "/s)")
         }, 0, 5, { .h_justify = Style::Left }));
     }
     if (attrs.extra_health > 0) {
         stats.push_back(new Ui::HContainer({
             new Ui::StaticText(12, "Flower Health:", { .fill = 0xff77ff77 }),
-            new Ui::StaticText(12, format_score(attrs.extra_health))
+            new Ui::StaticText(12, format_number(attrs.extra_health))
         }, 0, 5, { .h_justify = Style::Left }));
     }
     if (attrs.extra_body_damage > 0) {
         stats.push_back(new Ui::HContainer({
             new Ui::StaticText(12, "Body Damage:", { .fill = 0xffff7777 }),
-            new Ui::StaticText(12, format_score(attrs.extra_body_damage))
+            new Ui::StaticText(12, format_number(attrs.extra_body_damage))
         }, 0, 5, { .h_justify = Style::Left }));
     }
     if (attrs.poison_armor > 0) {
         stats.push_back(new Ui::HContainer({
             new Ui::StaticText(12, "Poison Armor:", { .fill = 0xffce76db }),
-            new Ui::StaticText(12, format_score(attrs.poison_armor) + "/s")
+            new Ui::StaticText(12, format_number(attrs.poison_armor) + "/s")
         }, 0, 5, { .h_justify = Style::Left }));
     }
     if (attrs.extra_rotation_speed > 0) {
@@ -121,6 +127,18 @@ static Ui::Element *make_petal_stat_container(PetalID::T id) {
         stats.push_back(new Ui::HContainer({
             new Ui::StaticText(12, "Attack Range:", { .fill = 0xffcde23b }),
             new Ui::StaticText(12, "+" + format_number(attrs.extra_range))
+        }, 0, 5, { .h_justify = Style::Left }));
+    }
+    if (attrs.extra_damage_factor > 1) {
+        stats.push_back(new Ui::HContainer({
+            new Ui::StaticText(12, "Extra Damage:", { .fill = 0xffff7777 }),
+            new Ui::StaticText(12, "+"+format_pct(100 * (attrs.extra_damage_factor - 1)))
+        }, 0, 5, { .h_justify = Style::Left }));
+    }
+    if (attrs.extra_reload_factor > 1) {
+        stats.push_back(new Ui::HContainer({
+            new Ui::StaticText(12, "Extra Reload:", { .fill = 0xff7777ff }),
+            new Ui::StaticText(12, "+"+format_pct(100 * (attrs.extra_reload_factor - 1)))
         }, 0, 5, { .h_justify = Style::Left }));
     }
     return new Ui::VContainer(stats, 0, 2, { .h_justify = Style::Left });
