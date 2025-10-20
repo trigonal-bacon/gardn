@@ -32,6 +32,13 @@ static Element *make_entries(std::initializer_list<std::string const> contents) 
 
 static Element *make_changelog_contents() {
     Element *elt = new Ui::VContainer({
+        make_date("October 20th 2025"),
+        make_entries({
+            "Added 1 new petal",
+            "Peas now split into 4 orthogonal directions",
+            "Even more bugfixes"
+        }),
+        make_divider(),
         make_date("August 30th 2025"),
         make_entries({
             "Added mobile touch controls",
