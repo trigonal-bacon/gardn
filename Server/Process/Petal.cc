@@ -48,9 +48,10 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
                 petal.acceleration.set(0,0);
                 break;
         }
+        return;
     }
     if (petal_data.attributes.secondary_reload == 0) return;
-    if (petal.secondary_reload < petal_data.attributes.secondary_reload * TPS) {
+    if (petal.secondary_reload <= petal_data.attributes.secondary_reload * TPS) {
         ++petal.secondary_reload;
         return;
     }
