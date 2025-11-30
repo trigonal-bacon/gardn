@@ -22,6 +22,12 @@ struct PlayerBuffs {
     uint8_t equip_flags = 0;
 };
 
+struct RotationCenter {
+    float x;
+    float y;
+    float r;
+};
+
 static struct PlayerBuffs _get_petal_passive_buffs(Simulation *sim, Entity &player) {
     struct PlayerBuffs buffs = {0};
     if (player.has_component(kMob)) return buffs;
@@ -80,6 +86,16 @@ static uint32_t _get_petal_rotation_count(Simulation *sim, Entity &player) {
     return count;
 }
 
+static RotationCenter const _get_petal_rotation_center(Simulation *sim, Entity const &player) {
+    RotationCenter rotation_center = { 
+        .x = player.get_x(), 
+        .y = player.get_y(), 
+        .r = player.get_radius() 
+    };
+
+    return rotation_center;
+}
+
 void tick_player_behavior(Simulation *sim, Entity &player) {
     if (player.pending_delete) return;
     DEBUG_ONLY(assert(player.max_health > 0);)
@@ -99,6 +115,7 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
     
     float rot_pos = 0;
     uint32_t rotation_count = _get_petal_rotation_count(sim, player);
+    RotationCenter const rotation_center = _get_petal_rotation_center(sim, player);
     //maybe use delta mode for face flags?
     player.set_face_flags(0);
 
@@ -149,14 +166,14 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
                 if (petal.has_component(kPetal) && !(BitMath::at(petal.flags, EntityFlags::kIsDespawning))) {
                     //petal rotation behavior
                     Vector wanting;
-                    Vector delta(player.get_x() - petal.get_x(), player.get_y() - petal.get_y());
+                    Vector delta(rotation_center.x - petal.get_x(), rotation_center.y - petal.get_y());
                     if (rotation_count > 0)
                         wanting.unit_normal(2 * M_PI * rot_pos / rotation_count + player.heading_angle);
 
-                    float range = player.get_radius() + 40;
+                    float range = rotation_center.r + 40;
                     if (BitMath::at(player.input, InputFlags::kAttacking)) { 
                         if (petal_data.attributes.defend_only == 0) 
-                            range = player.get_radius() + 100 + buffs.extra_range; 
+                            range = rotation_center.r + 100 + buffs.extra_range; 
                         if (petal.get_petal_id() == PetalID::kWing) {
                             float wave = sinf((float) petal.lifetime / (0.4 * TPS));
                             wave = wave * wave;

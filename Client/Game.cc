@@ -131,7 +131,8 @@ void Game::init() {
             Ui::Element *elt = new Ui::HContainer({
                 new Ui::DynamicText(16, [](){ return Game::disconnect_message; })
             }, 5, 5, { 
-                .fill = 0x40000000, 
+                .fill = 0x40000000,
+                .round_radius = 5,
                 .should_render = [](){
                     return !Game::socket.ready && Game::disconnect_message != "";
                 },
