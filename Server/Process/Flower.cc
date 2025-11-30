@@ -179,12 +179,14 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
                     if (petal_data.attributes.spawns != MobID::kNumMobs &&
                         petal.secondary_reload > sec_reload_ticks) {
                         uint8_t spawn_id = petal_data.attributes.spawns;
-                        Entity &mob = alloc_mob(sim, spawn_id, petal.get_x(), petal.get_y(), petal.get_team());
-                        mob.set_parent(player.id);
-                        mob.set_color(player.get_color());
-                        mob.base_entity = player.id;
-                        BitMath::set(mob.flags, EntityFlags::kDieOnParentDeath);
-                        BitMath::set(mob.flags, EntityFlags::kNoDrops);
+                        Entity &mob = alloc_mob(sim, spawn_id, petal.get_x(), petal.get_y(), petal.get_team(), [&](Entity &mob){
+                            mob.set_parent(player.id);
+                            mob.set_color(player.get_color());
+                            mob.base_entity = player.id;
+                            BitMath::set(mob.flags, EntityFlags::kDieOnParentDeath);
+                            BitMath::set(mob.flags, EntityFlags::kNoDrops);
+                        });
+                    
                         if (petal_data.attributes.spawn_count == 0) {
                             petal_slot.ent_id = mob.id;
                             sim->request_delete(petal.id);

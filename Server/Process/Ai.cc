@@ -156,12 +156,11 @@ static void tick_hornet_aggro(Simulation *sim, Entity &ent) {
         ent.set_angle(v.angle());
         if (ent.ai_tick >= 1.5 * TPS && dist < 800) {
             ent.ai_tick = 0;
-            //spawn missile;
+
             Entity &missile = alloc_petal(sim, PetalID::kMissile, ent);
             missile.damage = 10;
             missile.health = missile.max_health = 10;
-            //missile.health = missile.max_health = 20;
-            //missile.despawn_tick = 1;
+
             entity_set_despawn_tick(missile, 3 * TPS);
             missile.set_angle(ent.get_angle());
             missile.acceleration.unit_normal(ent.get_angle()).set_magnitude(40 * PLAYER_ACCELERATION);

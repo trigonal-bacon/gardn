@@ -2,10 +2,15 @@
 
 #include <Shared/Entity.hh>
 
+#include <functional>
+
 class Simulation;
 
 Entity &alloc_drop(Simulation *, PetalID::T);
-Entity &alloc_mob(Simulation *, MobID::T, float, float, EntityID const);
+Entity &alloc_mob(
+    Simulation *, MobID::T, float, float, 
+    EntityID const, std::function<void(Entity &)> = nullptr
+);
 Entity &alloc_player(Simulation *, EntityID const);
 Entity &alloc_petal(Simulation *, PetalID::T, Entity const &);
 Entity &alloc_web(Simulation *, float, Entity const &);

@@ -29,7 +29,10 @@ Entity &alloc_drop(Simulation *sim, PetalID::T drop_id) {
     return drop;
 }
 
-static Entity &__alloc_mob(Simulation *sim, MobID::T mob_id, float x, float y, EntityID const team = NULL_ENTITY) {
+static Entity &__alloc_mob(
+    Simulation *sim, MobID::T mob_id, float x, float y, 
+    EntityID const team, std::function<void(Entity &)> on_spawn
+) {
     DEBUG_ONLY(assert(mob_id < MobID::kNumMobs);)
     struct MobData const &data = MOB_DATA[mob_id];
     float seed = frand();
@@ -44,8 +47,6 @@ static Entity &__alloc_mob(Simulation *sim, MobID::T mob_id, float x, float y, E
     mob.mass = (1 + mob.get_radius() / BASE_FLOWER_RADIUS) * (data.attributes.stationary ? 10000 : 1);
     if (mob_id == MobID::kAntHole)
         BitMath::set(mob.flags, EntityFlags::kNoFriendlyCollision);
-    if (team == NULL_ENTITY)
-        BitMath::set(mob.flags, EntityFlags::kHasCulling);
         
     mob.add_component(kRelations);
     mob.set_team(team);
@@ -60,7 +61,7 @@ static Entity &__alloc_mob(Simulation *sim, MobID::T mob_id, float x, float y, E
     mob.set_health_ratio(1);
 
     mob.detection_radius = data.attributes.aggro_radius;
-    mob.score_reward = data.xp;
+    //mob.score_reward = data.xp;
 
     mob.add_component(kName);
     mob.set_name(data.name);
@@ -71,13 +72,18 @@ static Entity &__alloc_mob(Simulation *sim, MobID::T mob_id, float x, float y, E
         mob.set_angle(0);
         mob.set_color(ColorID::kGray);
     }
+    if (on_spawn) 
+        on_spawn(mob);
     return mob;
 }
 
-Entity &alloc_mob(Simulation *sim, MobID::T mob_id, float x, float y, EntityID const team) {
+Entity &alloc_mob(
+    Simulation *sim, MobID::T mob_id, float x, float y, 
+    EntityID const team, std::function<void(Entity &)> on_spawn
+) {
     struct MobData const &data = MOB_DATA[mob_id];
     if (data.attributes.segments <= 1) {
-        Entity &ent = __alloc_mob(sim, mob_id, x, y, team);
+        Entity &ent = __alloc_mob(sim, mob_id, x, y, team, on_spawn);
         if (mob_id == MobID::kAntHole) {
             std::vector<MobID::T> const spawns = { 
                 MobID::kBabyAnt, MobID::kBabyAnt, MobID::kBabyAnt, 
@@ -85,18 +91,18 @@ Entity &alloc_mob(Simulation *sim, MobID::T mob_id, float x, float y, EntityID c
             };
             for (MobID::T mob_id : spawns) {
                 Vector rand = Vector::rand(ent.get_radius() * 2);
-                Entity &ant = __alloc_mob(sim, mob_id, x + rand.x, y + rand.y, team);
+                Entity &ant = __alloc_mob(sim, mob_id, x + rand.x, y + rand.y, team, on_spawn);
                 ant.set_parent(ent.id);
             }
         }
         return ent;
     }
     else {
-        Entity &head = __alloc_mob(sim, mob_id, x, y, team);
+        Entity &head = __alloc_mob(sim, mob_id, x, y, team, on_spawn);
         //head.add_component(kSegmented);
         Entity *curr = &head;
         for (uint32_t i = 1; i < data.attributes.segments; ++i) {
-            Entity &seg = __alloc_mob(sim, mob_id, x, y, team);
+            Entity &seg = __alloc_mob(sim, mob_id, x, y, team, on_spawn);
             seg.add_component(kSegmented);
             seg.seg_head = curr->id;
             seg.set_angle(curr->get_angle() + frand() * 0.1 - 0.05);
