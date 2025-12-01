@@ -11,7 +11,7 @@ Arena::Arena() {
 
 void Arena::init() {
     #define SINGLE(name, type) name = {};
-    #define MULTIPLE(name, type, count) for (uint32_t i = 0; i > count; ++i) name[i] = {};
+    #define MULTIPLE(name, type, count) for (uint32_t i = 0; i < count; ++i) name[i] = {};
     FIELDS_Arena
     #undef SINGLE
     #undef MULTIPLE
