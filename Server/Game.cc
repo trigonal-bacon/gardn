@@ -24,7 +24,8 @@ static void _update_client(Simulation *sim, Client *client) {
     writer.write<uint8_t>(Clientbound::kClientUpdate);
     writer.write<EntityID>(client->camera);
     sim->spatial_hash.query(camera.get_camera_x(), camera.get_camera_y(), 
-    960 / camera.get_fov() + 50, 540 / camera.get_fov() + 50, [&](Simulation *, Entity &ent){
+    960 / camera.get_fov() + 50, 540 / camera.get_fov() + 50, 
+    [&](Simulation *, Entity &ent){
         in_view.insert(ent.id);
     });
 
@@ -52,7 +53,7 @@ static void _update_client(Simulation *sim, Client *client) {
     writer.write<EntityID>(NULL_ENTITY);
     //write arena stuff
     writer.write<uint8_t>(client->seen_arena);
-    sim->arena_info.write(&writer, client->seen_arena);
+    sim->arena_info.write(&writer, !client->seen_arena);
     client->seen_arena = 1;
     client->send_packet(writer.packet, writer.at - writer.packet);
 }

@@ -16,7 +16,7 @@ extern "C" {
     void on_message(uint8_t type, uint32_t len, char *reason) {
         if (type == 0) {
             std::printf("Connected\n");
-            Writer w(INCOMING_PACKET);
+            Writer w(OUTGOING_PACKET);
             w.write<uint8_t>(Serverbound::kVerify);
             w.write<uint64_t>(VERSION_HASH);
             Game::reset();
