@@ -41,7 +41,12 @@ void inflict_damage(Simulation *sim, EntityID const atk_id, EntityID const def_i
         if (defender.health <= 0) end = num_waves + 1;
         for (uint32_t i = start; i < end; ++i) {
             for (MobID::T mob_id : ANTHOLE_SPAWNS[i]) {
-                Entity &child = alloc_mob(sim, mob_id, defender.get_x(), defender.get_y(), defender.get_team());
+                Entity &child = alloc_mob(
+                    sim, mob_id, 
+                    defender.get_x(), defender.get_y(), defender.get_team(), [](Entity &mob){
+                    mob.score_reward = MOB_DATA[mob.get_mob_id()].xp;
+                    BitMath::set(mob.flags, EntityFlags::kHasCulling);
+                });
                 child.set_parent(defender.id);
                 child.target = defender.target;
             }
