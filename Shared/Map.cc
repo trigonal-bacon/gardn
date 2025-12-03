@@ -55,6 +55,7 @@ void Map::spawn_random_mob(Simulation *sim, float x, float y) {
                 mob.zone = zone_id;
                 mob.immunity_ticks = TPS;
                 BitMath::set(mob.flags, EntityFlags::kSpawnedFromZone);
+                BitMath::set(mob.flags, EntityFlags::kHasCulling);
                 sim->zone_mob_counts[zone_id]++;
                 mob.score_reward = MOB_DATA[mob.get_mob_id()].xp;
             });
