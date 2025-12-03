@@ -18,7 +18,7 @@ void Particle::tick_title(Renderer &ctx, double dt) {
     size_t len = title_particles.size();
     for (size_t i = len; i > 0; --i) {
         TitleParticleEntity &part = title_particles[i - 1];
-        if (part.x > ctx.width + 10 * part.radius) {
+        if (part.x > ctx.width + std::max(10.0f, PETAL_DATA[part.id].radius) * part.radius) {
             part = title_particles[title_particles.size() - 1];
             title_particles.pop_back();
             continue;
@@ -35,19 +35,20 @@ void Particle::tick_title(Renderer &ctx, double dt) {
         else
             draw_static_petal_single(part.id, ctx);
     }
+    std::vector<PetalID::T> ids = {PetalID::kBasic};
+    float freq_sum = 1;
+    for (PetalID::T pot = PetalID::kBasic + 1; pot < PetalID::kNumPetals; ++pot)
+        if (Game::seen_petals[pot]) { ids.push_back(pot); freq_sum += pow(0.5, PETAL_DATA[pot].rarity); }
+
     for (size_t i = 0; i < 4; ++i) {
         if (frand() > 0.02) continue;
         TitleParticleEntity npart;
         npart.x = -100;
-        std::vector<PetalID::T> ids = {PetalID::kBasic};
-        float freq_sum = 1;
-        for (PetalID::T pot = PetalID::kBasic + 1; pot < PetalID::kNumPetals; ++pot)
-            if (Game::seen_petals[pot]) { ids.push_back(pot); freq_sum += pow(0.5, PETAL_DATA[pot].rarity); }
         
-        freq_sum *= frand();
+        float freq_score = freq_sum * frand();
         for (PetalID::T id : ids) {
-            freq_sum -= pow(0.5, PETAL_DATA[id].rarity);
-            if (freq_sum > 0) continue;
+            freq_score -= pow(0.5, PETAL_DATA[id].rarity);
+            if (freq_score > 0) continue;
             npart.id = id;   
             npart.y = frand() * ctx.height;
             npart.angle = frand() * 2 * M_PI;

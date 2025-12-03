@@ -361,6 +361,8 @@ void tick_ai_behavior(Simulation *sim, Entity &ent) {
     if (ent.pending_delete) return;
     if (sim->ent_alive(ent.seg_head)) return;
     ent.acceleration.set(0,0);
+    if (!sim->ent_alive(ent.target) && sim->ent_alive(ent.last_damaged_by))
+        ent.target = ent.last_damaged_by;
     if (!(ent.get_parent() == NULL_ENTITY)) {
         if (!sim->ent_alive(ent.get_parent())) {
             if (BitMath::at(ent.flags, EntityFlags::kDieOnParentDeath))
@@ -386,8 +388,6 @@ void tick_ai_behavior(Simulation *sim, Entity &ent) {
         ent.ai_tick = 0;
         return;
     }
-    if (!sim->ent_alive(ent.target) && sim->ent_alive(ent.last_damaged_by))
-        ent.target = ent.last_damaged_by;
     switch(ent.get_mob_id()) {
         case MobID::kBabyAnt:            
         case MobID::kLadybug:
@@ -429,7 +429,12 @@ void tick_ai_behavior(Simulation *sim, Entity &ent) {
                 Vector behind;
                 behind.unit_normal(ent.get_angle() + M_PI);
                 behind *= ent.get_radius();
-                Entity &spawned = alloc_mob(sim, MobID::kSoldierAnt, ent.get_x() + behind.x, ent.get_y() + behind.y, ent.get_team());
+                Entity &spawned = alloc_mob(
+                    sim, MobID::kSoldierAnt, ent.get_x() + behind.x, ent.get_y() + behind.y, 
+                    ent.get_team(), [](Entity &mob) {
+                    mob.score_reward = MOB_DATA[mob.get_mob_id()].xp;
+                    BitMath::set(mob.flags, EntityFlags::kHasCulling);
+                });
                 entity_set_despawn_tick(spawned, 10 * TPS);
                 spawned.set_parent(ent.get_parent());
             }
