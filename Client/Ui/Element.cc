@@ -84,7 +84,8 @@ void Element::render(Renderer &ctx) {
         if (pressed) {
             focus_state = kMouseDown;
             on_event(kMouseDown);
-        } else if (released && focus_state == kMouseDown) {
+        }
+        if (released && focus_state == kMouseDown) {
             focus_state = kClick;
             on_event(kClick);
         }
