@@ -52,7 +52,7 @@ static void _update_client(Simulation *sim, Client *client) {
     }
     writer.write<EntityID>(NULL_ENTITY);
     //write arena stuff
-    writer.write<uint8_t>(client->seen_arena);
+    writer.write<uint8_t>(!client->seen_arena);
     sim->arena_info.write(&writer, !client->seen_arena);
     client->seen_arena = 1;
     client->send_packet(writer.packet, writer.at - writer.packet);
