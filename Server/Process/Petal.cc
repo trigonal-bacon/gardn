@@ -25,7 +25,8 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
         Vector delta(petal.get_x() - player.get_x(), petal.get_y() - player.get_y());
         petal.set_angle(delta.angle());
     }
-    if (BitMath::at(petal.flags, EntityFlags::kIsDespawning)) {
+    if (BitMath::at(petal.flags, EntityFlags::kIsDespawning) ||
+        BitMath::at(petal.flags, EntityFlags::kIsDetached)) {
         switch (petal.get_petal_id()) {
             case PetalID::kMissile: {
                 petal.acceleration.unit_normal(petal.get_angle()).set_magnitude(1.5 * PLAYER_ACCELERATION);
@@ -37,11 +38,19 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
                 break;
             }
             case PetalID::kMoon: {
+                /*
                 Vector delta(player.get_x() - petal.get_x(), player.get_y() - petal.get_y());
-                float magnitude = 20000 * PLAYER_ACCELERATION / (delta.x * delta.x + delta.y * delta.y);
-                if (magnitude > PLAYER_ACCELERATION) magnitude = PLAYER_ACCELERATION;
+                float magnitude = 20000 * PLAYER_ACCELERATION / (delta.x * delta.x + delta.y * delta.y + 1e-4);
+                magnitude = std::fmin(magnitude, PLAYER_ACCELERATION * 2);
                 delta.set_magnitude(magnitude);
                 petal.acceleration.set(delta.x, delta.y);
+                */
+                float wanting_angle = petal.get_angle() * 2.5;
+                float wanting_radius = 100 + player.get_radius();
+                float wanting_x = player.get_x() + wanting_radius * std::cosf(wanting_angle); 
+                float wanting_y = player.get_y() + wanting_radius * std::sinf(wanting_angle); 
+                Vector delta(wanting_x - petal.get_x(), wanting_y - petal.get_y());
+                petal.acceleration.set(delta.x * 0.5, delta.y * 0.5);
                 break;
             }
             default:
@@ -124,12 +133,14 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
             }
             break;
         case PetalID::kMoon: {
+            /*
             if (BitMath::at(player.input, InputFlags::kAttacking)) {
                 Vector delta(petal.get_x() - player.get_x(), petal.get_y() - player.get_y());
                 petal.friction = 0;
                 petal.acceleration.unit_normal(delta.angle() + M_PI / 3).set_magnitude(3 * PLAYER_ACCELERATION);
                 entity_set_despawn_tick(petal, 10 * TPS);
             }
+            */
             break;
         }
         default:

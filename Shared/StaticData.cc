@@ -578,13 +578,12 @@ std::array<struct PetalData, PetalID::kNumPetals> const PETAL_DATA = {{
         .name = "Moon",
         .description = "Where did this come from?",
         .health = 1000.0,
-        .damage = 1.0,
+        .damage = 3.0,
         .radius = 50.0,
         .reload = 10.0,
         .count = 1,
-        .rarity = RarityID::kMythic,
+        .rarity = RarityID::kUnique,
         .attributes = {
-            .secondary_reload = 0.5,
             .mass = 200
         }
     },

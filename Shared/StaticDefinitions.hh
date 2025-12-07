@@ -152,7 +152,8 @@ namespace EntityFlags {
         kNoDrops,
         kHasCulling,
         kIsCulled,
-        kCPUControlled
+        kCPUControlled,
+        kIsDetached
     };
 };
 

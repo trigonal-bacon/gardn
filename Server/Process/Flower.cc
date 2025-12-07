@@ -78,7 +78,7 @@ static uint32_t _get_petal_rotation_count(Simulation *sim, Entity &player) {
             for (uint32_t j = 0; j < slot.size(); ++j) {
                 if (!sim->ent_alive(slot.petals[j].ent_id))
                     ++count;
-                else if (!sim->get_ent(slot.petals[j].ent_id).has_component(kMob))
+                else if (!BitMath::at(sim->get_ent(slot.petals[j].ent_id).flags, EntityFlags::kIsDetached))
                     ++count;
             }
         }
@@ -92,7 +92,19 @@ static RotationCenter const _get_petal_rotation_center(Simulation *sim, Entity c
         .y = player.get_y(), 
         .r = player.get_radius() 
     };
-
+    for (uint32_t i = 0; i < player.get_loadout_count(); ++i) {
+        LoadoutSlot const &slot = player.loadout[i];
+        if (slot.get_petal_id() != PetalID::kMoon) continue;
+        for (uint32_t j = 0; j < slot.size(); ++j) {
+            LoadoutPetal const &petal_slot = slot.petals[j];
+            if (!sim->ent_alive(petal_slot.ent_id)) continue;
+            Entity &moon = sim->get_ent(petal_slot.ent_id);
+            rotation_center.x = moon.get_x();
+            rotation_center.y = moon.get_y();
+            rotation_center.r = moon.get_radius();
+            return rotation_center;
+        }
+    }
     return rotation_center;
 }
 
@@ -154,6 +166,8 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
                 if (petal_slot.reload >= reload_time) {
                     petal_slot.ent_id = alloc_petal(sim, slot_petal_id, player).id;
                     sim->get_ent(petal_slot.ent_id).damage *= buffs.damage_factor;
+                    sim->get_ent(petal_slot.ent_id).set_x(rotation_center.x);
+                    sim->get_ent(petal_slot.ent_id).set_y(rotation_center.y);
                     petal_slot.reload = 0;
                     slot.already_spawned = 1;
                 } 
@@ -163,7 +177,9 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
             if (sim->ent_alive(petal_slot.ent_id)) {
                 Entity &petal = sim->get_ent(petal_slot.ent_id);
                 //only do this if petal not despawning
-                if (petal.has_component(kPetal) && !(BitMath::at(petal.flags, EntityFlags::kIsDespawning))) {
+                if (petal.has_component(kPetal) && 
+                    !BitMath::at(petal.flags, EntityFlags::kIsDespawning) &&
+                    !BitMath::at(petal.flags, EntityFlags::kIsDetached)) {
                     //petal rotation behavior
                     Vector wanting;
                     Vector delta(rotation_center.x - petal.get_x(), rotation_center.y - petal.get_y());
@@ -181,7 +197,7 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
                         }
                     }
                     else if (BitMath::at(player.input, InputFlags::kDefending)) 
-                        range = player.get_radius() + 15;
+                        range = rotation_center.r + 15;
                     wanting *= range;
                     if (petal_data.attributes.clump_radius > 0) {
                         Vector secondary;
@@ -202,6 +218,7 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
                             mob.base_entity = player.id;
                             BitMath::set(mob.flags, EntityFlags::kDieOnParentDeath);
                             BitMath::set(mob.flags, EntityFlags::kNoDrops);
+                            BitMath::set(mob.flags, EntityFlags::kIsDetached);
                         });
                     
                         if (petal_data.attributes.spawn_count == 0) {
@@ -220,7 +237,7 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
                     //if petal is a mob, or detached (IsDespawning)
                     if (BitMath::at(petal.flags, EntityFlags::kIsDespawning))
                         petal_slot.ent_id = NULL_ENTITY;
-                    if (petal.has_component(kMob))
+                    if (BitMath::at(petal.flags, EntityFlags::kIsDetached))
                         --rot_pos;
                 }
             }
