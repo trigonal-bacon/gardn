@@ -157,6 +157,15 @@ public:
     bool null() const;
 };
 
+namespace std {
+    template<>
+    struct hash<EntityID> {
+        size_t operator()(EntityID const &id) {
+            return (size_t) EntityID::make_hash(id);
+        }
+    };
+}
+
 bool operator<(EntityID const, EntityID const);
 bool operator==(EntityID const, EntityID const);
 

@@ -10,7 +10,7 @@ float fclamp(float v, float s, float e) {
 }
 
 double frand() {
-    return std::rand() / (double) RAND_MAX;
+    return std::rand() / (((double) RAND_MAX) + 1);
 }
 
 float lerp(float v, float e, float a) {

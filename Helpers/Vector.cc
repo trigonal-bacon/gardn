@@ -34,8 +34,8 @@ Vector &Vector::operator+=(Vector const &o) {
 }
 
 Vector &Vector::operator-=(Vector const &o) {
-    x += o.x;
-    y += o.y;
+    x -= o.x;
+    y -= o.y;
     return *this;
 }
 
