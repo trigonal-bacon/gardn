@@ -268,7 +268,7 @@ uint8_t Validator::validate_string(uint32_t max_len) {
     if (byte_len == 0) return 1;
     if (byte_len + at > end) return 0;
     old = at + byte_len;
-    UTF8Parser utf8_parser(reinterpret_cast<char const *>(at));
+    UTF8Parser utf8_parser(reinterpret_cast<char const *>(at), byte_len);
     for (uint32_t i = 0; i < max_len; ++i) {
         at += utf8_parser.next_symbol_len();
         if (at < old) {

@@ -377,7 +377,7 @@ constexpr float CHAR_WIDTHS[128] = {0,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0,0.24,0.24,0.
 
 float Renderer::get_ascii_text_size(char const *text) {
     float w = 0;
-    UTF8Parser parser(text);
+    UTF8Parser parser(text, std::strlen(text));
     while (1) {
         uint32_t c = parser.next_symbol();
         if (c == 0) break;
