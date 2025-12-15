@@ -30,8 +30,8 @@ extern "C" {
         }
         std::printf("client disconnect: [%d]\n", ws_id);
         Client::on_disconnect(iter->second, reason, {});
-        WS_MAP.erase(ws_id);
         delete iter->second;
+        WS_MAP.erase(ws_id);
     }
 
     void tick() {
