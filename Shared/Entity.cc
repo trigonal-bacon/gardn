@@ -52,6 +52,7 @@ type const &Entity::get_##name() const { \
 #define MULTIPLE(component, name, type, amt) \
 type const &Entity::get_##name(uint32_t i) const { \
     DEBUG_ONLY(assert(has_component(k##component));) \
+    DEBUG_ONLY(assert(i < amt);) \
     return name[i]; \
 }
 PERFIELD
@@ -69,6 +70,8 @@ void Entity::set_##name(type const &v) { \
 #define MULTIPLE(component, name, type, amt) \
 void Entity::set_##name(uint32_t i, type const &v) { \
     DEBUG_ONLY(assert(has_component(k##component));) \
+    DEBUG_ONLY(assert(i < amt);) \
+    if (i >= amt) return; \
     if (name[i] == v) return; \
     name[i] = v; \
     BitMath::set_arr(state, k##name); \

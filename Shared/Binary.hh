@@ -6,7 +6,6 @@
 #include <string>
 #include <vector>
 
-
 enum Clientbound {
     kClientUpdate
 };
