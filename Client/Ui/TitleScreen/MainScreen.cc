@@ -61,8 +61,8 @@ Element *Ui::make_title_info_box() {
                 new Ui::StaticText(35, "How to play"),
                 new Ui::Element(0,5),
                 new Ui::StaticText(16, "Use mouse to move"),
-                new Ui::StaticText(16, "Right click to attack"),
-                new Ui::StaticText(16, "Left click to defend")
+                new Ui::StaticText(16, "Left click to attack"),
+                new Ui::StaticText(16, "Right click to defend")
             }, 0, 5, { .no_animation = 1 }),
             new Ui::VContainer({
                 new Ui::StaticText(35, "How to play"),
