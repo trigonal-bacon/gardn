@@ -5,7 +5,6 @@
 #include <Helpers/UTF8.hh>
 
 #include <cmath>
-#include <iostream>
 #include <emscripten.h>
 
 std::vector<Renderer *> Renderer::renderers;
@@ -160,7 +159,14 @@ void Renderer::center_text_baseline() {
     }, id);
 }
 
-static void update_transform(Renderer *r) {
+static void mark_transform_dirty(Renderer *r)
+{
+    r->transform_dirty = true;
+}
+
+static void flush_transform(Renderer *r) {
+    if (!r->transform_dirty) return;
+    r->transform_dirty = false;
 EM_ASM({
     Module.ctxs[$0].setTransform($1, $2, $4, $5, $3, $6);
 }, r->id, r->context.transform_matrix[0],r->context.transform_matrix[1],r->context.transform_matrix[2], 
@@ -174,7 +180,7 @@ void Renderer::set_transform(float a, float b, float c, float d, float e, float 
     context.transform_matrix[3] = d;
     context.transform_matrix[4] = e;
     context.transform_matrix[5] = f;
-    update_transform(this);
+    mark_transform_dirty(this);
 }
 
 void Renderer::scale(float v) {
@@ -182,7 +188,7 @@ void Renderer::scale(float v) {
     context.transform_matrix[1] *= v;
     context.transform_matrix[3] *= v;
     context.transform_matrix[4] *= v;
-    update_transform(this);
+    mark_transform_dirty(this);
 }
 
 void Renderer::scale(float x, float y) {
@@ -190,13 +196,13 @@ void Renderer::scale(float x, float y) {
     context.transform_matrix[1] *= x;
     context.transform_matrix[3] *= y;
     context.transform_matrix[4] *= y;
-    update_transform(this);
+    mark_transform_dirty(this);
 }
 
 void Renderer::translate(float x, float y) {
     context.transform_matrix[2] += x * context.transform_matrix[0] + y * context.transform_matrix[3];
     context.transform_matrix[5] += y * context.transform_matrix[4] + x * context.transform_matrix[1];
-    update_transform(this);
+    mark_transform_dirty(this);
 }
 
 void Renderer::rotate(float a) {
@@ -210,7 +216,7 @@ void Renderer::rotate(float a) {
     context.transform_matrix[1] = original0 * sin_a + original1 * cos_a;
     context.transform_matrix[3] = original3 * cos_a + original4 * -sin_a;
     context.transform_matrix[4] = original3 * sin_a + original4 * cos_a;
-    update_transform(this);
+    mark_transform_dirty(this);
 }
 
 void Renderer::reset_transform() {
@@ -218,30 +224,35 @@ void Renderer::reset_transform() {
 }
 
 void Renderer::begin_path() {
+    flush_transform(this);
     EM_ASM({
         Module.ctxs[$0].beginPath();
     }, id);
 }
 
 void Renderer::move_to(float x, float y) {
+    flush_transform(this);
     EM_ASM({
         Module.ctxs[$0].moveTo($1, $2);
     }, id, x, y);
     }
 
 void Renderer::line_to(float x, float y) {
+    flush_transform(this);
     EM_ASM({
         Module.ctxs[$0].lineTo($1, $2);
     }, id, x, y);
 }
 
 void Renderer::qcurve_to(float x, float y, float x1, float y1) {
+    flush_transform(this);
     EM_ASM({
         Module.ctxs[$0].quadraticCurveTo($1, $2, $3, $4);
     }, id, x, y, x1, y1);
 }
 
 void Renderer::bcurve_to(float x, float y, float x1, float y1, float x2, float y2) {
+    flush_transform(this);
     EM_ASM({
         Module.ctxs[$0].bezierCurveTo($1, $2, $3, $4, $5, $6);
     }, id, x, y, x1, y1, x2, y2);
@@ -249,6 +260,7 @@ void Renderer::bcurve_to(float x, float y, float x1, float y1, float x2, float y
 
 
 void Renderer::partial_arc(float x, float y, float r, float sa, float ea, uint8_t ccw) {
+    flush_transform(this);
     EM_ASM({
         Module.ctxs[$0].arc($1, $2, $3, $4, $5, !!$6);
     }, id, x, y, r, sa, ea, ccw);
@@ -263,6 +275,7 @@ void Renderer::reverse_arc(float x, float y, float r) {
 }
 
 void Renderer::ellipse(float x, float y, float r1, float r2, float a) {
+    flush_transform(this);
     EM_ASM({
         Module.ctxs[$0].ellipse($1, $2, $3, $4, $5, 2 * Math.PI, 0);
     }, id, x, y, r1, r2, a);
@@ -273,18 +286,21 @@ void Renderer::ellipse(float x, float y, float r1, float r2) {
 }
 
 void Renderer::fill_rect(float x, float y, float w, float h) {
+    flush_transform(this);
     EM_ASM({
         Module.ctxs[$0].fillRect($1, $2, $3, $4);
     }, id, x, y, w, h);
 }
 
 void Renderer::stroke_rect(float x, float y, float w, float h) {
+    flush_transform(this);
     EM_ASM({
         Module.ctxs[$0].strokeRect($1, $2, $3, $4);
     }, id, x, y, w, h);
 }
 
 void Renderer::rect(float x, float y, float w, float h) {
+    flush_transform(this);
     EM_ASM({
         Module.ctxs[$0].rect($1, $2, $3, $4);
     }, id, x, y, w, h);
@@ -327,6 +343,7 @@ void Renderer::clip() {
 }
 
 void Renderer::clip_rect(float x, float y, float w, float h) {
+    flush_transform(this);
     //assumes axis oriented scaling
     context.clip_x = x * context.transform_matrix[0] + context.transform_matrix[2];
     context.clip_w = w * context.transform_matrix[0];
@@ -338,18 +355,21 @@ void Renderer::clip_rect(float x, float y, float w, float h) {
 }
 
 void Renderer::draw_image(Renderer &ctx) {
+    flush_transform(this);
     EM_ASM({
         Module.ctxs[$0].drawImage(Module.ctxs[$1].canvas, $2, $3);
     }, id, ctx.id, -ctx.width / 2, -ctx.height / 2);
 }
 
 void Renderer::fill_text(char const *text) {
+    flush_transform(this);
     EM_ASM({
         Module.ctxs[$0].fillText(Module.TextDecoder.decode(HEAPU8.subarray($1, $1+$2)),0,0);
     }, id, text, std::strlen(text));
 }
 
 void Renderer::stroke_text(char const *text) {
+    flush_transform(this);
     EM_ASM({
         Module.ctxs[$0].strokeText(Module.TextDecoder.decode(HEAPU8.subarray($1, $1+$2)),0,0);
     }, id, text, std::strlen(text));
@@ -367,6 +387,7 @@ void Renderer::draw_text(char const *text, struct TextArgs const args) {
 }
 
 float Renderer::get_text_size(char const *text) {
+    flush_transform(this);
     return EM_ASM_DOUBLE({
         return Module.ctxs[$0].measureText(Module.TextDecoder.decode(HEAPU8.subarray($1, $1+$2)),0,0).width;
     }, id, text, std::strlen(text));
