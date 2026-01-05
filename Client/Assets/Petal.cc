@@ -165,7 +165,7 @@ void draw_static_petal_single(PetalID::T id, Renderer &ctx) {
             ctx.stroke();
             break;
         case PetalID::kThirdEye:
-            ctx.scale(0.5);
+            ctx.scale(r / 10);
             ctx.set_fill(0xff111111);
             ctx.begin_path();
             ctx.move_to(0,-10);
