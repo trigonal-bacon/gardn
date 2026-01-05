@@ -912,15 +912,14 @@ void draw_static_petal_single(PetalID::T id, Renderer &ctx) {
 
 void draw_static_petal(PetalID::T id, Renderer &ctx) {
     struct PetalData const &data = PETAL_DATA[id];
-    uint32_t count = data.count;
-    if (count == 0) count = 1;
+    uint32_t count = data.count > 1 ? data.count : 1;
     for (uint32_t i = 0; i < count; ++i) {
         RenderContext context(&ctx);
         float rad = 10;
         if (data.attributes.clump_radius != 0)
             rad = data.attributes.clump_radius;
-        ctx.rotate(i * 2 * M_PI / data.count);
-        if (data.count > 1) ctx.translate(rad, 0);
+        ctx.rotate(i * 2 * M_PI / count);
+        if (count > 1) ctx.translate(rad, 0);
         ctx.rotate(data.attributes.icon_angle);
         draw_static_petal_single(id, ctx);
     }
