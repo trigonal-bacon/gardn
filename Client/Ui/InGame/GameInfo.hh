@@ -44,11 +44,11 @@ namespace Ui {
         virtual void on_event(uint8_t) override;
     };
 
-    Element *make_leaderboard();
-    Element *make_level_bar();
-    Element *make_minimap();
-    Element *make_overlevel_indicator();
-    Element *make_mobile_attack_button();
-    Element *make_mobile_defend_button();
-    Element *make_mobile_joystick();
+    std::unique_ptr<Element> make_leaderboard();
+    std::unique_ptr<Element> make_level_bar();
+    std::unique_ptr<Element> make_minimap();
+    std::unique_ptr<Element> make_overlevel_indicator();
+    std::unique_ptr<Element> make_mobile_attack_button();
+    std::unique_ptr<Element> make_mobile_defend_button();
+    std::unique_ptr<Element> make_mobile_joystick();
 }

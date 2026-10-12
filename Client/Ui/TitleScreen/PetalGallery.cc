@@ -29,7 +29,7 @@ void GalleryPetal::on_render(Renderer &ctx) {
 void GalleryPetal::on_event(uint8_t event) {
     if (event != kFocusLost && id != PetalID::kNone && Game::seen_petals[id]) {
         rendering_tooltip = 1;
-        tooltip = Ui::UiLoadout::petal_tooltips[id];
+        tooltip = Ui::UiLoadout::petal_tooltips[id].get();
     } else
         rendering_tooltip = 0;
 }
@@ -55,8 +55,8 @@ void PetalsCollectedIndicator::on_render(Renderer &ctx) {
     ctx.fill();
 }
 
-static Element *make_scroll() {
-    Element *elt = new Ui::VContainer({}, 10, 10, {});
+static std::unique_ptr<Element> make_scroll() {
+    auto elt = el<VContainer>(make_children(), 10, 10, Style{});
 
     PetalID::T id_list[PetalID::kNumPetals];
     for (PetalID::T i = 0; i < PetalID::kNumPetals; ++i)
@@ -69,21 +69,21 @@ static Element *make_scroll() {
         return strcmp(PETAL_DATA[a].name, PETAL_DATA[b].name) <= 0;
     });
     for (PetalID::T i = PetalID::kBasic; i < PetalID::kNumPetals;) {
-        Element *row = new Ui::HContainer({}, 0, 10, { .v_justify = Style::Top });
+        auto row = el<HContainer>(make_children(), 0, 10, Style{ .v_justify = Style::Top });
         for (uint8_t j = 0; j < 4 && i < PetalID::kNumPetals; ++j, ++i) {
-            row->add_child(new GalleryPetal(id_list[i], 60));
+            row->add_child(el<GalleryPetal>(id_list[i], 60));
         }
         row->refactor();
-        elt->add_child(row);
+        elt->add_child(std::move(row));
     }
-    return new Ui::ScrollContainer(elt, 300);
+    return el<ScrollContainer>(std::move(elt), 300);
 }
 
-Element *Ui::make_petal_gallery() {
-    Element *elt = new Ui::VContainer({
-        new Ui::StaticText(25, "Petal Gallery"),
+std::unique_ptr<Element> Ui::make_petal_gallery() {
+    auto elt = el<VContainer>(make_children(
+        el<StaticText>(25, "Petal Gallery"),
         make_scroll()
-    }, 15, 10, { 
+    ), 15, 10, Style{ 
         .fill = 0xff5a9fdb,
         .line_width = 7,
         .round_radius = 3,
@@ -96,6 +96,6 @@ Element *Ui::make_petal_gallery() {
         .h_justify = Style::Left,
         .v_justify = Style::Bottom
     });
-    Ui::Panel::petal_gallery = elt;
+    Ui::Panel::petal_gallery = elt.get();
     return elt;
 }

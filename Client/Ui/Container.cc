@@ -3,23 +3,20 @@
 #include <Client/Ui/Extern.hh>
 
 #include <cmath>
-#include <iostream>
 
 using namespace Ui;
 
-Container::Container(std::vector<Element *> const &elts, float w, float h, Style s) :
+Container::Container(std::vector<std::unique_ptr<Element>> elts, float w, float h, Style s) :
     Element(w, h, s)
 {
-    for (Element *elt : elts) 
-        if (elt != nullptr) children.push_back(elt); 
-    for (Element *elt : children)
-        elt->parent = this;
+    for (auto &elt : elts)
+        add_child(std::move(elt));
 }
 
 void Container::on_render(Renderer &ctx) {
     Element::on_render(ctx);
     for (uint32_t layer = 0; layer < 2; ++layer) {
-        for (Element *elt : children) {
+        for (auto &elt : children) {
             if (elt->style.layer != layer) continue;
             RenderContext context(&ctx);
             ctx.translate(elt->x, elt->y);
@@ -34,14 +31,14 @@ void Container::poll_events(ScreenEvent const &event) {
     Element::poll_events(event);
     if (Ui::focused != this)
         return;
-    for (Element *elt : children)
+    for (auto &elt : children)
         if (elt->visible) elt->poll_events(event);
 }
 
-HContainer::HContainer(std::vector<Element *> const &elts, float opad, float ipad, Style s) :
-    Container(elts, 0, 0, s), outer_pad(opad), inner_pad(ipad)
+HContainer::HContainer(std::vector<std::unique_ptr<Element>> elts, float opad, float ipad, Style s) :
+    Container(std::move(elts), 0, 0, s), outer_pad(opad), inner_pad(ipad)
 {
-    for (Element *elt : children)
+    for (auto &elt : children)
         elt->style.h_justify = Style::Left;
     refactor();
 }
@@ -49,7 +46,7 @@ HContainer::HContainer(std::vector<Element *> const &elts, float opad, float ipa
 void HContainer::refactor() {
     float x = outer_pad;
     float y = 0;
-    for (Element *elt : children) {
+    for (auto &elt : children) {
         elt->refactor();
         if (!elt->visible) continue;
         //if (!elt->rendering || elt->detached) continue;
@@ -65,10 +62,10 @@ void HContainer::refactor() {
     height = y;
 }
 
-VContainer::VContainer(std::vector<Element *> const &elts, float opad, float ipad, Style s) :
-    Container(elts, 0, 0, s), outer_pad(opad), inner_pad(ipad)
+VContainer::VContainer(std::vector<std::unique_ptr<Element>> elts, float opad, float ipad, Style s) :
+    Container(std::move(elts), 0, 0, s), outer_pad(opad), inner_pad(ipad)
 {
-    for (Element *elt : children)
+    for (auto &elt : children)
         elt->style.v_justify = Style::Top;
     refactor();
 }
@@ -76,7 +73,7 @@ VContainer::VContainer(std::vector<Element *> const &elts, float opad, float ipa
 void VContainer::refactor() {
     float x = 0;
     float y = outer_pad;
-    for (Element *elt : children) {
+    for (auto &elt : children) {
         //elt->style.v_justify = -1;
         elt->refactor();
         if (!elt->visible) continue;
@@ -93,12 +90,12 @@ void VContainer::refactor() {
     height = y;
 }
 
-HFlexContainer::HFlexContainer(Element *l, Element *r, float opad, float ipad, Style s) : 
-    Container({l,r},0,0,s), outer_pad(opad), inner_pad(ipad) 
+HFlexContainer::HFlexContainer(std::unique_ptr<Element> l, std::unique_ptr<Element> r, float opad, float ipad, Style s) : 
+    Container(make_children(std::move(l), std::move(r)),0,0,s), outer_pad(opad), inner_pad(ipad) 
 {
     //style.h_flex = 1;
-    l->style.h_justify = Style::Left;
-    r->style.h_justify = Style::Right;
+    children[0]->style.h_justify = Style::Left;
+    children[1]->style.h_justify = Style::Right;
     refactor();
 }
 
@@ -109,7 +106,7 @@ void HFlexContainer::refactor() {
 }
 
 void HFlexContainer::on_render(Renderer &ctx) {
-    if (parent != nullptr)
-        width = fmax(width, parent->width - 2 * outer_pad);
+    if (auto p = parent.get(); p)
+        width = fmax(width, p->width - 2 * outer_pad);
     Container::on_render(ctx);
 }

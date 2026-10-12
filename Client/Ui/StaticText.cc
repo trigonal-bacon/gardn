@@ -40,13 +40,13 @@ StaticParagraph::StaticParagraph(float max_width, float text_height, std::string
     size_t len = words.size();
     while (at < len) {
         if (Renderer::get_ascii_text_size((line + " " + words[at]).c_str()) * text_height >= max_width) {
-            add_child(new Ui::StaticText(text_height, line, { .fill = 0xffffffff, .h_justify = Style::Left, .v_justify = Style::Top }));
+            add_child(el<StaticText>(text_height, line, Style{ .fill = 0xffffffff, .h_justify = Style::Left, .v_justify = Style::Top }));
             line = words[at];
         } else 
             line += ' ' + words[at];
         ++at;
     }
     if (line != "")
-        add_child(new Ui::StaticText(text_height, line, { .fill = 0xffffffff, .h_justify = Style::Left, .v_justify = Style::Top }));
+        add_child(el<StaticText>(text_height, line, Style{ .fill = 0xffffffff, .h_justify = Style::Left, .v_justify = Style::Top }));
     refactor();
 }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Client/Ui/Element.hh>
+
 #include <cstdint>
 
 namespace Ui {
@@ -12,17 +14,17 @@ namespace Ui {
             kMobs,
             kChangelog
         };
-        extern Element *settings;
-        extern Element *petal_gallery;
-        extern Element *mob_gallery;
-        extern Element *changelog;
+        extern Element::Handle<Element> settings;
+        extern Element::Handle<Element> petal_gallery;
+        extern Element::Handle<Element> mob_gallery;
+        extern Element::Handle<Element> changelog;
     }
     extern double dt;
     extern double window_width;
     extern double window_height;
     extern double scale;
     extern double lerp_amount;
-    extern Element *focused;
-    extern Element *pressed;
+    extern Element::Handle<Element> focused;
+    extern Element::Handle<Element> pressed;
     extern uint8_t panel_open;
 };

@@ -36,8 +36,8 @@ void GalleryMob::on_render(Renderer &ctx) {
     }
 }
 
-static Element *make_mob_drops(MobID::T id) {
-    Element *elt = new Ui::HContainer({}, 0, 6, { .h_justify = Style::Left });
+static std::unique_ptr<Element> make_mob_drops(MobID::T id) {
+    auto elt = el<HContainer>(make_children(), 0, 6, Style{ .h_justify = Style::Left });
     struct MobData const &data = MOB_DATA[id];
     StaticArray<float, MAX_DROPS_PER_MOB> const &drop_chances = MOB_DROP_CHANCES[id];
     std::vector<uint8_t> order;
@@ -50,64 +50,64 @@ static Element *make_mob_drops(MobID::T id) {
 
     for (uint32_t i = 0; i < data.drops.size(); ++i) {
         uint32_t j = order[i];
-        elt->add_child(new Ui::VContainer({
-            new GalleryPetal(data.drops[j], 45),
-            new StaticText(12, format_pct(drop_chances[j] * 100))
-        }, 0, 5, { .h_justify = Style::Left }));
+        elt->add_child(el<VContainer>(make_children(
+            el<GalleryPetal>(data.drops[j], 45),
+            el<StaticText>(12, format_pct(drop_chances[j] * 100))
+        ), 0, 5, Style{ .h_justify = Style::Left }));
     }
     return elt;
 }
 
-static Element *make_mob_stat_container(MobID::T id) {
-    std::vector<Ui::Element *> stats;
+static std::unique_ptr<Element> make_mob_stat_container(MobID::T id) {
+    std::vector<std::unique_ptr<Element>> stats;
     struct MobData const &mob_data = MOB_DATA[id];
     struct MobAttributes const &attrs = mob_data.attributes;
-    stats.push_back(new Ui::HContainer({
-        new Ui::StaticText(12, "Health:", { .fill = 0xff77ff77 }),
-        new Ui::StaticText(12, mob_data.health.to_string())
-    }, 0, 5, { .h_justify = Style::Left }));
-    stats.push_back(new Ui::HContainer({
-        new Ui::StaticText(12, "Damage:", { .fill = 0xffff7777 }),
-        new Ui::StaticText(12, format_number(mob_data.damage))
-    }, 0, 5, { .h_justify = Style::Left }));
+    stats.push_back(el<HContainer>(make_children(
+        el<StaticText>(12, "Health:", Style{ .fill = 0xff77ff77 }),
+        el<StaticText>(12, mob_data.health.to_string())
+    ), 0, 5, Style{ .h_justify = Style::Left }));
+    stats.push_back(el<HContainer>(make_children(
+        el<StaticText>(12, "Damage:", Style{ .fill = 0xffff7777 }),
+        el<StaticText>(12, format_number(mob_data.damage))
+    ), 0, 5, Style{ .h_justify = Style::Left }));
     if (attrs.poison_damage.damage > 0) {
-        stats.push_back(new Ui::HContainer({
-            new Ui::StaticText(12, "Poison:", { .fill = 0xffce76db }),
-            new Ui::StaticText(12, format_number(attrs.poison_damage.damage * attrs.poison_damage.time) + " (" + format_number(attrs.poison_damage.damage) + "/s)")
-        }, 0, 5, { .h_justify = Style::Left }));
+        stats.push_back(el<HContainer>(make_children(
+            el<StaticText>(12, "Poison:", Style{ .fill = 0xffce76db }),
+            el<StaticText>(12, format_number(attrs.poison_damage.damage * attrs.poison_damage.time) + " (" + format_number(attrs.poison_damage.damage) + "/s)")
+        ), 0, 5, Style{ .h_justify = Style::Left }));
     }
-    stats.push_back(new Ui::HContainer({
-        new Ui::StaticText(12, "XP:", { .fill = 0xff7777ff }),
-        new Ui::StaticText(12, format_score(mob_data.xp))
-    }, 0, 5, { .h_justify = Style::Left }));
-    return new Ui::VContainer(stats, 0, 2, { .h_justify = Style::Left });
+    stats.push_back(el<HContainer>(make_children(
+        el<StaticText>(12, "XP:", Style{ .fill = 0xff7777ff }),
+        el<StaticText>(12, format_score(mob_data.xp))
+    ), 0, 5, Style{ .h_justify = Style::Left }));
+    return el<VContainer>(std::move(stats), 0, 2, Style{ .h_justify = Style::Left });
 }
 
-static Element *make_mob_card(MobID::T id) {
-    Element *elt = new Ui::VContainer({
-        new Ui::Element(300,0),
-        new Ui::HFlexContainer(
-            new Ui::VContainer({
-                new Ui::StaticText(18, MOB_DATA[id].name, { .fill = 0xffffffff, .h_justify = Style::Left }),
-                new Ui::StaticText(14, RARITY_NAMES[MOB_DATA[id].rarity], { .fill = RARITY_COLORS[MOB_DATA[id].rarity], .h_justify = Style::Left }),
-                new Ui::Element(0,2),
-                new Ui::StaticParagraph(220, 14, MOB_DATA[id].description, { .h_justify = Style::Left })
-            }, 0, 5),
-            new GalleryMob(id, 60),
+static std::unique_ptr<Element> make_mob_card(MobID::T id) {
+    auto elt = el<VContainer>(make_children(
+        el<Element>(300,0),
+        el<HFlexContainer>(
+            el<VContainer>(make_children(
+                el<StaticText>(18, MOB_DATA[id].name, Style{ .fill = 0xffffffff, .h_justify = Style::Left }),
+                el<StaticText>(14, RARITY_NAMES[MOB_DATA[id].rarity], Style{ .fill = RARITY_COLORS[MOB_DATA[id].rarity], .h_justify = Style::Left }),
+                el<Element>(0,2),
+                el<StaticParagraph>(220, 14, MOB_DATA[id].description, Style{ .h_justify = Style::Left })
+            ), 0, 5),
+            el<GalleryMob>(id, 60),
             10, 10
         ),
-        new Ui::Element(0,10),
+        el<Element>(0,10),
         DEBUG_ONLY(make_mob_stat_container(id),)
-        new Ui::Element(0,10),
+        el<Element>(0,10),
         make_mob_drops(id)
-    }, 10, 0, { .fill = 0x33000000, .stroke_hsv = 1, .line_width = 3, .round_radius = 6, .v_justify = Style::Top, .no_animation = 1 });
-    Element *chooser = new Ui::Choose(
-        new Ui::VContainer({
-            new Ui::Element(300,5),
-            new Ui::StaticText(16, "?"),
-            new Ui::Element(300,5)
-        }, 10, 0, { .fill = 0x33000000, .stroke_hsv = 1, .line_width = 3, .round_radius = 6, .v_justify = Style::Top, .no_animation = 1 }),
-        elt,
+    ), 10, 0, Style{ .fill = 0x33000000, .stroke_hsv = 1, .line_width = 3, .round_radius = 6, .v_justify = Style::Top, .no_animation = 1 });
+    auto chooser = el<Choose>(
+        el<VContainer>(make_children(
+            el<Element>(300,5),
+            el<StaticText>(16, "?"),
+            el<Element>(300,5)
+        ), 10, 0, Style{ .fill = 0x33000000, .stroke_hsv = 1, .line_width = 3, .round_radius = 6, .v_justify = Style::Top, .no_animation = 1 }),
+        std::move(elt),
         [=](){ return Game::seen_mobs[id]; }
     );
     chooser->style.v_justify = Style::Top;
@@ -115,8 +115,8 @@ static Element *make_mob_card(MobID::T id) {
     return chooser;
 }
 
-static Element *make_scroll() {
-    Element *elt = new Ui::VContainer({}, 0, 10, {});
+static std::unique_ptr<Element> make_scroll() {
+    auto elt = el<VContainer>(make_children(), 0, 10, Style{});
     MobID::T id_list[MobID::kNumMobs];
     for (MobID::T i = 0; i < MobID::kNumMobs; ++i)
         id_list[i] = i;
@@ -129,14 +129,14 @@ static Element *make_scroll() {
     for (MobID::T i = 0; i < MobID::kNumMobs; ++i) 
         elt->add_child(make_mob_card(id_list[i]));
 
-    return new Ui::ScrollContainer(elt, 300);
+    return el<ScrollContainer>(std::move(elt), 300);
 }
 
-Element *Ui::make_mob_gallery() {
-    Element *elt = new Ui::VContainer({
-        new Ui::StaticText(25, "Mob Gallery"),
+std::unique_ptr<Element> Ui::make_mob_gallery() {
+    auto elt = el<VContainer>(make_children(
+        el<StaticText>(25, "Mob Gallery"),
         make_scroll()
-    }, 15, 10, { 
+    ), 15, 10, Style{ 
         .fill = 0xff5a9fdb,
         .line_width = 7,
         .round_radius = 3,
@@ -149,6 +149,6 @@ Element *Ui::make_mob_gallery() {
         .h_justify = Style::Left,
         .v_justify = Style::Bottom
     });
-    Ui::Panel::mob_gallery = elt;
+    Ui::Panel::mob_gallery = elt.get();
     return elt;
 }

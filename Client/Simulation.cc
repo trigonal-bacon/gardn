@@ -5,7 +5,6 @@
 #include <Client/Ui/Extern.hh>
 
 #include <cmath>
-#include <iostream>
 
 void Entity::tick_lerp(float amt) {
     if (has_component(kPhysics)) {

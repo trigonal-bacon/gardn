@@ -57,15 +57,15 @@ namespace Ui {
         virtual void on_render(Renderer &) override;
     };
 
-    Element *make_title_input_box();
-    Element *make_title_info_box();
-    Element *make_panel_buttons();
-    Element *make_death_main_screen();
-    Element *make_stat_screen();
-    Element *make_settings_panel();
-    Element *make_petal_gallery();
-    Element *make_mob_gallery();
-    Element *make_changelog();
-    Element *make_debug_stats();
-    Element *make_github_link_button();
+    std::unique_ptr<Element> make_title_input_box();
+    std::unique_ptr<Element> make_title_info_box();
+    std::unique_ptr<Element> make_panel_buttons();
+    std::unique_ptr<Element> make_death_main_screen();
+    std::unique_ptr<Element> make_stat_screen();
+    std::unique_ptr<Element> make_settings_panel();
+    std::unique_ptr<Element> make_petal_gallery();
+    std::unique_ptr<Element> make_mob_gallery();
+    std::unique_ptr<Element> make_changelog();
+    std::unique_ptr<Element> make_debug_stats();
+    std::unique_ptr<Element> make_github_link_button();
 }

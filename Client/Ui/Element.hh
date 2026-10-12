@@ -5,6 +5,7 @@
 #include <Helpers/Math.hh>
 
 #include <functional>
+#include <memory>
 #include <vector>
 
 namespace Ui {
@@ -49,13 +50,40 @@ namespace Ui {
         kMouseHover
     };
 
+    namespace Registry {
+        Element *find(uint32_t);
+    }
+
     class Element {
+    public:
+        template<typename T>
+        requires std::derived_from<T, Element>
+        class Handle {
+        private:
+            uint32_t handle = 0;
+        public:
+            Handle(T *elt = nullptr) {
+                if (elt != nullptr) handle = elt->handle;
+                else handle = 0;
+            };
+            bool operator==(Handle<T> const &other) const {
+                return handle == other.handle;
+            };
+            T *get() const {
+                return static_cast<T *>(Registry::find(handle));
+            }
+            operator bool() const {
+                return get() != nullptr;
+            }
+        };
+    private:
+        uint32_t handle;
     protected:
-        std::vector<Element *> children;
-        Ui::Element *tooltip = nullptr;
+        std::vector<std::unique_ptr<Element>> children;
+        Handle<Element> tooltip;
         uint32_t touch_id = (uint32_t)-1;
     public:
-        Ui::Element *parent = nullptr;
+        Handle<Element> parent;
         float width = 0;
         float height = 0;
         float x = 0;
@@ -73,7 +101,12 @@ namespace Ui {
         uint8_t focused : 1 = 0;
 
         Element(float = 0, float = 0, Style = {});
-        void add_child(Element *);
+        Element(Element const &) = delete;
+        Element &operator=(Element const &) = delete;
+        Element(Element &&) = delete;
+        Element& operator=(Element &&) = delete;
+        virtual ~Element();
+        void add_child(std::unique_ptr<Element>);
         void render(Renderer &);
         virtual void on_render(Renderer &);
         virtual void on_render_tooltip(Renderer &);
@@ -84,5 +117,18 @@ namespace Ui {
         virtual void poll_events(ScreenEvent const &);
     };
 
-    std::vector<Element *> const make_range(uint32_t, uint32_t, Element *(uint32_t));
+    std::vector<std::unique_ptr<Element>> make_range(uint32_t, uint32_t, std::unique_ptr<Element>(uint32_t));
+
+    template <typename T, typename... Args>
+    auto el(Args&&... args) {
+        return std::make_unique<T>(std::forward<Args>(args)...);
+    }
+
+    template <typename... Ptrs>
+    auto make_children(Ptrs&&... ptrs) {
+        std::vector<std::unique_ptr<Element>> result;
+        result.reserve(sizeof...(Ptrs));
+        (result.push_back(std::forward<Ptrs>(ptrs)), ...);
+        return result;
+    }
 }

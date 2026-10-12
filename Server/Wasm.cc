@@ -7,10 +7,11 @@
 #include <iostream>
 #include <string>
 #include <unordered_map>
+#include <memory>
 
 #include <emscripten.h>
 
-std::unordered_map<int, WebSocket *> WS_MAP;
+std::unordered_map<int, std::unique_ptr<WebSocket>> WS_MAP;
 
 size_t const MAX_BUFFER_LEN = 1024;
 static uint8_t INCOMING_BUFFER[MAX_BUFFER_LEN] = {0};
@@ -18,8 +19,7 @@ static uint8_t INCOMING_BUFFER[MAX_BUFFER_LEN] = {0};
 extern "C" {
     void on_connect(int ws_id) {
         std::printf("client connect: [%d]\n", ws_id);
-        WebSocket *ws = new WebSocket(ws_id);
-        WS_MAP.insert({ws_id, ws});
+        WS_MAP.insert({ws_id, std::make_unique<WebSocket>(ws_id)});
     }
 
     void on_disconnect(int ws_id, int reason) {
@@ -29,8 +29,7 @@ extern "C" {
             return;
         }
         std::printf("client disconnect: [%d]\n", ws_id);
-        Client::on_disconnect(iter->second, reason, {});
-        delete iter->second;
+        Client::on_disconnect(iter->second.get(), reason, {});
         WS_MAP.erase(ws_id);
     }
 
@@ -43,7 +42,7 @@ extern "C" {
         //WebSocket *ws = WS_MAP[ws_id];
         if (iter == WS_MAP.end()) return;
         std::string_view message(reinterpret_cast<char const *>(INCOMING_BUFFER), len);
-        Client::on_message(iter->second, message, 0);
+        Client::on_message(iter->second.get(), message, 0);
     }
 }
 

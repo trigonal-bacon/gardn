@@ -7,7 +7,7 @@ namespace Ui {
         std::function<uint8_t(void)> const chooser;
         uint8_t choose_showing;
     public:
-        Choose(Element *, Element *, std::function<uint8_t(void)> const &, Style = {});
+        Choose(std::unique_ptr<Element>, std::unique_ptr<Element>, std::function<uint8_t(void)> const &, Style = {});
 
         virtual void on_render(Renderer &) override;
         virtual void refactor() override;

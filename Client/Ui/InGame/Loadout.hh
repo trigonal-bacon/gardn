@@ -5,6 +5,8 @@
 
 #include <Client/StaticData.hh>
 
+#include <array>
+
 namespace Ui {
     class UiLoadoutSlot : public Element {
     public:
@@ -50,15 +52,15 @@ namespace Ui {
     };
 
     namespace UiLoadout {
-        extern UiLoadoutPetal *petal_slots[2 * MAX_SLOT_COUNT];
-        extern UiLoadoutSlot *petal_backgrounds[2 * MAX_SLOT_COUNT + 1];
-        extern Element *petal_tooltips[PetalID::kNumPetals];
+        extern std::array<Element::Handle<UiLoadoutPetal>, 2 * MAX_SLOT_COUNT> petal_slots;
+        extern std::array<Element::Handle<UiLoadoutSlot>, 2 * MAX_SLOT_COUNT + 1> petal_backgrounds;
+        extern std::array<std::unique_ptr<Element>, PetalID::kNumPetals> petal_tooltips;
         extern uint8_t selected_with_keys;
         extern double last_key_select;
         extern uint32_t num_petals_selected;
     };
 
-    Element *make_loadout_backgrounds();
+    std::unique_ptr<Element> make_loadout_backgrounds();
     void make_petal_tooltips();
 
     void forward_secondary_select();

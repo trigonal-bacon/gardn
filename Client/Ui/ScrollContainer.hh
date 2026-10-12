@@ -15,7 +15,7 @@ namespace Ui {
     class ScrollContainer : public HContainer {
     public:
         float lerp_scroll;
-        ScrollContainer(Element *, float);
+        ScrollContainer(std::unique_ptr<Element>, float);
 
         virtual void on_render(Renderer &) override;
         virtual void poll_events(ScreenEvent const &) override;

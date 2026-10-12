@@ -6,7 +6,7 @@
 
 using namespace Ui;
 
-UiLoadoutSlot *Ui::UiLoadout::petal_backgrounds[2 * MAX_SLOT_COUNT + 1] = {nullptr};
+std::array<Element::Handle<UiLoadoutSlot>, 2 * MAX_SLOT_COUNT + 1> Ui::UiLoadout::petal_backgrounds;
 
 UiLoadoutSlot::UiLoadoutSlot(uint8_t pos) : Element(70, 70, { .fill = 0xffeeeeee, .round_radius = 0 }) {
     if (pos >= MAX_SLOT_COUNT) width = height = 50;
@@ -53,24 +53,24 @@ void UiDeleteSlot::on_render(Renderer &ctx) {
     }
 }
 
-Element *Ui::make_loadout_backgrounds() {
-    Element *base = new Ui::VContainer(
-        {
-            (new Ui::HContainer(
-                Ui::make_range(0, MAX_SLOT_COUNT, [](uint32_t i){ return (Element *) (new Ui::UiLoadoutSlot(i)); })
-            , 5, 20, { .layer = 1 }
-            )),
-            (new Ui::HContainer(
-                Ui::make_range(MAX_SLOT_COUNT, 2*MAX_SLOT_COUNT+1, 
-                    [](uint32_t i){ 
-                        if (i == 2*MAX_SLOT_COUNT) return (Element *) new Ui::UiDeleteSlot();
-                        else return (Element *) (new Ui::UiLoadoutSlot(i)); 
-                    })
-                , 10, 15, { .layer = 1 }
-            )),
-            new Ui::InputFreeze(),
-            new Ui::Element(0,34,{ .should_render = [](){ return Input::keyboard_movement || Input::is_mobile; }})
-        }, 0, 0, { .should_render = [](){ return Game::alive(); } }
+std::unique_ptr<Element> Ui::make_loadout_backgrounds() {
+    auto base = el<VContainer>(make_children(
+        el<HContainer>(
+            Ui::make_range(0, MAX_SLOT_COUNT, [](uint32_t i){ 
+                return static_cast<std::unique_ptr<Element>>(el<UiLoadoutSlot>(i)); 
+            })
+        , 5, 20, Style{ .layer = 1 }),
+        (el<HContainer>(
+            Ui::make_range(MAX_SLOT_COUNT, 2*MAX_SLOT_COUNT+1, 
+                [](uint32_t i){ 
+                    if (i == 2*MAX_SLOT_COUNT) return static_cast<std::unique_ptr<Element>>(el<UiDeleteSlot>());
+                    else return static_cast<std::unique_ptr<Element>>(el<UiLoadoutSlot>(i)); 
+                })
+            , 10, 15, Style{ .layer = 1 }
+        )),
+        el<InputFreeze>(),
+        el<Element>(0,34, Style{ .should_render = [](){ return Input::keyboard_movement || Input::is_mobile; }})
+    ), 0, 0, Style{ .should_render = [](){ return Game::alive(); } }
     );
     base->style.v_justify = Style::Bottom;
     base->style.animate = [](Element *elt, Renderer &ctx) {

@@ -3,7 +3,7 @@
 #include <cmath>
 
 uint32_t const MAX_LEVEL = 99;
-uint32_t const TPS = 20;
+uint32_t const TPS = 60;
 
 //these two are based on the base game's 20 TPS
 float const PLAYER_ACCELERATION = 5.0f;

@@ -7,7 +7,7 @@
 namespace Ui {
     class Container : public Element {
     public:
-        Container(std::vector<Element *> const &, float = 0, float = 0, Style = {});
+        Container(std::vector<std::unique_ptr<Element>>, float = 0, float = 0, Style = {});
 
         virtual void on_render(Renderer &) override;
 
@@ -19,7 +19,7 @@ namespace Ui {
         float outer_pad = 0;
         float inner_pad = 0;
     public:
-        HContainer(std::vector<Element *> const &, float = 0, float = 0, Style = {});
+        HContainer(std::vector<std::unique_ptr<Element>>, float = 0, float = 0, Style = {});
 
         virtual void refactor() override;
     };
@@ -29,7 +29,7 @@ namespace Ui {
         float outer_pad = 0;
         float inner_pad = 0;
     public:
-        VContainer(std::vector<Element *> const &, float = 0, float = 0, Style = {});
+        VContainer(std::vector<std::unique_ptr<Element>>, float = 0, float = 0, Style = {});
 
         virtual void refactor() override;
     };
@@ -38,7 +38,7 @@ namespace Ui {
         float inner_pad = 0;
         float outer_pad = 0;
     public:
-        HFlexContainer(Element *, Element *, float, float, Style = {});
+        HFlexContainer(std::unique_ptr<Element>, std::unique_ptr<Element>, float, float, Style = {});
 
         virtual void refactor() override;
         virtual void on_render(Renderer &) override;

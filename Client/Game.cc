@@ -11,7 +11,7 @@
 #include <cmath>
 
 static double g_last_time = 0;
-float const MAX_TRANSITION_CIRCLE = 2500;
+constexpr float MAX_TRANSITION_CIRCLE = 2500;
 
 static int _c = setup_canvas();
 static int _i = setup_inputs();
@@ -56,7 +56,7 @@ void Game::init() {
     reset();
     title_ui_window.add_child(
         [](){ 
-            Ui::Element *elt = new Ui::StaticText(60, "the gardn project");
+            auto elt = Ui::el<Ui::StaticText>(60, "the gardn project");
             elt->x = 0;
             elt->y = -270;
             return elt;
@@ -107,7 +107,7 @@ void Game::init() {
     game_ui_window.add_child(
         Ui::make_mobile_defend_button()
     );
-    for (uint8_t i = 0; i < MAX_SLOT_COUNT * 2; ++i) game_ui_window.add_child(new Ui::UiLoadoutPetal(i));
+    for (uint8_t i = 0; i < MAX_SLOT_COUNT * 2; ++i) game_ui_window.add_child(Ui::el<Ui::UiLoadoutPetal>(i));
     game_ui_window.add_child(
         Ui::make_leaderboard()
     );
@@ -118,9 +118,9 @@ void Game::init() {
         Ui::make_stat_screen()
     );
     game_ui_window.add_child(
-        new Ui::HContainer({
-            new Ui::StaticText(20, "the gardn project")
-        }, 20, 0, { .h_justify = Ui::Style::Left, .v_justify = Ui::Style::Top })
+        Ui::el<Ui::HContainer>(Ui::make_children(
+            Ui::el<Ui::StaticText>(20, "the gardn project")
+        ), 20, 0, Ui::Style{ .h_justify = Ui::Style::Left, .v_justify = Ui::Style::Top })
     );
     Ui::make_petal_tooltips();
     other_ui_window.add_child(
@@ -128,9 +128,9 @@ void Game::init() {
     );
     other_ui_window.add_child(
         [](){ 
-            Ui::Element *elt = new Ui::HContainer({
-                new Ui::DynamicText(16, [](){ return Game::disconnect_message; })
-            }, 5, 5, { 
+            auto elt = Ui::el<Ui::HContainer>(Ui::make_children(
+                Ui::el<Ui::DynamicText>(16, [](){ return Game::disconnect_message; })
+            ), 5, 5, Ui::Style{ 
                 .fill = 0x40000000,
                 .round_radius = 5,
                 .should_render = [](){
@@ -187,8 +187,9 @@ void Game::poll_ui_event(Ui::ScreenEvent const &event) {
     if (Game::should_render_game_ui())
         game_ui_window.poll_events(event);
     other_ui_window.poll_events(event);
-    if (Ui::focused != nullptr)
-        Ui::focused->focused = 1;
+    if (auto focused = Ui::focused.get(); focused) {
+        focused->focused = 1;
+    }
 }
 
 void Game::tick(double time) {

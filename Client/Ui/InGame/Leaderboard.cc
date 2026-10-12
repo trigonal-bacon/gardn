@@ -5,12 +5,11 @@
 #include <Client/Game.hh>
 
 #include <string>
-
-#include <iostream>
+#include <format>
 
 using namespace Ui;
 
-static float const LEADERBOARD_WIDTH = 180;
+static constexpr float LEADERBOARD_WIDTH = 180;
 
 LeaderboardSlot::LeaderboardSlot(uint8_t p) : Element(LEADERBOARD_WIDTH, 18) , pos(p) {
     ratio.set(1);
@@ -53,22 +52,22 @@ void LeaderboardSlot::on_render(Renderer &ctx) {
     ctx.fill_text(format_string.c_str());
 }
 
-Element *Ui::make_leaderboard() {
-    Container *lb_header = new Ui::Container({
-        new Ui::DynamicText(18, [](){
-            std::string format_string{"1 Flower"};
-            if (Game::simulation.arena_info.player_count != 1) 
-                format_string = std::format("{} Flowers", Game::simulation.arena_info.player_count);
-            return format_string;
-        })
-    }, LEADERBOARD_WIDTH + 20, 48, { .fill = 0xff55bb55, .line_width = 6, .round_radius = 7 });
-
-    Element *leaderboard = new Ui::VContainer({
-        lb_header,
-        new Ui::VContainer(
-            Ui::make_range(0, LEADERBOARD_SIZE, [](uint32_t i){ return (Element *) (new Ui::LeaderboardSlot(i)); })
-        , 10, 4, {})
-    }, 0, 0, { 
+std::unique_ptr<Element> Ui::make_leaderboard() {
+    auto leaderboard = el<VContainer>(make_children(
+        el<Container>(make_children(
+            el<DynamicText>(18, [](){
+                std::string format_string{"1 Flower"};
+                if (Game::simulation.arena_info.player_count != 1) 
+                    format_string = std::format("{} Flowers", Game::simulation.arena_info.player_count);
+                return format_string;
+            })
+        ), LEADERBOARD_WIDTH + 20, 48, Style{ .fill = 0xff55bb55, .line_width = 6, .round_radius = 7 }),
+        el<VContainer>(
+            Ui::make_range(0, LEADERBOARD_SIZE, [](uint32_t i){ 
+                return static_cast<std::unique_ptr<Element>>(el<LeaderboardSlot>(i)); 
+            })
+        , 10, 4)
+    ), 0, 0, Style{ 
         .fill = 0xff555555,
         .line_width = 6,
         .round_radius = 7,

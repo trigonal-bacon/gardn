@@ -25,7 +25,7 @@ void Window::on_render(Renderer &ctx) {
     RenderContext context(&ctx);
     for (uint32_t layer = 0; layer < 2; ++layer) {
         for (uint32_t i = 0; i < children.size(); ++i) {
-            Element *elt = children[i];
+            auto &elt = children[i];
             if (elt->style.layer != layer) continue;
             RenderContext context(&ctx);
             ctx.translate(elt->style.h_justify * width / 2, elt->style.v_justify * height / 2);
@@ -41,7 +41,7 @@ void Window::on_render(Renderer &ctx) {
 void Window::poll_events(ScreenEvent const &event) {
     if (style.no_polling) return;
     Element::poll_events(event);
-    for (Element *elt : children)
+    for (auto &elt : children)
         if (elt->visible) elt->poll_events(event);
 }
 

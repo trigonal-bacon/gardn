@@ -20,15 +20,16 @@ void ScrollBar::on_event(uint8_t event) {
         style.layer = 1;
 }
 
-ScrollContainer::ScrollContainer(Element *content, float max_height) : HContainer({content, new ScrollBar()}, 0, 10, {}) {
+ScrollContainer::ScrollContainer(std::unique_ptr<Element> content, float max_height) 
+: HContainer(make_children(std::move(content), el<ScrollBar>()), 0, 10, {}) {
     height = max_height;
     lerp_scroll = 0;
 }
 
 void ScrollContainer::on_render(Renderer &ctx) {
     DEBUG_ONLY(assert(children.size() == 2));
-    Element *scroll = children[1];
-    Element *content = children[0];
+    Element *scroll = children[1].get();
+    Element *content = children[0].get();
     if (height < content->height) {
         scroll->height = height * height / content->height;
         float ratio = height == scroll->height ? 1 : (content->height - height) / (height - scroll->height);
@@ -50,7 +51,7 @@ void ScrollContainer::on_render(Renderer &ctx) {
         content->y = scroll->y = 0;
     RenderContext c(&ctx);
     ctx.clip_rect(0,0,width,height);
-    for (Element *elt : children) {
+    for (auto &elt : children) {
         RenderContext context(&ctx);
         ctx.translate(elt->x, elt->y);
         ctx.translate(elt->style.h_justify * (width - elt->width) / 2, elt->style.v_justify * (height - elt->height) / 2);
@@ -61,7 +62,7 @@ void ScrollContainer::on_render(Renderer &ctx) {
 void ScrollContainer::refactor() {
     DEBUG_ONLY(assert(children.size() == 2));
     width = 0;
-    for (Element *elt : children) {
+    for (auto &elt : children) {
         elt->style.h_justify = Style::Left;
         elt->style.v_justify = Style::Top;
         elt->refactor();
@@ -74,6 +75,6 @@ void ScrollContainer::refactor() {
 void ScrollContainer::poll_events(ScreenEvent const &event) {
     Element::poll_events(event);
     if (Ui::focused == this)
-        for (Element *elt : children)
+        for (auto &elt : children)
             elt->poll_events(event);
 }

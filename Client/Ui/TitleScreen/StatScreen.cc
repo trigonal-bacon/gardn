@@ -40,7 +40,7 @@ void StatPetalSlot::on_event(uint8_t event) {
     uint8_t id = Game::cached_loadout[pos];
     if (event != kFocusLost && id != PetalID::kNone) {
         rendering_tooltip = 1;
-        tooltip = Ui::UiLoadout::petal_tooltips[id];
+        tooltip = Ui::UiLoadout::petal_tooltips[id].get();
     } else {
         rendering_tooltip = 0;
     }
@@ -74,25 +74,27 @@ void TitlePetalSlot::on_event(uint8_t event) {
     uint8_t id = camera.get_inventory(pos);
     if (event != kFocusLost && id != PetalID::kNone) {
         rendering_tooltip = 1;
-        tooltip = Ui::UiLoadout::petal_tooltips[id];
+        tooltip = Ui::UiLoadout::petal_tooltips[id].get();
     } else {
         rendering_tooltip = 0;
     }
 }
 
-Element *Ui::make_stat_screen() {
-    Element *elt = new Ui::VContainer({
-        new Ui::StaticText(25, "Stats", { .fill = 0xffffffff, .h_justify = Style::Left }),
-        new Ui::DynamicText(16, [](){
+std::unique_ptr<Element> Ui::make_stat_screen() {
+    auto elt = el<VContainer>(make_children(
+        el<StaticText>(25, "Stats", Style{ .fill = 0xffffffff, .h_justify = Style::Left }),
+        el<DynamicText>(16, [](){
             return std::format("Score: {}", format_score(Game::score));
-        }, { .fill = 0xffffffff, .h_justify = Style::Left }),
-        new Ui::DynamicText(16, [](){
+        }, Style{ .fill = 0xffffffff, .h_justify = Style::Left }),
+        el<DynamicText>(16, [](){
             return std::format("Level: {}", score_to_level(Game::score));
-        }, { .fill = 0xffffffff, .h_justify = Style::Left }),
-        new Ui::HContainer(
-            Ui::make_range(0, 2 * MAX_SLOT_COUNT, [](uint32_t i){ return (Ui::Element *) new StatPetalSlot(i); })
+        }, Style{ .fill = 0xffffffff, .h_justify = Style::Left }),
+        el<HContainer>(
+            Ui::make_range(0, 2 * MAX_SLOT_COUNT, [](uint32_t i){ 
+                return static_cast<std::unique_ptr<Element>>(el<StatPetalSlot>(i)); 
+            })
         , 0, 10)
-    }, 20, 7);
+    ), 20, 7);
     elt->style.animate = [](Element *elt, Renderer &ctx) {
         ctx.translate(0, (1 - elt->animation) * elt->height);
     };

@@ -8,30 +8,30 @@
 
 using namespace Ui;
 
-static Element *make_divider() {
-    return new Element(400, 6, { .fill = 0x20000000, .line_width = 3, .round_radius = 3, .v_justify = Style::Top });
+static std::unique_ptr<Element> make_divider() {
+    return el<Element>(400, 6, Style{ .fill = 0x20000000, .line_width = 3, .round_radius = 3, .v_justify = Style::Top });
 }
 
-static Element *make_date(std::string const date) {
-    return new Ui::StaticText(20, date, { .fill = 0xffffffff, .h_justify = Style::Left, .v_justify = Style::Top });
+static std::unique_ptr<Element> make_date(std::string const date) {
+    return el<StaticText>(20, date, Style{ .fill = 0xffffffff, .h_justify = Style::Left, .v_justify = Style::Top });
 }
 
-static Element *make_paragraph(std::string const contents) {
-    return new Ui::HContainer({
-        new Ui::StaticText(14, "-", { .fill = 0xffffffff, .v_justify = Style::Top }),
-        new Ui::StaticParagraph(360, 14, contents)
-    }, 0, 10, { .h_justify = Style::Left, .v_justify = Style::Top });
+static std::unique_ptr<Element> make_paragraph(std::string const contents) {
+    return el<HContainer>(make_children(
+        el<StaticText>(14, "-", Style{ .fill = 0xffffffff, .v_justify = Style::Top }),
+        el<StaticParagraph>(360, 14, contents)
+    ), 0, 10, Style{ .h_justify = Style::Left, .v_justify = Style::Top });
 }
 
-static Element *make_entries(std::initializer_list<std::string const> contents) {
-    Element *elt = new Ui::VContainer({}, 5, 3, { .h_justify = Style::Left, .v_justify = Style::Top });
+static std::unique_ptr<Element> make_entries(std::initializer_list<std::string> contents) {
+    auto elt = el<VContainer>(make_children(), 5, 3, Style{ .h_justify = Style::Left, .v_justify = Style::Top });
     for (std::string const str : contents)
         elt->add_child(make_paragraph(str));
     return elt;
 }
 
-static Element *make_changelog_contents() {
-    Element *elt = new Ui::VContainer({
+static std::unique_ptr<Element> make_changelog_contents() {
+    auto elt = el<VContainer>(make_children(
         make_date("October 20th 2025"),
         make_entries({
             "Added 1 new petal",
@@ -94,16 +94,16 @@ static Element *make_changelog_contents() {
             "Added spawner petals"
         }),
         make_divider(),
-        new Ui::StaticText(14, "Older changelog entries not available")
-    }, 0, 10, {});
-    return new Ui::ScrollContainer(elt, 300);
+        el<StaticText>(14, "Older changelog entries not available")
+    ), 0, 10, Style{});
+    return el<ScrollContainer>(std::move(elt), 300);
 }
 
-Element *Ui::make_changelog() {
-    Element *elt = new Ui::VContainer({
-        new Ui::StaticText(25, "Changelog"),
+std::unique_ptr<Element> Ui::make_changelog() {
+    auto elt = el<VContainer>(make_children(
+        el<StaticText>(25, "Changelog"),
         make_changelog_contents()
-    }, 15, 10, { 
+    ), 15, 10, Style{ 
         .fill = 0xff5a9fdb,
         .line_width = 7,
         .round_radius = 3,
@@ -116,6 +116,6 @@ Element *Ui::make_changelog() {
         .h_justify = Style::Left,
         .v_justify = Style::Bottom
     });
-    Ui::Panel::changelog = elt;
+    Ui::Panel::changelog = elt.get();
     return elt;
 }

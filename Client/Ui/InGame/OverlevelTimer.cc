@@ -25,15 +25,15 @@ void OverlevelTimer::on_render(Renderer &ctx) {
     ctx.fill();
 }
 
-Element *Ui::make_overlevel_indicator() {
-    Element *elt = new Ui::HContainer({
-        new Ui::VContainer({
-            new Ui::StaticText(18, "MOVE RIGHT →", { .fill = 0xffea7f80, .h_justify = Style::Left }),
-            new Ui::StaticText(14, "You are overleveled for this zone", { .fill = 0xffffffff, .h_justify = Style::Left }),
-            new Ui::StaticText(14, "You will be unable to attack", { .fill = 0xffffffff, .h_justify = Style::Left }),
-        }, 0, 3),
-        new OverlevelTimer(50)
-    }, 10, 20, {
+std::unique_ptr<Element> Ui::make_overlevel_indicator() {
+    auto elt = el<HContainer>(make_children(
+        el<VContainer>(make_children(
+            el<StaticText>(18, "MOVE RIGHT →", Style{ .fill = 0xffea7f80, .h_justify = Style::Left }),
+            el<StaticText>(14, "You are overleveled for this zone", Style{ .fill = 0xffffffff, .h_justify = Style::Left }),
+            el<StaticText>(14, "You will be unable to attack", Style{ .fill = 0xffffffff, .h_justify = Style::Left })
+        ), 0, 3),
+        el<OverlevelTimer>(50)
+    ), 10, 20, Style{
         .fill = 0x40000000,
         .round_radius = 5,
         .animate = [](Element *elt, Renderer &ctx){

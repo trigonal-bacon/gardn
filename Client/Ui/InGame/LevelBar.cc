@@ -47,10 +47,10 @@ void LevelBar::on_render(Renderer &ctx) {
     ctx.draw_text(Game::nickname.c_str(), { .size = 24 });
 }
 
-Element *Ui::make_level_bar() {
-    Element *level_bar = new Ui::VContainer({
-        new Ui::LevelBar(),
-        new Ui::DynamicText(14, [](){
+std::unique_ptr<Element> Ui::make_level_bar() {
+    auto level_bar = el<VContainer>(make_children(
+        el<LevelBar>(),
+        el<DynamicText>(14, [](){
             std::string format_string;
             if (Game::alive()) {
                 Entity &player = Game::simulation.get_ent(Game::player_id);
@@ -60,8 +60,8 @@ Element *Ui::make_level_bar() {
             }
             return format_string;
         }),
-        new Ui::Element(0,65)
-    }, 0, 5, { .should_render = []() { return Game::alive(); } });
+        el<Element>(0,65)
+    ), 0, 5, Style{ .should_render = []() { return Game::alive(); } });
     level_bar->style.h_justify = Style::Left;
     level_bar->style.v_justify = Style::Bottom;
     level_bar->style.animate = [](Element *elt, Renderer &ctx) {

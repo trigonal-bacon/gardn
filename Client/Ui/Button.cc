@@ -5,10 +5,10 @@
 
 using namespace Ui;
 
-Button::Button(float w, float h, Element *l, void x(Element *, uint8_t), bool y (void), Style s) :
+Button::Button(float w, float h, std::unique_ptr<Element> l, void x(Element *, uint8_t), bool y (void), Style s) :
     Element(w, h, s), on_click(x), should_darken(y)
 {
-    if (l != nullptr) children.push_back(l);
+    add_child(std::move(l));
 }
 
 void Button::on_render(Renderer &ctx) {
@@ -30,11 +30,11 @@ void Button::on_render(Renderer &ctx) {
         ctx.fill();
         if (style.fill >= 0xff000000) ctx.stroke();
     }
-    for (Element *child : children) child->render(ctx);
+    for (auto &child : children) child->render(ctx);
 }
 
 void Button::refactor() {
-    for (Element *child : children) child->refactor();
+    for (auto &child : children) child->refactor();
 }
 
 void Button::on_event(uint8_t event) {

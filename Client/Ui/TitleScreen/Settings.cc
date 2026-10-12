@@ -10,24 +10,24 @@
 
 using namespace Ui;
 
-Element *Ui::make_settings_panel() {
-    Element *elt = new Ui::VContainer({
-        new Ui::StaticText(25, "Settings"),
-        new Ui::HContainer({
-            new Ui::ToggleButton(30, &Input::keyboard_movement),
-            new Ui::StaticText(16, "Keyboard movement")
-        }, 0, 10, {.h_justify = Style::Left }),
-        new Ui::HContainer({
-            new Ui::ToggleButton(30, &Input::movement_helper),
-            new Ui::StaticText(16, "Movement helper")
-        }, 0, 10, {.h_justify = Style::Left }),
-        new Ui::HContainer({
-            new Ui::ToggleButton(30, &Game::show_debug),
-            new Ui::StaticText(16, "Debug stats")
-        }, 0, 10, {.h_justify = Style::Left }),
-        new Ui::StaticText(12, "Made by bismuth (trigonal-bacon)"),
-        new Ui::StaticText(12, "Asset credits: M28 and affiliates")
-    }, 20, 10, { 
+std::unique_ptr<Element> Ui::make_settings_panel() {
+    auto elt = el<VContainer>(make_children(
+        el<StaticText>(25, "Settings"),
+        el<HContainer>(make_children(
+            el<ToggleButton>(30, &Input::keyboard_movement),
+            el<StaticText>(16, "Keyboard movement")
+        ), 0, 10, Style{.h_justify = Style::Left }),
+        el<HContainer>(make_children(
+            el<ToggleButton>(30, &Input::movement_helper),
+            el<StaticText>(16, "Movement helper")
+        ), 0, 10, Style{.h_justify = Style::Left }),
+        el<HContainer>(make_children(
+            el<ToggleButton>(30, &Game::show_debug),
+            el<StaticText>(16, "Debug stats")
+        ), 0, 10, Style{.h_justify = Style::Left }),
+        el<StaticText>(12, "Made by bismuth (trigonal-bacon)"),
+        el<StaticText>(12, "Asset credits: M28 and affiliates")
+    ), 20, 10, Style{ 
         .fill = 0xff5a9fdb,
         .line_width = 7,
         .round_radius = 3,
@@ -40,6 +40,6 @@ Element *Ui::make_settings_panel() {
         .h_justify = Style::Left,
         .v_justify = Style::Bottom
     });
-    Ui::Panel::settings = elt;
+    Ui::Panel::settings = elt.get();
     return elt;
 }

@@ -5,7 +5,8 @@
 #include <Helpers/UTF8.hh>
 
 #include <cmath>
-#include <iostream>
+DEBUG_ONLY(#include <iostream>)
+
 #include <emscripten.h>
 
 std::vector<Renderer *> Renderer::renderers;

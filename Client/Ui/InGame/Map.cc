@@ -34,11 +34,11 @@ void Minimap::on_render(Renderer &ctx) {
     ctx.stroke();
 }
 
-Element *Ui::make_minimap() {
-    Element *elt = new Ui::VContainer({
-        new Ui::StaticText(20, "Minimap"),
-        new Ui::Minimap(300)
-    }, 20, 10, { 
+std::unique_ptr<Element> Ui::make_minimap() {
+    auto elt = el<VContainer>(make_children(
+        el<StaticText>(20, "Minimap"),
+        el<Minimap>(300)
+    ), 20, 10, Style{ 
         .should_render = [](){ return Game::should_render_game_ui(); },
         .h_justify = Style::Right,
         .v_justify = Style::Bottom

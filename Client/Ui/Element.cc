@@ -5,29 +5,43 @@
 #include <Client/Game.hh>
 #include <Client/Input.hh>
 
-#include <iostream>
+#include <unordered_map>
 
 using namespace Ui;
+
+static uint32_t curr_handle = 1;
+static std::unordered_map<uint32_t, Element *> &registry() {
+    static std::unordered_map<uint32_t, Element *> registry;
+    return registry;
+}
 
 static void default_animate(Element *elt, Renderer &ctx) {
     ctx.scale((float) elt->animation);
 }
 
-Element::Element(float w, float h, Style s) : width(w), height(h), style(s) {
-    //so the animation doesnt set
-    //animation.set(1);
-    //animate = [&](Renderer &ctx){ ctx.scale((float) animation); };
+Element *Registry::find(uint32_t handle) {
+    auto it = registry().find(handle);
+    if (it == registry().end()) return nullptr;
+    return it->second;
+}
+
+Element::Element(float w, float h, Style s) : width(w), height(h), style(s), handle(curr_handle) {
     if (style.animate == nullptr) 
         style.animate = default_animate;
     if (style.should_render == nullptr)
         style.should_render = [](){ return 1; };
+    registry().insert({ handle, this });
+    curr_handle++;
 }
 
-void Element::add_child(Element *elt) {
+Element::~Element() {
+    registry().erase(handle);
+}
+
+void Element::add_child(std::unique_ptr<Element> elt) {
     if (elt == nullptr) return;
-    children.push_back(elt);
     elt->parent = this;
-    //parent/child?
+    children.push_back(std::move(elt));
 }
 
 void Element::render(Renderer &ctx) {
@@ -119,20 +133,20 @@ void Element::on_render_tooltip(Renderer &ctx) {
     tooltip_animation.step(Ui::lerp_amount * 1.5);
     if (tooltip_animation < 0.01 && !rendering_tooltip)
         tooltip = nullptr;
-    if (tooltip != nullptr) {
-        tooltip->refactor();
+    if (auto t = tooltip.get(); t) {
+        t->refactor();
         ctx.reset_transform();
-        if (screen_x < (tooltip->width / 2 + 10) * Ui::scale)
-            ctx.translate((tooltip->width / 2 + 10) * Ui::scale, screen_y);
-        else if (screen_x > Ui::window_width - (tooltip->width / 2 + 10) * Ui::scale)
-            ctx.translate(Ui::window_width - (tooltip->width / 2 + 10) * Ui::scale, screen_y);
+        if (screen_x < (t->width / 2 + 10) * Ui::scale)
+            ctx.translate((t->width / 2 + 10) * Ui::scale, screen_y);
+        else if (screen_x > Ui::window_width - (t->width / 2 + 10) * Ui::scale)
+            ctx.translate(Ui::window_width - (t->width / 2 + 10) * Ui::scale, screen_y);
         else ctx.translate(screen_x, screen_y);
         ctx.scale(Ui::scale);
-        ctx.translate(0, -(height + tooltip->height) / 2 - 5);
+        ctx.translate(0, -(height + t->height) / 2 - 5);
         ctx.set_global_alpha((float) tooltip_animation);
-        tooltip->on_render(ctx);
+        t->on_render(ctx);
     }
-    for (Element *elt : children) {
+    for (auto &elt : children) {
         RenderContext context(&ctx);
         if (!elt->visible) continue;
         elt->on_render_tooltip(ctx);
@@ -144,7 +158,7 @@ void Element::on_render_skip(Renderer &ctx) {
         focus_state = kFocusLost;
         on_event(kFocusLost);
     }
-    for (Element *elt : children)
+    for (auto &elt : children)
         elt->on_render_skip(ctx);
     focused = 0;
 }
@@ -152,7 +166,7 @@ void Element::on_render_skip(Renderer &ctx) {
 void Element::on_event(uint8_t event) {}
 
 void Element::refactor() {
-    for (Element *elt : children)
+    for (auto &elt : children)
         if (elt->visible) elt->refactor();
 }
 
@@ -186,13 +200,15 @@ void Element::poll_events(ScreenEvent const &event) {
         }
     } else {
         if (std::abs(Input::mouse_x - screen_x) < width * Ui::scale / 2
-        && std::abs(Input::mouse_y - screen_y) < height * Ui::scale / 2)
+        && std::abs(Input::mouse_y - screen_y) < height * Ui::scale / 2) {
             Ui::focused = this;
+        }
     }
 }
 
-std::vector<Element *> const Ui::make_range(uint32_t start, uint32_t end, Element *gen(uint32_t)) {
-    std::vector<Element *> elts;
+std::vector<std::unique_ptr<Element>> Ui::make_range(uint32_t start, uint32_t end, std::unique_ptr<Element> gen(uint32_t)) {
+    std::vector<std::unique_ptr<Element>> elts;
+    elts.reserve(end - start);
     for (uint32_t i = start; i < end; ++i)
         elts.push_back(gen(i));
     return elts; 

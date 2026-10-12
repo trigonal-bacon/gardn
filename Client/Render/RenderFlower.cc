@@ -7,8 +7,6 @@
 
 #include <Shared/Entity.hh>
 
-#include <iostream>
-
 void render_flower(Renderer &ctx, Entity const &ent) {
     if (ent.has_component(kMob)) return;
     uint8_t face_flags = ent.get_face_flags();

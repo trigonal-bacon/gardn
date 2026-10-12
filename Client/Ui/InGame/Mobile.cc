@@ -52,14 +52,14 @@ void MobileJoyStick::on_event(uint8_t event) {
         persistent_touch_id = touch_id;
 }
 
-Element *Ui::make_mobile_attack_button() {
-    Element *elt = new Ui::Button(200, 200, new Ui::StaticText(50, "A"), 
+std::unique_ptr<Element> Ui::make_mobile_attack_button() {
+    auto elt = el<Button>(200, 200, el<StaticText>(50, "A"), 
         [](Element *elt, uint8_t e) {
             if (e == Ui::kMouseDown)
                 BitMath::set(Input::game_inputs.flags, InputFlags::kAttacking);
             else if (e == Ui::kClick)
                 BitMath::unset(Input::game_inputs.flags, InputFlags::kAttacking);
-        }, nullptr, { .fill = 0x40000000, .line_width = 0, .round_radius = 50, 
+        }, nullptr, Style{ .fill = 0x40000000, .line_width = 0, .round_radius = 50, 
             .should_render = [](){ return Input::is_mobile && Game::alive(); },
             .h_justify = Style::Right, .v_justify = Style::Bottom,
             .no_animation = 1
@@ -70,14 +70,14 @@ Element *Ui::make_mobile_attack_button() {
     return elt;
 }
 
-Element *Ui::make_mobile_defend_button() {
-    Element *elt = new Ui::Button(150, 150, new Ui::StaticText(37.5, "B"), 
+std::unique_ptr<Element> Ui::make_mobile_defend_button() {
+    auto elt = el<Button>(150, 150, el<StaticText>(37.5, "B"), 
         [](Element *elt, uint8_t e) {
             if (e == Ui::kMouseDown)
                 BitMath::set(Input::game_inputs.flags, InputFlags::kDefending);
             else if (e == Ui::kClick)
                 BitMath::unset(Input::game_inputs.flags, InputFlags::kDefending);
-        }, nullptr, { .fill = 0x40000000, .line_width = 0, .round_radius = 50, 
+        }, nullptr, Style{ .fill = 0x40000000, .line_width = 0, .round_radius = 50, 
             .should_render = [](){ return Input::is_mobile && Game::alive(); },
             .h_justify = Style::Right, .v_justify = Style::Bottom,
             .no_animation = 1
@@ -88,8 +88,8 @@ Element *Ui::make_mobile_defend_button() {
     return elt;
 }
 
-Element *Ui::make_mobile_joystick() {
-    Element *elt = new Ui::MobileJoyStick(800, 800, 150);
+std::unique_ptr<Element> Ui::make_mobile_joystick() {
+    auto elt = el<MobileJoyStick>(800, 800, 150);
     elt->style.h_justify = Style::Left;
     return elt;
 }
