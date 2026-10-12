@@ -65,7 +65,8 @@ public:
         friend class Reader;
         static std::vector<T> read(Reader &r) {
             uint32_t len = r.read<uint32_t>();
-            std::vector<T> ret(len);
+            std::vector<T> ret;
+            ret.reserve(len);
             for (uint32_t i = 0; i < len; ++i)
                 ret.push_back(r.read<T>());
             return ret;
