@@ -16,10 +16,10 @@ static void _alloc_drops(Simulation *sim, std::vector<PetalID::T> &success_drops
         assert(id != PetalID::kNone && id < PetalID::kNumPetals);
     #endif
     size_t count = success_drops.size();
-    for (size_t i = count; i > 0; --i) {
-        PetalID::T drop_id = success_drops[i - 1];
+    for (size_t i = count; i --> 0; ) {
+        PetalID::T drop_id = success_drops[i];
         if (PETAL_DATA[drop_id].rarity == RarityID::kUnique && PetalTracker::get_count(sim, drop_id) > 0) {
-            success_drops[i - 1] = success_drops[count - 1];
+            success_drops[i] = success_drops[count - 1];
             --count;
             success_drops.pop_back();
         }
@@ -30,7 +30,7 @@ static void _alloc_drops(Simulation *sim, std::vector<PetalID::T> &success_drops
             Entity &drop = alloc_drop(sim, success_drops[i]);
             drop.set_x(x);
             drop.set_y(y);
-            drop.velocity.unit_normal(i * 2 * M_PI / count).set_magnitude(25);
+            drop.velocity.unit_normal(i * 2 * M_PI / count).set_magnitude(0.6);
         }
     } else if (count == 1) {
         Entity &drop = alloc_drop(sim, success_drops[0]);

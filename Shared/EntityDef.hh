@@ -90,9 +90,10 @@ SINGLE(Name, nametag_visible, uint8_t)
 #define PER_EXTRA_FIELD \
     SINGLE(velocity, Vector, .set(0,0)) \
     SINGLE(collision_velocity, Vector, .set(0,0)) \
+    SINGLE(constant_velocity, Vector, .set(0,0)) \
     SINGLE(acceleration, Vector, .set(0,0)) \
     SINGLE(friction, float, =0) \
-    SINGLE(mass, float, =1) \
+    SINGLE(density, float, =1) \
     SINGLE(speed_ratio, float, =1) \
     \
     MULTIPLE(loadout, LoadoutSlot, MAX_SLOT_COUNT, .reset()) \

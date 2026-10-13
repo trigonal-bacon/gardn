@@ -6,7 +6,7 @@ uint32_t const MAX_LEVEL = 99;
 uint32_t const TPS = 60;
 
 //these two are based on the base game's 20 TPS
-float const PLAYER_ACCELERATION = 5.0f;
+float const PLAYER_ACCELERATION = 2.5f;
 float const DEFAULT_FRICTION = 1.0f/3.0f;
 
 float const PETAL_DISABLE_DELAY = 45.0f; //seconds
@@ -508,6 +508,7 @@ std::array<struct PetalData, PetalID::kNumPetals> const PETAL_DATA = {{
         .attributes = {
             .attack_range = 75,
             .defend_range = 40,
+            .density = 4.0
         }
     },
     {
@@ -602,7 +603,7 @@ std::array<struct PetalData, PetalID::kNumPetals> const PETAL_DATA = {{
         .count = 1,
         .rarity = RarityID::kUnique,
         .attributes = {
-            .mass = 200
+            .density = 10
         }
     },
     {
@@ -819,7 +820,9 @@ std::array<struct MobData, MobID::kNumMobs> const MOB_DATA = {{
         .drops = {
             PetalID::kRose, PetalID::kDahlia, PetalID::kBubble, PetalID::kAzalea, PetalID::kObserver
         }, 
-        .attributes = {}
+        .attributes = {
+            .passive_speed_mult = 0.08
+        }
     },
     {
         .name = "Massive Beetle",
@@ -861,7 +864,8 @@ std::array<struct MobData, MobID::kNumMobs> const MOB_DATA = {{
             PetalID::kDandelion, PetalID::kMissile, PetalID::kWing, PetalID::kBubble, PetalID::kAntennae
         },
         .attributes = {
-            .aggro_radius = 600
+            .aggro_radius = 600,
+            .passive_speed_mult = 0.28
         }
     },
     {
@@ -876,7 +880,7 @@ std::array<struct MobData, MobID::kNumMobs> const MOB_DATA = {{
             PetalID::kStinger, PetalID::kYucca, PetalID::kCactus, PetalID::kPoisonCactus, PetalID::kTricac
         },
         .attributes = {
-            .stationary = 1
+            .unmovable = 1
         }
     },
     {
@@ -885,13 +889,13 @@ std::array<struct MobData, MobID::kNumMobs> const MOB_DATA = {{
         .rarity = RarityID::kCommon,
         .health = {5.0, 15.0},
         .damage = 10.0,
-        .radius = {10.0, 25.0},
+        .radius = {20.0, 40.0},
         .xp = 1,
         .drops = {
             PetalID::kHeavy, PetalID::kLight, PetalID::kRock
         },
         .attributes = {
-            .stationary = 1
+            .unmovable = 1
         }
     },
     {
@@ -906,7 +910,7 @@ std::array<struct MobData, MobID::kNumMobs> const MOB_DATA = {{
             PetalID::kHeavy, PetalID::kRock, PetalID::kHeaviest, PetalID::kMoon
         }, 
         .attributes = {
-            .stationary = 1
+            .unmovable = 1
         }
     },
     {
@@ -921,6 +925,7 @@ std::array<struct MobData, MobID::kNumMobs> const MOB_DATA = {{
             PetalID::kLight, PetalID::kTwin, PetalID::kLeaf, PetalID::kPeas, PetalID::kTriplet, PetalID::kGoldenLeaf
         },
         .attributes = {
+            .passive_speed_mult = 0.08,
             .segments = 10
         }
     },
@@ -936,6 +941,7 @@ std::array<struct MobData, MobID::kNumMobs> const MOB_DATA = {{
             PetalID::kIris, PetalID::kPoisonPeas, PetalID::kBlueIris
         },
         .attributes = { 
+            .passive_speed_mult = 0.08,
             .segments = 10, 
             .poison_damage = {
                 .damage = 5.0,
@@ -955,6 +961,7 @@ std::array<struct MobData, MobID::kNumMobs> const MOB_DATA = {{
             PetalID::kSand, PetalID::kFaster, PetalID::kSalt, PetalID::kStick
         },
         .attributes = {
+            .passive_speed_mult = 1.2,
             .segments = 6
         }
     },
@@ -969,7 +976,9 @@ std::array<struct MobData, MobID::kNumMobs> const MOB_DATA = {{
         .drops = {
             PetalID::kSand, PetalID::kFaster, PetalID::kStick
         },
-        .attributes = {}
+        .attributes = {
+            .passive_speed_mult = 1.5
+        }
     },
     {
         .name = "Scorpion",
@@ -983,6 +992,7 @@ std::array<struct MobData, MobID::kNumMobs> const MOB_DATA = {{
             PetalID::kIris, PetalID::kPincer, PetalID::kTriplet, PetalID::kLotus
         }, 
         .attributes = {
+            .aggro_speed_mult = 1.1,
             .poison_damage = {
                 .damage = 10.0,
                 .time = 1.0
@@ -1001,6 +1011,7 @@ std::array<struct MobData, MobID::kNumMobs> const MOB_DATA = {{
             PetalID::kStinger, PetalID::kWeb, PetalID::kFaster, PetalID::kTriweb
         },
         .attributes = { 
+            .aggro_speed_mult = 1.2,
             .poison_damage = {
                 .damage = 5.0,
                 .time = 3.0
@@ -1018,9 +1029,7 @@ std::array<struct MobData, MobID::kNumMobs> const MOB_DATA = {{
         .drops = {
             PetalID::kIris, PetalID::kWing, PetalID::kAntEgg, PetalID::kTriplet
         },
-        .attributes = {
-            .stationary = 1 
-        }
+        .attributes = {}
     },
     {
         .name = "Queen Ant",
@@ -1062,7 +1071,7 @@ std::array<struct MobData, MobID::kNumMobs> const MOB_DATA = {{
             PetalID::kSquare
         },
         .attributes = {
-            .stationary = 1
+            .unmovable = 1
         }
     },
     {
@@ -1076,7 +1085,9 @@ std::array<struct MobData, MobID::kNumMobs> const MOB_DATA = {{
         .drops = {
             PetalID::kCutter
         },
-        .attributes = {}
+        .attributes = {
+            .passive_speed_mult = 0.96
+        }
     },
 }};
 

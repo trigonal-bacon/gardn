@@ -28,15 +28,6 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
     if (BitMath::at(petal.flags, EntityFlags::kIsDespawning) ||
         BitMath::at(petal.flags, EntityFlags::kIsDetached)) {
         switch (petal.get_petal_id()) {
-            case PetalID::kMissile: {
-                petal.acceleration.unit_normal(petal.get_angle()).set_magnitude(2.0 * PLAYER_ACCELERATION);
-                break;
-            }
-            case PetalID::kPoisonPeas:
-            case PetalID::kPeas: {
-                petal.acceleration.unit_normal(petal.heading_angle).set_magnitude(2.0 * PLAYER_ACCELERATION);
-                break;
-            }
             case PetalID::kMoon: {
                 /*
                 Vector delta(player.get_x() - petal.get_x(), player.get_y() - petal.get_y());
@@ -77,7 +68,8 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
     switch (petal.get_petal_id()) {
         case PetalID::kMissile:
             if (BitMath::at(player.input, InputFlags::kAttacking)) {
-                petal.velocity.unit_normal(petal.get_angle()).set_magnitude(15 * PLAYER_ACCELERATION);
+                petal.velocity.unit_normal(petal.get_angle()).set_magnitude(1.4);
+                petal.constant_velocity.unit_normal(petal.get_angle()).set_magnitude(0.6);
                 petal.friction = DEFAULT_FRICTION;
                 entity_set_despawn_tick(petal, 2.5 * TPS);
             }
@@ -89,7 +81,7 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
                 petal.friction = DEFAULT_FRICTION;
                 float angle = delta.angle();
                 if (petal.get_petal_id() == PetalID::kTriweb) angle += frand() - 0.5;
-                petal.acceleration.unit_normal(angle).set_magnitude(25 * PLAYER_ACCELERATION);
+                petal.acceleration.unit_normal(angle).set_magnitude(1.4);
                 entity_set_despawn_tick(petal, 0.6 * TPS);
             } else if (BitMath::at(player.input, InputFlags::kDefending))
                 entity_set_despawn_tick(petal, 0.6 * TPS);
@@ -104,8 +96,15 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
             }
             break;
         case PetalID::kPollen:
-            if (BitMath::at(player.input, InputFlags::kAttacking) || BitMath::at(player.input, InputFlags::kDefending)) {
-                petal.friction = DEFAULT_FRICTION;
+            if (BitMath::at(player.input, InputFlags::kAttacking)) {
+                Vector v(petal.get_x() - player.get_x(), petal.get_y() - player.get_y());
+                v.normalize().set_magnitude(0.5);
+                petal.velocity += v;
+                entity_set_despawn_tick(petal, 4.0 * TPS);
+            } else if (BitMath::at(player.input, InputFlags::kDefending)) {
+                Vector v(petal.get_x() - player.get_x(), petal.get_y() - player.get_y());
+                v.normalize().set_magnitude(-0.5);
+                petal.velocity += v;
                 entity_set_despawn_tick(petal, 4.0 * TPS);
             }
             break;
@@ -113,13 +112,8 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
         case PetalID::kPoisonPeas:
             if (BitMath::at(player.input, InputFlags::kAttacking)) {
                 float spray_angle = frand() * 2 * M_PI;
-                petal.friction = DEFAULT_FRICTION;
-                petal.velocity.unit_normal(spray_angle).set_magnitude(20 * PLAYER_ACCELERATION);
-                petal.set_split_projectile(0);
-                petal.heading_angle = spray_angle;
-                entity_set_despawn_tick(petal, 1.0 * TPS);
-                for (uint32_t i = 1; i < petal_data.count; ++i) {
-                    Entity &new_petal = alloc_petal(sim, petal.get_petal_id(), player);
+                for (uint32_t i = 0; i < petal_data.count; ++i) {
+                    Entity &new_petal = i == 0 ? petal : alloc_petal(sim, petal.get_petal_id(), player);
                     new_petal.friction = DEFAULT_FRICTION;
                     new_petal.set_x(petal.get_x());
                     new_petal.set_y(petal.get_y());
@@ -127,7 +121,10 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
                     new_petal.heading_angle = spray_angle + (2 * M_PI * i) / petal_data.count;
                     new_petal.velocity
                         .unit_normal(new_petal.heading_angle)
-                        .set_magnitude(20 * PLAYER_ACCELERATION);
+                        .set_magnitude(1.4);
+                    new_petal.constant_velocity
+                        .unit_normal(new_petal.heading_angle)
+                        .set_magnitude(0.6);
                     entity_set_despawn_tick(new_petal, 1.0 * TPS);
                 }
             }

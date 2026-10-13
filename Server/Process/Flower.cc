@@ -202,7 +202,9 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
                         wanting += secondary;
                     }
                     wanting += delta;
-                    wanting *= 0.5f;
+                    float const dmag = wanting.magnitude();
+                    wanting.normalize();
+                    wanting *= 7 * fclamp(dmag * dmag / 900, 0.01, 2);
                     petal.acceleration = wanting;
                     game_tick_t sec_reload_ticks = petal_data.attributes.secondary_reload * TPS;
                     if (petal_data.attributes.spawns != MobID::kNumMobs &&

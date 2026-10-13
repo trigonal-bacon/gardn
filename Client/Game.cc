@@ -196,7 +196,7 @@ void Game::tick(double time) {
     double tick_start = Debug::get_timestamp();
     Game::timestamp = time;
     Ui::dt = time - g_last_time;
-    Ui::lerp_amount = 1 - pow(1 - 0.2, Ui::dt * 60 / 1000);
+    Ui::lerp_amount = 1 - pow(1 - 0.25, Ui::dt * 60 / 1000);
     g_last_time = time;
     simulation.tick();
     

@@ -147,6 +147,7 @@ namespace EntityFlags {
     enum {
         kIsDespawning,
         kNoFriendlyCollision,
+        kTakesNoKnockback,
         kDieOnParentDeath,
         kSpawnedFromZone,
         kNoDrops,
@@ -203,7 +204,7 @@ struct PetalAttributes {
     float secondary_reload = 0;
     float constant_heal = 0;
     float burst_heal = 0;
-    float mass = 0.1;
+    float density = 1.0;
     float armor = 0;
     float poison_armor = 0;
     float dandelion_inflict_seconds = 0;
@@ -240,8 +241,12 @@ struct PetalData {
 
 struct MobAttributes {
     float aggro_radius = 500;
+    float density = 1;
+    // relative to player
+    float passive_speed_mult = 0.4;
+    float aggro_speed_mult = 0.96;
+    uint8_t unmovable = 0;
     uint8_t segments = 1;
-    uint8_t stationary;
     struct PoisonDamage poison_damage;
 };
 

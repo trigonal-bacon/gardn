@@ -74,19 +74,35 @@ void on_collide(Simulation *sim, Entity &ent1, Entity &ent2) {
             separation.unit_normal(frand() * 2 * M_PI);
         else
             separation.normalize();
-        float ratio = ent2.mass / (ent1.mass + ent2.mass);
+        float const m1 = ent1.density * ent1.get_radius() * ent1.get_radius() + 0.0001;
+        float const m2 = ent2.density * ent2.get_radius() * ent2.get_radius() + 0.0001;
         if (!(ent1.get_team() == ent2.get_team())) {
-            if (ent1.has_component(kFlower) && !ent2.has_component(kPetal))
-                _cancel_movement(ent1, separation, ent2.velocity - ent1.velocity);
-            else
-                _deal_knockback(ent1, separation, ratio);
-            if (ent2.has_component(kFlower) && !ent1.has_component(kPetal))
-                _cancel_movement(ent2, separation*-1, ent1.velocity - ent2.velocity);
-            else
-                _deal_knockback(ent2, separation*-1, 1 - ratio);
+            Vector dv = (ent1.velocity + ent1.constant_velocity - ent2.velocity - ent2.constant_velocity);
+            float s = dv.x * separation.x + dv.y * separation.y;
+            if (s < 0) {
+                if (!BitMath::at(ent1.flags, EntityFlags::kTakesNoKnockback)) 
+                    ent1.velocity += separation * ((s * -2 * m2) / (m1 + m2));
+                if (!BitMath::at(ent2.flags, EntityFlags::kTakesNoKnockback)) 
+                    ent2.velocity += separation * ((s * 2 * m1) / (m1 + m2));
+            }
+            if (ent1.has_component(kFlower))
+                ent1.velocity += separation * -fabsf(s) * -0.2;
+            if (ent2.has_component(kFlower))
+                ent2.velocity += separation * -fabsf(s) * 0.2;
         }
-        _deal_push(ent1, separation, ratio, dist);
-        _deal_push(ent2, separation*-1, 1 - ratio, dist);
+        float const ratio = m2 / (m1 + m2);
+        if (BitMath::at(ent1.flags, EntityFlags::kTakesNoKnockback) &&
+            BitMath::at(ent2.flags, EntityFlags::kTakesNoKnockback)) {
+            _deal_push(ent1, separation, ratio, dist);
+            _deal_push(ent2, separation*-1, 1 - ratio, dist);
+        } else if (BitMath::at(ent2.flags, EntityFlags::kTakesNoKnockback)) {
+            _deal_push(ent1, separation, 1, dist);
+        } else if (BitMath::at(ent1.flags, EntityFlags::kTakesNoKnockback)) {
+            _deal_push(ent2, separation*-1, 1, dist);
+        } else {
+            _deal_push(ent1, separation, ratio, dist);
+            _deal_push(ent2, separation*-1, 1 - ratio, dist);
+        }
     }
 
     if (BOTH(kHealth) && !(ent1.get_team() == ent2.get_team())) {
