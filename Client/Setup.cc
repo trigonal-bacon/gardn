@@ -167,7 +167,6 @@ int setup_canvas() {
         Module.canvas.oncontextmenu = function() { return false; };
         window.onbeforeunload = function(e) { return "Are you sure?"; };
         Module.ctxs = [];
-        Module.availableCtxs = [];
         Module.TextDecoder = new TextDecoder('utf8');
     });
     return 0;

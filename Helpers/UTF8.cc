@@ -25,9 +25,14 @@ std::string UTF8Parser::trunc_string(std::string const &str, uint32_t max) {
 }
 
 char UTF8Parser::next_char() {
-    if (*at == 0) return 0;
-    if (at >= end) return 0;
+    if (at >= end) return fail();
+    if (*at == 0) return fail();
     return *at++;
+}
+
+uint32_t UTF8Parser::fail() {
+    at = end;
+    return 0;
 }
 
 bool UTF8Parser::is_valid_utf8(std::string const &str) {
@@ -50,26 +55,24 @@ bool UTF8Parser::is_valid_utf8(std::string const &str) {
 }
 
 uint32_t UTF8Parser::next_symbol() {
+    if (at >= end) return fail();
     uint32_t c = (uint8_t) next_char();
-    if (c & 0x80) {
-        if (c >= 0xf0) {
-            c &= 0x07;
-            for (uint32_t x = 0; x < 3; ++x)
-                c = (c << 6) | (next_char() & 0x3f);
-        } else if (c >= 0xe0) {
-            c &= 0x0f;
-            for (uint32_t x = 0; x < 2; ++x)
-                c = (c << 6) | (next_char() & 0x3f);
-        } else {
-            c &= 0x1f;
-            for (uint32_t x = 0; x < 1; ++x)
-                c = (c << 6) | (next_char() & 0x3f);
-        }
+    if (c < 0x80) return c;
+    uint32_t len = 0;
+    if (c >= 0xf0) { c &= 0x07; len = 3; }
+    else if (c >= 0xe0) { c &= 0x0f; len = 2; }
+    else if (c >= 0xc2) { c &= 0x1f; len = 1; }
+    else return fail(); //invalid lead
+    for (uint32_t x = 0; x < len; ++x) {
+        uint8_t nc = next_char();
+        if ((nc & 0xc0) != 0x80) return fail();
+        c = (c << 6) | (nc & 0x3f);
     }
     return c;
 }
 
 uint32_t UTF8Parser::next_symbol_len() const {
+    if (at >= end) return 0;
     uint8_t c = (uint8_t) *at;
     if (c < 0x80) return 1;
     if (c < 0xe0) return 2;

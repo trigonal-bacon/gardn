@@ -2,6 +2,10 @@
 
 #include <cmath>
 #include <format>
+#include <random>
+
+static std::mt19937 rng(std::random_device{}());
+static std::uniform_real_distribution<double> unit(0.0, 1.0);
 
 float fclamp(float v, float s, float e) {
     if (!(v >= s)) return s;
@@ -10,7 +14,7 @@ float fclamp(float v, float s, float e) {
 }
 
 double frand() {
-    return std::rand() / (((double) RAND_MAX) + 1);
+    return unit(rng);
 }
 
 float lerp(float v, float e, float a) {

@@ -4,12 +4,18 @@
 #include <Helpers/Math.hh>
 #include <Helpers/UTF8.hh>
 
+#include <algorithm>
 #include <cmath>
-DEBUG_ONLY(#include <iostream>)
+#ifdef DEBUG
+#include <iostream>
+#endif
 
 #include <emscripten.h>
 
 std::vector<Renderer *> Renderer::renderers;
+
+static std::vector<uint32_t> free_ids;
+static uint32_t next_id = 0;
 
 RenderContext::RenderContext() {}
 
@@ -19,7 +25,6 @@ RenderContext::RenderContext(Renderer *r) {
 EM_ASM({
     Module.ctxs[$0].save();
 }, r->id);
-    //reset();
 }
 
 void RenderContext::reset() {
@@ -40,20 +45,18 @@ RenderContext::~RenderContext() {
 }
 
 Renderer::Renderer() : context() {
-    id = EM_ASM_INT({
-        let idx;
-        if (Module.availableCtxs.length > 0)
-            idx = Module.availableCtxs.pop();
-        else
-            idx = Module.ctxs.length;
-        if (idx === 0) {
-            Module.ctxs[idx] = document.getElementById('canvas').getContext('2d');
+    if (free_ids.empty()) id = next_id++;
+    else {
+        id = free_ids.back();
+        free_ids.pop_back();
+    }
+    EM_ASM({
+        if ($0 === 0) {
+            Module.ctxs[$0] = document.getElementById('canvas').getContext('2d');
         } else {
-            const canvas = new OffscreenCanvas(1,1);
-            Module.ctxs[idx] = canvas.getContext('2d');
+            Module.ctxs[$0] = new OffscreenCanvas(1,1).getContext('2d');
         }
-        return idx;
-    });
+    }, id);
     DEBUG_ONLY(std::cout << "created canvas " << id << '\n';)
     Renderer::renderers.push_back(this);
     context.renderer = this;
@@ -68,6 +71,9 @@ Renderer::~Renderer() {
         Module.availableCtxs.push($0);
     }, id);
     DEBUG_ONLY(std::cout << "removed canvas " << id << '\n';)
+    free_ids.push_back(id);
+    const auto it = std::find(renderers.begin(), renderers.end(), this);
+    if (it != renderers.end()) renderers.erase(it);
 }
 
 uint32_t Renderer::HSV(uint32_t c, float v) {

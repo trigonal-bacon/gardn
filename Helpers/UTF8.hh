@@ -8,6 +8,7 @@ class UTF8Parser {
     char const *at;
     char const *end;
     char next_char();
+    uint32_t fail();
 public:
     UTF8Parser(char const *, size_t);
     UTF8Parser(std::string const &);

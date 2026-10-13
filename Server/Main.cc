@@ -9,7 +9,6 @@ int main() {
     std::cout << "  Spatial Hash Size: " << sizeof(SpatialHash) << '\n';
     std::cout << "  Entity Size: " << sizeof(Entity) << '\n';
     std::cout << "}\n";
-    srand(std::time(0));
     Server::init();
     return 0;
 }
