@@ -70,7 +70,6 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
             if (BitMath::at(player.input, InputFlags::kAttacking)) {
                 petal.velocity.unit_normal(petal.get_angle()).set_magnitude(1.4);
                 petal.constant_velocity.unit_normal(petal.get_angle()).set_magnitude(0.6);
-                petal.friction = DEFAULT_FRICTION;
                 entity_set_despawn_tick(petal, 2.5 * TPS);
             }
             break;
@@ -78,7 +77,6 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
         case PetalID::kWeb: {
             if (BitMath::at(player.input, InputFlags::kAttacking)) {
                 Vector delta(petal.get_x() - player.get_x(), petal.get_y() - player.get_y());
-                petal.friction = DEFAULT_FRICTION;
                 float angle = delta.angle();
                 if (petal.get_petal_id() == PetalID::kTriweb) angle += frand() - 0.5;
                 petal.acceleration.unit_normal(angle).set_magnitude(1.4);
@@ -114,7 +112,6 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
                 float spray_angle = frand() * 2 * M_PI;
                 for (uint32_t i = 0; i < petal_data.count; ++i) {
                     Entity &new_petal = i == 0 ? petal : alloc_petal(sim, petal.get_petal_id(), player);
-                    new_petal.friction = DEFAULT_FRICTION;
                     new_petal.set_x(petal.get_x());
                     new_petal.set_y(petal.get_y());
                     new_petal.set_split_projectile(0);
@@ -130,14 +127,6 @@ void tick_petal_behavior(Simulation *sim, Entity &petal) {
             }
             break;
         case PetalID::kMoon: {
-            /*
-            if (BitMath::at(player.input, InputFlags::kAttacking)) {
-                Vector delta(petal.get_x() - player.get_x(), petal.get_y() - player.get_y());
-                petal.friction = 0;
-                petal.acceleration.unit_normal(delta.angle() + M_PI / 3).set_magnitude(3 * PLAYER_ACCELERATION);
-                entity_set_despawn_tick(petal, 10 * TPS);
-            }
-            */
             break;
         }
         default:

@@ -7,7 +7,6 @@ uint32_t const TPS = 60;
 
 //these two are based on the base game's 20 TPS
 float const PLAYER_ACCELERATION = 2.5f;
-float const DEFAULT_FRICTION = 1.0f/3.0f;
 
 float const PETAL_DISABLE_DELAY = 45.0f; //seconds
 float const SUMMON_RETREAT_RADIUS = 600.0f;

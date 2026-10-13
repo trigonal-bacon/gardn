@@ -51,7 +51,7 @@ void Map::spawn_random_mob(Simulation *sim, float x, float y) {
     for (SpawnChance const &s : zone.spawns) {
         sum -= s.chance;
         if (sum <= 0) {
-            Entity &ent = alloc_mob(sim, s.id, x, y, NULL_ENTITY, [&](Entity &mob){
+            Entity &ent = alloc_mob(sim, s.id, x, y, NULL_ENTITY, [=](Entity &mob){
                 mob.zone = zone_id;
                 mob.immunity_ticks = TPS;
                 BitMath::set(mob.flags, EntityFlags::kSpawnedFromZone);

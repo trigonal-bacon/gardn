@@ -178,7 +178,6 @@ static void tick_hornet_aggro(Simulation *sim, Entity &ent) {
             Entity &missile = alloc_petal(sim, PetalID::kMissile, ent);
             missile.damage = 10;
             missile.health = missile.max_health = 10;
-            missile.friction = DEFAULT_FRICTION;
 
             entity_set_despawn_tick(missile, 3 * TPS);
             missile.set_angle(ent.get_angle());

@@ -92,7 +92,6 @@ SINGLE(Name, nametag_visible, uint8_t)
     SINGLE(collision_velocity, Vector, .set(0,0)) \
     SINGLE(constant_velocity, Vector, .set(0,0)) \
     SINGLE(acceleration, Vector, .set(0,0)) \
-    SINGLE(friction, float, =0) \
     SINGLE(density, float, =1) \
     SINGLE(speed_ratio, float, =1) \
     \

@@ -17,7 +17,6 @@ Entity &alloc_drop(Simulation *sim, PetalID::T drop_id) {
     drop.add_component(kPhysics);
     drop.set_radius(25);
     drop.set_angle(frand() * 0.2 - 0.1);
-    drop.friction = 0.25;
 
     drop.add_component(kRelations);
     drop.set_team(NULL_ENTITY);
@@ -43,8 +42,7 @@ static Entity &__alloc_mob(
     mob.set_angle(frand() * 2 * M_PI);
     mob.set_x(x);
     mob.set_y(y);
-    mob.friction = DEFAULT_FRICTION;
-    mob.density = 1.0;
+    mob.density = data.attributes.density;
 
     if (mob_id == MobID::kAntHole)
         BitMath::set(mob.flags, EntityFlags::kNoFriendlyCollision);
@@ -124,7 +122,6 @@ Entity &alloc_player(Simulation *sim, EntityID const team) {
 
     player.add_component(kPhysics);
     player.set_radius(BASE_FLOWER_RADIUS);
-    player.friction = DEFAULT_FRICTION;
     player.density = 1;
 
     player.add_component(kFlower);
@@ -160,7 +157,6 @@ Entity &alloc_petal(Simulation *sim, PetalID::T petal_id, Entity const &parent) 
     if (petal_id == PetalID::kMoon)
         BitMath::set(petal.flags, EntityFlags::kIsDetached);
     petal.density = petal_data.attributes.density;
-    petal.friction = DEFAULT_FRICTION * 1.5;
     petal.add_component(kRelations);
     petal.set_parent(parent.id);
     petal.set_team(parent.get_team());
@@ -189,7 +185,6 @@ Entity &alloc_web(Simulation *sim, float radius, Entity const &parent) {
     web.set_angle(frand() * 2 * M_PI);
     web.set_radius(radius);
     web.density = 1.0;
-    web.friction = 1.0;
     web.add_component(kRelations);
     web.set_team(parent.get_team());
     web.set_parent(parent.id);
