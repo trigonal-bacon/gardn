@@ -51,7 +51,9 @@ std::array<struct PetalData, PetalID::kNumPetals> const PETAL_DATA = {{
         .reload = 1.0,
         .count = 1,
         .rarity = RarityID::kCommon,
-        .attributes = {}
+        .attributes = {
+            .attack_range = 120
+        }
     },
     {
         .name = "Heavy",
@@ -62,7 +64,10 @@ std::array<struct PetalData, PetalID::kNumPetals> const PETAL_DATA = {{
         .reload = 4.5,
         .count = 1,
         .rarity = RarityID::kCommon,
-        .attributes = {}
+        .attributes = {
+            .attack_range = 95,
+            .defend_range = 25,
+        }
     },
     {
         .name = "Stinger",
@@ -98,7 +103,9 @@ std::array<struct PetalData, PetalID::kNumPetals> const PETAL_DATA = {{
         .reload = 1.0,
         .count = 2,
         .rarity = RarityID::kUnusual,
-        .attributes = {}
+        .attributes = {
+            .attack_range = 120
+        }
     },
     {
         .name = "Rose",
@@ -197,7 +204,10 @@ std::array<struct PetalData, PetalID::kNumPetals> const PETAL_DATA = {{
         .reload = 7.5,
         .count = 1,
         .rarity = RarityID::kRare,
-        .attributes = {}
+        .attributes = {
+            .attack_range = 85,
+            .defend_range = 30
+        }
     },
     {
         .name = "Cactus",
@@ -311,7 +321,9 @@ std::array<struct PetalData, PetalID::kNumPetals> const PETAL_DATA = {{
         .reload = 1.0,
         .count = 3,
         .rarity = RarityID::kEpic,
-        .attributes = {}
+        .attributes = {
+            .attack_range = 120
+        }
     },
     {
         .name = "Egg",
@@ -339,6 +351,7 @@ std::array<struct PetalData, PetalID::kNumPetals> const PETAL_DATA = {{
         .count = 1,
         .rarity = RarityID::kEpic,
         .attributes = { 
+            .attack_range = 115,
             .poison_damage = {
                 .damage = 15.0,
                 .time = 4.0
@@ -492,7 +505,10 @@ std::array<struct PetalData, PetalID::kNumPetals> const PETAL_DATA = {{
         .reload = 15.0,
         .count = 1,
         .rarity = RarityID::kEpic,
-        .attributes = {}
+        .attributes = {
+            .attack_range = 75,
+            .defend_range = 40,
+        }
     },
     {
         .name = "Third Eye",

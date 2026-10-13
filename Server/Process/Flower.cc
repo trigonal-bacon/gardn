@@ -182,10 +182,10 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
                     if (rotation_count > 0)
                         wanting.unit_normal(2 * M_PI * rot_pos / rotation_count + player.heading_angle);
 
-                    float range = rotation_center.r + 40;
+                    float range = rotation_center.r + petal_data.attributes.neutral_range;
                     if (BitMath::at(player.input, InputFlags::kAttacking)) { 
                         if (petal_data.attributes.defend_only == 0) 
-                            range = rotation_center.r + 100 + buffs.extra_range; 
+                            range = rotation_center.r + petal_data.attributes.attack_range + buffs.extra_range; 
                         if (petal.get_petal_id() == PetalID::kWing) {
                             float wave = sinf((float) petal.lifetime / (0.4 * TPS));
                             wave = wave * wave;
@@ -193,11 +193,11 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
                         }
                     }
                     else if (BitMath::at(player.input, InputFlags::kDefending)) 
-                        range = rotation_center.r + 15;
+                        range = rotation_center.r + petal_data.attributes.defend_range;
                     wanting *= range;
                     if (petal_data.attributes.clump_radius > 0) {
                         Vector secondary;
-                        secondary.unit_normal(2 * M_PI * j / petal_data.count + player.heading_angle * 0.2)
+                        secondary.unit_normal(2 * M_PI * j / petal_data.count + player.heading_angle * 1.1)
                         .set_magnitude(petal_data.attributes.clump_radius);
                         wanting += secondary;
                     }

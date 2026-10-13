@@ -196,6 +196,9 @@ struct PetalAttributes {
         kNoRot,
         kFollowRot
     };
+    float attack_range = 105;
+    float neutral_range = 40;
+    float defend_range = 15;
     float clump_radius = 0;
     float secondary_reload = 0;
     float constant_heal = 0;
