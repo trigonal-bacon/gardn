@@ -396,7 +396,7 @@ void tick_ai_behavior(Simulation *sim, Entity &ent) {
     switch(ent.get_mob_id()) {
         case MobID::kBabyAnt:            
         case MobID::kLadybug:
-            tick_default_passive(sim, ent);
+        case MobID::kMassiveLadybug:
             tick_default_passive(sim, ent);
             break;
         case MobID::kBee:

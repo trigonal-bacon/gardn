@@ -66,7 +66,7 @@ static Entity &__alloc_mob(
     //mob.score_reward = data.xp;
 
     mob.add_component(kName);
-    mob.set_name(data.name);
+    mob.set_name(std::string(data.name));
 
     mob.base_entity = mob.id;
     if (mob_id == MobID::kDigger) {
