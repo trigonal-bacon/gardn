@@ -939,14 +939,13 @@ void draw_loadout_background(Renderer &ctx, uint8_t id, float reload) {
     ctx.fill();
     ctx.clip();
     if (reload < 1) {
-        float rld =  1 - (float) reload;
         {
-            rld = rld * rld * rld * (rld * (6.0f * rld - 15.0f) + 10.0f);
+            float rld = 2 * M_PI * reload * reload;
             RenderContext context(&ctx);
             ctx.set_fill(0x40000000);
             ctx.begin_path();
             ctx.move_to(0,0);
-            ctx.partial_arc(0, 0, 90, -M_PI / 2 - rld * M_PI * 10, -M_PI / 2 - rld * M_PI * 8, 0);
+            ctx.partial_arc(0, 0, 90, 5.7 * rld, 4.7 * rld + 2 * M_PI, 0);
             ctx.fill();
         }
     }

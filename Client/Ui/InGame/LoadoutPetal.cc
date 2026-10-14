@@ -123,7 +123,7 @@ UiLoadoutPetal::UiLoadoutPetal(uint8_t pos) : Element(60, 60),
         return true;
     };
     style.animate = [&](Element *elt, Renderer &ctx) {
-        float lerp_amt = Ui::lerp_amount * 0.75;
+        float lerp_amt = Ui::lerp_amount * 0.8;
         reload.step(lerp_amt);
         if (curr_pos != 2 * MAX_SLOT_COUNT) 
             curr_pos = static_to_dynamic(static_pos);

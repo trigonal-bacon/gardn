@@ -15,11 +15,11 @@
 
 void _apply_damage_filter(Renderer &ctx, Entity const &ent) {
     ctx.set_global_alpha(1 - ent.deletion_animation);
-    ctx.scale(1 + 0.5 * ent.deletion_animation);
-    if (ent.damage_flash > 0.66)
+    ctx.scale(1 + ent.deletion_animation);
+    if (ent.damage_flash > 0.9)
         ctx.add_color_filter(0xffffffff, ent.damage_flash);
-    else if (ent.damage_flash > 0.1)
-        ctx.add_color_filter(0xffff1200, ent.damage_flash * 1.5);
+    else if (ent.damage_flash > 0.01)
+        ctx.add_color_filter(0xffff0000, ent.damage_flash);
 }
 
 static float screen_shake_radius = 0;
