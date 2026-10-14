@@ -6,25 +6,164 @@
 
 #include <algorithm>
 #include <cmath>
+
 #ifdef DEBUG
 #include <iostream>
 #endif
 
 #include <emscripten.h>
 
-std::vector<Renderer *> Renderer::renderers;
+EM_JS(void, js_bind_RenderContext, (uint32_t arg0), {
+    Module.ctxs[arg0].save();
+});
 
+
+EM_JS(void, js_bind_destroy_RenderContext, (uint32_t arg0), {
+    Module.ctxs[arg0].restore();
+});
+
+
+EM_JS(void, js_bind_Renderer, (uint32_t arg0), {
+    if (arg0 === 0) {
+        Module.ctxs[arg0] = document.getElementById('canvas').getContext('2d');
+    } else {
+        Module.ctxs[arg0] = new OffscreenCanvas(1,1).getContext('2d');
+    }
+});
+
+EM_JS(void, js_bind_destroy_Renderer, (uint32_t arg0), {
+    if (arg0 == 0)
+        throw new Error('Tried to delete the main context');
+    Module.ctxs[arg0] = null;
+    Module.availableCtxs.push(arg0);
+});
+
+EM_JS(void, js_bind_set_dimensions, (uint32_t arg0, double arg1, double arg2), {
+    Module.ctxs[arg0].canvas.width = arg1;
+    Module.ctxs[arg0].canvas.height = arg2;
+});
+
+EM_JS(void, js_bind_set_fill, (uint32_t arg0, uint32_t arg1, uint32_t arg2, uint32_t arg3, uint32_t arg4), {
+    Module.ctxs[arg0].fillStyle = "rgba("+arg3+","+arg2+","+arg1+","+arg4/255+")";
+});
+
+EM_JS(void, js_bind_set_stroke, (uint32_t arg0, uint32_t arg1, uint32_t arg2, uint32_t arg3, uint32_t arg4), {
+    Module.ctxs[arg0].strokeStyle = "rgba("+arg3+","+arg2+","+arg1+","+arg4/255+")";
+});
+
+EM_JS(void, js_bind_set_line_width, (uint32_t arg0, double arg1), {
+    Module.ctxs[arg0].lineWidth = arg1;
+});
+
+EM_JS(void, js_bind_set_text_size, (uint32_t arg0, double arg1), {
+    Module.ctxs[arg0].font = arg1 + "px Ubuntu";
+});
+
+EM_JS(void, js_bind_set_global_alpha, (uint32_t arg0, double arg1), {
+    Module.ctxs[arg0].globalAlpha = arg1;
+});
+
+EM_JS(void, js_bind_round_line_cap, (uint32_t arg0), {
+    Module.ctxs[arg0].lineCap = "round";
+});
+
+EM_JS(void, js_bind_round_line_join, (uint32_t arg0), {
+    Module.ctxs[arg0].lineJoin = "round";
+});
+
+EM_JS(void, js_bind_center_text_align, (uint32_t arg0), {
+    Module.ctxs[arg0].textAlign = "center";
+});
+
+EM_JS(void, js_bind_center_text_baseline, (uint32_t arg0), {
+    Module.ctxs[arg0].textBaseline = "middle";
+});
+
+EM_JS(void, js_bind_update_transform, (uint32_t arg0, double arg1, double arg2, double arg3, double arg4, double arg5, double arg6), {
+    Module.ctxs[arg0].setTransform(arg1, arg2, arg4, arg5, arg3, arg6);
+});
+
+EM_JS(void, js_bind_begin_path, (uint32_t arg0), {
+    Module.ctxs[arg0].beginPath();
+});
+
+EM_JS(void, js_bind_move_to, (uint32_t arg0, double arg1, double arg2), {
+    Module.ctxs[arg0].moveTo(arg1, arg2);
+});
+
+EM_JS(void, js_bind_line_to, (uint32_t arg0, double arg1, double arg2), {
+    Module.ctxs[arg0].lineTo(arg1, arg2);
+});
+
+EM_JS(void, js_bind_qcurve_to, (uint32_t arg0, double arg1, double arg2, double arg3, double arg4), {
+    Module.ctxs[arg0].quadraticCurveTo(arg1, arg2, arg3, arg4);
+});
+
+EM_JS(void, js_bind_bcurve_to, (uint32_t arg0, double arg1, double arg2, double arg3, double arg4, double arg5, double arg6), {
+    Module.ctxs[arg0].bezierCurveTo(arg1, arg2, arg3, arg4, arg5, arg6);
+});
+
+EM_JS(void, js_bind_partial_arc, (uint32_t arg0, double arg1, double arg2, double arg3, double arg4, double arg5, uint32_t arg6), {
+    Module.ctxs[arg0].arc(arg1, arg2, arg3, arg4, arg5, !!arg6);
+});
+
+EM_JS(void, js_bind_ellipse, (uint32_t arg0, double arg1, double arg2, double arg3, double arg4, double arg5), {
+    Module.ctxs[arg0].ellipse(arg1, arg2, arg3, arg4, arg5, 2 * Math.PI, 0);
+});
+
+EM_JS(void, js_bind_fill_rect, (uint32_t arg0, double arg1, double arg2, double arg3, double arg4), {
+    Module.ctxs[arg0].fillRect(arg1, arg2, arg3, arg4);
+});
+
+EM_JS(void, js_bind_stroke_rect, (uint32_t arg0, double arg1, double arg2, double arg3, double arg4), {
+    Module.ctxs[arg0].strokeRect(arg1, arg2, arg3, arg4);
+});
+
+EM_JS(void, js_bind_rect, (uint32_t arg0, double arg1, double arg2, double arg3, double arg4), {
+    Module.ctxs[arg0].rect(arg1, arg2, arg3, arg4);
+});
+
+EM_JS(void, js_bind_close_path, (uint32_t arg0), {
+    Module.ctxs[arg0].closePath();
+});
+
+EM_JS(void, js_bind_fill, (uint32_t arg0, uint32_t arg1), {
+    Module.ctxs[arg0].fill(arg1 ? "nonzero" : "evenodd");
+});
+
+EM_JS(void, js_bind_stroke, (uint32_t arg0), {
+    Module.ctxs[arg0].stroke();
+});
+
+EM_JS(void, js_bind_clip, (uint32_t arg0), {
+    Module.ctxs[arg0].clip();
+});
+
+EM_JS(void, js_bind_draw_image, (uint32_t arg0, uint32_t arg1, double arg2, double arg3), {
+    Module.ctxs[arg0].drawImage(Module.ctxs[arg1].canvas, arg2, arg3);
+});
+
+EM_JS(void, js_bind_fill_text, (uint32_t arg0, char const *arg1, size_t arg2), {
+    Module.ctxs[arg0].fillText(Module.TextDecoder.decode(HEAPU8.subarray(arg1, arg1+arg2)),0,0);
+});
+
+EM_JS(void, js_bind_stroke_text, (uint32_t arg0, char const *arg1, size_t arg2), {
+    Module.ctxs[arg0].strokeText(Module.TextDecoder.decode(HEAPU8.subarray(arg1, arg1+arg2)),0,0);
+});
+
+EM_JS(double, js_bind_get_text_size, (uint32_t arg0, char const *arg1, size_t arg2), {
+    return Module.ctxs[arg0].measureText(Module.TextDecoder.decode(HEAPU8.subarray(arg1, arg1+arg2)),0,0).width;
+});
+
+std::vector<Renderer *> Renderer::renderers;
 static std::vector<uint32_t> free_ids;
 static uint32_t next_id = 0;
 
 RenderContext::RenderContext() {}
-
 RenderContext::RenderContext(Renderer *r) {
     *this = r->context;
     renderer = r;
-EM_ASM({
-    Module.ctxs[$0].save();
-}, r->id);
+    js_bind_RenderContext(r->id);
 }
 
 void RenderContext::reset() {
@@ -39,9 +178,7 @@ void RenderContext::reset() {
 
 RenderContext::~RenderContext() {
     renderer->context = *this;
-    EM_ASM({
-        Module.ctxs[$0].restore();
-    }, renderer->id);
+    js_bind_destroy_RenderContext(renderer->id);
 }
 
 Renderer::Renderer() : context() {
@@ -50,13 +187,7 @@ Renderer::Renderer() : context() {
         id = free_ids.back();
         free_ids.pop_back();
     }
-    EM_ASM({
-        if ($0 === 0) {
-            Module.ctxs[$0] = document.getElementById('canvas').getContext('2d');
-        } else {
-            Module.ctxs[$0] = new OffscreenCanvas(1,1).getContext('2d');
-        }
-    }, id);
+    js_bind_Renderer(id);
     DEBUG_ONLY(std::cout << "created canvas " << id << '\n';)
     Renderer::renderers.push_back(this);
     context.renderer = this;
@@ -64,12 +195,7 @@ Renderer::Renderer() : context() {
 }
 
 Renderer::~Renderer() {
-    EM_ASM({
-        if ($0 == 0)
-            throw new Error('Tried to delete the main context');
-        Module.ctxs[$0] = null;
-        Module.availableCtxs.push($0);
-    }, id);
+    js_bind_destroy_Renderer(id);
     DEBUG_ONLY(std::cout << "removed canvas " << id << '\n';)
     free_ids.push_back(id);
     const auto it = std::find(renderers.begin(), renderers.end(), this);
@@ -100,10 +226,7 @@ void Renderer::reset() {
 void Renderer::set_dimensions(float w, float h) {
     width = w;
     height = h;
-    EM_ASM({
-        Module.ctxs[$0].canvas.width = $1;
-        Module.ctxs[$0].canvas.height = $2;
-    }, id, w, h);
+    js_bind_set_dimensions(id, w, h);
 }
 
 void Renderer::add_color_filter(uint32_t c, float v) {
@@ -113,65 +236,44 @@ void Renderer::add_color_filter(uint32_t c, float v) {
 
 void Renderer::set_fill(uint32_t v) {
     v = MIX(v, context.color_filter, context.amount);
-    EM_ASM({
-    Module.ctxs[$0].fillStyle = "rgba("+$3+","+$2+","+$1+","+$4/255+")";
-    }, id, v & 255, (v >> 8) & 255, (v >> 16) & 255, v >> 24);
+    js_bind_set_fill(id, v & 255, (v >> 8) & 255, (v >> 16) & 255, v >> 24);
 }
 
 void Renderer::set_stroke(uint32_t v) {
     v = MIX(v, context.color_filter, context.amount);
-    EM_ASM({
-    Module.ctxs[$0].strokeStyle = "rgba("+$3+","+$2+","+$1+","+$4/255+")";
-    }, id, v & 255, (v >> 8) & 255, (v >> 16) & 255, v >> 24);
+    js_bind_set_stroke(id, v & 255, (v >> 8) & 255, (v >> 16) & 255, v >> 24);
 }
 
 void Renderer::set_line_width(float v) {
-    EM_ASM({
-    Module.ctxs[$0].lineWidth = $1;
-    }, id, v);
+    js_bind_set_line_width(id, v);
 }
 
 void Renderer::set_text_size(float v) {
-    EM_ASM({
-    Module.ctxs[$0].font = $1 + "px Ubuntu";
-    }, id, v);
+    js_bind_set_text_size(id, v);
 }
 
 void Renderer::set_global_alpha(float v) {
-    EM_ASM({
-    Module.ctxs[$0].globalAlpha = $1;
-    }, id, v);
+    js_bind_set_global_alpha(id, v);
 }
 
 void Renderer::round_line_cap() {
-    EM_ASM({
-    Module.ctxs[$0].lineCap = "round";
-    }, id);
+    js_bind_round_line_cap(id);
 }
 
 void Renderer::round_line_join() {
-    EM_ASM({
-    Module.ctxs[$0].lineJoin = "round";
-    }, id);
+    js_bind_round_line_join(id);
 }
 
 void Renderer::center_text_align() {
-    EM_ASM({
-    Module.ctxs[$0].textAlign = "center";
-    }, id);
+    js_bind_center_text_align(id);
 }
 
 void Renderer::center_text_baseline() {
-    EM_ASM({
-    Module.ctxs[$0].textBaseline = "middle";
-    }, id);
+    js_bind_center_text_baseline(id);
 }
 
 static void update_transform(Renderer *r) {
-EM_ASM({
-    Module.ctxs[$0].setTransform($1, $2, $4, $5, $3, $6);
-}, r->id, r->context.transform_matrix[0],r->context.transform_matrix[1],r->context.transform_matrix[2], 
-r->context.transform_matrix[3],r->context.transform_matrix[4],r->context.transform_matrix[5]);
+    js_bind_update_transform(r->id, r->context.transform_matrix[0], r->context.transform_matrix[1], r->context.transform_matrix[2], r->context.transform_matrix[3], r->context.transform_matrix[4], r->context.transform_matrix[5]);
 }
 
 void Renderer::set_transform(float a, float b, float c, float d, float e, float f) {
@@ -225,40 +327,27 @@ void Renderer::reset_transform() {
 }
 
 void Renderer::begin_path() {
-    EM_ASM({
-        Module.ctxs[$0].beginPath();
-    }, id);
+    js_bind_begin_path(id);
 }
 
 void Renderer::move_to(float x, float y) {
-    EM_ASM({
-        Module.ctxs[$0].moveTo($1, $2);
-    }, id, x, y);
-    }
+    js_bind_move_to(id, x, y);
+}
 
 void Renderer::line_to(float x, float y) {
-    EM_ASM({
-        Module.ctxs[$0].lineTo($1, $2);
-    }, id, x, y);
+    js_bind_line_to(id, x, y);
 }
 
 void Renderer::qcurve_to(float x, float y, float x1, float y1) {
-    EM_ASM({
-        Module.ctxs[$0].quadraticCurveTo($1, $2, $3, $4);
-    }, id, x, y, x1, y1);
+    js_bind_qcurve_to(id, x, y, x1, y1);
 }
 
 void Renderer::bcurve_to(float x, float y, float x1, float y1, float x2, float y2) {
-    EM_ASM({
-        Module.ctxs[$0].bezierCurveTo($1, $2, $3, $4, $5, $6);
-    }, id, x, y, x1, y1, x2, y2);
+    js_bind_bcurve_to(id, x, y, x1, y1, x2, y2);
 }
 
-
 void Renderer::partial_arc(float x, float y, float r, float sa, float ea, uint8_t ccw) {
-    EM_ASM({
-        Module.ctxs[$0].arc($1, $2, $3, $4, $5, !!$6);
-    }, id, x, y, r, sa, ea, ccw);
+    js_bind_partial_arc(id, x, y, r, sa, ea, ccw);
 }
 
 void Renderer::arc(float x, float y, float r) {
@@ -270,9 +359,7 @@ void Renderer::reverse_arc(float x, float y, float r) {
 }
 
 void Renderer::ellipse(float x, float y, float r1, float r2, float a) {
-    EM_ASM({
-        Module.ctxs[$0].ellipse($1, $2, $3, $4, $5, 2 * Math.PI, 0);
-    }, id, x, y, r1, r2, a);
+    js_bind_ellipse(id, x, y, r1, r2, a);
 }
 
 void Renderer::ellipse(float x, float y, float r1, float r2) {
@@ -280,21 +367,15 @@ void Renderer::ellipse(float x, float y, float r1, float r2) {
 }
 
 void Renderer::fill_rect(float x, float y, float w, float h) {
-    EM_ASM({
-        Module.ctxs[$0].fillRect($1, $2, $3, $4);
-    }, id, x, y, w, h);
+    js_bind_fill_rect(id, x, y, w, h);
 }
 
 void Renderer::stroke_rect(float x, float y, float w, float h) {
-    EM_ASM({
-        Module.ctxs[$0].strokeRect($1, $2, $3, $4);
-    }, id, x, y, w, h);
+    js_bind_stroke_rect(id, x, y, w, h);
 }
 
 void Renderer::rect(float x, float y, float w, float h) {
-    EM_ASM({
-        Module.ctxs[$0].rect($1, $2, $3, $4);
-    }, id, x, y, w, h);
+    js_bind_rect(id, x, y, w, h);
 }
 
 void Renderer::round_rect(float x, float y, float w, float h, float r) {
@@ -310,27 +391,19 @@ void Renderer::round_rect(float x, float y, float w, float h, float r) {
 }
 
 void Renderer::close_path() {
-    EM_ASM({
-        Module.ctxs[$0].closePath();
-    }, id);
+    js_bind_close_path(id);
 }
 
 void Renderer::fill(uint8_t o) {
-    EM_ASM({
-        Module.ctxs[$0].fill($1 ? "nonzero" : "evenodd");
-    }, id, o);
+    js_bind_fill(id, o);
 }
 
 void Renderer::stroke() {
-    EM_ASM({
-        Module.ctxs[$0].stroke();
-    }, id);
+    js_bind_stroke(id);
 }
 
 void Renderer::clip() {
-    EM_ASM({
-        Module.ctxs[$0].clip();
-    }, id);
+    js_bind_clip(id);
 }
 
 void Renderer::clip_rect(float x, float y, float w, float h) {
@@ -345,24 +418,18 @@ void Renderer::clip_rect(float x, float y, float w, float h) {
 }
 
 void Renderer::draw_image(Renderer &ctx) {
-    EM_ASM({
-        Module.ctxs[$0].drawImage(Module.ctxs[$1].canvas, $2, $3);
-    }, id, ctx.id, -ctx.width / 2, -ctx.height / 2);
+    js_bind_draw_image(id, ctx.id, -ctx.width / 2, -ctx.height / 2);
 }
 
-void Renderer::fill_text(char const *text) {
-    EM_ASM({
-        Module.ctxs[$0].fillText(Module.TextDecoder.decode(HEAPU8.subarray($1, $1+$2)),0,0);
-    }, id, text, std::strlen(text));
+void Renderer::fill_text(std::string_view text) {
+    js_bind_fill_text(id, text.data(), text.size());
 }
 
-void Renderer::stroke_text(char const *text) {
-    EM_ASM({
-        Module.ctxs[$0].strokeText(Module.TextDecoder.decode(HEAPU8.subarray($1, $1+$2)),0,0);
-    }, id, text, std::strlen(text));
+void Renderer::stroke_text(std::string_view text) {
+    js_bind_stroke_text(id, text.data(), text.size());
 }
 
-void Renderer::draw_text(char const *text, struct TextArgs const args) {
+void Renderer::draw_text(std::string_view text, struct TextArgs const args) {
     set_fill(args.fill);
     set_stroke(args.stroke);
     set_text_size(args.size);
@@ -373,18 +440,15 @@ void Renderer::draw_text(char const *text, struct TextArgs const args) {
     fill_text(text);
 }
 
-float Renderer::get_text_size(char const *text) {
-    return EM_ASM_DOUBLE({
-        return Module.ctxs[$0].measureText(Module.TextDecoder.decode(HEAPU8.subarray($1, $1+$2)),0,0).width;
-    }, id, text, std::strlen(text));
+float Renderer::get_text_size(std::string_view text) {
+    return js_bind_get_text_size(id, text.data(), text.size());
 }
 
 //precalculated ascii for standard Ubuntu font, only serves as an approximation (will fail for certain scripts)
 constexpr float CHAR_WIDTHS[128] = {0,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0,0.24,0.24,0.24,0.24,0.24,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0,0.5,0.5,0.24,0.286,0.465,0.699,0.568,0.918,0.705,0.247,0.356,0.356,0.502,0.568,0.246,0.34,0.246,0.437,0.568,0.568,0.568,0.568,0.568,0.568,0.568,0.568,0.568,0.568,0.246,0.246,0.568,0.568,0.568,0.455,0.974,0.721,0.672,0.648,0.737,0.606,0.574,0.702,0.734,0.316,0.529,0.684,0.563,0.897,0.756,0.79,0.644,0.79,0.667,0.582,0.614,0.707,0.722,0.948,0.675,0.661,0.61,0.371,0.437,0.371,0.568,0.5,0.286,0.553,0.604,0.5,0.604,0.584,0.422,0.594,0.589,0.289,0.289,0.579,0.316,0.862,0.589,0.607,0.604,0.604,0.422,0.485,0.444,0.589,0.55,0.784,0.554,0.547,0.5,0.371,0.322,0.371,0.568,0.5};
-
-float Renderer::get_ascii_text_size(char const *text) {
+float Renderer::get_ascii_text_size(std::string_view text) {
     float w = 0;
-    UTF8Parser parser(text, std::strlen(text));
+    UTF8Parser parser(text.data(), text.size());
     while (1) {
         uint32_t c = parser.next_symbol();
         if (c == 0) break;

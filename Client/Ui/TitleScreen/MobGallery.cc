@@ -123,7 +123,7 @@ static std::unique_ptr<Element> make_scroll() {
     std::sort(id_list, id_list + MobID::kNumMobs, [](MobID::T a, MobID::T b) {
         if (MOB_DATA[a].rarity < MOB_DATA[b].rarity) return true;
         if (MOB_DATA[b].rarity < MOB_DATA[a].rarity) return false;
-        return strcmp(MOB_DATA[a].name, MOB_DATA[b].name) <= 0;
+        return MOB_DATA[a].name < MOB_DATA[b].name;
     });
 
     for (MobID::T i = 0; i < MobID::kNumMobs; ++i) 

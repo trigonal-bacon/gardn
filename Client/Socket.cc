@@ -43,10 +43,10 @@ extern "C" {
 
 Socket::Socket() {}
 
-void Socket::connect(std::string const url) {
+void Socket::connect(std::string_view url) {
     std::cout << "Connecting to " << url << '\n';
     EM_ASM({
-        let string = UTF8ToString($1);
+        let string = UTF8ToString($1, $2);
         function connect() {
             let socket = Module.socket = new WebSocket(string);
             socket.binaryType = "arraybuffer";
@@ -63,7 +63,7 @@ void Socket::connect(std::string const url) {
             };
         }
         setTimeout(connect, 1000);
-    }, INCOMING_PACKET, url.c_str());
+    }, INCOMING_PACKET, url.data(), url.size());
 }
 
 void Socket::send(uint8_t *ptr, uint32_t len) {

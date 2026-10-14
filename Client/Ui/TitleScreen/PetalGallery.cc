@@ -66,7 +66,7 @@ static std::unique_ptr<Element> make_scroll() {
         if (b == PetalID::kNone) return false;
         if (PETAL_DATA[a].rarity < PETAL_DATA[b].rarity) return true;
         if (PETAL_DATA[a].rarity > PETAL_DATA[b].rarity) return false;
-        return strcmp(PETAL_DATA[a].name, PETAL_DATA[b].name) <= 0;
+        return PETAL_DATA[a].name < PETAL_DATA[b].name;
     });
     for (PetalID::T i = PetalID::kBasic; i < PetalID::kNumPetals;) {
         auto row = el<HContainer>(make_children(), 0, 10, Style{ .v_justify = Style::Top });

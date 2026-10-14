@@ -29,7 +29,7 @@ inline std::array const MAP_DATA = std::to_array<struct ZoneDefinition>({
         .top = 0,
         .right = 10000,
         .bottom = 4000,
-        .density = 1,
+        .density = 25,
         .drop_multiplier = 0.3,
         .spawns = {
             { MobID::kRock, 500000 },

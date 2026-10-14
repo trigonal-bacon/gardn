@@ -4,11 +4,11 @@
 #include <string>
 
 namespace DOM {
-    void create_text_input(char const *, uint32_t);
-    void element_show(char const *);
-    void element_hide(char const *);
-    void update_pos_and_dimension(char const *, float, float, float, float);
-    std::string retrieve_text(char const *, uint32_t);
-    void update_text(char const *, std::string const &, uint32_t);
-    void open_page(char const *);
+    void create_text_input(std::string_view, uint32_t);
+    void element_show(std::string_view);
+    void element_hide(std::string_view);
+    void update_pos_and_dimension(std::string_view, float, float, float, float);
+    std::string retrieve_text(std::string_view, uint32_t);
+    void update_text(std::string_view, std::string_view, uint32_t);
+    void open_page(std::string_view);
 }

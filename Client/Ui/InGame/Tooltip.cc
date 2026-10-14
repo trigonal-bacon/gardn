@@ -109,13 +109,13 @@ static std::unique_ptr<Element> make_petal_stat_container(PetalID::T id) {
     if (attrs.spawns != MobID::kNumMobs && attrs.spawn_count == 0) {
         stats.push_back(el<HContainer>(make_children(
             el<StaticText>(12, "Contents:", Style{ .fill = 0xffd2eb34 }),
-            el<StaticText>(12, (petal_data.count > 1 ? format_number(petal_data.count) + "x " : "") + (MOB_DATA[attrs.spawns].name))
+            el<StaticText>(12, (petal_data.count > 1 ? format_number(petal_data.count) + "x " : "") + std::string(MOB_DATA[attrs.spawns].name))
         ), 0, 5, Style{ .h_justify = Style::Left }));
     }
     if (attrs.spawns != MobID::kNumMobs && attrs.spawn_count > 0) {
         stats.push_back(el<HContainer>(make_children(
             el<StaticText>(12, "Spawns:", Style{ .fill = 0xffd2eb34 }),
-            el<StaticText>(12, format_number(attrs.spawn_count) + "x " + (MOB_DATA[attrs.spawns].name))
+            el<StaticText>(12, format_number(attrs.spawn_count) + "x " + std::string(MOB_DATA[attrs.spawns].name))
         ), 0, 5, Style{ .h_justify = Style::Left }));
     }
     if (attrs.vision_factor < 1) {

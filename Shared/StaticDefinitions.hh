@@ -3,6 +3,7 @@
 #include <Helpers/Array.hh>
 #include <Helpers/Math.hh>
 
+#include <string_view>
 #include <cstdint>
 
 inline uint32_t const ARENA_WIDTH = 40000;
@@ -228,8 +229,8 @@ struct PetalAttributes {
 };
 
 struct PetalData {
-    char const *name;
-    char const *description;
+    std::string_view name;
+    std::string_view description;
     float health;
     float damage;
     float radius;
@@ -251,8 +252,8 @@ struct MobAttributes {
 };
 
 struct MobData {
-    char const *name;
-    char const *description;
+    std::string_view name;
+    std::string_view description;
     uint8_t rarity;
     RangeValue health;
     float damage;
@@ -277,5 +278,5 @@ struct ZoneDefinition {
     StaticArray<struct SpawnChance, MobID::kNumMobs> spawns;
     uint32_t difficulty;
     uint32_t color;
-    char const *name;
+    std::string_view name;
 };

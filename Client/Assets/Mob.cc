@@ -383,7 +383,7 @@ void draw_static_mob(MobID::T mob_id, Renderer &ctx, MobRenderAttributes attr) {
             ctx.begin_path();
             float deflection = radius * 0.1;
             ctx.move_to(radius + gen.binext() * deflection,gen.binext() * deflection);
-            uint32_t sides = 4 + radius / 10;
+            uint32_t sides = 3 + radius / 7;
             for (uint32_t i = 1; i < sides; ++i) {
                 float angle = 2 * M_PI * i / sides;
                 ctx.line_to(cosf(angle) * radius + gen.binext() * deflection, sinf(angle) * radius + gen.binext() * deflection);

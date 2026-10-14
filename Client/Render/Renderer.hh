@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
 #include <vector>
 
 class Renderer;
@@ -44,7 +45,7 @@ public:
 
     static uint32_t HSV(uint32_t, float);
     static uint32_t MIX(uint32_t, uint32_t, float);
-    static float get_ascii_text_size(char const *);
+    static float get_ascii_text_size(std::string_view);
 
     void reset();
 
@@ -92,9 +93,9 @@ public:
 
     void draw_image(Renderer &);
 
-    void fill_text(char const *);
-    void stroke_text(char const *);
-    void draw_text(char const *, struct TextArgs const);
-    float get_text_size(char const *);
+    void fill_text(std::string_view);
+    void stroke_text(std::string_view);
+    void draw_text(std::string_view, struct TextArgs const);
+    float get_text_size(std::string_view);
     //text ops
 };

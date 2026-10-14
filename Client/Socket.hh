@@ -10,6 +10,6 @@ class Socket {
 public:
     uint8_t ready = 0;
     Socket();
-    void connect(std::string const);
+    void connect(std::string_view);
     void send(uint8_t *, uint32_t);
 };
