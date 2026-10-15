@@ -7,13 +7,14 @@
 #include <Server/SpatialHash.hh>
 #endif
 
+#include <bitset>
 #include <functional>
 #include <string>
 
 inline uint32_t const ENTITY_CAP = 8192;
 
 class Simulation {
-    std::array<uint8_t, div_round_up(ENTITY_CAP, 8)> entity_tracker;
+    std::bitset<ENTITY_CAP> entity_tracker;
     std::array<EntityID::hash_type, ENTITY_CAP> hash_tracker;
     std::array<Entity, ENTITY_CAP> entities;
     StaticArray<EntityID::id_type, ENTITY_CAP> active_entities;

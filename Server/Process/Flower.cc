@@ -180,7 +180,7 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
                     Vector wanting;
                     Vector delta(rotation_center.x - petal.get_x(), rotation_center.y - petal.get_y());
                     if (rotation_count > 0)
-                        wanting.unit_normal(2 * M_PI * rot_pos / rotation_count + player.heading_angle);
+                        wanting.unit_normal(2 * M_PI * rot_pos / rotation_count + player.petal_base_angle);
 
                     float range = rotation_center.r + petal_data.attributes.neutral_range;
                     if (BitMath::at(player.input, InputFlags::kAttacking)) { 
@@ -197,7 +197,7 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
                     wanting *= range;
                     if (petal_data.attributes.clump_radius > 0) {
                         Vector secondary;
-                        secondary.unit_normal(2 * M_PI * j / petal_data.count + player.heading_angle * 1.1)
+                        secondary.unit_normal(2 * M_PI * j / petal_data.count + player.petal_base_angle * 1.1)
                         .set_magnitude(petal_data.attributes.clump_radius);
                         wanting += secondary;
                     }
@@ -257,14 +257,14 @@ void tick_player_behavior(Simulation *sim, Entity &player) {
     if (buffs.yinyang_count != MAX_SLOT_COUNT) {
         switch (buffs.yinyang_count % 3) {
             case 0:
-                player.heading_angle += (BASE_PETAL_ROTATION_SPEED + buffs.extra_rot) / TPS;
+                player.petal_base_angle += (BASE_PETAL_ROTATION_SPEED + buffs.extra_rot) / TPS;
                 break;
             case 1:
-                player.heading_angle -= (BASE_PETAL_ROTATION_SPEED + buffs.extra_rot) / TPS;
+                player.petal_base_angle -= (BASE_PETAL_ROTATION_SPEED + buffs.extra_rot) / TPS;
                 break;
             default:
                 break;
         }
     } else 
-        player.heading_angle += 10 * (BASE_PETAL_ROTATION_SPEED + buffs.extra_rot) / TPS;
+        player.petal_base_angle += 5 * (BASE_PETAL_ROTATION_SPEED + buffs.extra_rot) / TPS;
 }

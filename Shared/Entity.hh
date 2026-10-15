@@ -7,6 +7,8 @@
 #include <Helpers/Macros.hh>
 #include <Helpers/Vector.hh>
 
+#include <array>
+#include <bitset>
 #include <cstdint>
 
 typedef CircularArray<PetalID::T, MAX_SLOT_COUNT> circ_arr_t;
@@ -38,13 +40,13 @@ class Entity {
     };
     uint32_t components;
 #define SINGLE(component, name, type) type name;
-#define MULTIPLE(component, name, type, amt) type name[amt];
+#define MULTIPLE(component, name, type, amt) std::array<type, amt> name;
     PERFIELD
 #undef SINGLE
 #undef MULTIPLE
-    uint8_t state[div_round_up(kFieldCount, 8)];
+    std::bitset<kFieldCount> state;
 #define SINGLE(component, name, type);
-#define MULTIPLE(component, name, type, amt) uint8_t state_per_##name[div_round_up(amt, 8)];
+#define MULTIPLE(component, name, type, amt) std::bitset<amt> state_per_##name;
     PERFIELD
 #undef SINGLE
 #undef MULTIPLE

@@ -2,8 +2,10 @@
 
 #include <Shared/StaticData.hh>
 
-#include <string>
+#include <array>
+#include <bitset>
 #include <cstdint>
+#include <string>
 
 SERVER_ONLY(class Writer;)
 CLIENT_ONLY(class Reader;)
@@ -26,15 +28,15 @@ class Arena {
         #undef MULTIPLE
         kFieldCount
     };
-    uint8_t state[div_round_up(kFieldCount, 8)];
+    std::bitset<kFieldCount> state;
     #define SINGLE(name, type);
-    #define MULTIPLE(name, type, amt) uint8_t state_per_##name[div_round_up(amt, 8)];
+    #define MULTIPLE(name, type, amt) std::bitset<amt> state_per_##name;
     FIELDS_Arena
     #undef SINGLE
     #undef MULTIPLE
 public:
     #define SINGLE(name, type) type name;
-    #define MULTIPLE(name, type, count) type name[count];
+    #define MULTIPLE(name, type, count) std::array<type, count> name;
     FIELDS_Arena
     #undef SINGLE
     #undef MULTIPLE

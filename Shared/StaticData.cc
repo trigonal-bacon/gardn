@@ -1028,7 +1028,9 @@ std::array<struct MobData, MobID::kNumMobs> const MOB_DATA = {{
         .drops = {
             PetalID::kIris, PetalID::kWing, PetalID::kAntEgg, PetalID::kTriplet
         },
-        .attributes = {}
+        .attributes = {
+            .unmovable = 1
+        }
     },
     {
         .name = "Queen Ant",

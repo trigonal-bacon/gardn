@@ -53,7 +53,7 @@ void entity_on_death(Simulation *sim, Entity const &ent) {
         EntityID killer_id = sim->get_ent(ent.last_damaged_by).base_entity;
         _add_score(sim, killer_id, ent);
     }
-    if (ent.has_component(kFlower) && sim->ent_alive(ent.get_parent())) {
+    if (sim->ent_alive(ent.get_parent()) && sim->get_ent(ent.get_parent()).has_component(kCamera)) {
         Entity &camera = sim->get_ent(ent.get_parent());
         EntityID killer_id = sim->ent_exists(ent.last_damaged_by) ?
             sim->get_ent(ent.last_damaged_by).base_entity : NULL_ENTITY;
@@ -84,10 +84,12 @@ void entity_on_death(Simulation *sim, Entity const &ent) {
             alloc_mob(sim, MobID::kDigger, ent.get_x(), ent.get_y(), team);
         }
 
-    } else if (ent.has_component(kPetal)) {
+    } 
+    if (ent.has_component(kPetal)) {
         if (ent.get_petal_id() == PetalID::kWeb || ent.get_petal_id() == PetalID::kTriweb)
             alloc_web(sim, 100, ent);
-    } else if (ent.has_component(kFlower)) {
+    } 
+    if (ent.has_component(kFlower)) {
         std::vector<PetalID::T> potential = {};
         for (uint32_t i = 0; i < ent.get_loadout_count() + MAX_SLOT_COUNT; ++i) {
             DEBUG_ONLY(assert(ent.get_loadout_ids(i) < PetalID::kNumPetals));
@@ -119,7 +121,7 @@ void entity_on_death(Simulation *sim, Entity const &ent) {
         _alloc_drops(sim, success_drops, ent.get_x(), ent.get_y());
         //if the camera is the one that disconnects
         //no need to re-add the petals to the petal tracker
-        if (!sim->ent_alive(ent.get_parent()))
+        if (!sim->ent_alive(ent.get_parent()) || !sim->get_ent(ent.get_parent()).has_component(kCamera))
             return;
         Entity &camera = sim->get_ent(ent.get_parent());
         //reset all reloads and stuff

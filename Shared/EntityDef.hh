@@ -97,6 +97,7 @@ SINGLE(Name, nametag_visible, uint8_t)
     \
     MULTIPLE(loadout, LoadoutSlot, MAX_SLOT_COUNT, .reset()) \
     SINGLE(heading_angle, float, =0) \
+    SINGLE(petal_base_angle, float, =0) \
     SINGLE(player_count, uint32_t, =0) \
     SINGLE(flags, uint16_t, =0) \
     SINGLE(input, uint8_t, =0) \
