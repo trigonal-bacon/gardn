@@ -5,20 +5,20 @@
 
 namespace Ui {
 
-    class ScrollBar : public Element {
-    public:
-        ScrollBar();
+class ScrollBar : public Element {
+public:
+  ScrollBar();
 
-        virtual void on_event(uint8_t) override;
-    };
+  virtual void on_event(uint8_t) override;
+};
 
-    class ScrollContainer : public HContainer {
-    public:
-        float lerp_scroll;
-        ScrollContainer(std::unique_ptr<Element>, float);
+class ScrollContainer : public HContainer {
+public:
+  float lerp_scroll;
+  ScrollContainer(std::unique_ptr<Element>, float);
 
-        virtual void on_render(Renderer &) override;
-        virtual void poll_events(ScreenEvent const &) override;
-        virtual void refactor() override;
-    };
-}
+  virtual void on_render(Renderer&) override;
+  virtual void poll_events(const ScreenEvent&) override;
+  virtual void refactor() override;
+};
+} // namespace Ui

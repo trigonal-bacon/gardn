@@ -3,11 +3,11 @@
 #include <emscripten.h>
 
 namespace Debug {
-    CircularArray<double, 100> tick_times;
-    CircularArray<double, 100> frame_times;
-    CircularArray<double, 50> ping_times;
-}
+CircularArray<double, 100> tick_times;
+CircularArray<double, 100> frame_times;
+CircularArray<double, 50> ping_times;
+} // namespace Debug
 
 double Debug::get_timestamp() {
-    return EM_ASM_DOUBLE({ return performance.now(); });
+  return EM_ASM_DOUBLE({ return performance.now(); });
 }

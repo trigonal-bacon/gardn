@@ -8,10 +8,11 @@
 class Simulation;
 
 class TeamManager {
-    StaticArray<EntityID, 4> teams;
-    Simulation *simulation;
+  StaticArray<EntityID, 4> teams;
+  Simulation* simulation;
+
 public:
-    TeamManager(Simulation *);
-    void add_team(uint8_t);
-    EntityID const get_random_team() const;
+  TeamManager(Simulation*);
+  void add_team(uint8_t);
+  const EntityID get_random_team() const;
 };

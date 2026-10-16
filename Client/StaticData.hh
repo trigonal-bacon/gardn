@@ -3,8 +3,9 @@
 #include <Shared/StaticData.hh>
 
 #include <array>
+#include <string_view>
 
-extern std::array<uint32_t, RarityID::kNumRarities> const RARITY_COLORS;
-extern std::array<uint32_t, ColorID::kNumColors> const FLOWER_COLORS;
-extern std::array<char const *, RarityID::kNumRarities> const RARITY_NAMES;
-extern std::array<char const, MAX_SLOT_COUNT> const SLOT_KEYBINDS;
+extern const std::array<uint32_t, RarityID::kNumRarities> RARITY_COLORS;
+extern const std::array<uint32_t, ColorID::kNumColors> FLOWER_COLORS;
+extern const std::array<std::string_view, RarityID::kNumRarities> RARITY_NAMES;
+extern const std::array<const char, MAX_SLOT_COUNT> SLOT_KEYBINDS;

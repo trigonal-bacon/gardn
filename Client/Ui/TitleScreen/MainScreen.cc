@@ -6,8 +6,8 @@
 #include <Client/Ui/DynamicText.hh>
 #include <Client/Ui/TextInput.hh>
 
-#include <Client/Debug.hh>
 #include <Client/DOM.hh>
+#include <Client/Debug.hh>
 #include <Client/Game.hh>
 #include <Client/Input.hh>
 
@@ -18,218 +18,286 @@
 using namespace Ui;
 
 std::unique_ptr<Element> Ui::make_title_input_box() {
-    return el<VContainer>(make_children(
-        el<Element>(0, 60),
-        el<Choose>(
-            el<StaticText>(40, "Connecting..."),
-            el<VContainer>(make_children(
-                el<StaticText>(20, "This pretty little flower is called..."),
-                el<HContainer>(make_children(
-                    el<TextInput>(Game::nickname, 400, 50, MAX_NAME_LENGTH, Style{
-                        .line_width = 5,
-                        .round_radius = 5,
-                        .animate = [](Element *elt, Renderer &ctx) { 
-                            ctx.translate(0, (elt->animation - 1) * ctx.height * 0.6);
-                        },
-                        .should_render = [](){
-                            return !Game::in_game() && Game::transition_circle <= 0;
-                        }
-                    }),
-                    el<Button>(110, 36, 
-                        el<StaticText>(25, "Spawn"), 
-                        [](Element *elt, uint8_t e){ if (e == Ui::kClick) Game::spawn_in(); },
-                        [](){ return Game::in_game() != 0; },
-                        Style{ .fill = 0xff1dd129, .line_width = 5, .round_radius = 3 }
-                    )
-                ), 0, 10, Style{}),
-                el<StaticText>(14, "(or press ENTER to spawn)")
-            ), 10, 5, Style{ .animate = [](Element *elt, Renderer &ctx) {
-                ctx.translate(0, (elt->animation - 1) * ctx.height);
-            } }),
-            [](){ return Game::socket.ready; }
-        ),
-        el<Element>(0,20),
-        el<StaticText>(16, "open-source florr.io pvp clone")
-    ), 0, 0, Style{ .animate = [](Element *elt, Renderer &ctx){}, .should_render = [](){ return Game::should_render_title_ui(); } });
+  return el<VContainer>(
+      make_children(
+          el<Element>(0, 60),
+          el<Choose>(
+              el<StaticText>(40, "Connecting..."),
+              el<VContainer>(
+                  make_children(
+                      el<StaticText>(20,
+                                     "This pretty little flower is called..."),
+                      el<HContainer>(
+                          make_children(
+                              el<TextInput>(
+                                  Game::nickname, 400, 50, MAX_NAME_LENGTH,
+                                  Style{.line_width = 5,
+                                        .round_radius = 5,
+                                        .animate =
+                                            [](Element& elt, Renderer& ctx) {
+                                              ctx.translate(
+                                                  0, (elt.animation - 1) *
+                                                         ctx.height * 0.6);
+                                            },
+                                        .should_render =
+                                            []() {
+                                              return !Game::in_game() &&
+                                                     Game::transition_circle <=
+                                                         0;
+                                            }}),
+                              el<Button>(
+                                  110, 36, el<StaticText>(25, "Spawn"),
+                                  [](Element& elt, uint8_t e) {
+                                    if (e == Ui::kClick)
+                                      Game::spawn_in();
+                                  },
+                                  []() { return Game::in_game() != 0; },
+                                  Style{.fill = 0xff1dd129,
+                                        .line_width = 5,
+                                        .round_radius = 3})),
+                          0, 10, Style{}),
+                      el<StaticText>(14, "(or press ENTER to spawn)")),
+                  10, 5,
+                  Style{.animate =
+                            [](Element& elt, Renderer& ctx) {
+                              ctx.translate(0,
+                                            (elt.animation - 1) * ctx.height);
+                            }}),
+              []() { return Game::socket.ready; }),
+          el<Element>(0, 20),
+          el<StaticText>(16, "open-source florr.io pvp clone")),
+      0, 0,
+      Style{.animate = [](Element& elt, Renderer& ctx) {},
+            .should_render = []() { return Game::should_render_title_ui(); }});
 }
 
 std::unique_ptr<Element> Ui::make_title_info_box() {
-    auto elt = el<Choose>(
-        el<Choose>(
-            el<VContainer>(make_children(
-                el<StaticText>(35, "How to play"),
-                el<Element>(0,5),
-                el<StaticText>(16, "Use mouse to move"),
-                el<StaticText>(16, "Left click to attack"),
-                el<StaticText>(16, "Right click to defend")
-            ), 0, 5, Style{ .no_animation = 1 }),
-            el<VContainer>(make_children(
-                el<StaticText>(35, "How to play"),
-                el<Element>(0,5),
-                el<StaticText>(16, "Use WASD or arrow keys to move"),
-                el<StaticText>(16, "SPACE to attack"),
-                el<StaticText>(16, "SHIFT to defend")
-            ), 0, 5, Style{ .no_animation = 1 }),
-            [](){
-                return Input::keyboard_movement;
-            }, Style{ .no_polling = 1 }
-        ),
-        el<VContainer>(make_children(
-            el<HContainer>(make_children(
-                el<DynamicText>(16, [](){
-                    return std::format("You will respawn at level {}", Game::respawn_level);
-                }, Style{ .fill = 0xffffffff, .no_animation = 1 }),
-                el<StaticText>(16, " with:", Style{
-                    .fill = 0xffffffff,
-                    .should_render = [](){
-                        if (!Game::simulation.ent_exists(Game::camera_id)) return false;
-                        return Game::simulation.get_ent(Game::camera_id).get_inventory(0) > PetalID::kBasic;
-                    }
-                })
-            ), 0, 0),
-            el<HContainer>(
-                Ui::make_range(0, MAX_SLOT_COUNT, [](uint32_t i){ 
-                    return static_cast<std::unique_ptr<Element>>(el<TitlePetalSlot>(i)); 
-                })
-            , 0, 10),
-            el<HContainer>(
-                Ui::make_range(MAX_SLOT_COUNT, 2*MAX_SLOT_COUNT, [](uint32_t i){ 
-                    return static_cast<std::unique_ptr<Element>>(el<TitlePetalSlot>(i)); 
-                })
-            , 0, 10)
-        ), 0, 10, Style{ .no_animation = 1 }),
-        [](){
-            return Game::respawn_level > 1 ? 1 : 0;
-        }
-    );
-    elt->style.animate = [](Element *elt, Renderer &ctx) {
-        elt->x = 0;
-        elt->y = 270;
-    };
-    return elt;
+  auto elt =
+      el<Choose>(
+          el<Choose>(
+              el<VContainer>(
+                  make_children(el<StaticText>(35, "How to play"),
+                                el<Element>(0, 5),
+                                el<StaticText>(16, "Use mouse to move"),
+                                el<StaticText>(16, "Left click to attack"),
+                                el<StaticText>(16, "Right click to defend")),
+                  0, 5, Style{.no_animation = 1}),
+              el<VContainer>(
+                  make_children(
+                      el<StaticText>(35, "How to play"), el<Element>(0, 5),
+                      el<StaticText>(16, "Use WASD or arrow keys to move"),
+                      el<StaticText>(16, "SPACE to attack"),
+                      el<StaticText>(16, "SHIFT to defend")),
+                  0, 5, Style{.no_animation = 1}),
+              []() { return Input::keyboard_movement; },
+              Style{.no_polling = 1}),
+          el<VContainer>(
+              make_children(
+                  el<HContainer>(
+                      make_children(
+                          el<DynamicText>(
+                              16,
+                              []() {
+                                return std::format(
+                                    "You will respawn at level {}",
+                                    Game::respawn_level);
+                              },
+                              Style{.fill = 0xffffffff, .no_animation = 1}),
+                          el<StaticText>(
+                              16, " with:",
+                              Style{
+                                  .fill = 0xffffffff,
+                                  .should_render =
+                                      []() {
+                                        if (!Game::simulation.ent_exists(
+                                                Game::camera_id))
+                                          return false;
+                                        return Game::simulation
+                                                   .get_ent(Game::camera_id)
+                                                   .get_inventory(0) >
+                                               PetalID::kBasic;
+                                      }})),
+                      0, 0),
+                  el<HContainer>(Ui::make_range(0, MAX_SLOT_COUNT,
+                                                [](uint32_t i) {
+                                                  return static_cast<
+                                                      std::unique_ptr<Element>>(
+                                                      el<TitlePetalSlot>(i));
+                                                }),
+                                 0, 10),
+                  el<HContainer>(Ui::make_range(MAX_SLOT_COUNT,
+                                                2 * MAX_SLOT_COUNT,
+                                                [](uint32_t i) {
+                                                  return static_cast<
+                                                      std::unique_ptr<Element>>(
+                                                      el<TitlePetalSlot>(i));
+                                                }),
+                                 0, 10)),
+              0, 10, Style{.no_animation = 1}),
+          []() { return Game::respawn_level > 1 ? 1 : 0; });
+  elt->x = 0;
+  elt->y = 270;
+  return elt;
 }
 
-
 std::unique_ptr<Element> Ui::make_panel_buttons() {
-    return el<HContainer>(make_children(
-        el<Button>(100, 35, 
-            el<StaticText>(16, "Settings"), 
-            [](Element *elt, uint8_t e){ if (e == Ui::kClick) {
-                if (Ui::panel_open != Panel::kSettings) {
+  return el<HContainer>(
+      make_children(
+          el<Button>(
+              100, 35, el<StaticText>(16, "Settings"),
+              [](Element& elt, uint8_t e) {
+                if (e == Ui::kClick) {
+                  if (Ui::panel_open != Panel::kSettings) {
                     Ui::panel_open = Panel::kSettings;
                     if (auto pg = Ui::Panel::settings.get(); pg) {
-                        pg->x = elt->screen_x / Ui::scale - pg->width / 2;
-                        pg->y = -(elt->height + 20);
-                        if (pg->x < 10) 
-                            pg->x = 10;
+                      pg->x = elt.screen_x / Ui::scale - pg->width / 2;
+                      pg->y = -(elt.height + 20);
+                      if (pg->x < 10)
+                        pg->x = 10;
                     }
+                  } else
+                    Ui::panel_open = Panel::kNone;
                 }
-                else Ui::panel_open = Panel::kNone;
-            } },
-            [](){ return Ui::panel_open == Panel::kSettings; },
-            Style{ .fill = 0xff5a9fdb, .line_width = 5, .round_radius = 3 }
-        ),
-        el<Button>(100, 35, 
-            el<HContainer>(make_children(
-                el<Element>(0,0),
-                el<StaticText>(16, "Petals"),
-                el<PetalsCollectedIndicator>(20)
-            ), 0, 10),
-            [](Element *elt, uint8_t e){ if (e == Ui::kClick) {
-                if (Ui::panel_open != Panel::kPetals) {
+              },
+              []() { return Ui::panel_open == Panel::kSettings; },
+              Style{.fill = 0xff5a9fdb, .line_width = 5, .round_radius = 3}),
+          el<Button>(
+              100, 35,
+              el<HContainer>(make_children(el<Element>(0, 0),
+                                           el<StaticText>(16, "Petals"),
+                                           el<PetalsCollectedIndicator>(20)),
+                             0, 10),
+              [](Element& elt, uint8_t e) {
+                if (e == Ui::kClick) {
+                  if (Ui::panel_open != Panel::kPetals) {
                     Ui::panel_open = Panel::kPetals;
                     if (auto pg = Ui::Panel::petal_gallery.get(); pg) {
-                        pg->x = elt->screen_x / Ui::scale - pg->width / 2;
-                        pg->y = -(elt->height + 20);
-                        if (pg->x < 10) 
-                            pg->x = 10;
+                      pg->x = elt.screen_x / Ui::scale - pg->width / 2;
+                      pg->y = -(elt.height + 20);
+                      if (pg->x < 10)
+                        pg->x = 10;
                     }
+                  } else
+                    Ui::panel_open = Panel::kNone;
                 }
-                else Ui::panel_open = Panel::kNone;
-            } },
-            [](){ return Ui::panel_open == Panel::kPetals; },
-            Style{ .fill = 0xff5a9fdb, .line_width = 5, .round_radius = 3 }
-        ),
-        el<Button>(100, 35, 
-            el<StaticText>(16, "Mobs"), 
-            [](Element *elt, uint8_t e){ if (e == Ui::kClick) {
-                if (Ui::panel_open != Panel::kMobs) {
+              },
+              []() { return Ui::panel_open == Panel::kPetals; },
+              Style{.fill = 0xff5a9fdb, .line_width = 5, .round_radius = 3}),
+          el<Button>(
+              100, 35, el<StaticText>(16, "Mobs"),
+              [](Element& elt, uint8_t e) {
+                if (e == Ui::kClick) {
+                  if (Ui::panel_open != Panel::kMobs) {
                     Ui::panel_open = Panel::kMobs;
                     if (auto pg = Ui::Panel::mob_gallery.get(); pg) {
-                        pg->x = elt->screen_x / Ui::scale - pg->width / 2;
-                        pg->y = -(elt->height + 20);
-                        if (pg->x < 10) 
-                            pg->x = 10;
+                      pg->x = elt.screen_x / Ui::scale - pg->width / 2;
+                      pg->y = -(elt.height + 20);
+                      if (pg->x < 10)
+                        pg->x = 10;
                     }
+                  } else
+                    Ui::panel_open = Panel::kNone;
                 }
-                else Ui::panel_open = Panel::kNone;
-            } },
-            [](){ return Ui::panel_open == Panel::kMobs; },
-            Style{ .fill = 0xff5a9fdb, .line_width = 5, .round_radius = 3 }
-        ),
-        el<Button>(120, 35, 
-            el<StaticText>(16, "Changelog"), 
-            [](Element *elt, uint8_t e){ if (e == Ui::kClick) {
-                if (Ui::panel_open != Panel::kChangelog) {
+              },
+              []() { return Ui::panel_open == Panel::kMobs; },
+              Style{.fill = 0xff5a9fdb, .line_width = 5, .round_radius = 3}),
+          el<Button>(
+              120, 35, el<StaticText>(16, "Changelog"),
+              [](Element& elt, uint8_t e) {
+                if (e == Ui::kClick) {
+                  if (Ui::panel_open != Panel::kChangelog) {
                     Ui::panel_open = Panel::kChangelog;
-                    if(auto pg = Ui::Panel::changelog.get(); pg) {
-                        pg->x = elt->screen_x / Ui::scale - pg->width / 2;
-                        pg->y = -(elt->height + 20);
-                        if (pg->x < 10) 
-                            pg->x = 10;
+                    if (auto pg = Ui::Panel::changelog.get(); pg) {
+                      pg->x = elt.screen_x / Ui::scale - pg->width / 2;
+                      pg->y = -(elt.height + 20);
+                      if (pg->x < 10)
+                        pg->x = 10;
                     }
+                  } else
+                    Ui::panel_open = Panel::kNone;
                 }
-                else Ui::panel_open = Panel::kNone;
-            } },
-            [](){ return Ui::panel_open == Panel::kChangelog; },
-            Style{ .fill = 0xff5a9fdb, .line_width = 5, .round_radius = 3 }
-        )
-    ), 10, 10, Style{ .should_render = [](){ return Game::should_render_title_ui(); }, .h_justify = Style::Left, .v_justify = Style::Bottom });
+              },
+              []() { return Ui::panel_open == Panel::kChangelog; },
+              Style{.fill = 0xff5a9fdb, .line_width = 5, .round_radius = 3})),
+      10, 10,
+      Style{.should_render = []() { return Game::should_render_title_ui(); },
+            .h_justify = Style::Left,
+            .v_justify = Style::Bottom});
 }
 
 std::unique_ptr<Element> Ui::make_debug_stats() {
-    return el<VContainer>(make_children(
-        el<DynamicText>(12, [](){
-            float pxls = 0;
-            for (Renderer *r : Renderer::renderers) pxls += r->width * r->height;
-            return std::format("{} ctxs - {} pxls - {:.0f}x{:.0f}", Renderer::renderers.size(), format_score(pxls), Ui::window_width, Ui::window_height);
-        }, Style{ .fill = 0xffffffff, .h_justify = Style::Right }),
-        el<DynamicText>(12, [](){
-            if (Debug::frame_times.size() == 0) return std::string{"Failed to show debug stats"};
-            float min_dt = Debug::tick_times[0];
-            float avg_dt = min_dt;
-            float max_dt = min_dt;
-            for (uint32_t i = 1; i < Debug::tick_times.size(); ++i) {
-                float const frame_time = Debug::tick_times[i];
-                if (min_dt > frame_time) min_dt = frame_time;
-                else if (max_dt < frame_time) max_dt = frame_time;
-                avg_dt += frame_time;
-            }
-            avg_dt /= Debug::tick_times.size();
-            return std::format("tick: {:.1f}/{:.1f}/{:.1f} ms (min/avg/max)", min_dt, avg_dt, max_dt, 1000 / Ui::dt);
-        }, Style{ .fill = 0xffffffff, .h_justify = Style::Right }),
-        el<DynamicText>(12, [](){
-            if (Debug::frame_times.size() == 0) return std::string{"Failed to show debug stats"};
-            float min_dt = Debug::frame_times[0];
-            float avg_dt = min_dt;
-            float max_dt = min_dt;
-            for (uint32_t i = 1; i < Debug::frame_times.size(); ++i) {
-                float const frame_time = Debug::frame_times[i];
-                if (min_dt > frame_time) min_dt = frame_time;
-                else if (max_dt < frame_time) max_dt = frame_time;
-                avg_dt += frame_time;
-            }
-            avg_dt /= Debug::frame_times.size();
-            return std::format("frame: {:.1f}/{:.1f}/{:.1f} ms (min/avg/max) - {:.1f} fps", min_dt, avg_dt, max_dt, 1000 / Ui::dt);
-        }, Style{ .fill = 0xffffffff, .h_justify = Style::Right })
-    ), 5, 5, Style{ .should_render = [](){ return Game::show_debug; }, .h_justify = Style::Right, .v_justify = Style::Bottom, .no_animation = 1 });
+  return el<VContainer>(
+      make_children(
+          el<DynamicText>(
+              12,
+              []() {
+                float pxls = 0;
+                for (Renderer* r : Renderer::renderers)
+                  pxls += r->width * r->height;
+                return std::format("{} ctxs - {} pxls - {:.0f}x{:.0f}",
+                                   Renderer::renderers.size(),
+                                   format_score(pxls), Ui::window_width,
+                                   Ui::window_height);
+              },
+              Style{.fill = 0xffffffff, .h_justify = Style::Right}),
+          el<DynamicText>(
+              12,
+              []() {
+                if (Debug::frame_times.size() == 0)
+                  return std::string{"Failed to show debug stats"};
+                float min_dt = Debug::tick_times[0];
+                float avg_dt = min_dt;
+                float max_dt = min_dt;
+                for (uint32_t i = 1; i < Debug::tick_times.size(); ++i) {
+                  const float frame_time = Debug::tick_times[i];
+                  if (min_dt > frame_time)
+                    min_dt = frame_time;
+                  else if (max_dt < frame_time)
+                    max_dt = frame_time;
+                  avg_dt += frame_time;
+                }
+                avg_dt /= Debug::tick_times.size();
+                return std::format(
+                    "tick: {:.1f}/{:.1f}/{:.1f} ms (min/avg/max)", min_dt,
+                    avg_dt, max_dt, 1000 / Ui::dt);
+              },
+              Style{.fill = 0xffffffff, .h_justify = Style::Right}),
+          el<DynamicText>(
+              12,
+              []() {
+                if (Debug::frame_times.size() == 0)
+                  return std::string{"Failed to show debug stats"};
+                float min_dt = Debug::frame_times[0];
+                float avg_dt = min_dt;
+                float max_dt = min_dt;
+                for (uint32_t i = 1; i < Debug::frame_times.size(); ++i) {
+                  const float frame_time = Debug::frame_times[i];
+                  if (min_dt > frame_time)
+                    min_dt = frame_time;
+                  else if (max_dt < frame_time)
+                    max_dt = frame_time;
+                  avg_dt += frame_time;
+                }
+                avg_dt /= Debug::frame_times.size();
+                return std::format(
+                    "frame: {:.1f}/{:.1f}/{:.1f} ms (min/avg/max) - {:.1f} fps",
+                    min_dt, avg_dt, max_dt, 1000 / Ui::dt);
+              },
+              Style{.fill = 0xffffffff, .h_justify = Style::Right})),
+      5, 5,
+      Style{.should_render = []() { return Game::show_debug; },
+            .h_justify = Style::Right,
+            .v_justify = Style::Bottom,
+            .no_animation = 1});
 }
 
 std::unique_ptr<Element> Ui::make_github_link_button() {
-    return el<HContainer>(make_children(
-        el<Button>(50, 50, 
-            el<StaticIcon>([](Element *elt, Renderer &ctx){
-                ctx.scale(elt->width / 20);
+  return el<HContainer>(
+      make_children(el<Button>(
+          50, 50,
+          el<StaticIcon>(
+              [](Element& elt, Renderer& ctx) {
+                ctx.scale(elt.width / 20);
                 ctx.set_fill(0xfff1f1f1);
                 ctx.begin_path();
                 ctx.move_to(0.00, -10.00);
@@ -259,12 +327,13 @@ std::unique_ptr<Element> Ui::make_github_link_button() {
                 ctx.bcurve_to(-7.13, 8.63, -10.00, 4.78, -10.00, 0.25);
                 ctx.bcurve_to(-10.00, -5.41, -5.52, -10.00, 0.00, -10.00);
                 ctx.fill();
-            }, 40, 40),
-            [](Element *elt, uint8_t e){
-                if (e == Ui::kClick) DOM::open_page("https://github.com/trigonal-bacon/gardn/");
-            },
-            nullptr,
-            Style{ .fill = 0xff333333, .line_width = 4, .round_radius = 4 }
-        )
-    ), 10, 10, Style{ .h_justify = Style::Right, .v_justify = Style::Top });
+              },
+              40, 40),
+          [](Element& elt, uint8_t e) {
+            if (e == Ui::kClick)
+              DOM::open_page("https://github.com/trigonal-bacon/gardn/");
+          },
+          nullptr,
+          Style{.fill = 0xff333333, .line_width = 4, .round_radius = 4})),
+      10, 10, Style{.h_justify = Style::Right, .v_justify = Style::Top});
 }
