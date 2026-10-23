@@ -176,7 +176,7 @@ public:
   LoadoutPetal petals[MAX_PETALS_IN_CLUMP];
   LoadoutSlot();
   void reset();
-  void update_id(Simulation*, PetalID::T);
+  void update_id(Simulation&, PetalID::T);
   void force_reload();
   PetalID::T get_petal_id() const;
   uint32_t size() const;

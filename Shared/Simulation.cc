@@ -8,7 +8,7 @@ std::ostream& operator<<(std::ostream& out, const EntityID& id) {
 }
 #endif
 
-Simulation::Simulation() SERVER_ONLY( : spatial_hash(this)) { reset(); }
+Simulation::Simulation() SERVER_ONLY( : spatial_hash(*this)) { reset(); }
 
 void Simulation::reset() {
   active_entities.clear();
@@ -87,26 +87,26 @@ void Simulation::tick() {
   on_tick();
 }
 
-void Simulation::for_each_entity(std::function<void(Simulation*, Entity&)> cb) {
+void Simulation::for_each_entity(std::function<void(Simulation&, Entity&)> cb) {
   for (EntityID::id_type id : active_entities) {
     if (!entity_tracker[id])
       continue;
     Entity& ent = entities[id];
-    cb(this, ent);
+    cb(*this, ent);
   }
 }
 
 #define COMPONENT(name)                                                        \
   template <>                                                                  \
   void Simulation::for_each<k##name>(                                          \
-      std::function<void(Simulation*, Entity&)> cb) {                          \
+      std::function<void(Simulation&, Entity&)> cb) {                          \
     for (EntityID::id_type id : active_entities) {                             \
       if (!entity_tracker[id])                                                 \
         continue;                                                              \
       Entity& ent = entities[id];                                              \
       SERVER_ONLY(if (ent.pending_delete) continue;)                           \
       if (ent.has_component(k##name))                                          \
-        cb(this, ent);                                                         \
+        cb(*this, ent);                                                         \
     }                                                                          \
   }
 PERCOMPONENT

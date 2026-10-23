@@ -69,7 +69,7 @@ void Entity::tick_lerp(float amt) {
 
 void Simulation::on_tick() {
   for_each_entity(
-      [](Simulation* sim, Entity& ent) { ent.tick_lerp(Ui::lerp_amount); });
+      [](Simulation& sim, Entity& ent) { ent.tick_lerp(Ui::lerp_amount); });
 
   for (uint32_t i = 0; i < std::min(arena_info.player_count, LEADERBOARD_SIZE);
        ++i)
@@ -80,5 +80,5 @@ void Simulation::on_tick() {
 }
 
 void Simulation::post_tick() {
-  for_each_entity([](Simulation* sim, Entity& ent) { ent.reset_protocol(); });
+  for_each_entity([](Simulation& sim, Entity& ent) { ent.reset_protocol(); });
 }

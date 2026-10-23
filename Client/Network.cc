@@ -17,7 +17,6 @@ void Game::on_message(uint8_t* ptr, uint32_t len) {
     EntityID curr_id = reader.read<EntityID>();
     while (!(curr_id == NULL_ENTITY)) {
       assert(simulation.ent_exists(curr_id));
-      Entity& ent = simulation.get_ent(curr_id);
       simulation._delete_ent(curr_id);
       curr_id = reader.read<EntityID>();
     }
@@ -28,12 +27,12 @@ void Game::on_message(uint8_t* ptr, uint32_t len) {
         simulation.force_alloc_ent(curr_id);
       assert(simulation.ent_exists(curr_id));
       Entity& ent = simulation.get_ent(curr_id);
-      ent.read(&reader, BitMath::at(create, 0));
+      ent.read(reader, BitMath::at(create, 0));
       if (BitMath::at(create, 1))
         ent.pending_delete = 1;
       curr_id = reader.read<EntityID>();
     }
-    simulation.arena_info.read(&reader, reader.read<uint8_t>());
+    simulation.arena_info.read(reader, reader.read<uint8_t>());
     break;
   }
   default:

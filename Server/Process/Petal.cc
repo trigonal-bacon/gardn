@@ -8,14 +8,14 @@
 
 #include <cmath>
 
-void tick_petal_behavior(Simulation* sim, Entity& petal) {
+void tick_petal_behavior(Simulation& sim, Entity& petal) {
   if (petal.pending_delete)
     return;
-  if (!sim->ent_alive(petal.get_parent())) {
-    sim->request_delete(petal.id);
+  if (!sim.ent_alive(petal.get_parent())) {
+    sim.request_delete(petal.id);
     return;
   }
-  Entity& player = sim->get_ent(petal.get_parent());
+  Entity& player = sim.get_ent(petal.get_parent());
   struct PetalData const& petal_data = PETAL_DATA[petal.get_petal_id()];
   if (petal_data.attributes.rotation_style == PetalAttributes::kPassiveRot) {
     // simulate on clientside
@@ -70,7 +70,7 @@ void tick_petal_behavior(Simulation* sim, Entity& petal) {
                  player.get_y() - petal.get_y());
     if (delta.magnitude() < petal.get_radius()) {
       inflict_heal(sim, player, petal_data.attributes.burst_heal);
-      sim->request_delete(petal.id);
+      sim.request_delete(petal.id);
       return;
     }
     delta.set_magnitude(PLAYER_ACCELERATION * 4);
@@ -92,7 +92,7 @@ void tick_petal_behavior(Simulation* sim, Entity& petal) {
       float angle = delta.angle();
       if (petal.get_petal_id() == PetalID::kTriweb)
         angle += frand() - 0.5;
-      petal.acceleration.unit_normal(angle).set_magnitude(1.4);
+      petal.velocity.unit_normal(angle).set_magnitude(2.4);
       entity_set_despawn_tick(petal, 0.6 * TPS);
     } else if (BitMath::at(player.input, InputFlags::kDefending))
       entity_set_despawn_tick(petal, 0.6 * TPS);
@@ -103,7 +103,7 @@ void tick_petal_behavior(Simulation* sim, Entity& petal) {
       Vector v(player.get_x() - petal.get_x(), player.get_y() - petal.get_y());
       v.set_magnitude(PLAYER_ACCELERATION * 0.56);
       player.velocity += v;
-      sim->request_delete(petal.id);
+      sim.request_delete(petal.id);
     }
     break;
   case PetalID::kPollen:

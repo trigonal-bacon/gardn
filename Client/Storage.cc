@@ -10,8 +10,8 @@
 #include <string>
 
 const uint32_t XOR_CYCLE_LENGTH = 7;
-static const uint8_t XOR_CYCLE[XOR_CYCLE_LENGTH] = {0x43, 0x37, 0x92, 0xa4,
-                                                    0x38, 0xf1, 0x2b};
+static const std::array<uint8_t, XOR_CYCLE_LENGTH> XOR_CYCLE = {0x43, 0x37, 0x92, 0xa4,
+                                                                 0x38, 0xf1, 0x2b};
 
 static void _custom_b16_encode(uint32_t len) {
   for (uint32_t i = len; i > 0; --i) {
@@ -32,18 +32,18 @@ static void _custom_b16_decode(uint32_t len) {
 }
 
 namespace StorageProtocol {
-uint8_t buffer[2 * StorageProtocol::MAX_LENGTH] = {0};
+std::array<uint8_t, 2 * StorageProtocol::MAX_LENGTH> buffer = {0};
 
-void store(const char* name, uint32_t len) {
+void store(std::string_view name, uint32_t len) {
   _custom_b16_encode(len);
   EM_ASM({
     window.localStorage[Module.TextDecoder.decode(
         HEAPU8.subarray($0, $0 + $1))] =
         Module.TextDecoder.decode(HEAPU8.subarray($2, $2 + $3));
-  }, name, std::strlen(name), buffer, 2 * len);
+  }, name.data(), name.size(), buffer.data(), 2 * len);
 }
 
-uint32_t retrieve(const char* name, uint32_t max_length) {
+uint32_t retrieve(std::string_view name, uint32_t max_length) {
   uint32_t len = EM_ASM_INT({
     let a = window.localStorage[Module.TextDecoder.decode(
         HEAPU8.subarray($0, $0 + $1))];
@@ -52,7 +52,7 @@ uint32_t retrieve(const char* name, uint32_t max_length) {
     a = a.slice(0, $3);
     HEAPU8.set(new TextEncoder().encode(a), $2);
     return a.length;
-  }, name, std::strlen(name), buffer, 2 * max_length) / 2;
+  }, name.data(), name.size(), buffer.data(), 2 * max_length) / 2;
   _custom_b16_decode(len);
   return len;
 }
@@ -142,7 +142,7 @@ void Storage::retrieve() {
   {
     uint32_t len = StorageProtocol::retrieve("mobs", 256);
     Decoder reader(&StorageProtocol::buffer[0]);
-    while (reader.at < StorageProtocol::buffer + len) {
+    while (reader.at < StorageProtocol::buffer.data() + len) {
       MobID::T mob_id = reader.read<uint8_t>();
       if (mob_id >= MobID::kNumMobs)
         break;
@@ -152,7 +152,7 @@ void Storage::retrieve() {
   {
     uint32_t len = StorageProtocol::retrieve("petals", 256);
     Decoder reader(&StorageProtocol::buffer[0]);
-    while (reader.at < StorageProtocol::buffer + len) {
+    while (reader.at < StorageProtocol::buffer.data() + len) {
       PetalID::T petal_id = reader.read<uint8_t>();
       if (petal_id >= PetalID::kNumPetals || petal_id == PetalID::kNone)
         break;

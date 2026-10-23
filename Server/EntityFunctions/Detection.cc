@@ -3,7 +3,7 @@
 #include <Shared/Entity.hh>
 #include <Shared/Simulation.hh>
 
-EntityID find_nearest_enemy(Simulation* simulation, const Entity& entity,
+EntityID find_nearest_enemy(Simulation& simulation, const Entity& entity,
                             float radius) {
   if ((entity.id.id - entity.lifetime) % (TPS / 5) != 0)
     return NULL_ENTITY;
@@ -11,10 +11,10 @@ EntityID find_nearest_enemy(Simulation* simulation, const Entity& entity,
     return NULL_ENTITY;
   EntityID ret;
   float min_dist = radius;
-  simulation->spatial_hash.query(
+  simulation.spatial_hash.query(
       entity.get_x(), entity.get_y(), radius, radius,
-      [&](Simulation* sim, Entity& ent) {
-        if (!sim->ent_alive(ent.id))
+      [&](Simulation& sim, Entity& ent) {
+        if (!sim.ent_alive(ent.id))
           return;
         if (ent.get_team() == entity.get_team())
           return;
@@ -22,8 +22,8 @@ EntityID find_nearest_enemy(Simulation* simulation, const Entity& entity,
           return;
         if (!ent.has_component(kMob) && !ent.has_component(kFlower))
           return;
-        if (sim->ent_alive(entity.get_parent())) {
-          Entity& parent = sim->get_ent(entity.get_parent());
+        if (sim.ent_alive(entity.get_parent())) {
+          Entity& parent = sim.get_ent(entity.get_parent());
           float dist =
               Vector(ent.get_x() - parent.get_x(), ent.get_y() - parent.get_y())
                   .magnitude();

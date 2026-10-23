@@ -39,17 +39,17 @@ uint32_t Map::get_suitable_difficulty_zone(uint32_t power) {
 
 #ifdef SERVERSIDE
 #include <Shared/Simulation.hh>
-void Map::remove_mob(Simulation* sim, uint32_t zone) {
+void Map::remove_mob(Simulation& sim, uint32_t zone) {
   DEBUG_ONLY(assert(zone < MAP_DATA.size());)
-  --sim->zone_mob_counts[zone];
+  --sim.zone_mob_counts[zone];
 }
 
-void Map::spawn_random_mob(Simulation* sim, float x, float y) {
+void Map::spawn_random_mob(Simulation& sim, float x, float y) {
   uint32_t zone_id = Map::get_zone_from_pos(x, y);
   struct ZoneDefinition const& zone = MAP_DATA[zone_id];
   if (zone.density * (zone.right - zone.left) * (zone.bottom - zone.top) /
-          (500 * 500) <
-      sim->zone_mob_counts[zone_id])
+      (500 * 500) <
+      sim.zone_mob_counts[zone_id])
     return;
   float sum = 0;
   for (const SpawnChance& s : zone.spawns)
@@ -58,12 +58,12 @@ void Map::spawn_random_mob(Simulation* sim, float x, float y) {
   for (const SpawnChance& s : zone.spawns) {
     sum -= s.chance;
     if (sum <= 0) {
-      Entity& ent = alloc_mob(sim, s.id, x, y, NULL_ENTITY, [=](Entity& mob) {
+      Entity& ent = alloc_mob(sim, s.id, x, y, NULL_ENTITY, [=, &sim](Entity& mob) {
         mob.zone = zone_id;
         mob.immunity_ticks = TPS;
         BitMath::set(mob.flags, EntityFlags::kSpawnedFromZone);
         BitMath::set(mob.flags, EntityFlags::kHasCulling);
-        sim->zone_mob_counts[zone_id]++;
+        sim.zone_mob_counts[zone_id]++;
         mob.score_reward = MOB_DATA[mob.get_mob_id()].xp;
       });
       return;
@@ -71,11 +71,11 @@ void Map::spawn_random_mob(Simulation* sim, float x, float y) {
   }
 }
 
-bool Map::find_spawn_location(Simulation* sim, float d, Vector& vref) {
+bool Map::find_spawn_location(Simulation& sim, float d, Vector& vref) {
   for (uint32_t i = 0; i < 10; ++i) {
     vref.set(frand() * ARENA_WIDTH, frand() * ARENA_HEIGHT);
     bool valid = true;
-    sim->for_each<kFlower>([&](Simulation*, Entity& ent) {
+    sim.for_each<kFlower>([&](Simulation&, Entity& ent) {
       if (ent.has_component(kMob))
         return;
       if (!valid)

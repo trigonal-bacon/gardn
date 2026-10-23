@@ -77,9 +77,9 @@ public:
 #undef MULTIPLE
 
 #ifdef SERVERSIDE
-  void write(Writer*, uint8_t);
+  void write(Writer&, uint8_t);
 
-  template <bool> void write(Writer*);
+  template <bool> void write(Writer&);
 #define SINGLE(component, name, type) void set_##name(type const&);
 #define MULTIPLE(component, name, type, amt)                                   \
   void set_##name(uint32_t, type const&);
@@ -88,9 +88,9 @@ public:
 #undef MULTIPLE
 #else
   void tick_lerp(float);
-  void read(Reader*, uint8_t);
+  void read(Reader&, uint8_t);
 
-  template <bool> void read(Reader*);
+  template <bool> void read(Reader&);
 
 #define SINGLE(component, name, type) uint8_t get_state_##name() const;
 #define MULTIPLE(component, name, type, amt)                                   \

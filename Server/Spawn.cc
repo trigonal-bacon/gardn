@@ -10,10 +10,10 @@
 
 #include <cmath>
 
-Entity& alloc_drop(Simulation* sim, PetalID::T drop_id) {
+Entity& alloc_drop(Simulation& sim, PetalID::T drop_id) {
   DEBUG_ONLY(assert(drop_id < PetalID::kNumPetals);)
   PetalTracker::add_petal(sim, drop_id);
-  Entity& drop = sim->alloc_ent();
+  Entity& drop = sim.alloc_ent();
   drop.add_component(kPhysics);
   drop.set_radius(25);
   drop.set_angle(frand() * 0.2 - 0.1);
@@ -28,13 +28,13 @@ Entity& alloc_drop(Simulation* sim, PetalID::T drop_id) {
   return drop;
 }
 
-static Entity& __alloc_mob(Simulation* sim, MobID::T mob_id, float x, float y,
+static Entity& __alloc_mob(Simulation& sim, MobID::T mob_id, float x, float y,
                            const EntityID team,
                            std::function<void(Entity&)> on_spawn) {
   DEBUG_ONLY(assert(mob_id < MobID::kNumMobs);)
   struct MobData const& data = MOB_DATA[mob_id];
   float seed = frand();
-  Entity& mob = sim->alloc_ent();
+  Entity& mob = sim.alloc_ent();
 
   mob.add_component(kPhysics);
   mob.set_radius(data.radius.get_single(seed));
@@ -79,7 +79,7 @@ static Entity& __alloc_mob(Simulation* sim, MobID::T mob_id, float x, float y,
   return mob;
 }
 
-Entity& alloc_mob(Simulation* sim, MobID::T mob_id, float x, float y,
+Entity& alloc_mob(Simulation& sim, MobID::T mob_id, float x, float y,
                   const EntityID team, std::function<void(Entity&)> on_spawn) {
   struct MobData const& data = MOB_DATA[mob_id];
   if (data.attributes.segments <= 1) {
@@ -115,8 +115,8 @@ Entity& alloc_mob(Simulation* sim, MobID::T mob_id, float x, float y,
   }
 }
 
-Entity& alloc_player(Simulation* sim, const EntityID team) {
-  Entity& player = sim->alloc_ent();
+Entity& alloc_player(Simulation& sim, const EntityID team) {
+  Entity& player = sim.alloc_ent();
 
   player.add_component(kPhysics);
   player.set_radius(BASE_FLOWER_RADIUS);
@@ -142,11 +142,11 @@ Entity& alloc_player(Simulation* sim, const EntityID team) {
   return player;
 }
 
-Entity& alloc_petal(Simulation* sim, PetalID::T petal_id,
+Entity& alloc_petal(Simulation& sim, PetalID::T petal_id,
                     const Entity& parent) {
   DEBUG_ONLY(assert(petal_id < PetalID::kNumPetals);)
   struct PetalData const& petal_data = PETAL_DATA[petal_id];
-  Entity& petal = sim->alloc_ent();
+  Entity& petal = sim.alloc_ent();
   petal.add_component(kPhysics);
   petal.set_x(parent.get_x());
   petal.set_y(parent.get_y());
@@ -178,8 +178,8 @@ Entity& alloc_petal(Simulation* sim, PetalID::T petal_id,
   return petal;
 }
 
-Entity& alloc_web(Simulation* sim, float radius, const Entity& parent) {
-  Entity& web = sim->alloc_ent();
+Entity& alloc_web(Simulation& sim, float radius, const Entity& parent) {
+  Entity& web = sim.alloc_ent();
   web.add_component(kPhysics);
   web.set_x(parent.get_x());
   web.set_y(parent.get_y());
@@ -195,8 +195,8 @@ Entity& alloc_web(Simulation* sim, float radius, const Entity& parent) {
   return web;
 }
 
-Entity& alloc_cpu_camera(Simulation* sim, const EntityID team) {
-  Entity& ent = sim->alloc_ent();
+Entity& alloc_cpu_camera(Simulation& sim, const EntityID team) {
+  Entity& ent = sim.alloc_ent();
   ent.add_component(kCamera);
   ent.add_component(kRelations);
 
@@ -222,7 +222,7 @@ Entity& alloc_cpu_camera(Simulation* sim, const EntityID team) {
   return ent;
 }
 
-void player_spawn(Simulation* sim, Entity& camera, Entity& player) {
+void player_spawn(Simulation& sim, Entity& camera, Entity& player) {
   camera.set_player(player.id);
   player.set_parent(camera.id);
   player.set_color(camera.get_color());

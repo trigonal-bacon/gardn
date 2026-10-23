@@ -22,8 +22,8 @@ static bool _should_interact(const Entity& ent1, const Entity& ent2) {
   return false;
 }
 
-static void _pickup_drop(Simulation* sim, Entity& player, Entity& drop) {
-  if (!sim->ent_alive(player.get_parent()))
+static void _pickup_drop(Simulation& sim, Entity& player, Entity& drop) {
+  if (!sim.ent_alive(player.get_parent()))
     return;
   if (drop.immunity_ticks > 0)
     return;
@@ -35,7 +35,7 @@ static void _pickup_drop(Simulation* sim, Entity& player, Entity& drop) {
     drop.set_x(player.get_x());
     drop.set_y(player.get_y());
     BitMath::unset(drop.flags, EntityFlags::kIsDespawning);
-    sim->request_delete(drop.id);
+    sim.request_delete(drop.id);
     // peaceful transfer, no petal tracking needed
     return;
   }
@@ -74,7 +74,7 @@ static void _cancel_movement(Entity& ent, Vector dir, Vector add) {
   ent.collision_velocity += push * (0.5 * PLAYER_ACCELERATION);
 }
 
-void on_collide(Simulation* sim, Entity& ent1, Entity& ent2) {
+void on_collide(Simulation& sim, Entity& ent1, Entity& ent2) {
   // do a distance dependent check first (it's faster)
   float min_dist = ent1.get_radius() + ent2.get_radius();
   if (fabs(ent1.get_x() - ent2.get_x()) > min_dist ||
@@ -133,9 +133,9 @@ void on_collide(Simulation* sim, Entity& ent1, Entity& ent2) {
       inflict_damage(sim, ent2.id, ent1.id, ent2.damage, DamageType::kContact);
     }
     if (ent1.health == 0)
-      sim->request_delete(ent1.id);
+      sim.request_delete(ent1.id);
     if (ent2.health == 0)
-      sim->request_delete(ent2.id);
+      sim.request_delete(ent2.id);
   }
 
   if (ent1.has_component(kDrop) && ent2.has_component(kFlower))

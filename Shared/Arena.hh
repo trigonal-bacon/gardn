@@ -45,13 +45,13 @@ FIELDS_Arena
   void init();
   void reset_protocol();
 #ifdef SERVERSIDE
-  void write(Writer*, uint8_t);
+  void write(Writer&, uint8_t);
 #define SINGLE(name, type) void set_##name(type const);
 #define MULTIPLE(name, type, amt) void set_##name(uint32_t, type const);
   FIELDS_Arena
 #undef SINGLE
 #undef MULTIPLE
 #else
-  void read(Reader*, uint8_t);
+  void read(Reader&, uint8_t);
 #endif
 };

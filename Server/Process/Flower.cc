@@ -28,7 +28,7 @@ struct RotationCenter {
   float r;
 };
 
-static struct PlayerBuffs _get_petal_passive_buffs(Simulation* sim,
+static struct PlayerBuffs _get_petal_passive_buffs(Simulation& sim,
                                                    Entity& player) {
   struct PlayerBuffs buffs = {0};
   if (player.has_component(kMob))
@@ -70,7 +70,7 @@ static struct PlayerBuffs _get_petal_passive_buffs(Simulation* sim,
   return buffs;
 }
 
-static uint32_t _get_petal_rotation_count(Simulation* sim, Entity& player) {
+static uint32_t _get_petal_rotation_count(Simulation& sim, Entity& player) {
   uint32_t count = 0;
   for (uint8_t i = 0; i < player.get_loadout_count(); ++i) {
     const LoadoutSlot& slot = player.loadout[i];
@@ -79,9 +79,9 @@ static uint32_t _get_petal_rotation_count(Simulation* sim, Entity& player) {
       ++count;
     else {
       for (uint32_t j = 0; j < slot.size(); ++j) {
-        if (!sim->ent_alive(slot.petals[j].ent_id))
+        if (!sim.ent_alive(slot.petals[j].ent_id))
           ++count;
-        else if (!BitMath::at(sim->get_ent(slot.petals[j].ent_id).flags,
+        else if (!BitMath::at(sim.get_ent(slot.petals[j].ent_id).flags,
                               EntityFlags::kIsDetached))
           ++count;
       }
@@ -90,7 +90,7 @@ static uint32_t _get_petal_rotation_count(Simulation* sim, Entity& player) {
   return count;
 }
 
-static const RotationCenter _get_petal_rotation_center(Simulation* sim,
+static const RotationCenter _get_petal_rotation_center(Simulation& sim,
                                                        const Entity& player) {
   RotationCenter rotation_center = {
       .x = player.get_x(), .y = player.get_y(), .r = player.get_radius()};
@@ -100,9 +100,9 @@ static const RotationCenter _get_petal_rotation_center(Simulation* sim,
       continue;
     for (uint32_t j = 0; j < slot.size(); ++j) {
       const LoadoutPetal& petal_slot = slot.petals[j];
-      if (!sim->ent_alive(petal_slot.ent_id))
+      if (!sim.ent_alive(petal_slot.ent_id))
         continue;
-      Entity& moon = sim->get_ent(petal_slot.ent_id);
+      Entity& moon = sim.get_ent(petal_slot.ent_id);
       rotation_center.x = moon.get_x();
       rotation_center.y = moon.get_y();
       rotation_center.r = moon.get_radius();
@@ -112,7 +112,7 @@ static const RotationCenter _get_petal_rotation_center(Simulation* sim,
   return rotation_center;
 }
 
-void tick_player_behavior(Simulation* sim, Entity& player) {
+void tick_player_behavior(Simulation& sim, Entity& player) {
   if (player.pending_delete)
     return;
   DEBUG_ONLY(assert(player.max_health > 0);)
@@ -138,8 +138,8 @@ void tick_player_behavior(Simulation* sim, Entity& player) {
   // maybe use delta mode for face flags?
   player.set_face_flags(0);
 
-  if (sim->ent_alive(player.get_parent())) {
-    Entity& camera = sim->get_ent(player.get_parent());
+  if (sim.ent_alive(player.get_parent())) {
+    Entity& camera = sim.get_ent(player.get_parent());
     camera.set_fov(BASE_FOV * buffs.vision_factor);
   }
 
@@ -165,7 +165,7 @@ void tick_player_behavior(Simulation* sim, Entity& player) {
     float min_reload = 1;
     for (uint32_t j = 0; j < slot.size(); ++j) {
       LoadoutPetal& petal_slot = slot.petals[j];
-      if (!sim->ent_alive(petal_slot.ent_id)) {
+      if (!sim.ent_alive(petal_slot.ent_id)) {
         petal_slot.ent_id = NULL_ENTITY;
         game_tick_t reload_time =
             (petal_data.reload * TPS) * buffs.reload_factor;
@@ -176,16 +176,16 @@ void tick_player_behavior(Simulation* sim, Entity& player) {
         min_reload = std::min(min_reload, this_reload);
         if (petal_slot.reload >= reload_time) {
           petal_slot.ent_id = alloc_petal(sim, slot_petal_id, player).id;
-          sim->get_ent(petal_slot.ent_id).damage *= buffs.damage_factor;
-          sim->get_ent(petal_slot.ent_id).set_x(rotation_center.x);
-          sim->get_ent(petal_slot.ent_id).set_y(rotation_center.y);
+          sim.get_ent(petal_slot.ent_id).damage *= buffs.damage_factor;
+          sim.get_ent(petal_slot.ent_id).set_x(rotation_center.x);
+          sim.get_ent(petal_slot.ent_id).set_y(rotation_center.y);
           petal_slot.reload = 0;
           slot.already_spawned = 1;
         } else
           ++petal_slot.reload;
       }
-      if (sim->ent_alive(petal_slot.ent_id)) {
-        Entity& petal = sim->get_ent(petal_slot.ent_id);
+      if (sim.ent_alive(petal_slot.ent_id)) {
+        Entity& petal = sim.get_ent(petal_slot.ent_id);
         // only do this if petal not despawning
         if (petal.has_component(kPetal) &&
             !BitMath::at(petal.flags, EntityFlags::kIsDespawning) &&
@@ -214,7 +214,7 @@ void tick_player_behavior(Simulation* sim, Entity& player) {
           if (petal_data.attributes.clump_radius > 0) {
             Vector secondary;
             secondary
-                .unit_normal(2 * M_PI * j / petal_data.count +
+                .unit_normal(2 * M_PI * j / slot.size() +
                              player.petal_base_angle * 1.1)
                 .set_magnitude(petal_data.attributes.clump_radius);
             wanting += secondary;
@@ -242,7 +242,7 @@ void tick_player_behavior(Simulation* sim, Entity& player) {
 
             if (petal_data.attributes.spawn_count == 0) {
               petal_slot.ent_id = mob.id;
-              sim->request_delete(petal.id);
+              sim.request_delete(petal.id);
               break;
             } else {
               entity_set_despawn_tick(

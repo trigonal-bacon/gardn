@@ -22,11 +22,11 @@ public:
   static const EntityID& set(const EntityID& v) { return v; }
 };
 
-void entity_clear_references(Simulation* sim, Entity& ent) {
+void entity_clear_references(Simulation& sim, Entity& ent) {
 #define SINGLE(component, name, type)                                          \
   if constexpr (std::is_same_v<type, EntityID>) {                              \
     if (ent.has_component(k##component) &&                                     \
-        !sim->ent_exists(FilterCast<EntityID, type>::get(ent.get_##name())))   \
+        !sim.ent_exists(FilterCast<EntityID, type>::get(ent.get_##name())))   \
       ent.set_##name(FilterCast<type, EntityID>::get(NULL_ENTITY));            \
   }
 #define MULTIPLE(component, name, type, count)
@@ -35,7 +35,7 @@ void entity_clear_references(Simulation* sim, Entity& ent) {
 #undef MULTIPLE
 #define SINGLE(name, type, default)                                            \
   if constexpr (std::is_same_v<type, EntityID>) {                              \
-    if (!sim->ent_exists(FilterCast<EntityID, type>::get(ent.name)))           \
+    if (!sim.ent_exists(FilterCast<EntityID, type>::get(ent.name)))           \
       ent.name = FilterCast<type, EntityID>::get(NULL_ENTITY);                 \
   }
 #define MULTIPLE(name, type, count, default)

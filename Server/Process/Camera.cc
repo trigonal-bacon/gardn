@@ -5,9 +5,9 @@
 #include <Shared/Simulation.hh>
 #include <Shared/StaticData.hh>
 
-void tick_camera_behavior(Simulation* sim, Entity& ent) {
-  if (sim->ent_exists(ent.get_player())) {
-    Entity& player = sim->get_ent(ent.get_player());
+void tick_camera_behavior(Simulation& sim, Entity& ent) {
+  if (sim.ent_exists(ent.get_player())) {
+    Entity& player = sim.get_ent(ent.get_player());
     ent.set_camera_x(player.get_x());
     ent.set_camera_y(player.get_y());
     player.set_loadout_count(
@@ -33,12 +33,12 @@ void tick_camera_behavior(Simulation* sim, Entity& ent) {
   } else {
     if (BitMath::at(ent.flags, EntityFlags::kCPUControlled)) {
       // temp: cpu cameras die
-      return sim->request_delete(ent.id);
+      return sim.request_delete(ent.id);
     }
     ent.set_player(NULL_ENTITY);
     ent.set_fov(BASE_FOV * 0.9);
-    if (sim->ent_exists(ent.last_damaged_by)) {
-      Entity& spectating = sim->get_ent(ent.last_damaged_by);
+    if (sim.ent_exists(ent.last_damaged_by)) {
+      Entity& spectating = sim.get_ent(ent.last_damaged_by);
       ent.set_camera_x(spectating.get_x());
       ent.set_camera_y(spectating.get_y());
     }

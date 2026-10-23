@@ -38,6 +38,6 @@ public:
   void post_tick();
 
   // will only consider active entities from the start of the tick() call
-  void for_each_entity(std::function<void(Simulation*, Entity&)>);
-  template <uint8_t> void for_each(std::function<void(Simulation*, Entity&)>);
+  void for_each_entity(std::function<void(Simulation&, Entity&)>);
+  template <uint8_t> void for_each(std::function<void(Simulation&, Entity&)>);
 };

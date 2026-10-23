@@ -48,56 +48,56 @@ FIELDS_Arena
 #undef SINGLE
 #undef MULTIPLE
 
-    void Arena::write(Writer* writer, uint8_t create) {
+    void Arena::write(Writer& writer, uint8_t create) {
   if (create) {
-#define SINGLE(name, type) writer->write<type>(name);
+#define SINGLE(name, type) writer.write<type>(name);
 #define MULTIPLE(name, type, count)                                            \
   for (uint32_t i = 0; i < count; ++i)                                         \
-    writer->write<type>(name[i]);
+    writer.write<type>(name[i]);
     FIELDS_Arena
 #undef SINGLE
 #undef MULTIPLE
   } else {
 #define SINGLE(name, type)                                                     \
   if (state[k##name]) {                                                        \
-    writer->write<uint8_t>(k##name);                                           \
-    writer->write<type>(name);                                                 \
+    writer.write<uint8_t>(k##name);                                           \
+    writer.write<type>(name);                                                 \
   }
 #define MULTIPLE(name, type, amt)                                              \
   if (state[k##name]) {                                                        \
-    writer->write<uint8_t>(k##name);                                           \
+    writer.write<uint8_t>(k##name);                                           \
     for (uint32_t n = 0; n < amt; ++n)                                         \
       if (state_per_##name[n]) {                                               \
-        writer->write<uint8_t>(n);                                             \
-        writer->write<type>(name[n]);                                          \
+        writer.write<uint8_t>(n);                                             \
+        writer.write<type>(name[n]);                                          \
       }                                                                        \
-    writer->write<uint8_t>(amt);                                               \
+    writer.write<uint8_t>(amt);                                               \
   }
     FIELDS_Arena
 #undef SINGLE
 #undef MULTIPLE
-        writer->write<uint8_t>(kFieldCount);
+        writer.write<uint8_t>(kFieldCount);
   }
 }
 #else
-void Arena::read(Reader* reader, uint8_t create) {
+void Arena::read(Reader& reader, uint8_t create) {
   if (create) {
-#define SINGLE(name, type) reader->read<type>(name);
+#define SINGLE(name, type) reader.read<type>(name);
 #define MULTIPLE(name, type, count)                                            \
   for (uint32_t i = 0; i < count; ++i)                                         \
-    reader->read<type>(name[i]);
+    reader.read<type>(name[i]);
     FIELDS_Arena
 #undef SINGLE
 #undef MULTIPLE
   } else {
     while (1) {
-      switch (reader->read<uint8_t>()) {
+      switch (reader.read<uint8_t>()) {
       case kFieldCount: {
         return;
       }
 #define SINGLE(name, type)                                                     \
   case k##name: {                                                              \
-    reader->read<type>(name);                                                  \
+    reader.read<type>(name);                                                  \
     state.set(k##name, 1);                                                     \
     break;                                                                     \
   }
@@ -105,10 +105,10 @@ void Arena::read(Reader* reader, uint8_t create) {
   case k##name: {                                                              \
     state.set(k##name, 1);                                                     \
     while (1) {                                                                \
-      uint8_t index = reader->read<uint8_t>();                                 \
+      uint8_t index = reader.read<uint8_t>();                                 \
       if (index >= amt)                                                        \
         break;                                                                 \
-      reader->read<type>(name[index]);                                         \
+      reader.read<type>(name[index]);                                         \
       state_per_##name.set(index, 1);                                          \
     }                                                                          \
     break;                                                                     \

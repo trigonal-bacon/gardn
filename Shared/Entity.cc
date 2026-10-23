@@ -90,17 +90,17 @@ PERFIELD
 #undef SINGLE
 #undef MULTIPLE
 
-template <> void Entity::write<true>(Writer* writer) {
-  writer->write<uint32_t>(components);
-  writer->write<uint32_t>(lifetime);
+template <> void Entity::write<true>(Writer& writer) {
+  writer.write<uint32_t>(components);
+  writer.write<uint32_t>(lifetime);
 #define SINGLE(component, name, type)                                          \
   {                                                                            \
-    writer->write<type>(name);                                                 \
+    writer.write<type>(name);                                                 \
   }
 #define MULTIPLE(component, name, type, amt)                                   \
   {                                                                            \
     for (uint32_t n = 0; n < amt; ++n)                                         \
-      writer->write<type>(name[n]);                                            \
+      writer.write<type>(name[n]);                                            \
   }
 #define COMPONENT(name)                                                        \
   if (has_component(k##name)) {                                                \
@@ -112,22 +112,22 @@ template <> void Entity::write<true>(Writer* writer) {
 #undef COMPONENT
 }
 
-template <> void Entity::write<false>(Writer* writer) {
+template <> void Entity::write<false>(Writer& writer) {
 #define SINGLE(component, name, type)                                          \
   if (state[k##name]) {                                                        \
-    writer->write<uint8_t>(k##name);                                           \
-    writer->write<type>(name);                                                 \
+    writer.write<uint8_t>(k##name);                                           \
+    writer.write<type>(name);                                                 \
   }
 #define MULTIPLE(component, name, type, amt)                                   \
   if (state[k##name]) {                                                        \
-    writer->write<uint8_t>(k##name);                                           \
+    writer.write<uint8_t>(k##name);                                           \
     for (uint32_t n = 0; n < amt; ++n) {                                       \
       if (state_per_##name[n]) {                                               \
-        writer->write<uint8_t>(n);                                             \
-        writer->write<type>(name[n]);                                          \
+        writer.write<uint8_t>(n);                                             \
+        writer.write<type>(name[n]);                                          \
       }                                                                        \
     }                                                                          \
-    writer->write<uint8_t>(amt);                                               \
+    writer.write<uint8_t>(amt);                                               \
   }
 #define COMPONENT(name)                                                        \
   if (has_component(k##name)) {                                                \
@@ -137,10 +137,10 @@ template <> void Entity::write<false>(Writer* writer) {
 #undef SINGLE
 #undef MULTIPLE
 #undef COMPONENT
-  writer->write<uint8_t>(kFieldCount);
+  writer.write<uint8_t>(kFieldCount);
 }
 
-void Entity::write(Writer* writer, uint8_t create) {
+void Entity::write(Writer& writer, uint8_t create) {
   if (create)
     write<true>(writer);
   else
@@ -148,12 +148,12 @@ void Entity::write(Writer* writer, uint8_t create) {
 }
 #else
 
-template <> void Entity::read<true>(Reader* reader) {
-  components = reader->read<uint32_t>();
-  lifetime = reader->read<uint32_t>();
+template <> void Entity::read<true>(Reader& reader) {
+  components = reader.read<uint32_t>();
+  lifetime = reader.read<uint32_t>();
 #define SINGLE(component, name, type)                                          \
   {                                                                            \
-    reader->read<type>(name);                                                  \
+    reader.read<type>(name);                                                  \
     state.set(k##name, 1);                                                     \
   }
 #define MULTIPLE(component, name, type, amt)                                   \
@@ -161,7 +161,7 @@ template <> void Entity::read<true>(Reader* reader) {
     state.set(k##name, 1);                                                     \
     for (uint32_t n = 0; n < amt; ++n) {                                       \
       state_per_##name.set(n, 1);                                              \
-      reader->read<type>(name[n]);                                             \
+      reader.read<type>(name[n]);                                             \
     }                                                                          \
   }
 #define COMPONENT(name)                                                        \
@@ -174,16 +174,16 @@ template <> void Entity::read<true>(Reader* reader) {
 #undef COMPONENT
 }
 
-template <> void Entity::read<false>(Reader* reader) {
+template <> void Entity::read<false>(Reader& reader) {
   ++lifetime;
   while (1) {
-    switch (reader->read<uint8_t>()) {
+    switch (reader.read<uint8_t>()) {
     case kFieldCount: {
       return;
     }
 #define SINGLE(component, name, type)                                          \
   case k##name: {                                                              \
-    reader->read<type>(name);                                                  \
+    reader.read<type>(name);                                                  \
     state.set(k##name, 1);                                                     \
     break;                                                                     \
   }
@@ -191,10 +191,10 @@ template <> void Entity::read<false>(Reader* reader) {
   case k##name: {                                                              \
     state.set(k##name, 1);                                                     \
     while (1) {                                                                \
-      uint8_t index = reader->read<uint8_t>();                                 \
+      uint8_t index = reader.read<uint8_t>();                                 \
       if (index >= amt)                                                        \
         break;                                                                 \
-      reader->read<type>(name[index]);                                         \
+      reader.read<type>(name[index]);                                         \
       state_per_##name.set(index, 1);                                          \
     }                                                                          \
     break;                                                                     \
@@ -206,7 +206,7 @@ template <> void Entity::read<false>(Reader* reader) {
   }
 }
 
-void Entity::read(Reader* reader, uint8_t create) {
+void Entity::read(Reader& reader, uint8_t create) {
   if (create)
     read<true>(reader);
   else

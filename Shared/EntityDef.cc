@@ -36,12 +36,12 @@ void LoadoutSlot::reset() {
 
 PetalID::T LoadoutSlot::get_petal_id() const { return id; }
 
-void LoadoutSlot::update_id(Simulation* sim, PetalID::T petal_id) {
+void LoadoutSlot::update_id(Simulation& sim, PetalID::T petal_id) {
   struct PetalData const& petal_data = PETAL_DATA[id];
   for (uint32_t j = 0; j < size(); ++j) {
     LoadoutPetal& petal_slot = petals[j];
-    if (sim->ent_alive(petal_slot.ent_id))
-      sim->request_delete(petal_slot.ent_id);
+    if (sim.ent_alive(petal_slot.ent_id))
+      sim.request_delete(petal_slot.ent_id);
   }
   reset();
   id = petal_id;
@@ -56,6 +56,5 @@ void LoadoutSlot::force_reload() {
 uint32_t LoadoutSlot::size() const {
   if (PETAL_DATA[id].attributes.split_projectile)
     return 1;
-  return std::min(static_cast<uint32_t>(PETAL_DATA[id].count),
-                  MAX_PETALS_IN_CLUMP);
+  return std::min<uint32_t>(PETAL_DATA[id].count, MAX_PETALS_IN_CLUMP);
 }

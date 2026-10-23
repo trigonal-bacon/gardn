@@ -1,12 +1,14 @@
 #pragma once
 
+#include <array>
 #include <cstdint>
+#include <string_view>
 
 namespace StorageProtocol {
-const uint32_t MAX_LENGTH = 1024;
-extern uint8_t buffer[2 * MAX_LENGTH];
-void store(const char*, uint32_t);
-uint32_t retrieve(const char*, uint32_t);
+constexpr uint32_t MAX_LENGTH = 1024;
+extern std::array<uint8_t, 2 * MAX_LENGTH> buffer;
+void store(std::string_view, uint32_t);
+uint32_t retrieve(std::string_view, uint32_t);
 
 class Encoder {
 public:

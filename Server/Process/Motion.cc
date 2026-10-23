@@ -5,7 +5,7 @@
 
 #include <cmath>
 
-void tick_entity_motion(Simulation* sim, Entity& ent) {
+void tick_entity_motion(Simulation& sim, Entity& ent) {
   if (ent.pending_delete)
     return;
   if (ent.slow_ticks > 0) {

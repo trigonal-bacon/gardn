@@ -6,7 +6,7 @@
 
 #include <cmath>
 
-static bool _yggdrasil_revival_clause(Simulation* sim, Entity& player) {
+static bool _yggdrasil_revival_clause(Simulation& sim, Entity& player) {
   for (uint32_t i = 0; i < player.get_loadout_count(); ++i) {
     if (!player.loadout[i].already_spawned)
       continue;
@@ -18,13 +18,13 @@ static bool _yggdrasil_revival_clause(Simulation* sim, Entity& player) {
   return false;
 }
 
-void inflict_damage(Simulation* sim, const EntityID atk_id,
+void inflict_damage(Simulation& sim, const EntityID atk_id,
                     const EntityID def_id, float amt, uint8_t type) {
   if (amt <= 0)
     return;
-  if (!sim->ent_alive(def_id))
+  if (!sim.ent_alive(def_id))
     return;
-  Entity& defender = sim->get_ent(def_id);
+  Entity& defender = sim.get_ent(def_id);
   if (!defender.has_component(kHealth))
     return;
   DEBUG_ONLY(assert(!defender.pending_delete);)
@@ -74,16 +74,16 @@ void inflict_damage(Simulation* sim, const EntityID atk_id,
       }
   }
   */
-  if (!sim->ent_exists(atk_id))
+  if (!sim.ent_exists(atk_id))
     return;
-  Entity& attacker = sim->get_ent(atk_id);
+  Entity& attacker = sim.get_ent(atk_id);
 
   if (type != DamageType::kReflect && defender.damage_reflection > 0)
     inflict_damage(sim, def_id, attacker.base_entity,
                    damage_dealt * defender.damage_reflection,
                    DamageType::kReflect);
 
-  if (!sim->ent_alive(atk_id))
+  if (!sim.ent_alive(atk_id))
     return;
 
   if (defender.slow_ticks < attacker.slow_inflict)
@@ -100,11 +100,11 @@ void inflict_damage(Simulation* sim, const EntityID atk_id,
   }
 
   if (attacker.has_component(kPetal)) {
-    if (!sim->ent_alive(defender.target))
+    if (!sim.ent_alive(defender.target))
       defender.target = attacker.base_entity;
 
   } else {
-    if (!sim->ent_alive(defender.target))
+    if (!sim.ent_alive(defender.target))
       defender.target = atk_id;
   }
   defender.last_damaged_by = attacker.base_entity;
@@ -117,7 +117,7 @@ void inflict_damage(Simulation* sim, const EntityID atk_id,
   }
 }
 
-void inflict_heal(Simulation* sim, Entity& ent, float amt) {
+void inflict_heal(Simulation& sim, Entity& ent, float amt) {
   DEBUG_ONLY(assert(ent.has_component(kHealth));)
   if (ent.pending_delete || ent.health <= 0)
     return;

@@ -10,7 +10,7 @@
 #include <algorithm>
 #include <iostream>
 
-static void _alloc_drops(Simulation* sim,
+static void _alloc_drops(Simulation& sim,
                          std::vector<PetalID::T>& success_drops, float x,
                          float y) {
 #ifdef DEBUG
@@ -42,33 +42,33 @@ static void _alloc_drops(Simulation* sim,
   }
 }
 
-static void _add_score(Simulation* sim, const EntityID killer_id,
+static void _add_score(Simulation& sim, const EntityID killer_id,
                        const Entity& target) {
-  if (!sim->ent_exists(killer_id))
+  if (!sim.ent_exists(killer_id))
     return;
-  Entity& killer = sim->get_ent(killer_id);
+  Entity& killer = sim.get_ent(killer_id);
   if (killer.has_component(kScore))
     killer.set_score(killer.get_score() + target.score_reward);
 }
 
-void entity_on_death(Simulation* sim, const Entity& ent) {
+void entity_on_death(Simulation& sim, const Entity& ent) {
   // don't do on_death for any despawned entity
   uint8_t natural_despawn =
       BitMath::at(ent.flags, EntityFlags::kIsDespawning) &&
       ent.despawn_tick == 0;
-  if (ent.score_reward > 0 && sim->ent_exists(ent.last_damaged_by) &&
+  if (ent.score_reward > 0 && sim.ent_exists(ent.last_damaged_by) &&
       !natural_despawn) {
-    EntityID killer_id = sim->get_ent(ent.last_damaged_by).base_entity;
+    EntityID killer_id = sim.get_ent(ent.last_damaged_by).base_entity;
     _add_score(sim, killer_id, ent);
   }
-  if (sim->ent_alive(ent.get_parent()) &&
-      sim->get_ent(ent.get_parent()).has_component(kCamera)) {
-    Entity& camera = sim->get_ent(ent.get_parent());
-    EntityID killer_id = sim->ent_exists(ent.last_damaged_by)
-                             ? sim->get_ent(ent.last_damaged_by).base_entity
+  if (sim.ent_alive(ent.get_parent()) &&
+      sim.get_ent(ent.get_parent()).has_component(kCamera)) {
+    Entity& camera = sim.get_ent(ent.get_parent());
+    EntityID killer_id = sim.ent_exists(ent.last_damaged_by)
+                             ? sim.get_ent(ent.last_damaged_by).base_entity
                              : NULL_ENTITY;
-    if (sim->ent_alive(killer_id)) {
-      const Entity& killer = sim->get_ent(killer_id);
+    if (sim.ent_alive(killer_id)) {
+      const Entity& killer = sim.get_ent(killer_id);
       if (killer.has_component(kName))
         camera.set_killed_by(killer.get_name());
       else
@@ -95,8 +95,8 @@ void entity_on_death(Simulation* sim, const Entity& ent) {
         BitMath::at(ent.flags, EntityFlags::kSpawnedFromZone) &&
         frand() < DIGGER_SPAWN_CHANCE) {
       EntityID team = NULL_ENTITY;
-      if (sim->ent_exists(ent.last_damaged_by))
-        team = sim->get_ent(ent.last_damaged_by).get_team();
+      if (sim.ent_exists(ent.last_damaged_by))
+        team = sim.get_ent(ent.last_damaged_by).get_team();
       alloc_mob(sim, MobID::kDigger, ent.get_x(), ent.get_y(), team);
     }
   }
@@ -141,10 +141,10 @@ void entity_on_death(Simulation* sim, const Entity& ent) {
     _alloc_drops(sim, success_drops, ent.get_x(), ent.get_y());
     // if the camera is the one that disconnects
     // no need to re-add the petals to the petal tracker
-    if (!sim->ent_alive(ent.get_parent()) ||
-        !sim->get_ent(ent.get_parent()).has_component(kCamera))
+    if (!sim.ent_alive(ent.get_parent()) ||
+        !sim.get_ent(ent.get_parent()).has_component(kCamera))
       return;
-    Entity& camera = sim->get_ent(ent.get_parent());
+    Entity& camera = sim.get_ent(ent.get_parent());
     // reset all reloads and stuff
     uint32_t num_left = potential.size();
     // set respawn level

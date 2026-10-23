@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-void tick_health_behavior(Simulation* sim, Entity& ent) {
+void tick_health_behavior(Simulation& sim, Entity& ent) {
   ent.set_damaged(0);
   if (ent.poison_ticks > 0 && !ent.has_component(kPetal)) {
     ent.poison_ticks--;
@@ -21,7 +21,7 @@ void tick_health_behavior(Simulation* sim, Entity& ent) {
   if (ent.dandy_ticks > 0)
     --ent.dandy_ticks;
   if (ent.health <= 0)
-    sim->request_delete(ent.id);
+    sim.request_delete(ent.id);
   if (ent.max_health == 0)
     return;
   if (ent.has_component(kFlower))

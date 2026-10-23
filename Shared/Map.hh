@@ -17,11 +17,11 @@ extern uint32_t difficulty_at_level(uint32_t);
 extern uint32_t get_zone_from_pos(float, float);
 extern uint32_t get_suitable_difficulty_zone(uint32_t);
 #ifdef SERVERSIDE
-extern void remove_mob(Simulation*, uint32_t);
-extern void spawn_random_mob(Simulation*, float, float);
+extern void remove_mob(Simulation&, uint32_t);
+extern void spawn_random_mob(Simulation&, float, float);
 /* finds a spawn location at least <d> units from a player,
 and places it in the Vector &. returns whether or not a
 suitable spawn location was found */
-extern bool find_spawn_location(Simulation*, float, Vector&);
+extern bool find_spawn_location(Simulation&, float, Vector&);
 #endif
 } // namespace Map

@@ -39,9 +39,9 @@ void Client::disconnect(int reason, const std::string& message) {
 uint8_t Client::alive() {
   if (game == nullptr)
     return false;
-  Simulation* simulation = &game->simulation;
-  return simulation->ent_exists(camera) &&
-         simulation->ent_exists(simulation->get_ent(camera).get_player());
+  Simulation& sim = game->simulation;
+  return sim.ent_exists(camera) &&
+         sim.ent_exists(sim.get_ent(camera).get_player());
 }
 
 void Client::on_message(WebSocket* ws, std::string_view message,
@@ -85,9 +85,9 @@ void Client::on_message(WebSocket* ws, std::string_view message,
   case Serverbound::kClientInput: {
     if (!client->alive())
       break;
-    Simulation* simulation = &client->game->simulation;
-    Entity& camera = simulation->get_ent(client->camera);
-    Entity& player = simulation->get_ent(camera.get_player());
+    Simulation& sim = client->game->simulation;
+    Entity& camera = sim.get_ent(client->camera);
+    Entity& player = sim.get_ent(camera.get_player());
     if (client->check_invalid(validator.validate_float() &&
                               validator.validate_float() &&
                               validator.validate_uint8()))
@@ -120,19 +120,19 @@ void Client::on_message(WebSocket* ws, std::string_view message,
     reader.read<std::string>(name);
     if (client->check_invalid(UTF8Parser::is_valid_utf8(name)))
       return;
-    Simulation* simulation = &client->game->simulation;
-    Entity& camera = simulation->get_ent(client->camera);
-    Entity& player = alloc_player(simulation, camera.get_team());
-    player_spawn(simulation, camera, player);
+    Simulation& sim = client->game->simulation;
+    Entity& camera = sim.get_ent(client->camera);
+    Entity& player = alloc_player(sim, camera.get_team());
+    player_spawn(sim, camera, player);
     player.set_name(name);
     break;
   }
   case Serverbound::kPetalDelete: {
     if (!client->alive())
       break;
-    Simulation* simulation = &client->game->simulation;
-    Entity& camera = simulation->get_ent(client->camera);
-    Entity& player = simulation->get_ent(camera.get_player());
+    Simulation& sim = client->game->simulation;
+    Entity& camera = sim.get_ent(client->camera);
+    Entity& player = sim.get_ent(camera.get_player());
     if (client->check_invalid(validator.validate_uint8()))
       return;
     uint8_t pos = reader.read<uint8_t>();
@@ -145,7 +145,7 @@ void Client::on_message(WebSocket* ws, std::string_view message,
       // need to delete if over cap
       if (player.deleted_petals.size() == player.deleted_petals.capacity())
         // removes old trashed old petal
-        PetalTracker::remove_petal(simulation, player.deleted_petals[0]);
+        PetalTracker::remove_petal(sim, player.deleted_petals[0]);
       player.deleted_petals.push_back(old_id);
     }
     player.set_loadout_ids(pos, PetalID::kNone);
@@ -154,9 +154,9 @@ void Client::on_message(WebSocket* ws, std::string_view message,
   case Serverbound::kPetalSwap: {
     if (!client->alive())
       break;
-    Simulation* simulation = &client->game->simulation;
-    Entity& camera = simulation->get_ent(client->camera);
-    Entity& player = simulation->get_ent(camera.get_player());
+    Simulation& sim = client->game->simulation;
+    Entity& camera = sim.get_ent(client->camera);
+    Entity& player = sim.get_ent(camera.get_player());
     if (client->check_invalid(validator.validate_uint8() &&
                               validator.validate_uint8()))
       return;

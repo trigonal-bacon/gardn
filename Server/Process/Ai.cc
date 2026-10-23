@@ -31,13 +31,13 @@ static void set_and_follow_angle(Entity& ent, float angle) {
   ent.set_angle(angle);
 }
 
-static void default_tick_idle(Simulation* sim, Entity& ent) {
+static void default_tick_idle(Simulation& sim, Entity& ent) {
   ent.ai_tick = 0;
   set_and_follow_angle(ent, frand() * 2 * M_PI);
   ent.ai_state = AIState::kIdleMoving;
 }
 
-static void default_tick_idle_moving(Simulation* sim, Entity& ent,
+static void default_tick_idle_moving(Simulation& sim, Entity& ent,
                                      float freq = 0.002, float k = 2) {
   if (ent.ai_tick * (1000.0f / TPS) > 6.28 / freq) {
     ent.ai_tick = 0;
@@ -50,14 +50,14 @@ static void default_tick_idle_moving(Simulation* sim, Entity& ent,
                      powf((1 - cosf(t * freq)) / 2, k));
 }
 
-static void default_tick_returning(Simulation* sim, Entity& ent,
+static void default_tick_returning(Simulation& sim, Entity& ent,
                                    float speed = 1.0) {
-  if (!sim->ent_alive(ent.get_parent())) {
+  if (!sim.ent_alive(ent.get_parent())) {
     ent.ai_tick = 0;
     ent.ai_state = AIState::kIdle;
     return;
   }
-  Entity& parent = sim->get_ent(ent.get_parent());
+  Entity& parent = sim.get_ent(ent.get_parent());
   Vector delta(parent.get_x() - ent.get_x(), parent.get_y() - ent.get_y());
   if (delta.magnitude() > 300) {
     ent.ai_tick = 0;
@@ -71,7 +71,7 @@ static void default_tick_returning(Simulation* sim, Entity& ent,
   set_and_follow_angle(ent, delta.angle());
 }
 
-static void tick_default_passive(Simulation* sim, Entity& ent) {
+static void tick_default_passive(Simulation& sim, Entity& ent) {
   switch (ent.ai_state) {
   case AIState::kIdle: {
     default_tick_idle(sim, ent);
@@ -91,9 +91,9 @@ static void tick_default_passive(Simulation* sim, Entity& ent) {
   }
 }
 
-static void tick_default_neutral(Simulation* sim, Entity& ent) {
-  if (sim->ent_alive(ent.target)) {
-    Entity& target = sim->get_ent(ent.target);
+static void tick_default_neutral(Simulation& sim, Entity& ent) {
+  if (sim.ent_alive(ent.target)) {
+    Entity& target = sim.get_ent(ent.target);
     Vector v(target.get_x() - ent.get_x(), target.get_y() - ent.get_y());
     v.set_magnitude(get_aggro_speed(ent));
     ent.acceleration = v;
@@ -109,9 +109,9 @@ static void tick_default_neutral(Simulation* sim, Entity& ent) {
   }
 }
 
-static void tick_default_aggro(Simulation* sim, Entity& ent) {
-  if (sim->ent_alive(ent.target)) {
-    Entity& target = sim->get_ent(ent.target);
+static void tick_default_aggro(Simulation& sim, Entity& ent) {
+  if (sim.ent_alive(ent.target)) {
+    Entity& target = sim.get_ent(ent.target);
     Vector v(target.get_x() - ent.get_x(), target.get_y() - ent.get_y());
     _focus_lose_clause(ent, v);
     v.set_magnitude(get_aggro_speed(ent));
@@ -130,7 +130,7 @@ static void tick_default_aggro(Simulation* sim, Entity& ent) {
   }
 }
 
-static void tick_bee_passive(Simulation* sim, Entity& ent, float freq = 0.002,
+static void tick_bee_passive(Simulation& sim, Entity& ent, float freq = 0.002,
                              float k = 0.5) {
   switch (ent.ai_state) {
   case AIState::kIdle: {
@@ -159,9 +159,9 @@ static void tick_bee_passive(Simulation* sim, Entity& ent, float freq = 0.002,
   }
 }
 
-static void tick_hornet_aggro(Simulation* sim, Entity& ent) {
-  if (sim->ent_alive(ent.target)) {
-    Entity& target = sim->get_ent(ent.target);
+static void tick_hornet_aggro(Simulation& sim, Entity& ent) {
+  if (sim.ent_alive(ent.target)) {
+    Entity& target = sim.get_ent(ent.target);
     Vector v(target.get_x() - ent.get_x(), target.get_y() - ent.get_y());
     _focus_lose_clause(ent, v);
     set_and_follow_angle(ent, v.angle());
@@ -204,7 +204,7 @@ static void tick_hornet_aggro(Simulation* sim, Entity& ent) {
   }
 }
 
-static void tick_centipede_passive(Simulation* sim, Entity& ent) {
+static void tick_centipede_passive(Simulation& sim, Entity& ent) {
   switch (ent.ai_state) {
   case AIState::kIdle: {
     set_and_follow_angle(ent, ent.get_angle() + 0.2 / TPS);
@@ -227,9 +227,9 @@ static void tick_centipede_passive(Simulation* sim, Entity& ent) {
       .set_magnitude(get_passive_speed(ent));
 }
 
-static void tick_centipede_neutral(Simulation* sim, Entity& ent) {
-  if (sim->ent_alive(ent.target)) {
-    Entity& target = sim->get_ent(ent.target);
+static void tick_centipede_neutral(Simulation& sim, Entity& ent) {
+  if (sim.ent_alive(ent.target)) {
+    Entity& target = sim.get_ent(ent.target);
     Vector v(target.get_x() - ent.get_x(), target.get_y() - ent.get_y());
     v.set_magnitude(get_passive_speed(ent));
     ent.acceleration = v;
@@ -253,9 +253,9 @@ static void tick_centipede_neutral(Simulation* sim, Entity& ent) {
   }
 }
 
-static void tick_centipede_aggro(Simulation* sim, Entity& ent) {
-  if (sim->ent_alive(ent.target)) {
-    Entity& target = sim->get_ent(ent.target);
+static void tick_centipede_aggro(Simulation& sim, Entity& ent) {
+  if (sim.ent_alive(ent.target)) {
+    Entity& target = sim.get_ent(ent.target);
     Vector v(target.get_x() - ent.get_x(), target.get_y() - ent.get_y());
     _focus_lose_clause(ent, v);
     v.set_magnitude(get_aggro_speed(ent));
@@ -282,7 +282,7 @@ static void tick_centipede_aggro(Simulation* sim, Entity& ent) {
   }
 }
 
-static void tick_sandstorm(Simulation* sim, Entity& ent) {
+static void tick_sandstorm(Simulation& sim, Entity& ent) {
   switch (ent.ai_state) {
   case AIState::kIdle: {
     if (frand() > 1.0f / TPS) {
@@ -319,16 +319,16 @@ static void tick_sandstorm(Simulation* sim, Entity& ent) {
     ent.ai_state = AIState::kIdle;
     break;
   }
-  if (sim->ent_alive(ent.get_parent())) {
-    Entity& parent = sim->get_ent(ent.get_parent());
+  if (sim.ent_alive(ent.get_parent())) {
+    Entity& parent = sim.get_ent(ent.get_parent());
     ent.acceleration = (ent.acceleration + parent.acceleration) * 0.75;
   }
 }
 
-static void tick_digger(Simulation* sim, Entity& ent) {
+static void tick_digger(Simulation& sim, Entity& ent) {
   ent.input = 0;
-  if (sim->ent_alive(ent.target)) {
-    Entity& target = sim->get_ent(ent.target);
+  if (sim.ent_alive(ent.target)) {
+    Entity& target = sim.get_ent(ent.target);
     Vector v(target.get_x() - ent.get_x(), target.get_y() - ent.get_y());
     _focus_lose_clause(ent, v);
     v.set_magnitude(get_aggro_speed(ent));
@@ -371,28 +371,28 @@ static void tick_digger(Simulation* sim, Entity& ent) {
   }
 }
 
-void tick_ai_behavior(Simulation* sim, Entity& ent) {
+void tick_ai_behavior(Simulation& sim, Entity& ent) {
   if (ent.pending_delete)
     return;
-  if (sim->ent_alive(ent.seg_head))
+  if (sim.ent_alive(ent.seg_head))
     return;
   ent.acceleration.set(0, 0);
-  if (!sim->ent_alive(ent.target) && sim->ent_alive(ent.last_damaged_by))
+  if (!sim.ent_alive(ent.target) && sim.ent_alive(ent.last_damaged_by))
     ent.target = ent.last_damaged_by;
   if (!(ent.get_parent() == NULL_ENTITY)) {
-    if (!sim->ent_alive(ent.get_parent())) {
+    if (!sim.ent_alive(ent.get_parent())) {
       if (BitMath::at(ent.flags, EntityFlags::kDieOnParentDeath))
-        sim->request_delete(ent.id);
+        sim.request_delete(ent.id);
       ent.set_parent(NULL_ENTITY);
     } else {
-      const Entity& parent = sim->get_ent(ent.get_parent());
+      const Entity& parent = sim.get_ent(ent.get_parent());
       Vector delta(parent.get_x() - ent.get_x(), parent.get_y() - ent.get_y());
       if (delta.magnitude() > SUMMON_RETREAT_RADIUS) {
         ent.target = NULL_ENTITY;
         ent.ai_state = AIState::kReturning;
       }
-      if (sim->ent_alive(ent.target)) {
-        const Entity& target = sim->get_ent(ent.target);
+      if (sim.ent_alive(ent.target)) {
+        const Entity& target = sim.get_ent(ent.target);
         delta = Vector(parent.get_x() - target.get_x(),
                        parent.get_y() - target.get_y());
         if (delta.magnitude() > SUMMON_RETREAT_RADIUS)
@@ -471,7 +471,7 @@ void tick_ai_behavior(Simulation* sim, Entity& ent) {
     break;
   }
   // wall avoidance, reflect both angles
-  if (!sim->ent_alive(ent.target)) {
+  if (!sim.ent_alive(ent.target)) {
     if (ent.get_x() - ent.get_radius() <= 0 &&
         angle_within(ent.get_angle(), M_PI, M_PI / 2))
       set_and_follow_angle(ent, M_PI - ent.get_angle());
