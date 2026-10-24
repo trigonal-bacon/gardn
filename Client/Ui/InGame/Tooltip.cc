@@ -42,8 +42,8 @@ static float get_damage_factor() {
 static std::unique_ptr<Element> make_petal_stat_container(PetalID::T id) {
   std::vector<std::unique_ptr<Ui::Element>> stats =
       make_children(el<Element>(0, 10));
-  struct PetalData const& petal_data = PETAL_DATA[id];
-  struct PetalAttributes const& attrs = petal_data.attributes;
+  const PetalData& petal_data = PETAL_DATA[id];
+  const PetalAttributes& attrs = petal_data.attributes;
   if (petal_data.health > 0) {
     stats.push_back(el<HContainer>(
         make_children(el<StaticText>(12, "Health:", Style{.fill = 0xff77ff77}),

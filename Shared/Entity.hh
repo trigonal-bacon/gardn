@@ -63,9 +63,9 @@ public:
   void add_component(uint32_t);
   uint8_t has_component(uint32_t) const;
 
-#define SINGLE(component, name, type) type const& get_##name() const;
+#define SINGLE(component, name, type) const type& get_##name() const;
 #define MULTIPLE(component, name, type, amt)                                   \
-  type const& get_##name(uint32_t) const;
+  const type& get_##name(uint32_t) const;
   PERFIELD
 #undef SINGLE
 #undef MULTIPLE
@@ -80,9 +80,9 @@ public:
   void write(Writer&, uint8_t);
 
   template <bool> void write(Writer&);
-#define SINGLE(component, name, type) void set_##name(type const&);
+#define SINGLE(component, name, type) void set_##name(const type&);
 #define MULTIPLE(component, name, type, amt)                                   \
-  void set_##name(uint32_t, type const&);
+  void set_##name(uint32_t, const type&);
   PERFIELD
 #undef SINGLE
 #undef MULTIPLE

@@ -32,7 +32,7 @@ static Entity& __alloc_mob(Simulation& sim, MobID::T mob_id, float x, float y,
                            const EntityID team,
                            std::function<void(Entity&)> on_spawn) {
   DEBUG_ONLY(assert(mob_id < MobID::kNumMobs);)
-  struct MobData const& data = MOB_DATA[mob_id];
+  const MobData& data = MOB_DATA[mob_id];
   float seed = frand();
   Entity& mob = sim.alloc_ent();
 
@@ -81,7 +81,7 @@ static Entity& __alloc_mob(Simulation& sim, MobID::T mob_id, float x, float y,
 
 Entity& alloc_mob(Simulation& sim, MobID::T mob_id, float x, float y,
                   const EntityID team, std::function<void(Entity&)> on_spawn) {
-  struct MobData const& data = MOB_DATA[mob_id];
+  const MobData& data = MOB_DATA[mob_id];
   if (data.attributes.segments <= 1) {
     Entity& ent = __alloc_mob(sim, mob_id, x, y, team, on_spawn);
     if (mob_id == MobID::kAntHole) {
@@ -145,7 +145,7 @@ Entity& alloc_player(Simulation& sim, const EntityID team) {
 Entity& alloc_petal(Simulation& sim, PetalID::T petal_id,
                     const Entity& parent) {
   DEBUG_ONLY(assert(petal_id < PetalID::kNumPetals);)
-  struct PetalData const& petal_data = PETAL_DATA[petal_id];
+  const PetalData& petal_data = PETAL_DATA[petal_id];
   Entity& petal = sim.alloc_ent();
   petal.add_component(kPhysics);
   petal.set_x(parent.get_x());

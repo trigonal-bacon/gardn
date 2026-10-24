@@ -82,7 +82,7 @@ void entity_on_death(Simulation& sim, const Entity& ent) {
     if (BitMath::at(ent.flags, EntityFlags::kSpawnedFromZone))
       Map::remove_mob(sim, ent.zone);
     if (!natural_despawn && !(BitMath::at(ent.flags, EntityFlags::kNoDrops))) {
-      struct MobData const& mob_data = MOB_DATA[ent.get_mob_id()];
+      const MobData& mob_data = MOB_DATA[ent.get_mob_id()];
       std::vector<PetalID::T> success_drops = {};
       const StaticArray<float, MAX_DROPS_PER_MOB>& drop_chances =
           MOB_DROP_CHANCES[ent.get_mob_id()];

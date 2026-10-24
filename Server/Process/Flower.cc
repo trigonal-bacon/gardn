@@ -39,8 +39,8 @@ static struct PlayerBuffs _get_petal_passive_buffs(Simulation& sim,
   for (uint32_t i = 0; i < player.get_loadout_count(); ++i) {
     const LoadoutSlot& slot = player.loadout[i];
     PetalID::T slot_petal_id = slot.get_petal_id();
-    struct PetalData const& petal_data = PETAL_DATA[slot_petal_id];
-    struct PetalAttributes const& attrs = petal_data.attributes;
+    const PetalData& petal_data = PETAL_DATA[slot_petal_id];
+    const PetalAttributes& attrs = petal_data.attributes;
     if (attrs.equipment != EquipmentFlags::kNone)
       player.set_equip_flags(player.get_equip_flags() | (1 << attrs.equipment));
     buffs.vision_factor = std::min(buffs.vision_factor, attrs.vision_factor);
@@ -74,7 +74,7 @@ static uint32_t _get_petal_rotation_count(Simulation& sim, Entity& player) {
   uint32_t count = 0;
   for (uint8_t i = 0; i < player.get_loadout_count(); ++i) {
     const LoadoutSlot& slot = player.loadout[i];
-    struct PetalData const& petal_data = PETAL_DATA[slot.get_petal_id()];
+    const PetalData& petal_data = PETAL_DATA[slot.get_petal_id()];
     if (petal_data.attributes.clump_radius > 0)
       ++count;
     else {
@@ -152,7 +152,7 @@ void tick_player_behavior(Simulation& sim, Entity& player) {
         player.get_overlevel_timer() >= PETAL_DISABLE_DELAY * TPS)
       slot.update_id(sim, player.get_loadout_ids(i));
     PetalID::T slot_petal_id = slot.get_petal_id();
-    struct PetalData const& petal_data = PETAL_DATA[slot_petal_id];
+    const PetalData& petal_data = PETAL_DATA[slot_petal_id];
     DEBUG_ONLY(assert(petal_data.count <= MAX_PETALS_IN_CLUMP);)
 
     if (slot_petal_id == PetalID::kNone || petal_data.count == 0)

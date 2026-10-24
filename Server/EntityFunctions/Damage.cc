@@ -1,6 +1,7 @@
 #include <Server/EntityFunctions.hh>
 
 #include <Server/Spawn.hh>
+#include <Server/PetalTracker.hh>
 #include <Shared/Entity.hh>
 #include <Shared/Simulation.hh>
 
@@ -13,6 +14,7 @@ static bool _yggdrasil_revival_clause(Simulation& sim, Entity& player) {
     if (player.loadout[i].get_petal_id() != PetalID::kYggdrasil)
       continue;
     player.set_loadout_ids(i, PetalID::kNone);
+    PetalTracker::remove_petal(sim, PetalID::kYggdrasil);
     return true;
   }
   return false;

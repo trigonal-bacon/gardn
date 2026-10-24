@@ -1099,7 +1099,7 @@ const std::array<StaticArray<float, MAX_DROPS_PER_MOB>, MobID::kNumMobs> MOB_DRO
       50000, 15000, 2500, 100, 10, 2.5, 1};
   double MOB_SPAWN_RATES[MobID::kNumMobs] = {0};
   double PETAL_AGGREGATE_DROPS[PetalID::kNumPetals] = {0};
-  for (struct ZoneDefinition const& zone : MAP_DATA) {
+  for (const ZoneDefinition& zone : MAP_DATA) {
     double total = 0;
     for (const SpawnChance& s : zone.spawns)
       total += s.chance;

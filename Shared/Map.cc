@@ -19,7 +19,7 @@ uint32_t Map::difficulty_at_level(uint32_t level) {
 uint32_t Map::get_zone_from_pos(float x, float y) {
   uint32_t ret = 0;
   for (uint32_t i = 1; i < MAP_DATA.size(); ++i) {
-    struct ZoneDefinition const& zone = MAP_DATA[i];
+    const ZoneDefinition& zone = MAP_DATA[i];
     if (fclamp(x, zone.left, zone.right) == x &&
         fclamp(y, zone.top, zone.bottom) == y)
       ret = i;
@@ -46,7 +46,7 @@ void Map::remove_mob(Simulation& sim, uint32_t zone) {
 
 void Map::spawn_random_mob(Simulation& sim, float x, float y) {
   uint32_t zone_id = Map::get_zone_from_pos(x, y);
-  struct ZoneDefinition const& zone = MAP_DATA[zone_id];
+  const ZoneDefinition& zone = MAP_DATA[zone_id];
   if (zone.density * (zone.right - zone.left) * (zone.bottom - zone.top) /
       (500 * 500) <
       sim.zone_mob_counts[zone_id])

@@ -414,7 +414,7 @@ void Renderer::stroke_text(std::string_view text) {
   js_bind_stroke_text(id, text.data(), text.size());
 }
 
-void Renderer::draw_text(std::string_view text, struct TextArgs const args) {
+void Renderer::draw_text(std::string_view text, const TextArgs args) {
   set_fill(args.fill);
   set_stroke(args.stroke);
   set_text_size(args.size);

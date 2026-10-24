@@ -16,7 +16,7 @@ void tick_petal_behavior(Simulation& sim, Entity& petal) {
     return;
   }
   Entity& player = sim.get_ent(petal.get_parent());
-  struct PetalData const& petal_data = PETAL_DATA[petal.get_petal_id()];
+  const PetalData& petal_data = PETAL_DATA[petal.get_petal_id()];
   if (petal_data.attributes.rotation_style == PetalAttributes::kPassiveRot) {
     // simulate on clientside
     float rot_amt = petal.get_petal_id() == PetalID::kWing ? 10.0 : 1.0;

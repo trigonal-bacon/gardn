@@ -926,7 +926,7 @@ void draw_static_petal_single(PetalID::T id, Renderer& ctx) {
 }
 
 void draw_static_petal(PetalID::T id, Renderer& ctx) {
-  struct PetalData const& data = PETAL_DATA[id];
+  const PetalData& data = PETAL_DATA[id];
   uint32_t count = data.count > 1 ? data.count : 1;
   for (uint32_t i = 0; i < count; ++i) {
     RenderContext context(&ctx);

@@ -27,7 +27,7 @@ void GalleryMob::on_render(Renderer& ctx) {
   ctx.begin_path();
   ctx.round_rect(-width / 2, -height / 2, width, height, style.round_radius);
   ctx.clip();
-  struct MobData const& data = MOB_DATA[id];
+  const MobData& data = MOB_DATA[id];
   if (id != MobID::kDigger)
     ctx.rotate(-3 * M_PI / 4);
   if (id == MobID::kBeetle || id == MobID::kMassiveBeetle)
@@ -50,7 +50,7 @@ void GalleryMob::on_render(Renderer& ctx) {
 static std::unique_ptr<Element> make_mob_drops(MobID::T id) {
   auto elt =
       el<HContainer>(make_children(), 0, 6, Style{.h_justify = Style::Left});
-  struct MobData const& data = MOB_DATA[id];
+  const MobData& data = MOB_DATA[id];
   const StaticArray<float, MAX_DROPS_PER_MOB>& drop_chances =
       MOB_DROP_CHANCES[id];
   std::vector<uint8_t> order;
@@ -73,8 +73,8 @@ static std::unique_ptr<Element> make_mob_drops(MobID::T id) {
 
 static std::unique_ptr<Element> make_mob_stat_container(MobID::T id) {
   std::vector<std::unique_ptr<Element>> stats;
-  struct MobData const& mob_data = MOB_DATA[id];
-  struct MobAttributes const& attrs = mob_data.attributes;
+  const MobData& mob_data = MOB_DATA[id];
+  const MobAttributes& attrs = mob_data.attributes;
   stats.push_back(el<HContainer>(
       make_children(el<StaticText>(12, "Health:", Style{.fill = 0xff77ff77}),
                     el<StaticText>(12, mob_data.health.to_string())),

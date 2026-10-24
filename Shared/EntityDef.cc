@@ -37,7 +37,7 @@ void LoadoutSlot::reset() {
 PetalID::T LoadoutSlot::get_petal_id() const { return id; }
 
 void LoadoutSlot::update_id(Simulation& sim, PetalID::T petal_id) {
-  struct PetalData const& petal_data = PETAL_DATA[id];
+  const PetalData& petal_data = PETAL_DATA[id];
   for (uint32_t j = 0; j < size(); ++j) {
     LoadoutPetal& petal_slot = petals[j];
     if (sim.ent_alive(petal_slot.ent_id))

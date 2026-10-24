@@ -96,7 +96,7 @@ public:
 
   void fill_text(std::string_view);
   void stroke_text(std::string_view);
-  void draw_text(std::string_view, struct TextArgs const);
+  void draw_text(std::string_view, const TextArgs);
   float get_text_size(std::string_view);
   // text ops
 };
