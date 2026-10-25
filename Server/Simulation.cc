@@ -10,25 +10,26 @@
 #include <Shared/Map.hh>
 
 #include <algorithm>
+#include <functional>
 #include <vector>
 
 static void calculate_leaderboard(Simulation& sim) {
-  std::vector<const Entity*> players;
+  std::vector<std::reference_wrapper<Entity>> players;
   sim.for_each<kCamera>([&](Simulation& sim, Entity& ent) {
     if (sim.ent_alive(ent.get_player()))
-      players.push_back(&sim.get_ent(ent.get_player()));
+      players.push_back(sim.get_ent(ent.get_player()));
   });
   std::stable_sort(players.begin(), players.end(),
-                   [](const Entity* a, const Entity* b) {
-                     return a->get_score() > b->get_score();
+                   [](const Entity& a, const Entity& b) {
+                     return a.get_score() > b.get_score();
                    });
   uint32_t num = players.size();
   sim.arena_info.set_player_count(num);
   num = std::min(num, LEADERBOARD_SIZE);
   for (uint32_t i = 0; i < num; ++i) {
-    sim.arena_info.set_names(i, players[i]->get_name());
-    sim.arena_info.set_scores(i, players[i]->get_score());
-    sim.arena_info.set_colors(i, players[i]->get_color());
+    sim.arena_info.set_names(i, players[i].get().get_name());
+    sim.arena_info.set_scores(i, players[i].get().get_score());
+    sim.arena_info.set_colors(i, players[i].get().get_color());
   }
 }
 

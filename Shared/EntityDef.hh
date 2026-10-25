@@ -42,6 +42,7 @@ typedef uint16_t game_tick_t;
 
 #define FIELDS_Relations                                                       \
   SINGLE(Relations, team, EntityID)                                            \
+  SINGLE(Relations, owner, EntityID)                                           \
   SINGLE(Relations, parent, EntityID)                                          \
   SINGLE(Relations, color, uint8_t)
 
@@ -114,7 +115,6 @@ typedef uint16_t game_tick_t;
                                                                                \
   SINGLE(base_entity, EntityID, = NULL_ENTITY)                                 \
   SINGLE(target, EntityID, = NULL_ENTITY)                                      \
-  SINGLE(seg_head, EntityID, = NULL_ENTITY)                                    \
   SINGLE(detection_radius, float, = 0)                                         \
   SINGLE(ai_state, uint8_t, = 0)                                               \
                                                                                \
@@ -149,7 +149,7 @@ public:
 
 namespace std {
 template <> struct hash<EntityID> {
-  size_t operator()(const EntityID& id) {
+  size_t operator()(const EntityID& id) const {
     return (size_t)EntityID::make_hash(id);
   }
 };

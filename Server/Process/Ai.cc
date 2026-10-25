@@ -52,12 +52,12 @@ static void default_tick_idle_moving(Simulation& sim, Entity& ent,
 
 static void default_tick_returning(Simulation& sim, Entity& ent,
                                    float speed = 1.0) {
-  if (!sim.ent_alive(ent.get_parent())) {
+  if (!sim.ent_alive(ent.get_owner())) {
     ent.ai_tick = 0;
     ent.ai_state = AIState::kIdle;
     return;
   }
-  Entity& parent = sim.get_ent(ent.get_parent());
+  Entity& parent = sim.get_ent(ent.get_owner());
   Vector delta(parent.get_x() - ent.get_x(), parent.get_y() - ent.get_y());
   if (delta.magnitude() > 300) {
     ent.ai_tick = 0;
@@ -319,8 +319,8 @@ static void tick_sandstorm(Simulation& sim, Entity& ent) {
     ent.ai_state = AIState::kIdle;
     break;
   }
-  if (sim.ent_alive(ent.get_parent())) {
-    Entity& parent = sim.get_ent(ent.get_parent());
+  if (sim.ent_alive(ent.get_owner())) {
+    Entity& parent = sim.get_ent(ent.get_owner());
     ent.acceleration = (ent.acceleration + parent.acceleration) * 0.75;
   }
 }
@@ -374,18 +374,18 @@ static void tick_digger(Simulation& sim, Entity& ent) {
 void tick_ai_behavior(Simulation& sim, Entity& ent) {
   if (ent.pending_delete)
     return;
-  if (sim.ent_alive(ent.seg_head))
+  if (sim.ent_alive(ent.get_parent()))
     return;
   ent.acceleration.set(0, 0);
   if (!sim.ent_alive(ent.target) && sim.ent_alive(ent.last_damaged_by))
     ent.target = ent.last_damaged_by;
-  if (!(ent.get_parent() == NULL_ENTITY)) {
-    if (!sim.ent_alive(ent.get_parent())) {
+  if (!(ent.get_owner() == NULL_ENTITY)) {
+    if (!sim.ent_alive(ent.get_owner())) {
       if (BitMath::at(ent.flags, EntityFlags::kDieOnParentDeath))
         sim.request_delete(ent.id);
-      ent.set_parent(NULL_ENTITY);
+      ent.set_owner(NULL_ENTITY);
     } else {
-      const Entity& parent = sim.get_ent(ent.get_parent());
+      const Entity& parent = sim.get_ent(ent.get_owner());
       Vector delta(parent.get_x() - ent.get_x(), parent.get_y() - ent.get_y());
       if (delta.magnitude() > SUMMON_RETREAT_RADIUS) {
         ent.target = NULL_ENTITY;
@@ -449,7 +449,7 @@ void tick_ai_behavior(Simulation& sim, Entity& ent) {
                       BitMath::set(mob.flags, EntityFlags::kHasCulling);
                     });
       entity_set_despawn_tick(spawned, 10 * TPS);
-      spawned.set_parent(ent.get_parent());
+      spawned.set_owner(ent.get_owner());
     }
     tick_default_aggro(sim, ent);
     break;

@@ -138,8 +138,8 @@ void tick_player_behavior(Simulation& sim, Entity& player) {
   // maybe use delta mode for face flags?
   player.set_face_flags(0);
 
-  if (sim.ent_alive(player.get_parent())) {
-    Entity& camera = sim.get_ent(player.get_parent());
+  if (sim.ent_alive(player.get_owner())) {
+    Entity& camera = sim.get_ent(player.get_owner());
     camera.set_fov(BASE_FOV * buffs.vision_factor);
   }
 
@@ -232,7 +232,7 @@ void tick_player_behavior(Simulation& sim, Entity& player) {
             Entity& mob = alloc_mob(
                 sim, spawn_id, petal.get_x(), petal.get_y(), petal.get_team(),
                 [&](Entity& mob) {
-                  mob.set_parent(player.id);
+                  mob.set_owner(player.id);
                   mob.set_color(player.get_color());
                   mob.base_entity = player.id;
                   BitMath::set(mob.flags, EntityFlags::kDieOnParentDeath);
@@ -249,7 +249,7 @@ void tick_player_behavior(Simulation& sim, Entity& player) {
                   mob, sec_reload_ticks * petal_data.attributes.spawn_count);
               petal.secondary_reload = 0;
               // needed
-              mob.set_parent(petal.id);
+              mob.set_owner(petal.id);
               mob.base_entity = player.id;
             }
           }

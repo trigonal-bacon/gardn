@@ -132,6 +132,7 @@ enum { kIdle, kIdleMoving, kReturning, kBasicAggro };
 namespace EntityFlags {
 enum {
   kIsDespawning,
+  kNoPhysicalCollision,
   kNoFriendlyCollision,
   kTakesNoKnockback,
   kDieOnParentDeath,

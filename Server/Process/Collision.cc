@@ -7,23 +7,19 @@
 #include <iostream>
 
 static bool _should_interact(const Entity& ent1, const Entity& ent2) {
-  // if (ent1.has_component(kFlower) || ent2.has_component(kFlower)) return
-  // false; if (ent1.has_component(kPetal) || ent2.has_component(kPetal)) return
-  // false;
   if (ent1.pending_delete || ent2.pending_delete)
     return false;
   if (!(ent1.get_team() == ent2.get_team()))
     return true;
   if (BitMath::at((ent1.flags | ent2.flags), EntityFlags::kNoFriendlyCollision))
     return false;
-  // if (ent1.has_component(kPetal) || ent2.has_component(kPetal)) return false;
   if (ent1.has_component(kMob) && ent2.has_component(kMob))
     return true;
   return false;
 }
 
 static void _pickup_drop(Simulation& sim, Entity& player, Entity& drop) {
-  if (!sim.ent_alive(player.get_parent()))
+  if (!sim.ent_alive(player.get_owner()))
     return;
   if (drop.immunity_ticks > 0)
     return;
@@ -88,7 +84,8 @@ void on_collide(Simulation& sim, Entity& ent1, Entity& ent2) {
   float dist = min_dist - separation.magnitude();
   if (dist < 0)
     return;
-  if (NO(kDrop) && NO(kWeb)) {
+  if (!BitMath::at(ent1.flags, EntityFlags::kNoPhysicalCollision) && 
+      !BitMath::at(ent2.flags, EntityFlags::kNoPhysicalCollision)) {
     if (separation.x == 0 && separation.y == 0)
       separation.unit_normal(frand() * 2 * M_PI);
     else

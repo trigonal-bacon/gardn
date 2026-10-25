@@ -63,7 +63,7 @@ void inflict_damage(Simulation& sim, const EntityID atk_id,
                         mob.score_reward = MOB_DATA[mob.get_mob_id()].xp;
                         BitMath::set(mob.flags, EntityFlags::kHasCulling);
                       });
-        child.set_parent(defender.id);
+        child.set_owner(defender.id);
         child.target = defender.target;
       }
     }

@@ -24,6 +24,7 @@ Entity& alloc_drop(Simulation& sim, PetalID::T drop_id) {
   drop.add_component(kDrop);
   drop.set_drop_id(drop_id);
   entity_set_despawn_tick(drop, 10 * (2 + PETAL_DATA[drop_id].rarity) * TPS);
+  BitMath::set(drop.flags, EntityFlags::kNoPhysicalCollision);
   drop.immunity_ticks = TPS / 3;
   return drop;
 }
@@ -87,12 +88,13 @@ Entity& alloc_mob(Simulation& sim, MobID::T mob_id, float x, float y,
     if (mob_id == MobID::kAntHole) {
       const std::vector<MobID::T> spawns = {
           MobID::kBabyAnt,   MobID::kBabyAnt,   MobID::kBabyAnt,
-          MobID::kWorkerAnt, MobID::kWorkerAnt, MobID::kSoldierAnt};
+          MobID::kWorkerAnt, MobID::kWorkerAnt, MobID::kSoldierAnt
+      };
       for (MobID::T mob_id : spawns) {
         Vector rand = Vector::rand(ent.get_radius() * 2);
         Entity& ant =
             __alloc_mob(sim, mob_id, x + rand.x, y + rand.y, team, on_spawn);
-        ant.set_parent(ent.id);
+        ant.set_owner(ent.id);
       }
     }
     return ent;
@@ -103,7 +105,7 @@ Entity& alloc_mob(Simulation& sim, MobID::T mob_id, float x, float y,
     for (uint32_t i = 1; i < data.attributes.segments; ++i) {
       Entity& seg = __alloc_mob(sim, mob_id, x, y, team, on_spawn);
       seg.add_component(kSegmented);
-      seg.seg_head = curr->id;
+      seg.set_parent(curr->id);
       seg.set_angle(curr->get_angle() + frand() * 0.1 - 0.05);
       seg.set_x(curr->get_x() - (curr->get_radius() + seg.get_radius()) *
                                     cosf(seg.get_angle()));
@@ -157,7 +159,7 @@ Entity& alloc_petal(Simulation& sim, PetalID::T petal_id,
     BitMath::set(petal.flags, EntityFlags::kIsDetached);
   petal.density = petal_data.attributes.density;
   petal.add_component(kRelations);
-  petal.set_parent(parent.id);
+  petal.set_owner(parent.id);
   petal.set_team(parent.get_team());
   petal.set_color(parent.get_color());
   petal.add_component(kPetal);
@@ -188,10 +190,11 @@ Entity& alloc_web(Simulation& sim, float radius, const Entity& parent) {
   web.density = 1.0;
   web.add_component(kRelations);
   web.set_team(parent.get_team());
-  web.set_parent(parent.id);
+  web.set_owner(parent.id);
   web.set_color(parent.get_color());
   web.add_component(kWeb);
   entity_set_despawn_tick(web, 10 * TPS);
+  BitMath::set(web.flags, EntityFlags::kNoPhysicalCollision);
   return web;
 }
 
@@ -209,7 +212,8 @@ Entity& alloc_cpu_camera(Simulation& sim, const EntityID team) {
   const std::vector<PetalID::T> inventory = {
       PetalID::kRose, PetalID::kBasic, PetalID::kBasic,
       PetalID::kRose, PetalID::kBasic, PetalID::kBasic,
-      PetalID::kRose, PetalID::kBasic, PetalID::kBasic};
+      PetalID::kRose, PetalID::kBasic, PetalID::kBasic
+  };
 
   for (uint32_t i = 0; i < loadout_slots_at_level(ent.get_respawn_level()); ++i)
     ent.set_inventory(i, inventory[i]);
@@ -224,7 +228,7 @@ Entity& alloc_cpu_camera(Simulation& sim, const EntityID team) {
 
 void player_spawn(Simulation& sim, Entity& camera, Entity& player) {
   camera.set_player(player.id);
-  player.set_parent(camera.id);
+  player.set_owner(camera.id);
   player.set_color(camera.get_color());
   uint32_t power = Map::difficulty_at_level(camera.get_respawn_level());
   const ZoneDefinition& zone =

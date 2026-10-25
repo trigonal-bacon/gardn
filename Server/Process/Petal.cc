@@ -11,11 +11,11 @@
 void tick_petal_behavior(Simulation& sim, Entity& petal) {
   if (petal.pending_delete)
     return;
-  if (!sim.ent_alive(petal.get_parent())) {
+  if (!sim.ent_alive(petal.get_owner())) {
     sim.request_delete(petal.id);
     return;
   }
-  Entity& player = sim.get_ent(petal.get_parent());
+  Entity& player = sim.get_ent(petal.get_owner());
   const PetalData& petal_data = PETAL_DATA[petal.get_petal_id()];
   if (petal_data.attributes.rotation_style == PetalAttributes::kPassiveRot) {
     // simulate on clientside

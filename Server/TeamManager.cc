@@ -9,7 +9,7 @@ void TeamManager::add_team(uint8_t color) {
   team_ent.add_component(kRelations);
   team_ent.set_color(color);
   team_ent.set_team(team_ent.id);
-  team_ent.set_parent(team_ent.id);
+  team_ent.set_owner(team_ent.id);
   teams.push(team_ent.id);
 }
 

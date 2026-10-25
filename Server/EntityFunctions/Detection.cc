@@ -22,8 +22,8 @@ EntityID find_nearest_enemy(Simulation& simulation, const Entity& entity,
           return;
         if (!ent.has_component(kMob) && !ent.has_component(kFlower))
           return;
-        if (sim.ent_alive(entity.get_parent())) {
-          Entity& parent = sim.get_ent(entity.get_parent());
+        if (sim.ent_alive(entity.get_owner())) {
+          Entity& parent = sim.get_ent(entity.get_owner());
           float dist =
               Vector(ent.get_x() - parent.get_x(), ent.get_y() - parent.get_y())
                   .magnitude();

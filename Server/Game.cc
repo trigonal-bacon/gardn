@@ -9,6 +9,8 @@
 #include <Shared/Entity.hh>
 #include <Shared/Map.hh>
 
+#include <unordered_set>
+
 static void _update_client(Simulation& sim, Client* client) {
   if (client == nullptr)
     return;
@@ -16,7 +18,7 @@ static void _update_client(Simulation& sim, Client* client) {
     return;
   if (!sim.ent_exists(client->camera))
     return;
-  std::set<EntityID> in_view;
+  std::unordered_set<EntityID> in_view;
   std::vector<EntityID> deletes;
   in_view.insert(client->camera);
   Entity& camera = sim.get_ent(client->camera);
@@ -28,7 +30,18 @@ static void _update_client(Simulation& sim, Client* client) {
   sim.spatial_hash.query(
       camera.get_camera_x(), camera.get_camera_y(), 960 / camera.get_fov() + 50,
       540 / camera.get_fov() + 50,
-      [&](Simulation&, Entity& ent) { in_view.insert(ent.id); });
+      [&](Simulation& sim, Entity& ent) { 
+        if (in_view.find(ent.id) != in_view.end()) return;
+        in_view.insert(ent.id); 
+        std::reference_wrapper<Entity> curr(ent);
+        //recurse on parents so that all parents are in view
+        while (curr.get().has_component(kRelations) && sim.ent_exists(curr.get().get_parent())) {
+          curr = sim.get_ent(curr.get().get_parent());
+          if (in_view.find(curr.get().id) != in_view.end())
+            return;
+          in_view.insert(curr.get().id);
+        }
+      });
 
   for (EntityID i : client->in_view) {
     if (!in_view.contains(i)) {

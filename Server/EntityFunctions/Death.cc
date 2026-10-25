@@ -61,9 +61,9 @@ void entity_on_death(Simulation& sim, const Entity& ent) {
     EntityID killer_id = sim.get_ent(ent.last_damaged_by).base_entity;
     _add_score(sim, killer_id, ent);
   }
-  if (sim.ent_alive(ent.get_parent()) &&
-      sim.get_ent(ent.get_parent()).has_component(kCamera)) {
-    Entity& camera = sim.get_ent(ent.get_parent());
+  if (sim.ent_alive(ent.get_owner()) &&
+      sim.get_ent(ent.get_owner()).has_component(kCamera)) {
+    Entity& camera = sim.get_ent(ent.get_owner());
     EntityID killer_id = sim.ent_exists(ent.last_damaged_by)
                              ? sim.get_ent(ent.last_damaged_by).base_entity
                              : NULL_ENTITY;
@@ -141,10 +141,10 @@ void entity_on_death(Simulation& sim, const Entity& ent) {
     _alloc_drops(sim, success_drops, ent.get_x(), ent.get_y());
     // if the camera is the one that disconnects
     // no need to re-add the petals to the petal tracker
-    if (!sim.ent_alive(ent.get_parent()) ||
-        !sim.get_ent(ent.get_parent()).has_component(kCamera))
+    if (!sim.ent_alive(ent.get_owner()) ||
+        !sim.get_ent(ent.get_owner()).has_component(kCamera))
       return;
-    Entity& camera = sim.get_ent(ent.get_parent());
+    Entity& camera = sim.get_ent(ent.get_owner());
     // reset all reloads and stuff
     uint32_t num_left = potential.size();
     // set respawn level
