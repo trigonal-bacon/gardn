@@ -68,8 +68,17 @@ void Entity::tick_lerp(float amt) {
 }
 
 void Simulation::on_tick() {
-  for_each_entity(
-      [](Simulation& sim, Entity& ent) { ent.tick_lerp(Ui::lerp_amount); });
+  for_each_entity([](Simulation& sim, Entity& ent) { 
+    ent.children.clear();
+    ent.tick_lerp(Ui::lerp_amount); 
+  });
+
+  for_each<kAnimation>([](Simulation& sim, Entity& ent) {
+    if (sim.ent_exists(ent.get_parent())) {
+      Entity& parent = sim.get_ent(ent.get_parent());
+      parent.children.push_back(ent.id);
+    }
+  });
 
   for (uint32_t i = 0; i < std::min(arena_info.player_count, LEADERBOARD_SIZE);
        ++i)

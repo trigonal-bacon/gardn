@@ -22,14 +22,38 @@ EntityID find_nearest_enemy(Simulation& simulation, const Entity& entity,
           return;
         if (!ent.has_component(kMob) && !ent.has_component(kFlower))
           return;
-        if (sim.ent_alive(entity.get_owner())) {
-          Entity& parent = sim.get_ent(entity.get_owner());
+        if (sim.ent_alive(entity.get_parent())) {
+          Entity& parent = sim.get_ent(entity.get_parent());
           float dist =
               Vector(ent.get_x() - parent.get_x(), ent.get_y() - parent.get_y())
                   .magnitude();
           if (dist > SUMMON_RETREAT_RADIUS)
             return;
         }
+        float dist =
+            Vector(ent.get_x() - entity.get_x(), ent.get_y() - entity.get_y())
+                .magnitude();
+        if (dist < min_dist) {
+          min_dist = dist;
+          ret = ent.id;
+        }
+      });
+  return ret;
+}
+
+EntityID find_nearest(Simulation& simulation, const Entity& entity,
+                       float radius, std::function<bool(const Entity&)> filter) {
+  EntityID ret;
+  float min_dist = radius;
+  simulation.spatial_hash.query(
+      entity.get_x(), entity.get_y(), radius, radius,
+      [&](Simulation& sim, Entity& ent) {
+        if (!sim.ent_alive(ent.id))
+          return;
+        if (ent.immunity_ticks > 0)
+          return;
+        if (filter && !filter(ent))
+          return;
         float dist =
             Vector(ent.get_x() - entity.get_x(), ent.get_y() - entity.get_y())
                 .magnitude();

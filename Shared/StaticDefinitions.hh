@@ -17,7 +17,7 @@ inline const uint32_t MAX_DIFFICULTY = 3;
 inline const uint32_t MAX_DROPS_PER_MOB = 6;
 
 namespace DamageType {
-enum : uint8_t { kContact, kPoison, kReflect, kSponge };
+enum : uint8_t { kContact, kPoison, kReflect, kSponge, kLightning };
 }
 
 namespace PetalID {
@@ -74,6 +74,7 @@ enum : T {
   kCorn,
   kGoldenLeaf,
   kSponge,
+  kLightning,
   kNumPetals
 };
 }; // namespace PetalID
@@ -193,6 +194,7 @@ struct PetalAttributes {
   float damage_reflection = 0;
   float extra_damage_factor = 1;
   float extra_reload_factor = 1;
+  float lightning_bounces = 0;
   float icon_angle = 0;
   struct PoisonDamage poison_damage;
   uint8_t defend_only = 0;

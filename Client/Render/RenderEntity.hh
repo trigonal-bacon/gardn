@@ -3,6 +3,7 @@
 class Entity;
 class Renderer;
 
+void render_animation(Renderer&, const Entity&);
 void render_drop(Renderer&, const Entity&);
 void render_flower(Renderer&, const Entity&);
 void render_health(Renderer&, const Entity&);

@@ -17,6 +17,7 @@ const float BASE_PETAL_ROTATION_SPEED = 2.5f;
 const float BASE_FOV = 0.9f;
 const float BASE_HEALTH = 100.0f;
 const float BASE_BODY_DAMAGE = 25.0f;
+const float LIGHTNING_BOUNCE_RADIUS = 300.0f;
 
 const std::array<struct PetalData, PetalID::kNumPetals> PETAL_DATA = {{
     {
@@ -735,11 +736,25 @@ const std::array<struct PetalData, PetalID::kNumPetals> PETAL_DATA = {{
         .radius = 12.0,
         .reload = 1.0,
         .count = 1,
-        .rarity = RarityID::kLegendary,
+        .rarity = RarityID::kEpic,
         .attributes = {
             .sponge_duration_seconds = 10,
             .icon_angle = 1.0,
             .defend_only = 1
+        }
+    },
+    {
+        .name = "Lightning",
+        .description = "Strikes several nearby enemies",
+        .health = 1.0,
+        .damage = 12.0,
+        .radius = 10.0,
+        .reload = 3.0,
+        .count = 1,
+        .rarity = RarityID::kLegendary,
+        .attributes = {
+            .lightning_bounces = 5,
+            .icon_angle = 1.0,
         }
     },
 }};
@@ -952,7 +967,7 @@ const std::array<struct MobData, MobID::kNumMobs> MOB_DATA = {{
         .radius = {35.0},
         .xp = 3,
         .drops = {
-            PetalID::kIris, PetalID::kPoisonPeas, PetalID::kBlueIris
+            PetalID::kIris, PetalID::kPoisonPeas, PetalID::kBlueIris, PetalID::kLightning
         },
         .attributes = { 
             .passive_speed_mult = 0.08,
@@ -972,7 +987,7 @@ const std::array<struct MobData, MobID::kNumMobs> MOB_DATA = {{
         .radius = {35.0},
         .xp = 4,
         .drops = {
-            PetalID::kSand, PetalID::kFaster, PetalID::kSalt, PetalID::kStick
+            PetalID::kSand, PetalID::kFaster, PetalID::kSalt, PetalID::kSponge, PetalID::kStick
         },
         .attributes = {
             .passive_speed_mult = 1.2,

@@ -18,6 +18,14 @@ static bool _should_interact(const Entity& ent1, const Entity& ent2) {
   return false;
 }
 
+static void _on_contact_damage(Simulation& sim, Entity& attacker, Entity& defender) {
+  if (attacker.has_component(kPetal) && PETAL_DATA[attacker.get_petal_id()].attributes.lightning_bounces > 0) {
+    inflict_lightning(sim, attacker.id, defender.id, attacker.damage, PETAL_DATA[attacker.get_petal_id()].attributes.lightning_bounces);
+  } else {
+    inflict_damage(sim, attacker.id, defender.id, attacker.damage, DamageType::kContact);
+  }
+}
+
 static void _pickup_drop(Simulation& sim, Entity& player, Entity& drop) {
   if (!sim.ent_alive(player.get_owner()))
     return;
@@ -126,8 +134,8 @@ void on_collide(Simulation& sim, Entity& ent1, Entity& ent2) {
 
   if (BOTH(kHealth) && ent1.get_team() != ent2.get_team()) {
     if (ent1.health > 0 && ent2.health > 0) {
-      inflict_damage(sim, ent1.id, ent2.id, ent1.damage, DamageType::kContact);
-      inflict_damage(sim, ent2.id, ent1.id, ent2.damage, DamageType::kContact);
+      _on_contact_damage(sim, ent1, ent2);
+      _on_contact_damage(sim, ent2, ent1);
     }
     if (ent1.health == 0)
       sim.request_delete(ent1.id);

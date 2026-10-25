@@ -18,7 +18,8 @@ typedef uint16_t game_tick_t;
   COMPONENT(Segmented)                                                         \
   COMPONENT(Web)                                                               \
   COMPONENT(Score)                                                             \
-  COMPONENT(Name)
+  COMPONENT(Name)                                                              \
+  COMPONENT(Animation)
 
 #define PERFIELD                                                               \
   FIELDS_Physics FIELDS_Camera FIELDS_Relations FIELDS_Flower FIELDS_Petal     \
@@ -76,6 +77,8 @@ typedef uint16_t game_tick_t;
   SINGLE(Name, name, std::string)                                              \
   SINGLE(Name, nametag_visible, uint8_t)
 
+#define FIELDS_Animation
+
 #ifdef SERVERSIDE
 #define PER_EXTRA_FIELD                                                        \
   SINGLE(velocity, Vector, .set(0, 0))                                         \
@@ -123,6 +126,7 @@ typedef uint16_t game_tick_t;
   SINGLE(deleted_petals, circ_arr_t, = {})
 #else
 #define PER_EXTRA_FIELD                                                        \
+  SINGLE(children, std::vector<EntityID>, = {})                                \
   SINGLE(last_damaged_time, double, = 0)                                       \
   SINGLE(healthbar_lag, float, = 0)                                            \
   SINGLE(healthbar_opacity, float, = 0)                                        \

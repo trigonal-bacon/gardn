@@ -5,6 +5,7 @@
 #include <Shared/Entity.hh>
 #include <Shared/Simulation.hh>
 
+#include <algorithm>
 #include <cmath>
 
 static bool _yggdrasil_revival_clause(Simulation& sim, Entity& player) {
@@ -29,8 +30,6 @@ void inflict_damage(Simulation& sim, const EntityID atk_id,
   Entity& defender = sim.get_ent(def_id);
   if (!defender.has_component(kHealth))
     return;
-  DEBUG_ONLY(assert(!defender.pending_delete);)
-  DEBUG_ONLY(assert(defender.has_component(kHealth));)
   if (defender.immunity_ticks > 0)
     return;
   if (type == DamageType::kContact)
@@ -126,6 +125,55 @@ void inflict_damage(Simulation& sim, const EntityID atk_id,
     defender.poison_inflicted.ticks_remaining = attacker.poison_damage.time * TPS;
     defender.poison_inflicted.damage_per_tick = attacker.poison_damage.damage / TPS;
     defender.poison_inflicted.inflicted_by = attacker.id;
+  }
+}
+
+void inflict_lightning(Simulation& sim, const EntityID atk_id,
+                      const EntityID def_id, float amt, uint32_t bounces) {
+  if (bounces <= 0)
+    return;
+  if (amt <= 0)
+    return;
+  if (!sim.ent_alive(def_id))
+    return;
+  if (!sim.ent_alive(atk_id))
+    return;
+  const Entity& attacker = sim.get_ent(atk_id);
+  std::vector<EntityID> hit_entities = {def_id};
+  EntityID last = def_id;
+  for (uint32_t i = 0; i < bounces - 1; ++i) {
+    EntityID target = find_nearest(sim, sim.get_ent(last), LIGHTNING_BOUNCE_RADIUS, [&](const Entity& ent) {
+      if (!sim.ent_alive(ent.id))
+        return false;
+      if (!ent.has_component(kHealth))
+        return false;
+      if (ent.has_component(kPetal))
+        return false;
+      if (ent.get_team() == attacker.get_team())
+        return false;
+      return std::find(hit_entities.begin(), hit_entities.end(), ent.id) == hit_entities.end();
+    });
+    if (!sim.ent_alive(target))
+      break;
+    hit_entities.push_back(target);
+    last = target;
+  }
+  last = NULL_ENTITY;
+  for (const EntityID& id : hit_entities) {
+    inflict_damage(sim, atk_id, id, amt, DamageType::kLightning);
+    const Entity& target = sim.get_ent(id);
+    Entity& anim = sim.alloc_ent();
+    anim.add_component(kPhysics);
+    anim.set_radius(3.5);
+    anim.set_x(target.get_x());
+    anim.set_y(target.get_y());
+    anim.add_component(kRelations);
+    anim.set_parent(last);
+    anim.add_component(kAnimation);
+    entity_set_despawn_tick(anim, 0.1 * TPS);
+    BitMath::set(anim.flags, EntityFlags::kNoPhysicalCollision);
+
+    last = anim.id;
   }
 }
 

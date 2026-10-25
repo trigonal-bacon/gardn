@@ -18,6 +18,7 @@ extern const float BASE_PETAL_ROTATION_SPEED;
 extern const float BASE_FOV;
 extern const float BASE_HEALTH;
 extern const float BASE_BODY_DAMAGE;
+extern const float LIGHTNING_BOUNCE_RADIUS;
 
 extern const std::array<struct PetalData, PetalID::kNumPetals> PETAL_DATA;
 extern const std::array<struct MobData, MobID::kNumMobs> MOB_DATA;

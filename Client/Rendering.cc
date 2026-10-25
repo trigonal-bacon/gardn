@@ -180,6 +180,10 @@ void Game::render_game() {
     renderer.translate(ent.get_x(), ent.get_y());
     render_name(renderer, ent);
   });
+  simulation.for_each<kAnimation>([](Simulation& sim, const Entity& ent) {
+    RenderContext context(&renderer);
+    render_animation(renderer, ent);
+  });
 }
 
 void Game::render_title_screen() {
