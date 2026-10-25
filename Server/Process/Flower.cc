@@ -17,6 +17,7 @@ struct PlayerBuffs {
   float extra_damage = 0;
   float damage_factor = 1;
   float reload_factor = 1;
+  game_tick_t sponge_ticks = 0;
   uint8_t yinyang_count = 0;
   uint8_t is_poisonous = 0;
   uint8_t equip_flags = 0;
@@ -48,6 +49,7 @@ static struct PlayerBuffs _get_petal_passive_buffs(Simulation& sim,
     buffs.extra_damage = std::fmax(buffs.extra_damage, attrs.extra_body_damage);
     buffs.damage_factor *= attrs.extra_damage_factor;
     buffs.reload_factor *= attrs.extra_reload_factor;
+    buffs.sponge_ticks = std::max<game_tick_t>(buffs.sponge_ticks, attrs.sponge_duration_seconds * TPS);
     if (slot_petal_id == PetalID::kYinYang)
       ++buffs.yinyang_count;
     if (!player.loadout[i].already_spawned)
@@ -130,6 +132,7 @@ void tick_player_behavior(Simulation& sim, Entity& player) {
     player.poison_damage = {10.0, 2};
   else
     player.poison_damage = {0, 0};
+  player.sponge_duration = buffs.sponge_ticks;
 
   float rot_pos = 0;
   uint32_t rotation_count = _get_petal_rotation_count(sim, player);
@@ -276,7 +279,7 @@ void tick_player_behavior(Simulation& sim, Entity& player) {
   else if (BitMath::at(player.input, InputFlags::kDefending))
     player.set_face_flags(player.get_face_flags() |
                           (1 << FaceFlags::kDefending));
-  if (player.poison_ticks > 0)
+  if (player.poison_inflicted.ticks_remaining > 0)
     player.set_face_flags(player.get_face_flags() |
                           (1 << FaceFlags::kPoisoned));
   if (player.dandy_ticks > 0)

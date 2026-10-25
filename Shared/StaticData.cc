@@ -148,8 +148,8 @@ const std::array<struct PetalData, PetalID::kNumPetals> PETAL_DATA = {{
         .rarity = RarityID::kRare,
         .attributes = {
             .secondary_reload = 1.0, 
-            .defend_only = 1,
             .icon_angle = 1,
+            .defend_only = 1,
             .rotation_style = PetalAttributes::kFollowRot 
         }
     },
@@ -288,11 +288,11 @@ const std::array<struct PetalData, PetalID::kNumPetals> PETAL_DATA = {{
         .rarity = RarityID::kRare,
         .attributes = {
             .slow_inflict_seconds = 2,
+            .icon_angle = 0.7,
             .poison_damage = {
                 .damage = 5.0,
                 .time = 1.0
             },
-            .icon_angle = 0.7
         }
     },
     {
@@ -433,8 +433,8 @@ const std::array<struct PetalData, PetalID::kNumPetals> PETAL_DATA = {{
         .rarity = RarityID::kLegendary,
         .attributes = { 
             .secondary_reload = 4.0,
-            .defend_only = 1,
             .icon_angle = 1,
+            .defend_only = 1,
             .spawns = MobID::kSandstorm,
             .spawn_count = 2
         }
@@ -654,8 +654,8 @@ const std::array<struct PetalData, PetalID::kNumPetals> PETAL_DATA = {{
         .count = 1,
         .rarity = RarityID::kUnique,
         .attributes = {
+            .icon_angle = M_PI,
             .defend_only = 1,
-            .icon_angle = M_PI
         }
     },
     {
@@ -725,6 +725,21 @@ const std::array<struct PetalData, PetalID::kNumPetals> PETAL_DATA = {{
             .extra_damage_factor = 1.2,
             .extra_reload_factor = 1.2,
             .icon_angle = -1
+        }
+    },
+    {
+        .name = "Sponge",
+        .description = "Spreads damage taken over a period of time. Does not stack with itself",
+        .health = 100.0,
+        .damage = 0.0,
+        .radius = 12.0,
+        .reload = 1.0,
+        .count = 1,
+        .rarity = RarityID::kLegendary,
+        .attributes = {
+            .sponge_duration_seconds = 10,
+            .icon_angle = 1.0,
+            .defend_only = 1
         }
     },
 }};

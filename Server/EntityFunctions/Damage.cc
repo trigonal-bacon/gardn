@@ -39,11 +39,20 @@ void inflict_damage(Simulation& sim, const EntityID atk_id,
     amt -= defender.poison_armor;
   if (amt <= 0)
     return;
-  // if (amt <= defender.armor) return;
   float old_health = defender.health;
-  defender.set_damaged(1);
-  defender.health = fclamp(defender.health - amt, 0, defender.health);
-  float damage_dealt = old_health - defender.health;
+  if (defender.sponge_duration > 0 && type == DamageType::kContact) {
+    //only contact damage is sponged
+    defender.continuous_damage.emplace_back(ContinuousDamage{
+        .damage_per_tick = amt / defender.sponge_duration,
+        .ticks_remaining = defender.sponge_duration,
+        .inflicted_by = atk_id,
+        .damage_type = DamageType::kSponge,
+    });
+  } else {
+    if (type != DamageType::kSponge) defender.set_damaged(1);
+    defender.health = fclamp(defender.health - amt, 0, defender.health);
+  }
+  const float damage_dealt = old_health - defender.health;
   // ant hole spawns
   // floor start, ceil end
   if (defender.has_component(kMob) &&
@@ -63,7 +72,7 @@ void inflict_damage(Simulation& sim, const EntityID atk_id,
                         mob.score_reward = MOB_DATA[mob.get_mob_id()].xp;
                         BitMath::set(mob.flags, EntityFlags::kHasCulling);
                       });
-        child.set_owner(defender.id);
+        child.set_parent(defender.id);
         child.target = defender.target;
       }
     }
@@ -80,10 +89,11 @@ void inflict_damage(Simulation& sim, const EntityID atk_id,
     return;
   Entity& attacker = sim.get_ent(atk_id);
 
-  if (type != DamageType::kReflect && defender.damage_reflection > 0)
+  if (type != DamageType::kReflect && type != DamageType::kSponge && defender.damage_reflection > 0) {
     inflict_damage(sim, def_id, attacker.base_entity,
                    damage_dealt * defender.damage_reflection,
                    DamageType::kReflect);
+  }
 
   if (!sim.ent_alive(atk_id))
     return;
@@ -112,10 +122,10 @@ void inflict_damage(Simulation& sim, const EntityID atk_id,
   defender.last_damaged_by = attacker.base_entity;
 
   if (type == DamageType::kContact &&
-      defender.poison_ticks < attacker.poison_damage.time * TPS) {
-    defender.poison_ticks = attacker.poison_damage.time * TPS;
-    defender.poison_inflicted = attacker.poison_damage.damage / TPS;
-    defender.poison_dealer = defender.last_damaged_by;
+      defender.poison_inflicted.ticks_remaining < attacker.poison_damage.time * TPS) {
+    defender.poison_inflicted.ticks_remaining = attacker.poison_damage.time * TPS;
+    defender.poison_inflicted.damage_per_tick = attacker.poison_damage.damage / TPS;
+    defender.poison_inflicted.inflicted_by = attacker.id;
   }
 }
 

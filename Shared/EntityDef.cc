@@ -3,26 +3,6 @@
 #include <Shared/Simulation.hh>
 #include <Shared/StaticDefinitions.hh>
 
-EntityID::EntityID() : id(0), hash(0) {}
-
-EntityID::EntityID(id_type id, hash_type hash) : id(id), hash(hash) {}
-
-bool EntityID::null() const { return id == 0; }
-
-uint32_t EntityID::make_hash(const EntityID o) { return o.id * 65536 + o.hash; }
-
-bool EntityID::equal_to(const EntityID a, const EntityID b) {
-  return a.id == b.id && a.hash == b.hash;
-}
-
-bool operator<(const EntityID a, const EntityID b) {
-  return EntityID::make_hash(a) < EntityID::make_hash(b);
-}
-
-bool operator==(const EntityID a, const EntityID b) {
-  return EntityID::equal_to(a, b);
-}
-
 LoadoutSlot::LoadoutSlot() { reset(); }
 
 void LoadoutSlot::reset() {

@@ -9,7 +9,7 @@
 static bool _should_interact(const Entity& ent1, const Entity& ent2) {
   if (ent1.pending_delete || ent2.pending_delete)
     return false;
-  if (!(ent1.get_team() == ent2.get_team()))
+  if (ent1.get_team() != ent2.get_team())
     return true;
   if (BitMath::at((ent1.flags | ent2.flags), EntityFlags::kNoFriendlyCollision))
     return false;
@@ -94,7 +94,7 @@ void on_collide(Simulation& sim, Entity& ent1, Entity& ent2) {
         ent1.density * ent1.get_radius() * ent1.get_radius() + 0.0001;
     const float m2 =
         ent2.density * ent2.get_radius() * ent2.get_radius() + 0.0001;
-    if (!(ent1.get_team() == ent2.get_team())) {
+    if (ent1.get_team() != ent2.get_team()) {
       Vector dv = (ent1.velocity + ent1.constant_velocity - ent2.velocity -
                    ent2.constant_velocity);
       float s = dv.x * separation.x + dv.y * separation.y;
@@ -124,7 +124,7 @@ void on_collide(Simulation& sim, Entity& ent1, Entity& ent2) {
     }
   }
 
-  if (BOTH(kHealth) && !(ent1.get_team() == ent2.get_team())) {
+  if (BOTH(kHealth) && ent1.get_team() != ent2.get_team()) {
     if (ent1.health > 0 && ent2.health > 0) {
       inflict_damage(sim, ent1.id, ent2.id, ent1.damage, DamageType::kContact);
       inflict_damage(sim, ent2.id, ent1.id, ent2.damage, DamageType::kContact);

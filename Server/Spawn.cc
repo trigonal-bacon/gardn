@@ -101,17 +101,17 @@ Entity& alloc_mob(Simulation& sim, MobID::T mob_id, float x, float y,
   } else {
     Entity& head = __alloc_mob(sim, mob_id, x, y, team, on_spawn);
     // head.add_component(kSegmented);
-    Entity* curr = &head;
+    std::reference_wrapper<Entity> curr = head;
     for (uint32_t i = 1; i < data.attributes.segments; ++i) {
       Entity& seg = __alloc_mob(sim, mob_id, x, y, team, on_spawn);
       seg.add_component(kSegmented);
-      seg.set_parent(curr->id);
-      seg.set_angle(curr->get_angle() + frand() * 0.1 - 0.05);
-      seg.set_x(curr->get_x() - (curr->get_radius() + seg.get_radius()) *
+      seg.set_parent(curr.get().id);
+      seg.set_angle(curr.get().get_angle() + frand() * 0.1 - 0.05);
+      seg.set_x(curr.get().get_x() - (curr.get().get_radius() + seg.get_radius()) *
                                     cosf(seg.get_angle()));
-      seg.set_y(curr->get_y() - (curr->get_radius() + seg.get_radius()) *
+      seg.set_y(curr.get().get_y() - (curr.get().get_radius() + seg.get_radius()) *
                                     sinf(seg.get_angle()));
-      curr = &seg;
+      curr = seg;
     }
     return head;
   }

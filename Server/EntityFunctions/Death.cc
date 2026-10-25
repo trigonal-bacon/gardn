@@ -73,7 +73,7 @@ void entity_on_death(Simulation& sim, const Entity& ent) {
         camera.set_killed_by(killer.get_name());
       else
         camera.set_killed_by("");
-    } else if (ent.poison_ticks > 0)
+    } else if (ent.poison_inflicted.ticks_remaining > 0)
       camera.set_killed_by("Poison");
     else
       camera.set_killed_by("");

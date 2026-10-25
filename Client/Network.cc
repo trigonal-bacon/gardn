@@ -15,13 +15,13 @@ void Game::on_message(uint8_t* ptr, uint32_t len) {
     simulation_ready = 1;
     camera_id = reader.read<EntityID>();
     EntityID curr_id = reader.read<EntityID>();
-    while (!(curr_id == NULL_ENTITY)) {
+    while (curr_id != NULL_ENTITY) {
       assert(simulation.ent_exists(curr_id));
       simulation._delete_ent(curr_id);
       curr_id = reader.read<EntityID>();
     }
     curr_id = reader.read<EntityID>();
-    while (!(curr_id == NULL_ENTITY)) {
+    while (curr_id != NULL_ENTITY) {
       uint8_t create = reader.read<uint8_t>();
       if (BitMath::at(create, 0))
         simulation.force_alloc_ent(curr_id);

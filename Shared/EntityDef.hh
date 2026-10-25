@@ -96,13 +96,13 @@ typedef uint16_t game_tick_t;
   SINGLE(slow_inflict, game_tick_t, = 0)                                       \
   SINGLE(immunity_ticks, game_tick_t, = 0)                                     \
   SINGLE(dandy_ticks, game_tick_t, = 0)                                        \
-  SINGLE(poison_ticks, game_tick_t, = 0)                                       \
   SINGLE(despawn_tick, game_tick_t, = 0)                                       \
+  SINGLE(sponge_duration, game_tick_t, = 0)                                    \
   SINGLE(secondary_reload, game_tick_t, = 0)                                   \
   SINGLE(ai_tick, game_tick_t, = 0)                                            \
                                                                                \
-  SINGLE(poison_inflicted, float, = 0)                                         \
-  SINGLE(poison_dealer, EntityID, = NULL_ENTITY)                               \
+  SINGLE(poison_inflicted, ContinuousDamage, = {})                             \
+  SINGLE(continuous_damage, std::vector<ContinuousDamage>, = {})               \
   SINGLE(poison_damage, PoisonDamage, = {})                                    \
   SINGLE(health, float, = 0)                                                   \
   SINGLE(max_health, float, = 0)                                               \
@@ -140,11 +140,18 @@ public:
   typedef uint16_t id_type;
   id_type id;
   hash_type hash;
-  EntityID();
-  EntityID(id_type, hash_type);
-  static uint32_t make_hash(const EntityID);
-  static bool equal_to(const EntityID, const EntityID);
-  bool null() const;
+  constexpr EntityID() : id(0), hash(0) {};
+  constexpr EntityID(id_type id, hash_type hash) : id(id), hash(hash) {};
+  static constexpr uint32_t make_hash(const EntityID o) {
+    return o.id * 65536 + o.hash;
+  };
+  constexpr std::strong_ordering operator<=>(const EntityID o) const {
+    return make_hash(*this) <=> make_hash(o);
+  };
+
+  constexpr bool operator==(const EntityID o) const {
+    return id == o.id && hash == o.hash;
+  };
 };
 
 namespace std {
@@ -155,10 +162,7 @@ template <> struct hash<EntityID> {
 };
 } // namespace std
 
-bool operator<(const EntityID, const EntityID);
-bool operator==(const EntityID, const EntityID);
-
-inline const EntityID NULL_ENTITY;
+inline const EntityID NULL_ENTITY = EntityID{0, 0};
 
 #ifdef SERVER_ONLY
 class Simulation;
@@ -180,5 +184,12 @@ public:
   void force_reload();
   PetalID::T get_petal_id() const;
   uint32_t size() const;
+};
+
+struct ContinuousDamage {
+  float damage_per_tick = 0;
+  game_tick_t ticks_remaining = 0;
+  EntityID inflicted_by = NULL_ENTITY;
+  uint8_t damage_type = DamageType::kPoison;
 };
 #endif

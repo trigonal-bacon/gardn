@@ -10,6 +10,7 @@
 #include <array>
 #include <bitset>
 #include <cstdint>
+#include <vector>
 
 typedef CircularArray<PetalID::T, MAX_SLOT_COUNT> circ_arr_t;
 

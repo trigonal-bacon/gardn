@@ -100,7 +100,7 @@ static void tick_default_neutral(Simulation& sim, Entity& ent) {
     set_and_follow_angle(ent, v.angle());
     return;
   } else {
-    if (!(ent.target == NULL_ENTITY)) {
+    if (ent.target != NULL_ENTITY) {
       ent.target = NULL_ENTITY;
       ent.ai_state = AIState::kIdle;
       ent.ai_tick = 0;
@@ -119,7 +119,7 @@ static void tick_default_aggro(Simulation& sim, Entity& ent) {
     set_and_follow_angle(ent, v.angle());
     return;
   } else {
-    if (!(ent.target == NULL_ENTITY)) {
+    if (ent.target != NULL_ENTITY) {
       ent.ai_state = AIState::kIdle;
       ent.ai_tick = 0;
     }
@@ -194,7 +194,7 @@ static void tick_hornet_aggro(Simulation& sim, Entity& ent) {
     }
     return;
   } else {
-    if (!(ent.target == NULL_ENTITY)) {
+    if (ent.target != NULL_ENTITY) {
       ent.ai_state = AIState::kIdle;
       ent.ai_tick = 0;
       ent.target = NULL_ENTITY;
@@ -236,7 +236,7 @@ static void tick_centipede_neutral(Simulation& sim, Entity& ent) {
     set_and_follow_angle(ent, v.angle());
     return;
   } else {
-    if (!(ent.target == NULL_ENTITY)) {
+    if (ent.target != NULL_ENTITY) {
       ent.ai_state = AIState::kIdle;
       ent.ai_tick = 0;
     }
@@ -263,7 +263,7 @@ static void tick_centipede_aggro(Simulation& sim, Entity& ent) {
     set_and_follow_angle(ent, v.angle());
     return;
   } else {
-    if (!(ent.target == NULL_ENTITY)) {
+    if (ent.target != NULL_ENTITY) {
       ent.ai_state = AIState::kIdle;
       ent.ai_tick = 0;
     }
@@ -342,7 +342,7 @@ static void tick_digger(Simulation& sim, Entity& ent) {
     set_and_follow_angle(ent, v.angle());
     return;
   } else {
-    if (!(ent.target == NULL_ENTITY)) {
+    if (ent.target != NULL_ENTITY) {
       ent.ai_state = AIState::kIdle;
       ent.ai_tick = 0;
       ent.target = NULL_ENTITY;
@@ -379,7 +379,7 @@ void tick_ai_behavior(Simulation& sim, Entity& ent) {
   ent.acceleration.set(0, 0);
   if (!sim.ent_alive(ent.target) && sim.ent_alive(ent.last_damaged_by))
     ent.target = ent.last_damaged_by;
-  if (!(ent.get_owner() == NULL_ENTITY)) {
+  if (ent.get_owner() != NULL_ENTITY) {
     if (!sim.ent_alive(ent.get_owner())) {
       if (BitMath::at(ent.flags, EntityFlags::kDieOnParentDeath))
         sim.request_delete(ent.id);

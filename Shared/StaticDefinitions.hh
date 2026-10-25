@@ -17,7 +17,7 @@ inline const uint32_t MAX_DIFFICULTY = 3;
 inline const uint32_t MAX_DROPS_PER_MOB = 6;
 
 namespace DamageType {
-enum : uint8_t { kContact, kPoison, kReflect };
+enum : uint8_t { kContact, kPoison, kReflect, kSponge };
 }
 
 namespace PetalID {
@@ -73,6 +73,7 @@ enum : T {
   kYucca,
   kCorn,
   kGoldenLeaf,
+  kSponge,
   kNumPetals
 };
 }; // namespace PetalID
@@ -183,6 +184,7 @@ struct PetalAttributes {
   float poison_armor = 0;
   float dandelion_inflict_seconds = 0;
   float slow_inflict_seconds = 0;
+  float sponge_duration_seconds = 0;
   float vision_factor = 1;
   float extra_body_damage = 0;
   float extra_rotation_speed = 0;
@@ -191,9 +193,9 @@ struct PetalAttributes {
   float damage_reflection = 0;
   float extra_damage_factor = 1;
   float extra_reload_factor = 1;
+  float icon_angle = 0;
   struct PoisonDamage poison_damage;
   uint8_t defend_only = 0;
-  float icon_angle = 0;
   uint8_t split_projectile = 0;
   uint8_t rotation_style = kPassiveRot;
   uint8_t spawns = MobID::kNumMobs;
