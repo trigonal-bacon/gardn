@@ -12,10 +12,7 @@ void Entity::init() {
   pending_delete = 0;
   lifetime = 0;
 #define SINGLE(component, name, type) name = {};
-#define MULTIPLE(component, name, type, amt)                                   \
-  for (uint32_t n = 0; n < amt; ++n) {                                         \
-    name[n] = {};                                                              \
-  }
+#define MULTIPLE(component, name, type, amt) name = {};
   PERFIELD
 #undef SINGLE
 #undef MULTIPLE
@@ -43,11 +40,11 @@ void Entity::reset_protocol() {
 
 void Entity::add_component(uint32_t comp) {
   DEBUG_ONLY(assert(!has_component(comp));)
-  BitMath::set(components, comp);
+  Bits::set(components, comp);
 }
 
 uint8_t Entity::has_component(uint32_t comp) const {
-  return BitMath::at(components, comp);
+  return Bits::at(components, comp);
 }
 
 #define SINGLE(component, name, type)                                          \
@@ -90,7 +87,7 @@ PERFIELD
 #undef SINGLE
 #undef MULTIPLE
 
-template <> void Entity::write<true>(Writer& writer) {
+template <> void Entity::write<true>(Writer& writer) const {
   writer.write<uint32_t>(components);
   writer.write<uint32_t>(lifetime);
 #define SINGLE(component, name, type)                                          \
@@ -112,7 +109,7 @@ template <> void Entity::write<true>(Writer& writer) {
 #undef COMPONENT
 }
 
-template <> void Entity::write<false>(Writer& writer) {
+template <> void Entity::write<false>(Writer& writer) const {
 #define SINGLE(component, name, type)                                          \
   if (state[k##name]) {                                                        \
     writer.write<uint8_t>(k##name);                                           \
@@ -140,7 +137,7 @@ template <> void Entity::write<false>(Writer& writer) {
   writer.write<uint8_t>(kFieldCount);
 }
 
-void Entity::write(Writer& writer, uint8_t create) {
+void Entity::write(Writer& writer, uint8_t create) const {
   if (create)
     write<true>(writer);
   else

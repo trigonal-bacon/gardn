@@ -12,7 +12,7 @@ ScrollBar::ScrollBar()
     : Element(8, 100, {.fill = 0x40000000, .round_radius = 4}) {
   style.animate = [&](Element& elt, Renderer& ctx) {
     if (elt.style.layer &&
-        BitMath::at(Input::mouse_buttons_released, Input::LeftMouse))
+        Bits::at(Input::mouse_buttons_released, Input::LeftMouse))
       elt.style.layer = 0;
   };
 }

@@ -69,7 +69,7 @@ void inflict_damage(Simulation& sim, const EntityID atk_id,
             alloc_mob(sim, mob_id, defender.get_x(), defender.get_y(),
                       defender.get_team(), [](Entity& mob) {
                         mob.score_reward = MOB_DATA[mob.get_mob_id()].xp;
-                        BitMath::set(mob.flags, EntityFlags::kHasCulling);
+                        Bits::set(mob.flags, EntityFlags::kHasCulling);
                       });
         child.set_parent(defender.id);
         child.target = defender.target;
@@ -171,7 +171,7 @@ void inflict_lightning(Simulation& sim, const EntityID atk_id,
     anim.set_parent(last);
     anim.add_component(kAnimation);
     entity_set_despawn_tick(anim, 0.1 * TPS);
-    BitMath::set(anim.flags, EntityFlags::kNoPhysicalCollision);
+    Bits::set(anim.flags, EntityFlags::kNoPhysicalCollision);
 
     last = anim.id;
   }

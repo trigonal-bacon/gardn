@@ -27,7 +27,7 @@ float input_y = 0;
 }; // namespace Input
 
 uint8_t Input::is_valid() {
-  return BitMath::at(Input::mouse_buttons_released, Input::LeftMouse) ||
+  return Bits::at(Input::mouse_buttons_released, Input::LeftMouse) ||
          !Input::is_mobile;
 }
 

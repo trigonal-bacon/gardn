@@ -7,7 +7,7 @@
 
 void entity_set_despawn_tick(Entity& ent, game_tick_t t) {
   ent.despawn_tick = t;
-  BitMath::set(ent.flags, EntityFlags::kIsDespawning);
+  Bits::set(ent.flags, EntityFlags::kIsDespawning);
 }
 
 template <typename T, typename U> class FilterCast {

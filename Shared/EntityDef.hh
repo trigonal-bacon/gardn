@@ -50,8 +50,8 @@ typedef uint16_t game_tick_t;
 #define FIELDS_Flower                                                          \
   SINGLE(Flower, overlevel_timer, float)                                       \
   SINGLE(Flower, loadout_count, uint8_t)                                       \
-  SINGLE(Flower, face_flags, uint8_t)                                          \
-  SINGLE(Flower, equip_flags, uint8_t)                                         \
+  SINGLE(Flower, face_flags, Bits::Uint_t<FaceFlags::kNumFlags>)               \
+  SINGLE(Flower, equip_flags, Bits::Uint_t<EquipmentFlags::kNumFlags>)         \
   MULTIPLE(Flower, loadout_ids, PetalID::T, 2 * MAX_SLOT_COUNT)                \
   MULTIPLE(Flower, loadout_reloads, uint8_t, MAX_SLOT_COUNT)
 
@@ -92,7 +92,7 @@ typedef uint16_t game_tick_t;
   SINGLE(heading_angle, float, = 0)                                            \
   SINGLE(petal_base_angle, float, = 0)                                         \
   SINGLE(player_count, uint32_t, = 0)                                          \
-  SINGLE(flags, uint16_t, = 0)                                                 \
+  SINGLE(flags, Bits::Uint_t<EntityFlags::kNumFlags>, = 0)                     \
   SINGLE(input, uint8_t, = 0)                                                  \
                                                                                \
   SINGLE(slow_ticks, game_tick_t, = 0)                                         \
@@ -119,7 +119,7 @@ typedef uint16_t game_tick_t;
   SINGLE(base_entity, EntityID, = NULL_ENTITY)                                 \
   SINGLE(target, EntityID, = NULL_ENTITY)                                      \
   SINGLE(detection_radius, float, = 0)                                         \
-  SINGLE(ai_state, uint8_t, = 0)                                               \
+  SINGLE(ai_state, Bits::Uint_t<AIState::kNumStates>, = 0)                     \
                                                                                \
   SINGLE(zone, uint8_t, = 0)                                                   \
   SINGLE(deletion_tick, uint8_t, = 0)                                          \

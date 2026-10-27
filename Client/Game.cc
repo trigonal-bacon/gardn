@@ -303,9 +303,9 @@ void Game::tick(double time) {
       Input::game_inputs.y = (Input::mouse_y - renderer.height / 2) / Ui::scale;
     }
     uint8_t attack = Input::keys_held.contains(' ') ||
-                     BitMath::at(Input::mouse_buttons_state, Input::LeftMouse);
+                     Bits::at(Input::mouse_buttons_state, Input::LeftMouse);
     uint8_t defend = Input::keys_held.contains('\x10') ||
-                     BitMath::at(Input::mouse_buttons_state, Input::RightMouse);
+                     Bits::at(Input::mouse_buttons_state, Input::RightMouse);
     Input::game_inputs.flags =
         (attack << InputFlags::kAttacking) | (defend << InputFlags::kDefending);
   }

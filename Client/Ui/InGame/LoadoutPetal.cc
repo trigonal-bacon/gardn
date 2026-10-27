@@ -169,7 +169,7 @@ UiLoadoutPetal::UiLoadoutPetal(uint8_t pos)
     } else {
       mouse_x = Input::mouse_x;
       mouse_y = Input::mouse_y;
-      released = BitMath::at(Input::mouse_buttons_released, Input::LeftMouse);
+      released = Bits::at(Input::mouse_buttons_released, Input::LeftMouse);
     }
     if (auto parent_slot = Ui::UiLoadout::petal_backgrounds[curr_pos].get();
         parent_slot && selected && Game::alive()) {

@@ -333,9 +333,9 @@ static void tick_digger(Simulation& sim, Entity& ent) {
     _focus_lose_clause(ent, v);
     v.set_magnitude(get_aggro_speed(ent));
     if (ent.health / ent.max_health > 0.1) {
-      BitMath::set(ent.input, InputFlags::kAttacking);
+      Bits::set(ent.input, InputFlags::kAttacking);
     } else {
-      BitMath::set(ent.input, InputFlags::kDefending);
+      Bits::set(ent.input, InputFlags::kDefending);
       v *= -1;
     }
     ent.acceleration = v;
@@ -381,7 +381,7 @@ void tick_ai_behavior(Simulation& sim, Entity& ent) {
     ent.target = ent.last_damaged_by;
   if (ent.get_owner() != NULL_ENTITY) {
     if (!sim.ent_alive(ent.get_owner())) {
-      if (BitMath::at(ent.flags, EntityFlags::kDieOnParentDeath))
+      if (Bits::at(ent.flags, EntityFlags::kDieOnParentDeath))
         sim.request_delete(ent.id);
       ent.set_owner(NULL_ENTITY);
     } else {
@@ -400,7 +400,7 @@ void tick_ai_behavior(Simulation& sim, Entity& ent) {
       }
     }
   }
-  if (BitMath::at(ent.flags, EntityFlags::kIsCulled)) {
+  if (Bits::at(ent.flags, EntityFlags::kIsCulled)) {
     ent.target = NULL_ENTITY;
     ent.ai_tick = 0;
     return;
@@ -444,10 +444,9 @@ void tick_ai_behavior(Simulation& sim, Entity& ent) {
       behind *= ent.get_radius();
       Entity& spawned =
           alloc_mob(sim, MobID::kSoldierAnt, ent.get_x() + behind.x,
-                    ent.get_y() + behind.y, ent.get_team(), [](Entity& mob) {
-                      mob.score_reward = MOB_DATA[mob.get_mob_id()].xp;
-                      BitMath::set(mob.flags, EntityFlags::kHasCulling);
-                    });
+                    ent.get_y() + behind.y, ent.get_team(), [](Entity& mob) {});
+      spawned.score_reward = MOB_DATA[spawned.get_mob_id()].xp;
+      Bits::set(spawned.flags, EntityFlags::kHasCulling);
       entity_set_despawn_tick(spawned, 10 * TPS);
       spawned.set_owner(ent.get_owner());
     }

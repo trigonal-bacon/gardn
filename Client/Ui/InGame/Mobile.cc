@@ -58,9 +58,9 @@ std::unique_ptr<Element> Ui::make_mobile_attack_button() {
       200, 200, el<StaticText>(50, "A"),
       [](Element& elt, uint8_t e) {
         if (e == Ui::kMouseDown)
-          BitMath::set(Input::game_inputs.flags, InputFlags::kAttacking);
+          Bits::set(Input::game_inputs.flags, InputFlags::kAttacking);
         else if (e == Ui::kClick)
-          BitMath::unset(Input::game_inputs.flags, InputFlags::kAttacking);
+          Bits::unset(Input::game_inputs.flags, InputFlags::kAttacking);
       },
       nullptr,
       Style{.fill = 0x40000000,
@@ -80,9 +80,9 @@ std::unique_ptr<Element> Ui::make_mobile_defend_button() {
       150, 150, el<StaticText>(37.5, "B"),
       [](Element& elt, uint8_t e) {
         if (e == Ui::kMouseDown)
-          BitMath::set(Input::game_inputs.flags, InputFlags::kDefending);
+          Bits::set(Input::game_inputs.flags, InputFlags::kDefending);
         else if (e == Ui::kClick)
-          BitMath::unset(Input::game_inputs.flags, InputFlags::kDefending);
+          Bits::unset(Input::game_inputs.flags, InputFlags::kDefending);
       },
       nullptr,
       Style{.fill = 0x40000000,

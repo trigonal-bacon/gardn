@@ -54,7 +54,7 @@ static void _add_score(Simulation& sim, const EntityID killer_id,
 void entity_on_death(Simulation& sim, const Entity& ent) {
   // don't do on_death for any despawned entity
   uint8_t natural_despawn =
-      BitMath::at(ent.flags, EntityFlags::kIsDespawning) &&
+      Bits::at(ent.flags, EntityFlags::kIsDespawning) &&
       ent.despawn_tick == 0;
   if (ent.score_reward > 0 && sim.ent_exists(ent.last_damaged_by) &&
       !natural_despawn) {
@@ -79,9 +79,9 @@ void entity_on_death(Simulation& sim, const Entity& ent) {
       camera.set_killed_by("");
   }
   if (ent.has_component(kMob)) {
-    if (BitMath::at(ent.flags, EntityFlags::kSpawnedFromZone))
+    if (Bits::at(ent.flags, EntityFlags::kSpawnedFromZone))
       Map::remove_mob(sim, ent.zone);
-    if (!natural_despawn && !(BitMath::at(ent.flags, EntityFlags::kNoDrops))) {
+    if (!natural_despawn && !(Bits::at(ent.flags, EntityFlags::kNoDrops))) {
       const MobData& mob_data = MOB_DATA[ent.get_mob_id()];
       std::vector<PetalID::T> success_drops = {};
       const StaticArray<float, MAX_DROPS_PER_MOB>& drop_chances =
@@ -92,7 +92,7 @@ void entity_on_death(Simulation& sim, const Entity& ent) {
       _alloc_drops(sim, success_drops, ent.get_x(), ent.get_y());
     }
     if (ent.get_mob_id() == MobID::kAntHole &&
-        BitMath::at(ent.flags, EntityFlags::kSpawnedFromZone) &&
+        Bits::at(ent.flags, EntityFlags::kSpawnedFromZone) &&
         frand() < DIGGER_SPAWN_CHANCE) {
       EntityID team = NULL_ENTITY;
       if (sim.ent_exists(ent.last_damaged_by))
@@ -175,7 +175,7 @@ void entity_on_death(Simulation& sim, const Entity& ent) {
       camera.set_inventory(i, PetalID::kBasic);
     }
   } else if (ent.has_component(kDrop)) {
-    if (BitMath::at(ent.flags, EntityFlags::kIsDespawning))
+    if (Bits::at(ent.flags, EntityFlags::kIsDespawning))
       PetalTracker::remove_petal(sim, ent.get_drop_id());
   }
 }

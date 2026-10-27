@@ -128,8 +128,8 @@ void WebSocket::end(int code, const std::string& message) {
   EM_ASM({
     if (!Module.ws_connections || !Module.ws_connections[$0]) return;
     const ws = Module.ws_connections[$0];
-    ws.close($1, UTF8ToString($2));
-  }, ws_id, code, message.c_str());
+    ws.close($1, UTF8ToString($2, $3));
+  }, ws_id, code, message.data(), message.size());
 }
 
 Client* WebSocket::getUserData() { return &client; }

@@ -31,7 +31,7 @@ void tick_camera_behavior(Simulation& sim, Entity& ent) {
         player.set_overlevel_timer(0);
     }
   } else {
-    if (BitMath::at(ent.flags, EntityFlags::kCPUControlled)) {
+    if (Bits::at(ent.flags, EntityFlags::kCPUControlled)) {
       // temp: cpu cameras die
       return sim.request_delete(ent.id);
     }

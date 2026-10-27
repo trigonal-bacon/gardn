@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace BitMath {
+namespace Bits {
 constexpr uint32_t count(uint32_t v) { return 32 - __builtin_clz(v - 1); };
 constexpr uint32_t fill(uint32_t v) { return (1 << v) - 1; };
 template <typename T> constexpr T at(const T& val, uint32_t bit) {
@@ -24,7 +24,36 @@ constexpr void set_arr(uint8_t* arr, uint32_t bit) {
 constexpr void unset_arr(uint8_t* arr, uint32_t bit) {
   unset(arr[bit >> 3], bit & 7);
 };
-} // namespace BitMath
+
+template<uint32_t k>
+struct UintType {
+  using T = uint64_t;
+};
+
+template<> struct UintType<0> {
+  using T = uint8_t;
+};
+
+template<> struct UintType<1> {
+  using T = uint8_t;
+};
+
+template<> struct UintType<2> {
+  using T = uint16_t;
+};
+
+template<> struct UintType<3> {
+  using T = uint32_t;
+};
+
+template<> struct UintType<4> {
+  using T = uint32_t;
+};
+
+template<uint32_t k>
+using Uint_t = UintType<(k + 7u) / 8u>::T;
+
+} // namespace Bits
 
 class PersistentFlag {
   uint8_t value : 1;

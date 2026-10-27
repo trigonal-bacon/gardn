@@ -11,7 +11,7 @@ static bool _should_interact(const Entity& ent1, const Entity& ent2) {
     return false;
   if (ent1.get_team() != ent2.get_team())
     return true;
-  if (BitMath::at((ent1.flags | ent2.flags), EntityFlags::kNoFriendlyCollision))
+  if (Bits::at((ent1.flags | ent2.flags), EntityFlags::kNoFriendlyCollision))
     return false;
   if (ent1.has_component(kMob) && ent2.has_component(kMob))
     return true;
@@ -38,7 +38,7 @@ static void _pickup_drop(Simulation& sim, Entity& player, Entity& drop) {
     player.set_loadout_ids(i, drop.get_drop_id());
     drop.set_x(player.get_x());
     drop.set_y(player.get_y());
-    BitMath::unset(drop.flags, EntityFlags::kIsDespawning);
+    Bits::unset(drop.flags, EntityFlags::kIsDespawning);
     sim.request_delete(drop.id);
     // peaceful transfer, no petal tracking needed
     return;
@@ -92,8 +92,8 @@ void on_collide(Simulation& sim, Entity& ent1, Entity& ent2) {
   float dist = min_dist - separation.magnitude();
   if (dist < 0)
     return;
-  if (!BitMath::at(ent1.flags, EntityFlags::kNoPhysicalCollision) && 
-      !BitMath::at(ent2.flags, EntityFlags::kNoPhysicalCollision)) {
+  if (!Bits::at(ent1.flags, EntityFlags::kNoPhysicalCollision) && 
+      !Bits::at(ent2.flags, EntityFlags::kNoPhysicalCollision)) {
     if (separation.x == 0 && separation.y == 0)
       separation.unit_normal(frand() * 2 * M_PI);
     else
@@ -107,9 +107,9 @@ void on_collide(Simulation& sim, Entity& ent1, Entity& ent2) {
                    ent2.constant_velocity);
       float s = dv.x * separation.x + dv.y * separation.y;
       if (s < 0) {
-        if (!BitMath::at(ent1.flags, EntityFlags::kTakesNoKnockback))
+        if (!Bits::at(ent1.flags, EntityFlags::kTakesNoKnockback))
           ent1.velocity += separation * ((s * -2 * m2) / (m1 + m2));
-        if (!BitMath::at(ent2.flags, EntityFlags::kTakesNoKnockback))
+        if (!Bits::at(ent2.flags, EntityFlags::kTakesNoKnockback))
           ent2.velocity += separation * ((s * 2 * m1) / (m1 + m2));
       }
       if (ent1.has_component(kFlower))
@@ -118,13 +118,13 @@ void on_collide(Simulation& sim, Entity& ent1, Entity& ent2) {
         ent2.velocity += separation * -fabsf(s) * 0.2;
     }
     const float ratio = m2 / (m1 + m2);
-    if (BitMath::at(ent1.flags, EntityFlags::kTakesNoKnockback) &&
-        BitMath::at(ent2.flags, EntityFlags::kTakesNoKnockback)) {
+    if (Bits::at(ent1.flags, EntityFlags::kTakesNoKnockback) &&
+        Bits::at(ent2.flags, EntityFlags::kTakesNoKnockback)) {
       _deal_push(ent1, separation, ratio, dist);
       _deal_push(ent2, separation * -1, 1 - ratio, dist);
-    } else if (BitMath::at(ent2.flags, EntityFlags::kTakesNoKnockback)) {
+    } else if (Bits::at(ent2.flags, EntityFlags::kTakesNoKnockback)) {
       _deal_push(ent1, separation, 1, dist);
-    } else if (BitMath::at(ent1.flags, EntityFlags::kTakesNoKnockback)) {
+    } else if (Bits::at(ent1.flags, EntityFlags::kTakesNoKnockback)) {
       _deal_push(ent2, separation * -1, 1, dist);
     } else {
       _deal_push(ent1, separation, ratio, dist);

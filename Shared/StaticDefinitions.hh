@@ -128,7 +128,7 @@ enum { kYellow, kGray, kBlue, kRed, kNumColors };
 };
 
 namespace AIState {
-enum { kIdle, kIdleMoving, kReturning, kBasicAggro };
+enum { kIdle, kIdleMoving, kReturning, kBasicAggro, kNumStates };
 };
 
 namespace EntityFlags {
@@ -143,7 +143,8 @@ enum {
   kHasCulling,
   kIsCulled,
   kCPUControlled,
-  kIsDetached
+  kIsDetached,
+  kNumFlags
 };
 };
 
@@ -154,16 +155,17 @@ enum {
   kPoisoned,
   kDandelioned,
   kDeadEyes,
-  kSquareEyes
+  kSquareEyes,
+  kNumFlags
 };
 };
 
 namespace EquipmentFlags {
-enum { kThirdEye, kAntennae, kObserver, kCutter, kNone };
+enum { kThirdEye, kAntennae, kObserver, kCutter, kNone, kNumFlags };
 };
 
 namespace InputFlags {
-enum { kAttacking, kDefending };
+enum { kAttacking, kDefending, kNumFlags };
 }
 
 struct PoisonDamage {

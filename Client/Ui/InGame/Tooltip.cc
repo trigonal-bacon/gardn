@@ -182,8 +182,14 @@ static std::unique_ptr<Element> make_petal_stat_container(PetalID::T id) {
                 el<StaticText>(12, format_number(attrs.sponge_duration_seconds) + " seconds")),
             0, 5, Style{.h_justify = Style::Left}));
     }
-    return el<VContainer>(std::move(stats), 0, 2,
-                        Style{.h_justify = Style::Left});
+    if (attrs.lightning_bounces > 0) {
+        stats.push_back(el<HContainer>(
+            make_children(
+                el<StaticText>(12, "Bounces:", Style{.fill = 0xffcde23b}),
+                el<StaticText>(12, format_number(attrs.lightning_bounces))),
+            0, 5, Style{.h_justify = Style::Left}));
+    }
+    return el<VContainer>(std::move(stats), 0, 2, Style{.h_justify = Style::Left});
 }
 
 static void make_petal_tooltip(PetalID::T id) {

@@ -94,8 +94,8 @@ void Element::render(Renderer& ctx) {
       released = !pressed;
       focused = pressed;
     } else {
-      pressed = BitMath::at(Input::mouse_buttons_pressed, Input::LeftMouse);
-      released = BitMath::at(Input::mouse_buttons_released, Input::LeftMouse);
+      pressed = Bits::at(Input::mouse_buttons_pressed, Input::LeftMouse);
+      released = Bits::at(Input::mouse_buttons_released, Input::LeftMouse);
       focused = 0;
     }
 

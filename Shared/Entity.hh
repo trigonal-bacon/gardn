@@ -39,7 +39,7 @@ class Entity {
 #undef MULTIPLE
         kFieldCount
   };
-  uint32_t components;
+  Bits::Uint_t<kComponentCount> components;
 #define SINGLE(component, name, type) type name;
 #define MULTIPLE(component, name, type, amt) std::array<type, amt> name;
   PERFIELD
@@ -72,15 +72,15 @@ public:
 #undef MULTIPLE
 
 #define SINGLE(name, type, reset) type name;
-#define MULTIPLE(name, type, amt, reset) type name[amt];
+#define MULTIPLE(name, type, amt, reset) std::array<type, amt> name;
   PER_EXTRA_FIELD
 #undef SINGLE
 #undef MULTIPLE
 
 #ifdef SERVERSIDE
-  void write(Writer&, uint8_t);
+  void write(Writer&, uint8_t) const;
 
-  template <bool> void write(Writer&);
+  template <bool> void write(Writer&) const;
 #define SINGLE(component, name, type) void set_##name(const type&);
 #define MULTIPLE(component, name, type, amt)                                   \
   void set_##name(uint32_t, const type&);

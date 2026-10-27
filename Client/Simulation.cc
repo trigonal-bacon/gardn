@@ -56,11 +56,11 @@ void Entity::tick_lerp(float amt) {
     float eye_angle = angle.anchor();
     eye_x = lerp(eye_x, cosf(eye_angle) * 2, amt);
     eye_y = lerp(eye_y, sinf(eye_angle) * 4, amt);
-    if (BitMath::at(face_flags, FaceFlags::kAttacking) ||
-        BitMath::at(face_flags, FaceFlags::kPoisoned) ||
-        BitMath::at(face_flags, FaceFlags::kDandelioned) || pending_delete)
+    if (Bits::at(face_flags, FaceFlags::kAttacking) ||
+        Bits::at(face_flags, FaceFlags::kPoisoned) ||
+        Bits::at(face_flags, FaceFlags::kDandelioned) || pending_delete)
       mouth = lerp(mouth, 5, amt);
-    else if (BitMath::at(face_flags, FaceFlags::kDefending))
+    else if (Bits::at(face_flags, FaceFlags::kDefending))
       mouth = lerp(mouth, 8, amt);
     else
       mouth = lerp(mouth, 15, amt);

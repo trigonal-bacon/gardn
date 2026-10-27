@@ -48,11 +48,11 @@ void mouse_event(float x, float y, uint8_t type, uint8_t button) {
   Input::mouse_x = x;
   Input::mouse_y = y;
   if (type == 0) {
-    BitMath::set(Input::mouse_buttons_pressed, button);
-    BitMath::set(Input::mouse_buttons_state, button);
+    Bits::set(Input::mouse_buttons_pressed, button);
+    Bits::set(Input::mouse_buttons_state, button);
   } else if (type == 2) {
-    BitMath::set(Input::mouse_buttons_released, button);
-    BitMath::unset(Input::mouse_buttons_state, button);
+    Bits::set(Input::mouse_buttons_released, button);
+    Bits::unset(Input::mouse_buttons_state, button);
   }
 }
 

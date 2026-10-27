@@ -9,7 +9,7 @@
 
 #define SET_BASE_COLOR(set_color)                                              \
   {                                                                            \
-    if (!BitMath::at(flags, 0))                                                \
+    if (!Bits::at(flags, 0))                                                \
       base_color = set_color;                                                  \
     else {                                                                     \
       base_color = FLOWER_COLORS[attr.color];                                  \
@@ -458,7 +458,7 @@ void draw_static_mob(MobID::T mob_id, Renderer& ctx, MobRenderAttributes attr) {
     ctx.set_stroke(Renderer::HSV(base_color, 0.8));
     ctx.set_line_width(7);
     ctx.stroke();
-    if (!BitMath::at(flags, 1)) {
+    if (!Bits::at(flags, 1)) {
       ctx.begin_path();
       ctx.move_to(25, -10);
       ctx.qcurve_to(45, -10, 55, -30);
@@ -721,8 +721,8 @@ void draw_static_mob(MobID::T mob_id, Renderer& ctx, MobRenderAttributes attr) {
     break;
   case MobID::kDigger: {
     attr.flower_attrs.radius = attr.radius;
-    BitMath::set(attr.flower_attrs.equip_flags, EquipmentFlags::kCutter);
-    BitMath::set(attr.flower_attrs.face_flags, FaceFlags::kSquareEyes);
+    Bits::set(attr.flower_attrs.equip_flags, EquipmentFlags::kCutter);
+    Bits::set(attr.flower_attrs.face_flags, FaceFlags::kSquareEyes);
     draw_static_flower(ctx, attr.flower_attrs);
     break;
   };

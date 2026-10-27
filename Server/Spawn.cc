@@ -24,7 +24,7 @@ Entity& alloc_drop(Simulation& sim, PetalID::T drop_id) {
   drop.add_component(kDrop);
   drop.set_drop_id(drop_id);
   entity_set_despawn_tick(drop, 10 * (2 + PETAL_DATA[drop_id].rarity) * TPS);
-  BitMath::set(drop.flags, EntityFlags::kNoPhysicalCollision);
+  Bits::set(drop.flags, EntityFlags::kNoPhysicalCollision);
   drop.immunity_ticks = TPS / 3;
   return drop;
 }
@@ -45,10 +45,10 @@ static Entity& __alloc_mob(Simulation& sim, MobID::T mob_id, float x, float y,
   mob.density = data.attributes.density;
 
   if (mob_id == MobID::kAntHole)
-    BitMath::set(mob.flags, EntityFlags::kNoFriendlyCollision);
+    Bits::set(mob.flags, EntityFlags::kNoFriendlyCollision);
 
   if (data.attributes.unmovable)
-    BitMath::set(mob.flags, EntityFlags::kTakesNoKnockback);
+    Bits::set(mob.flags, EntityFlags::kTakesNoKnockback);
 
   mob.add_component(kRelations);
   mob.set_team(team);
@@ -156,7 +156,7 @@ Entity& alloc_petal(Simulation& sim, PetalID::T petal_id,
   if (petal_data.attributes.rotation_style == PetalAttributes::kPassiveRot)
     petal.set_angle(frand() * 2 * M_PI);
   if (petal_id == PetalID::kMoon)
-    BitMath::set(petal.flags, EntityFlags::kIsDetached);
+    Bits::set(petal.flags, EntityFlags::kIsDetached);
   petal.density = petal_data.attributes.density;
   petal.add_component(kRelations);
   petal.set_owner(parent.id);
@@ -194,7 +194,7 @@ Entity& alloc_web(Simulation& sim, float radius, const Entity& parent) {
   web.set_color(parent.get_color());
   web.add_component(kWeb);
   entity_set_despawn_tick(web, 10 * TPS);
-  BitMath::set(web.flags, EntityFlags::kNoPhysicalCollision);
+  Bits::set(web.flags, EntityFlags::kNoPhysicalCollision);
   return web;
 }
 

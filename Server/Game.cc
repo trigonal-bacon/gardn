@@ -57,11 +57,11 @@ static void _update_client(Simulation& sim, Client* client) {
   // upcreates
   for (EntityID id : in_view) {
     DEBUG_ONLY(assert(sim.ent_exists(id));)
-    Entity& ent = sim.get_ent(id);
+    const Entity& ent = sim.get_ent(id);
     uint8_t create = !client->in_view.contains(id);
     writer.write<EntityID>(id);
     writer.write<uint8_t>(create | (ent.pending_delete << 1));
-    ent.write(writer, BitMath::at(create, 0));
+    ent.write(writer, Bits::at(create, 0));
     client->in_view.insert(id);
   }
   writer.write<EntityID>(NULL_ENTITY);

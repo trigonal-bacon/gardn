@@ -5,7 +5,7 @@
 const uint32_t MAX_LEVEL = 99;
 const uint32_t TPS = 60;
 
-// these two are based on the base game's 20 TPS
+// this is based on the base game's 20 TPS
 const float PLAYER_ACCELERATION = 2.5f;
 
 const float PETAL_DISABLE_DELAY = 45.0f; // seconds
