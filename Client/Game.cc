@@ -31,6 +31,7 @@ std::string disconnect_message;
 std::array<uint8_t, PetalID::kNumPetals> seen_petals;
 std::array<uint8_t, MobID::kNumMobs> seen_mobs;
 std::array<PetalID::T, 2 * MAX_SLOT_COUNT> cached_loadout = {PetalID::kNone};
+std::vector<Notification> notifications;
 
 double timestamp = 0;
 
@@ -82,6 +83,7 @@ void Game::init() {
   game_ui_window.add_child(Ui::el<Ui::HContainer>(
       Ui::make_children(Ui::el<Ui::StaticText>(20, "the gardn project")), 20, 0,
       Ui::Style{.h_justify = Ui::Style::Left, .v_justify = Ui::Style::Top}));
+  game_ui_window.add_child(Ui::make_notification_container());
   Ui::make_petal_tooltips();
   other_ui_window.add_child(Ui::make_debug_stats());
   other_ui_window.add_child([]() {
@@ -164,6 +166,7 @@ void Game::tick(double time) {
   Ui::window_width = renderer.width;
   Ui::window_height = renderer.height;
   Ui::focused = nullptr;
+
   double a = Ui::window_width / 1920;
   double b = Ui::window_height / 1080;
   Ui::scale = std::max(a, b);
@@ -320,6 +323,7 @@ void Game::tick(double time) {
 
   // clearing operations
   simulation.post_tick();
+  notifications.clear();
   Storage::set();
   Input::reset();
   Debug::frame_times.push_back(Ui::dt);

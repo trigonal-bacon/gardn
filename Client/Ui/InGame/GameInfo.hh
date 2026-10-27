@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Client/Ui/Element.hh>
+#include <Client/Ui/Container.hh>
 
 namespace Ui {
 class LevelBar final : public Element {
@@ -45,6 +46,21 @@ public:
   virtual void on_event(uint8_t) override;
 };
 
+class Notification final : public HContainer {
+  float creation_time;
+  float duration;
+  uint8_t should_hide;
+public:
+  Notification(std::string_view, float);
+};
+
+class NotificationContainer final : public VContainer {
+public:
+  NotificationContainer();
+  virtual void on_render(Renderer&) override;
+  virtual void refactor() override;
+};
+
 std::unique_ptr<Element> make_leaderboard();
 std::unique_ptr<Element> make_level_bar();
 std::unique_ptr<Element> make_minimap();
@@ -52,4 +68,5 @@ std::unique_ptr<Element> make_overlevel_indicator();
 std::unique_ptr<Element> make_mobile_attack_button();
 std::unique_ptr<Element> make_mobile_defend_button();
 std::unique_ptr<Element> make_mobile_joystick();
+std::unique_ptr<Element> make_notification_container();
 } // namespace Ui

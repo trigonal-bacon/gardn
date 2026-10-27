@@ -11,7 +11,7 @@ using namespace Ui;
 
 LevelBar::LevelBar() : Element(300, 40) {
   progress = 0;
-  style.animate = [&](Element& elt, Renderer& ctx) {
+  style.animate = [this](Element& elt, Renderer& ctx) {
     if (Game::alive()) {
       Entity& player = Game::simulation.get_ent(Game::player_id);
       float xp = Game::score;

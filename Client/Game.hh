@@ -8,8 +8,13 @@
 #include <Shared/Simulation.hh>
 
 #include <array>
+#include <vector>
 
 namespace Game {
+struct Notification {
+    std::string message;
+    float duration = 5000;
+};
 extern Simulation simulation;
 extern Renderer renderer;
 extern Renderer game_ui_renderer;
@@ -23,6 +28,7 @@ extern std::string nickname;
 extern std::string disconnect_message;
 extern std::array<uint8_t, PetalID::kNumPetals> seen_petals;
 extern std::array<uint8_t, MobID::kNumMobs> seen_mobs;
+extern std::vector<Notification> notifications;
 
 extern double timestamp;
 

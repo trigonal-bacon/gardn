@@ -39,6 +39,7 @@ set(SRCS
     Ui/InGame/LoadoutSlot.cc
     Ui/InGame/Map.cc
     Ui/InGame/Mobile.cc
+    Ui/InGame/Notification.cc
     Ui/InGame/OverlevelTimer.cc
     Ui/InGame/Tooltip.cc
     Ui/TitleScreen/Changelog.cc
