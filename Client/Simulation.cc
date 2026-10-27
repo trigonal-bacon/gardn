@@ -38,8 +38,8 @@ void Entity::tick_lerp(float amt) {
     health_ratio.step(amt);
     if (damaged == 1 && damage_flash < 0.1 && !pending_delete)
       damage_flash = 1;
-    else // damage_flash = fclamp(damage_flash - Ui::dt / 150, 0, 1);
-      damage_flash = lerp(damage_flash, 0, amt);
+    else
+      damage_flash = fclamp(damage_flash - Ui::dt / 150, 0, 1);
     if (damaged)
       last_damaged_time = Game::timestamp;
     damaged.clear();
