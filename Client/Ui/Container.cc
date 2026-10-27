@@ -59,7 +59,7 @@ void HContainer::refactor() {
     elt->x = x;
     elt->y = -elt->style.v_justify * outer_pad;
     x += elt->width + inner_pad;
-    y = fmax(y, elt->height);
+    y = std::max<float>(y, elt->height);
   }
   x += outer_pad - inner_pad;
   y += 2 * outer_pad;
@@ -87,7 +87,7 @@ void VContainer::refactor() {
     // Layout l = elt->get_layout();
     elt->x = -elt->style.h_justify * outer_pad;
     elt->y = y;
-    x = fmax(x, elt->width);
+    x = std::max<float>(x, elt->width);
     y += elt->height + inner_pad;
   }
   x += 2 * outer_pad;
@@ -110,11 +110,11 @@ HFlexContainer::HFlexContainer(std::unique_ptr<Element> l,
 void HFlexContainer::refactor() {
   Container::refactor();
   width = children[0]->width + inner_pad + children[1]->width;
-  height = fmax(children[0]->height, children[1]->height);
+  height = std::max<float>(children[0]->height, children[1]->height);
 }
 
 void HFlexContainer::on_render(Renderer& ctx) {
   if (auto p = parent.get(); p)
-    width = fmax(width, p->width - 2 * outer_pad);
+    width = std::max<float>(width, p->width - 2 * outer_pad);
   Container::on_render(ctx);
 }

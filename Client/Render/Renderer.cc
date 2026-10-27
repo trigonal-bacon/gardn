@@ -175,8 +175,8 @@ void RenderContext::reset() {
   clip_x = renderer->width / 2;
   clip_y = renderer->height / 2;
   // prevents premature unrendering
-  clip_w = std::fmax(renderer->width, 10000.0);
-  clip_h = std::fmax(renderer->height, 10000.0);
+  clip_w = std::max<float>(renderer->width, 10000.0);
+  clip_h = std::max<float>(renderer->height, 10000.0);
 }
 
 RenderContext::~RenderContext() {

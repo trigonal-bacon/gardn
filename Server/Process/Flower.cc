@@ -45,8 +45,8 @@ static struct PlayerBuffs _get_petal_passive_buffs(Simulation& sim,
     if (attrs.equipment != EquipmentFlags::kNone)
       player.set_equip_flags(player.get_equip_flags() | (1 << attrs.equipment));
     buffs.vision_factor = std::min(buffs.vision_factor, attrs.vision_factor);
-    buffs.extra_range = std::fmax(attrs.extra_range, buffs.extra_range);
-    buffs.extra_damage = std::fmax(buffs.extra_damage, attrs.extra_body_damage);
+    buffs.extra_range = std::max<float>(attrs.extra_range, buffs.extra_range);
+    buffs.extra_damage = std::max<float>(buffs.extra_damage, attrs.extra_body_damage);
     buffs.damage_factor *= attrs.extra_damage_factor;
     buffs.reload_factor *= attrs.extra_reload_factor;
     buffs.sponge_ticks = std::max<game_tick_t>(buffs.sponge_ticks, attrs.sponge_duration_seconds * TPS);
@@ -63,9 +63,9 @@ static struct PlayerBuffs _get_petal_passive_buffs(Simulation& sim,
     buffs.extra_rot += attrs.extra_rotation_speed;
     buffs.extra_health += attrs.extra_health;
     player.damage_reflection =
-        std::fmax(player.damage_reflection, attrs.damage_reflection);
+        std::max(player.damage_reflection, attrs.damage_reflection);
     player.poison_armor =
-        std::fmax(player.poison_armor, attrs.poison_armor / TPS);
+        std::max(player.poison_armor, attrs.poison_armor / TPS);
     if (slot_petal_id == PetalID::kPoisonCactus)
       buffs.is_poisonous = 1;
   }
