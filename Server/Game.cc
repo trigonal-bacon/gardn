@@ -35,7 +35,7 @@ static void _update_client(Simulation& sim, Client* client) {
         in_view.insert(ent.id); 
         std::reference_wrapper<Entity> curr(ent);
         //recurse on parents so that all parents are in view
-        while (curr.get().has_component(kRelations) && sim.ent_exists(curr.get().get_parent())) {
+        while (curr.get().has_component<kRelations>() && sim.ent_exists(curr.get().get_parent())) {
           curr = sim.get_ent(curr.get().get_parent());
           if (in_view.find(curr.get().id) != in_view.end())
             return;
@@ -98,8 +98,8 @@ void GameInstance::add_client(Client* client) {
   client->game = this;
   clients.insert(client);
   Entity& ent = simulation.alloc_ent();
-  ent.add_component(kCamera);
-  ent.add_component(kRelations);
+  ent.add_component<kCamera>();
+  ent.add_component<kRelations>();
 #ifdef GAMEMODE_TDM
   EntityID team = team_manager.get_random_team();
   ent.set_team(team);

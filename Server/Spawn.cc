@@ -14,14 +14,14 @@ Entity& alloc_drop(Simulation& sim, PetalID::T drop_id) {
   DEBUG_ONLY(assert(drop_id < PetalID::kNumPetals);)
   PetalTracker::add_petal(sim, drop_id);
   Entity& drop = sim.alloc_ent();
-  drop.add_component(kPhysics);
+  drop.add_component<kPhysics>();
   drop.set_radius(25);
   drop.set_angle(frand() * 0.2 - 0.1);
 
-  drop.add_component(kRelations);
+  drop.add_component<kRelations>();
   drop.set_team(NULL_ENTITY);
 
-  drop.add_component(kDrop);
+  drop.add_component<kDrop>();
   drop.set_drop_id(drop_id);
   entity_set_despawn_tick(drop, 10 * (2 + PETAL_DATA[drop_id].rarity) * TPS);
   Bits::set(drop.flags, EntityFlags::kNoPhysicalCollision);
@@ -37,7 +37,7 @@ static Entity& __alloc_mob(Simulation& sim, MobID::T mob_id, float x, float y,
   float seed = frand();
   Entity& mob = sim.alloc_ent();
 
-  mob.add_component(kPhysics);
+  mob.add_component<kPhysics>();
   mob.set_radius(data.radius.get_single(seed));
   mob.set_angle(frand() * 2 * M_PI);
   mob.set_x(x);
@@ -50,13 +50,13 @@ static Entity& __alloc_mob(Simulation& sim, MobID::T mob_id, float x, float y,
   if (data.attributes.unmovable)
     Bits::set(mob.flags, EntityFlags::kTakesNoKnockback);
 
-  mob.add_component(kRelations);
+  mob.add_component<kRelations>();
   mob.set_team(team);
 
-  mob.add_component(kMob);
+  mob.add_component<kMob>();
   mob.set_mob_id(mob_id);
 
-  mob.add_component(kHealth);
+  mob.add_component<kHealth>();
   mob.health = mob.max_health = data.health.get_single(seed);
   mob.damage = data.damage;
   mob.poison_damage = data.attributes.poison_damage;
@@ -65,12 +65,12 @@ static Entity& __alloc_mob(Simulation& sim, MobID::T mob_id, float x, float y,
   mob.detection_radius = data.attributes.aggro_radius;
   // mob.score_reward = data.xp;
 
-  mob.add_component(kName);
+  mob.add_component<kName>();
   mob.set_name(std::string(data.name));
 
   mob.base_entity = mob.id;
   if (mob_id == MobID::kDigger) {
-    mob.add_component(kFlower);
+    mob.add_component<kFlower>();
     mob.set_angle(0);
     mob.set_color(ColorID::kGray);
   }
@@ -100,11 +100,11 @@ Entity& alloc_mob(Simulation& sim, MobID::T mob_id, float x, float y,
     return ent;
   } else {
     Entity& head = __alloc_mob(sim, mob_id, x, y, team, on_spawn);
-    // head.add_component(kSegmented);
+    // head.add_component<kSegmented>();
     std::reference_wrapper<Entity> curr = head;
     for (uint32_t i = 1; i < data.attributes.segments; ++i) {
       Entity& seg = __alloc_mob(sim, mob_id, x, y, team, on_spawn);
-      seg.add_component(kSegmented);
+      seg.add_component<kSegmented>();
       seg.set_parent(curr.get().id);
       seg.set_angle(curr.get().get_angle() + frand() * 0.1 - 0.05);
       seg.set_x(curr.get().get_x() - (curr.get().get_radius() + seg.get_radius()) *
@@ -120,24 +120,24 @@ Entity& alloc_mob(Simulation& sim, MobID::T mob_id, float x, float y,
 Entity& alloc_player(Simulation& sim, const EntityID team) {
   Entity& player = sim.alloc_ent();
 
-  player.add_component(kPhysics);
+  player.add_component<kPhysics>();
   player.set_radius(BASE_FLOWER_RADIUS);
   player.density = 1;
 
-  player.add_component(kFlower);
+  player.add_component<kFlower>();
 
-  player.add_component(kRelations);
+  player.add_component<kRelations>();
   player.set_team(team);
 
-  player.add_component(kHealth);
+  player.add_component<kHealth>();
   player.health = player.max_health = BASE_HEALTH;
   player.set_health_ratio(1);
   player.damage = BASE_BODY_DAMAGE;
   player.immunity_ticks = 1.0 * TPS;
 
-  player.add_component(kScore);
+  player.add_component<kScore>();
 
-  player.add_component(kName);
+  player.add_component<kName>();
   player.set_nametag_visible(1);
 
   player.base_entity = player.id;
@@ -149,7 +149,7 @@ Entity& alloc_petal(Simulation& sim, PetalID::T petal_id,
   DEBUG_ONLY(assert(petal_id < PetalID::kNumPetals);)
   const PetalData& petal_data = PETAL_DATA[petal_id];
   Entity& petal = sim.alloc_ent();
-  petal.add_component(kPhysics);
+  petal.add_component<kPhysics>();
   petal.set_x(parent.get_x());
   petal.set_y(parent.get_y());
   petal.set_radius(petal_data.radius);
@@ -158,14 +158,14 @@ Entity& alloc_petal(Simulation& sim, PetalID::T petal_id,
   if (petal_id == PetalID::kMoon)
     Bits::set(petal.flags, EntityFlags::kIsDetached);
   petal.density = petal_data.attributes.density;
-  petal.add_component(kRelations);
+  petal.add_component<kRelations>();
   petal.set_owner(parent.id);
   petal.set_team(parent.get_team());
   petal.set_color(parent.get_color());
-  petal.add_component(kPetal);
+  petal.add_component<kPetal>();
   petal.set_petal_id(petal_id);
   petal.set_split_projectile(petal_data.attributes.split_projectile);
-  petal.add_component(kHealth);
+  petal.add_component<kHealth>();
   petal.health = petal.max_health = petal_data.health;
   petal.damage = petal_data.damage;
   petal.set_health_ratio(1);
@@ -182,17 +182,17 @@ Entity& alloc_petal(Simulation& sim, PetalID::T petal_id,
 
 Entity& alloc_web(Simulation& sim, float radius, const Entity& parent) {
   Entity& web = sim.alloc_ent();
-  web.add_component(kPhysics);
+  web.add_component<kPhysics>();
   web.set_x(parent.get_x());
   web.set_y(parent.get_y());
   web.set_angle(frand() * 2 * M_PI);
   web.set_radius(radius);
   web.density = 1.0;
-  web.add_component(kRelations);
+  web.add_component<kRelations>();
   web.set_team(parent.get_team());
   web.set_owner(parent.id);
   web.set_color(parent.get_color());
-  web.add_component(kWeb);
+  web.add_component<kWeb>();
   entity_set_despawn_tick(web, 10 * TPS);
   Bits::set(web.flags, EntityFlags::kNoPhysicalCollision);
   return web;
@@ -200,8 +200,8 @@ Entity& alloc_web(Simulation& sim, float radius, const Entity& parent) {
 
 Entity& alloc_cpu_camera(Simulation& sim, const EntityID team) {
   Entity& ent = sim.alloc_ent();
-  ent.add_component(kCamera);
-  ent.add_component(kRelations);
+  ent.add_component<kCamera>();
+  ent.add_component<kRelations>();
 
   ent.set_fov(BASE_FOV);
   ent.set_respawn_level(frand() * 30);

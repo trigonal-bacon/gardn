@@ -28,7 +28,7 @@ void inflict_damage(Simulation& sim, const EntityID atk_id,
   if (!sim.ent_alive(def_id))
     return;
   Entity& defender = sim.get_ent(def_id);
-  if (!defender.has_component(kHealth))
+  if (!defender.has_component<kHealth>())
     return;
   if (defender.immunity_ticks > 0)
     return;
@@ -54,7 +54,7 @@ void inflict_damage(Simulation& sim, const EntityID atk_id,
   const float damage_dealt = old_health - defender.health;
   // ant hole spawns
   // floor start, ceil end
-  if (defender.has_component(kMob) &&
+  if (defender.has_component<kMob>() &&
       defender.get_mob_id() == MobID::kAntHole) {
     const uint32_t num_waves = ANTHOLE_SPAWNS.size() - 1;
     uint32_t start = ceilf((defender.max_health - old_health) /
@@ -77,7 +77,7 @@ void inflict_damage(Simulation& sim, const EntityID atk_id,
     }
   }
   /* yggdrasil revive clause
-  if (defender.health == 0 && defender.has_component(kFlower)) {
+  if (defender.health == 0 && defender.has_component<kFlower>()) {
       if (_yggdrasil_revival_clause(sim, defender)) {
           defender.health = defender.max_health * 0.25;
           defender.immunity_ticks = 1.0 * TPS;
@@ -100,7 +100,7 @@ void inflict_damage(Simulation& sim, const EntityID atk_id,
   if (defender.slow_ticks < attacker.slow_inflict)
     defender.slow_ticks = attacker.slow_inflict;
 
-  if (attacker.has_component(kPetal)) {
+  if (attacker.has_component<kPetal>()) {
     switch (attacker.get_petal_id()) {
     case PetalID::kDandelion:
       defender.dandy_ticks = 10 * TPS;
@@ -110,7 +110,7 @@ void inflict_damage(Simulation& sim, const EntityID atk_id,
     }
   }
 
-  if (attacker.has_component(kPetal)) {
+  if (attacker.has_component<kPetal>()) {
     if (!sim.ent_alive(defender.target))
       defender.target = attacker.base_entity;
 
@@ -145,9 +145,9 @@ void inflict_lightning(Simulation& sim, const EntityID atk_id,
     EntityID target = find_nearest(sim, sim.get_ent(last), LIGHTNING_BOUNCE_RADIUS, [&](const Entity& ent) {
       if (!sim.ent_alive(ent.id))
         return false;
-      if (!ent.has_component(kHealth))
+      if (!ent.has_component<kHealth>())
         return false;
-      if (ent.has_component(kPetal))
+      if (ent.has_component<kPetal>())
         return false;
       if (ent.get_team() == attacker.get_team())
         return false;
@@ -163,13 +163,13 @@ void inflict_lightning(Simulation& sim, const EntityID atk_id,
     inflict_damage(sim, atk_id, id, amt, DamageType::kLightning);
     const Entity& target = sim.get_ent(id);
     Entity& anim = sim.alloc_ent();
-    anim.add_component(kPhysics);
+    anim.add_component<kPhysics>();
     anim.set_radius(3.5);
     anim.set_x(target.get_x());
     anim.set_y(target.get_y());
-    anim.add_component(kRelations);
+    anim.add_component<kRelations>();
     anim.set_parent(last);
-    anim.add_component(kAnimation);
+    anim.add_component<kAnimation>();
     entity_set_despawn_tick(anim, 0.1 * TPS);
     Bits::set(anim.flags, EntityFlags::kNoPhysicalCollision);
 
@@ -178,7 +178,7 @@ void inflict_lightning(Simulation& sim, const EntityID atk_id,
 }
 
 void inflict_heal(Simulation& sim, Entity& ent, float amt) {
-  DEBUG_ONLY(assert(ent.has_component(kHealth));)
+  DEBUG_ONLY(assert(ent.has_component<kHealth>());)
   if (ent.pending_delete || ent.health <= 0)
     return;
   if (ent.dandy_ticks > 0)

@@ -59,6 +59,7 @@ If hosting somewhere other than ``localhost``, use the  ``WS_URL`` constant in `
 ``TDM`` | ``Server only`` | ``Default: 0`` : enables TDM instead of FFA.<br>
 ``GENERAL_SPATIAL_HASH`` | ``Server only`` | ``Default: 0`` : uses the canonical hash grid implementation instead of a uniform grid; enable this to support large entities. <br>
 ``USE_CODEPOINT_LEN`` | ``Server & Client`` | ``Default: 0`` : uses the number of codepoints (characters) instead of byte length for string validation and truncation - useful for non-english characters. Should be the same on both server and client.
+``USE_UPTR_ENTITY`` | ``Server & Client`` | ``Default: 0`` : stores entity components as pointers to structs instead of inlining inside the entity. Saves a bit of memory but may run slower. Does NOT need to be the same on both server and client.
 
 # License
 [LICENSE](./LICENSE)

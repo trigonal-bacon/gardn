@@ -16,7 +16,7 @@ void SpatialHash::refresh(uint32_t _width, uint32_t _height) {
 }
 
 void SpatialHash::insert(const Entity& ent) {
-  DEBUG_ONLY(assert(ent.has_component(kPhysics));)
+  DEBUG_ONLY(assert(ent.has_component<kPhysics>());)
   // for the uniform grid to work, the max ent radius is GRID_SIZE/2
   // if larger entities are needed, either increase the GRID_SIZE
   // or use SpatialHashCanonical

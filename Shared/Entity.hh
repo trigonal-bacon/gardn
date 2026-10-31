@@ -11,6 +11,7 @@
 #include <bitset>
 #include <cstdint>
 #include <vector>
+#include <memory>
 
 typedef CircularArray<PetalID::T, MAX_SLOT_COUNT> circ_arr_t;
 
@@ -40,14 +41,33 @@ class Entity {
         kFieldCount
   };
   Bits::Uint_t<kComponentCount> components;
+
 #define SINGLE(component, name, type) type name;
 #define MULTIPLE(component, name, type, amt) std::array<type, amt> name;
-  PERFIELD
+#ifdef USE_UPTR_ENTITY
+#define COMPONENT(component) \
+struct Component_##component { \
+FIELDS_##component \
+}; \
+std::unique_ptr<Component_##component> component;
+PERCOMPONENT
+#undef COMPONENT
+#else
+PERFIELD
+#endif
+
+
 #undef SINGLE
 #undef MULTIPLE
   std::bitset<kFieldCount> state;
 #define SINGLE(component, name, type) ;
 #define MULTIPLE(component, name, type, amt) std::bitset<amt> state_per_##name;
+  PERFIELD
+#undef SINGLE
+#undef MULTIPLE
+
+#define SINGLE(component, name, type) type& get_##name##_mut();
+#define MULTIPLE(component, name, type, amt) type& get_##name##_mut(uint32_t i);
   PERFIELD
 #undef SINGLE
 #undef MULTIPLE
@@ -61,8 +81,16 @@ public:
   uint32_t lifetime;
   EntityID id;
   uint8_t pending_delete;
-  void add_component(uint32_t);
-  uint8_t has_component(uint32_t) const;
+  template<uint32_t component>
+  void add_component();
+  template<uint32_t component>
+  uint8_t has_component() const;
+
+#define COMPONENT(component) \
+template<> void add_component<k##component>(); \
+template<> uint8_t has_component<k##component>() const;
+  PERCOMPONENT
+#undef COMPONENT
 
 #define SINGLE(component, name, type) const type& get_##name() const;
 #define MULTIPLE(component, name, type, amt)                                   \

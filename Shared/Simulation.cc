@@ -105,7 +105,7 @@ void Simulation::for_each_entity(std::function<void(Simulation&, Entity&)> cb) {
         continue;                                                              \
       Entity& ent = entities[id];                                              \
       SERVER_ONLY(if (ent.pending_delete) continue;)                           \
-      if (ent.has_component(k##name))                                          \
+      if (ent.has_component<k##name>())                                          \
         cb(*this, ent);                                                         \
     }                                                                          \
   }

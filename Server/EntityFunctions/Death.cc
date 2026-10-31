@@ -47,7 +47,7 @@ static void _add_score(Simulation& sim, const EntityID killer_id,
   if (!sim.ent_exists(killer_id))
     return;
   Entity& killer = sim.get_ent(killer_id);
-  if (killer.has_component(kScore))
+  if (killer.has_component<kScore>())
     killer.set_score(killer.get_score() + target.score_reward);
 }
 
@@ -62,14 +62,14 @@ void entity_on_death(Simulation& sim, const Entity& ent) {
     _add_score(sim, killer_id, ent);
   }
   if (sim.ent_alive(ent.get_owner()) &&
-      sim.get_ent(ent.get_owner()).has_component(kCamera)) {
+      sim.get_ent(ent.get_owner()).has_component<kCamera>()) {
     Entity& camera = sim.get_ent(ent.get_owner());
     EntityID killer_id = sim.ent_exists(ent.last_damaged_by)
                              ? sim.get_ent(ent.last_damaged_by).base_entity
                              : NULL_ENTITY;
     if (sim.ent_alive(killer_id)) {
       const Entity& killer = sim.get_ent(killer_id);
-      if (killer.has_component(kName))
+      if (killer.has_component<kName>())
         camera.set_killed_by(killer.get_name());
       else
         camera.set_killed_by("");
@@ -78,7 +78,7 @@ void entity_on_death(Simulation& sim, const Entity& ent) {
     else
       camera.set_killed_by("");
   }
-  if (ent.has_component(kMob)) {
+  if (ent.has_component<kMob>()) {
     if (Bits::at(ent.flags, EntityFlags::kSpawnedFromZone))
       Map::remove_mob(sim, ent.zone);
     if (!natural_despawn && !(Bits::at(ent.flags, EntityFlags::kNoDrops))) {
@@ -100,12 +100,12 @@ void entity_on_death(Simulation& sim, const Entity& ent) {
       alloc_mob(sim, MobID::kDigger, ent.get_x(), ent.get_y(), team);
     }
   }
-  if (ent.has_component(kPetal)) {
+  if (ent.has_component<kPetal>()) {
     if (ent.get_petal_id() == PetalID::kWeb ||
         ent.get_petal_id() == PetalID::kTriweb)
       alloc_web(sim, 100, ent);
   }
-  if (ent.has_component(kFlower)) {
+  if (ent.has_component<kFlower>()) {
     std::vector<PetalID::T> potential = {};
     for (uint32_t i = 0; i < ent.get_loadout_count() + MAX_SLOT_COUNT; ++i) {
       DEBUG_ONLY(assert(ent.get_loadout_ids(i) < PetalID::kNumPetals));
@@ -142,7 +142,7 @@ void entity_on_death(Simulation& sim, const Entity& ent) {
     // if the camera is the one that disconnects
     // no need to re-add the petals to the petal tracker
     if (!sim.ent_alive(ent.get_owner()) ||
-        !sim.get_ent(ent.get_owner()).has_component(kCamera))
+        !sim.get_ent(ent.get_owner()).has_component<kCamera>())
       return;
     Entity& camera = sim.get_ent(ent.get_owner());
     // reset all reloads and stuff
@@ -174,7 +174,7 @@ void entity_on_death(Simulation& sim, const Entity& ent) {
       PetalTracker::add_petal(sim, PetalID::kBasic);
       camera.set_inventory(i, PetalID::kBasic);
     }
-  } else if (ent.has_component(kDrop)) {
+  } else if (ent.has_component<kDrop>()) {
     if (Bits::at(ent.flags, EntityFlags::kIsDespawning))
       PetalTracker::remove_petal(sim, ent.get_drop_id());
   }

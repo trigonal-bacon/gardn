@@ -13,13 +13,13 @@ static bool _should_interact(const Entity& ent1, const Entity& ent2) {
     return true;
   if (Bits::at((ent1.flags | ent2.flags), EntityFlags::kNoFriendlyCollision))
     return false;
-  if (ent1.has_component(kMob) && ent2.has_component(kMob))
+  if (ent1.has_component<kMob>() && ent2.has_component<kMob>())
     return true;
   return false;
 }
 
 static void _on_contact_damage(Simulation& sim, Entity& attacker, Entity& defender) {
-  if (attacker.has_component(kPetal) && PETAL_DATA[attacker.get_petal_id()].attributes.lightning_bounces > 0) {
+  if (attacker.has_component<kPetal>() && PETAL_DATA[attacker.get_petal_id()].attributes.lightning_bounces > 0) {
     inflict_lightning(sim, attacker.id, defender.id, attacker.damage, PETAL_DATA[attacker.get_petal_id()].attributes.lightning_bounces);
   } else {
     inflict_damage(sim, attacker.id, defender.id, attacker.damage, DamageType::kContact);
@@ -46,11 +46,11 @@ static void _pickup_drop(Simulation& sim, Entity& player, Entity& drop) {
 }
 
 #define NO(component)                                                          \
-  (!ent1.has_component(component) && !ent2.has_component(component))
+  (!ent1.has_component<component>() && !ent2.has_component<component>())
 #define BOTH(component)                                                        \
-  (ent1.has_component(component) && ent2.has_component(component))
+  (ent1.has_component<component>() && ent2.has_component<component>())
 #define EITHER(component)                                                      \
-  (ent1.has_component(component) || ent2.has_component(component))
+  (ent1.has_component<component>() || ent2.has_component<component>())
 
 static void _deal_push(Entity& ent, Vector knockback, float mass_ratio,
                        float scale) {
@@ -112,9 +112,9 @@ void on_collide(Simulation& sim, Entity& ent1, Entity& ent2) {
         if (!Bits::at(ent2.flags, EntityFlags::kTakesNoKnockback))
           ent2.velocity += separation * ((s * 2 * m1) / (m1 + m2));
       }
-      if (ent1.has_component(kFlower))
+      if (ent1.has_component<kFlower>())
         ent1.velocity += separation * -fabsf(s) * -0.2;
-      if (ent2.has_component(kFlower))
+      if (ent2.has_component<kFlower>())
         ent2.velocity += separation * -fabsf(s) * 0.2;
     }
     const float ratio = m2 / (m1 + m2);
@@ -143,15 +143,15 @@ void on_collide(Simulation& sim, Entity& ent1, Entity& ent2) {
       sim.request_delete(ent2.id);
   }
 
-  if (ent1.has_component(kDrop) && ent2.has_component(kFlower))
+  if (ent1.has_component<kDrop>() && ent2.has_component<kFlower>())
     _pickup_drop(sim, ent2, ent1);
-  if (ent2.has_component(kDrop) && ent1.has_component(kFlower))
+  if (ent2.has_component<kDrop>() && ent1.has_component<kFlower>())
     _pickup_drop(sim, ent1, ent2);
 
-  if (ent1.has_component(kWeb) && !ent2.has_component(kPetal) &&
-      !ent2.has_component(kDrop))
+  if (ent1.has_component<kWeb>() && !ent2.has_component<kPetal>() &&
+      !ent2.has_component<kDrop>())
     ent2.speed_ratio = 0.5;
-  if (ent2.has_component(kWeb) && !ent1.has_component(kPetal) &&
-      !ent1.has_component(kDrop))
+  if (ent2.has_component<kWeb>() && !ent1.has_component<kPetal>() &&
+      !ent1.has_component<kDrop>())
     ent1.speed_ratio = 0.5;
 }

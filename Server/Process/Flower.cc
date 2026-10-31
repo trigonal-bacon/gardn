@@ -32,7 +32,7 @@ struct RotationCenter {
 static struct PlayerBuffs _get_petal_passive_buffs(Simulation& sim,
                                                    Entity& player) {
   struct PlayerBuffs buffs = {0};
-  if (player.has_component(kMob))
+  if (player.has_component<kMob>())
     return buffs;
   player.set_equip_flags(0);
   player.damage_reflection = 0;
@@ -121,7 +121,7 @@ void tick_player_behavior(Simulation& sim, Entity& player) {
   DEBUG_ONLY(assert(player.max_health > 0);)
   const PlayerBuffs buffs = _get_petal_passive_buffs(sim, player);
   float health_ratio = player.health / player.max_health;
-  if (!player.has_component(kMob)) {
+  if (!player.has_component<kMob>()) {
     player.max_health =
         hp_at_level(score_to_level(player.get_score())) + buffs.extra_health;
     player.damage = BASE_BODY_DAMAGE + buffs.extra_damage;
@@ -191,7 +191,7 @@ void tick_player_behavior(Simulation& sim, Entity& player) {
       if (sim.ent_alive(petal_slot.ent_id)) {
         Entity& petal = sim.get_ent(petal_slot.ent_id);
         // only do this if petal not despawning
-        if (petal.has_component(kPetal) &&
+        if (petal.has_component<kPetal>() &&
             !Bits::at(petal.flags, EntityFlags::kIsDespawning) &&
             !Bits::at(petal.flags, EntityFlags::kIsDetached)) {
           // petal rotation behavior

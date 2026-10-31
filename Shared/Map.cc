@@ -76,7 +76,7 @@ bool Map::find_spawn_location(Simulation& sim, float d, Vector& vref) {
     vref.set(frand() * ARENA_WIDTH, frand() * ARENA_HEIGHT);
     bool valid = true;
     sim.for_each<kFlower>([&](Simulation&, Entity& ent) {
-      if (ent.has_component(kMob))
+      if (ent.has_component<kMob>())
         return;
       if (!valid)
         return;

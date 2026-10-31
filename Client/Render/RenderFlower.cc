@@ -8,7 +8,7 @@
 #include <Shared/Entity.hh>
 
 void render_flower(Renderer& ctx, const Entity& ent) {
-  if (ent.has_component(kMob))
+  if (ent.has_component<kMob>())
     return;
   uint8_t face_flags = ent.get_face_flags();
   if (ent.deletion_animation > 0)

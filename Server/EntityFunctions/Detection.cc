@@ -20,7 +20,7 @@ EntityID find_nearest_enemy(Simulation& simulation, const Entity& entity,
           return;
         if (ent.immunity_ticks > 0)
           return;
-        if (!ent.has_component(kMob) && !ent.has_component(kFlower))
+        if (!ent.has_component<kMob>() && !ent.has_component<kFlower>())
           return;
         if (sim.ent_alive(entity.get_parent())) {
           Entity& parent = sim.get_ent(entity.get_parent());

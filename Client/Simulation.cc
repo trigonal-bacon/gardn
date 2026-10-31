@@ -7,53 +7,54 @@
 #include <cmath>
 
 void Entity::tick_lerp(float amt) {
-  if (has_component(kPhysics)) {
-    float prev_x = x;
-    float prev_y = y;
+  if (has_component<kPhysics>()) {
+    float prev_x = get_x();
+    float prev_y = get_y();
     if (!pending_delete) {
-      x.step(amt);
-      y.step(amt);
+      get_x_mut().step(amt);
+      get_y_mut().step(amt);
     }
-    if (has_component(kDrop) || has_component(kWeb)) {
+    if (has_component<kDrop>() || has_component<kWeb>()) {
       if (lifetime < TPS)
         animation = lerp(animation, 1, amt * 0.75);
       else
         animation = 1;
     } else {
-      Vector vel(x - prev_x, y - prev_y);
+      Vector vel(get_x() - prev_x, get_y() - prev_y);
       animation += (1 + 0.75 * vel.magnitude()) * 0.075;
     }
-    radius.step(amt);
-    angle.step_angle(amt);
+    get_radius_mut().step(amt);
+    get_angle_mut().step_angle(amt);
     if (pending_delete)
       deletion_animation = fclamp(deletion_animation + Ui::dt / 150, 0, 1);
   }
-  if (has_component(kCamera)) {
-    camera_x.step(amt);
-    camera_y.step(amt);
-    fov.step(amt);
-    Game::respawn_level = respawn_level;
+  if (has_component<kCamera>()) {
+    get_camera_x_mut().step(amt);
+    get_camera_y_mut().step(amt);
+    get_fov_mut().step(amt);
+    Game::respawn_level = get_respawn_level();
   }
-  if (has_component(kHealth)) {
-    health_ratio.step(amt);
-    if (damaged == 1 && damage_flash < 0.1 && !pending_delete)
+  if (has_component<kHealth>()) {
+    get_health_ratio_mut().step(amt);
+    if (get_damaged() == 1 && damage_flash < 0.1 && !pending_delete)
       damage_flash = 1;
     else
       damage_flash = fclamp(damage_flash - Ui::dt / 150, 0, 1);
-    if (damaged)
+    if (get_damaged())
       last_damaged_time = Game::timestamp;
-    damaged.clear();
-    if ((float)health_ratio > 0.999)
+    get_damaged_mut().clear();
+    if ((float) get_health_ratio() > 0.999)
       healthbar_opacity = lerp(healthbar_opacity, 0, amt);
     else
       healthbar_opacity = 1;
-    if (healthbar_lag < health_ratio)
-      healthbar_lag = health_ratio;
+    if (healthbar_lag < get_health_ratio())
+      healthbar_lag = get_health_ratio();
     else if (Game::timestamp - last_damaged_time > 250)
-      healthbar_lag = lerp(healthbar_lag, health_ratio, amt / 3);
+      healthbar_lag = lerp(healthbar_lag, get_health_ratio(), amt / 3);
   }
-  if (has_component(kFlower)) {
-    float eye_angle = angle.anchor();
+  if (has_component<kFlower>()) {
+    float eye_angle = get_angle().anchor();
+    uint32_t face_flags = get_face_flags();
     eye_x = lerp(eye_x, cosf(eye_angle) * 2, amt);
     eye_y = lerp(eye_y, sinf(eye_angle) * 4, amt);
     if (Bits::at(face_flags, FaceFlags::kAttacking) ||

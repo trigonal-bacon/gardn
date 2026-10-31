@@ -25,7 +25,7 @@ public:
 void entity_clear_references(Simulation& sim, Entity& ent) {
 #define SINGLE(component, name, type)                                          \
   if constexpr (std::is_same_v<type, EntityID>) {                              \
-    if (ent.has_component(k##component) &&                                     \
+    if (ent.has_component<k##component>() &&                                     \
         !sim.ent_exists(FilterCast<EntityID, type>::get(ent.get_##name())))   \
       ent.set_##name(FilterCast<type, EntityID>::get(NULL_ENTITY));            \
   }

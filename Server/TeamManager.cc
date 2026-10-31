@@ -6,7 +6,7 @@ TeamManager::TeamManager(Simulation& sim) : simulation(sim) {}
 
 void TeamManager::add_team(uint8_t color) {
   Entity& team_ent = simulation.alloc_ent();
-  team_ent.add_component(kRelations);
+  team_ent.add_component<kRelations>();
   team_ent.set_color(color);
   team_ent.set_team(team_ent.id);
   team_ent.set_owner(team_ent.id);

@@ -154,7 +154,7 @@ void Game::render_game() {
       return;
     RenderContext context(&renderer);
     renderer.translate(ent.get_x(), ent.get_y());
-    if (!ent.has_component(kFlower))
+    if (!ent.has_component<kFlower>())
       renderer.rotate(ent.get_angle());
     _apply_damage_filter(renderer, ent);
     render_mob(renderer, ent);
@@ -164,7 +164,7 @@ void Game::render_game() {
       return;
     RenderContext context(&renderer);
     renderer.translate(ent.get_x(), ent.get_y());
-    if (!ent.has_component(kFlower))
+    if (!ent.has_component<kFlower>())
       renderer.rotate(ent.get_angle());
     _apply_damage_filter(renderer, ent);
     render_mob(renderer, ent);

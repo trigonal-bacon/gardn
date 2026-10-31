@@ -23,7 +23,7 @@ void tick_entity_motion(Simulation& sim, Entity& ent) {
   ent.set_y(position.y);
   ent.velocity *= damping;
 
-  if (!ent.has_component(kPetal) && !ent.has_component(kWeb)) {
+  if (!ent.has_component<kPetal>() && !ent.has_component<kWeb>()) {
     ent.set_x(
         fclamp(ent.get_x(), ent.get_radius(), ARENA_WIDTH - ent.get_radius()));
     ent.set_y(

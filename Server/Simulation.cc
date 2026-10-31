@@ -43,7 +43,7 @@ void Simulation::on_tick() {
     }
   }
   for_each_entity([](Simulation& sim, Entity& ent) {
-    if (ent.has_component(kPhysics))
+    if (ent.has_component<kPhysics>())
       sim.spatial_hash.insert(ent);
     if (Bits::at(ent.flags, EntityFlags::kHasCulling))
       Bits::set(ent.flags, EntityFlags::kIsCulled);
@@ -82,7 +82,7 @@ void Simulation::post_tick() {
   for_each_entity([](Simulation& sim, Entity& ent) {
     if (!ent.pending_delete)
       return;
-    if (!ent.has_component(kPhysics))
+    if (!ent.has_component<kPhysics>())
       return sim._delete_ent(ent.id);
     if (ent.deletion_tick >= TPS / 5)
       return sim._delete_ent(ent.id);

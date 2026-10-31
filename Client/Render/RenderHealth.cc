@@ -7,8 +7,8 @@
 #include <Shared/Entity.hh>
 
 void render_health(Renderer& ctx, const Entity& ent) {
-  // if (ent.has_component(kPetal)) return;
-  // if (ent.has_component(kMob)) return;
+  // if (ent.has_component<kPetal>()) return;
+  // if (ent.has_component<kMob>()) return;
   if (ent.healthbar_opacity < 0.01)
     return;
   float w = ent.get_radius() * 1.33;
