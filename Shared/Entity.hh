@@ -40,7 +40,25 @@ class Entity {
 #undef MULTIPLE
         kFieldCount
   };
+  static constexpr std::array<uint32_t, kFieldCount+1> _BIT_OFFSETS = [](){
+#define SINGLE(component, name, type) (0),
+#define MULTIPLE(component, name, type, amount) (amount),
+    constexpr std::array<uint32_t, kFieldCount> increments = {
+      PERFIELD
+    };
+#undef SINGLE
+#undef MULTIPLE
+    
+    std::array<uint32_t, kFieldCount+1> res = {};
+    for (size_t i = 0; i < kFieldCount; ++i) {
+      res[i+1] = res[i] + increments[i];
+    }
+    return res;
+  }();
+
   Bits::Uint_t<kComponentCount> components;
+  std::bitset<kFieldCount> state;
+  std::bitset<_BIT_OFFSETS.back()> vector_state;
 
 #define SINGLE(component, name, type) type name;
 #define MULTIPLE(component, name, type, amt) std::array<type, amt> name;
@@ -55,12 +73,6 @@ std::unique_ptr<Component_##component> component;
 #else
   PERFIELD
 #endif
-#undef SINGLE
-#undef MULTIPLE
-  std::bitset<kFieldCount> state;
-#define SINGLE(component, name, type) ;
-#define MULTIPLE(component, name, type, amt) std::bitset<amt> state_per_##name;
-  PERFIELD
 #undef SINGLE
 #undef MULTIPLE
 

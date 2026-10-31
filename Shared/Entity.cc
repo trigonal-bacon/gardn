@@ -36,13 +36,7 @@ void Entity::init() {
 
 void Entity::reset_protocol() {
   state.reset();
-#define SINGLE(component, name, type) ;
-#define MULTIPLE(component, name, type, amt)                                   \
-  ;                                                                            \
-  state_per_##name.reset();
-  PERFIELD
-#undef SINGLE
-#undef MULTIPLE
+  vector_state.reset();
 }
 
 #ifdef USE_UPTR_ENTITY
@@ -129,7 +123,7 @@ PERFIELD
       return;                                                                  \
     get_##name##_mut(i) = v;                                                   \
     state.set(k##name, 1);                                                     \
-    state_per_##name.set(i, 1);                                                \
+    vector_state.set(_BIT_OFFSETS[k##name]+i, 1);                              \
   }
 PERFIELD
 #undef SINGLE
@@ -167,7 +161,7 @@ template <> void Entity::write<false>(Writer& writer) const {
   if (state[k##name]) {                                                        \
     writer.write<uint8_t>(k##name);                                            \
     for (uint32_t n = 0; n < amt; ++n) {                                       \
-      if (state_per_##name[n]) {                                               \
+      if (vector_state[_BIT_OFFSETS[k##name]+n]) {                             \
         writer.write<uint8_t>(n);                                              \
         writer.write<type>(get_##name(n));                                     \
       }                                                                        \
@@ -210,7 +204,7 @@ template <> void Entity::read<true>(Reader& reader) {
   {                                                                            \
     state.set(k##name, 1);                                                     \
     for (uint32_t n = 0; n < amt; ++n) {                                       \
-      state_per_##name.set(n, 1);                                              \
+      vector_state.set(_BIT_OFFSETS[k##name]+n, 1);                            \
       reader.read<type>(get_##name##_mut(n));                                  \
     }                                                                          \
   }
@@ -245,7 +239,7 @@ template <> void Entity::read<false>(Reader& reader) {
       if (index >= amt)                                                        \
         break;                                                                 \
       reader.read<type>(get_##name##_mut(index));                              \
-      state_per_##name.set(index, 1);                                          \
+      vector_state.set(_BIT_OFFSETS[k##name]+index, 1);                        \
     }                                                                          \
     break;                                                                     \
   }
@@ -272,7 +266,7 @@ void Entity::read(Reader& reader, uint8_t create) {
 #define MULTIPLE(component, name, type, amt)                                   \
   uint8_t Entity::get_state_##name(uint32_t i) const {                         \
     DEBUG_ONLY(assert(has_component<k##component>());)                         \
-    return state_per_##name[i];                                                \
+    return vector_state[_BIT_OFFSETS[k##name]+i];                              \
   }
 PERFIELD
 #undef SINGLE

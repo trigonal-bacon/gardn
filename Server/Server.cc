@@ -21,7 +21,7 @@ void Server::tick() {
   Server::game.tick();
   auto end = std::chrono::steady_clock::now();
   std::chrono::duration<double, std::milli> tick_time = end - start;
-  if (tick_time > 5ms)
+  if (tick_time > 0.2ms)
     std::cout << "tick took " << tick_time << '\n';
 }
 
