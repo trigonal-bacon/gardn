@@ -2,7 +2,7 @@
 
 #include <Server/TeamManager.hh>
 
-#include <Shared/Simulation.hh>
+#include <Server/Simulation.hh>
 
 #include <set>
 

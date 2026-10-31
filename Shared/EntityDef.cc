@@ -1,6 +1,6 @@
+#ifdef SERVERSIDE
 #include <Shared/EntityDef.hh>
-
-#include <Shared/Simulation.hh>
+#include <Server/Simulation.hh>
 #include <Shared/StaticDefinitions.hh>
 
 LoadoutSlot::LoadoutSlot() { reset(); }
@@ -38,3 +38,4 @@ uint32_t LoadoutSlot::size() const {
     return 1;
   return std::min<uint32_t>(PETAL_DATA[id].count, MAX_PETALS_IN_CLUMP);
 }
+#endif

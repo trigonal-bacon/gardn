@@ -5,7 +5,7 @@
 
 #include <Shared/Entity.hh>
 #include <Shared/Map.hh>
-#include <Shared/Simulation.hh>
+#include <Server/Simulation.hh>
 
 #include <algorithm>
 #include <iostream>
@@ -80,7 +80,7 @@ void entity_on_death(Simulation& sim, const Entity& ent) {
   }
   if (ent.has_component<kMob>()) {
     if (Bits::at(ent.flags, EntityFlags::kSpawnedFromZone))
-      Map::remove_mob(sim, ent.zone);
+      sim.remove_mob(ent.zone);
     if (!natural_despawn && !(Bits::at(ent.flags, EntityFlags::kNoDrops))) {
       const MobData& mob_data = MOB_DATA[ent.get_mob_id()];
       std::vector<PetalID::T> success_drops = {};

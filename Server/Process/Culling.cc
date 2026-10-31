@@ -1,8 +1,8 @@
 #include <Server/Process.hh>
 
+#include <Server/Simulation.hh>
 #include <Shared/Entity.hh>
 #include <Shared/Map.hh>
-#include <Shared/Simulation.hh>
 #include <Shared/StaticData.hh>
 
 constexpr float CULL_EXTRA_RADIUS = 250;

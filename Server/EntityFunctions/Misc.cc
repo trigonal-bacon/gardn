@@ -1,7 +1,7 @@
 #include <Server/EntityFunctions.hh>
 
 #include <Shared/Entity.hh>
-#include <Shared/Simulation.hh>
+#include <Server/Simulation.hh>
 
 #include <type_traits>
 

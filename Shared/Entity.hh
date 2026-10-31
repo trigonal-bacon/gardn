@@ -48,7 +48,6 @@ class Entity {
     };
 #undef SINGLE
 #undef MULTIPLE
-    
     std::array<uint32_t, kFieldCount+1> res = {};
     for (size_t i = 0; i < kFieldCount; ++i) {
       res[i+1] = res[i] + increments[i];

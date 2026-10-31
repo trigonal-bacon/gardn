@@ -1,7 +1,6 @@
 #include <Server/Process.hh>
 
-#include <Shared/Entity.hh>
-#include <Shared/Simulation.hh>
+#include <Server/Simulation.hh>
 
 void tick_segment_behavior(Simulation& sim, Entity& ent) {
   if (sim.ent_alive(ent.get_parent())) {

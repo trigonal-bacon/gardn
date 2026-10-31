@@ -1,8 +1,8 @@
 #include <Server/Process.hh>
 
+#include <Server/Simulation.hh>
 #include <Shared/Entity.hh>
 #include <Shared/Map.hh>
-#include <Shared/Simulation.hh>
 #include <Shared/StaticData.hh>
 
 void tick_camera_behavior(Simulation& sim, Entity& ent) {

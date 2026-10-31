@@ -258,6 +258,9 @@ void UiLoadoutPetal::on_render_skip(Renderer& ctx) {
   petal_id = last_id = PetalID::kNone;
   // if (Ui::UiLoadout::petal_selected == this)
   // Ui::UiLoadout::petal_selected = nullptr;
+  if (Game::simulation.ent_exists(Game::camera_id)) {
+    width = height = 30 * Game::simulation.get_ent(Game::camera_id).get_fov();
+  }
 }
 
 void UiLoadoutPetal::on_event(uint8_t event) {

@@ -1,6 +1,6 @@
 #include <Server/TeamManager.hh>
 
-#include <Shared/Simulation.hh>
+#include <Server/Simulation.hh>
 
 TeamManager::TeamManager(Simulation& sim) : simulation(sim) {}
 

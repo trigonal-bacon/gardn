@@ -1,8 +1,6 @@
 #include <Server/PetalTracker.hh>
 
-#include <Shared/Simulation.hh>
-
-using namespace PetalTracker;
+#include <Server/Simulation.hh>
 
 void PetalTracker::add_petal(Simulation& sim, PetalID::T id) {
   DEBUG_ONLY(assert(id < PetalID::kNumPetals);)

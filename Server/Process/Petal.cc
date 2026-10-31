@@ -1,9 +1,9 @@
 #include <Server/Process.hh>
 
+#include <Server/Simulation.hh>
 #include <Server/EntityFunctions.hh>
 #include <Server/Spawn.hh>
 #include <Shared/Entity.hh>
-#include <Shared/Simulation.hh>
 #include <Shared/StaticData.hh>
 
 #include <cmath>

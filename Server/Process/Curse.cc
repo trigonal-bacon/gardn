@@ -1,6 +1,6 @@
 #include <Server/Process.hh>
 
-#include <Shared/Simulation.hh>
+#include <Server/Simulation.hh>
 
 #include <Shared/StaticData.hh>
 

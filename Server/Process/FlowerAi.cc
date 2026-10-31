@@ -1,7 +1,7 @@
 #include <Server/Process.hh>
 
+#include <Server/Simulation.hh>
 #include <Shared/Entity.hh>
-#include <Shared/Simulation.hh>
 #include <Shared/StaticData.hh>
 
 void tick_player_ai_behavior(Simulation& sim, Entity& ent) {

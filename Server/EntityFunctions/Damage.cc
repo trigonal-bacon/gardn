@@ -1,9 +1,8 @@
 #include <Server/EntityFunctions.hh>
 
+#include <Server/Simulation.hh>
 #include <Server/Spawn.hh>
 #include <Server/PetalTracker.hh>
-#include <Shared/Entity.hh>
-#include <Shared/Simulation.hh>
 
 #include <algorithm>
 #include <cmath>

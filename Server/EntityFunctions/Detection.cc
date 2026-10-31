@@ -1,7 +1,7 @@
 #include <Server/EntityFunctions.hh>
 
+#include <Server/Simulation.hh>
 #include <Shared/Entity.hh>
-#include <Shared/Simulation.hh>
 
 EntityID find_nearest_enemy(Simulation& simulation, const Entity& entity,
                             float radius) {

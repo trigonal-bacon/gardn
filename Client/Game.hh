@@ -3,9 +3,9 @@
 #include <Client/Render/Renderer.hh>
 #include <Client/Socket.hh>
 #include <Client/StaticData.hh>
+#include <Client/Simulation.hh>
 #include <Client/Ui/Ui.hh>
 
-#include <Shared/Simulation.hh>
 
 #include <array>
 

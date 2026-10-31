@@ -168,6 +168,14 @@ template <> struct hash<EntityID> {
 
 inline const EntityID NULL_ENTITY = EntityID{0, 0};
 
+#ifdef DEBUG
+#include <iostream>
+
+inline std::ostream& operator<<(std::ostream& out, const EntityID& id) {
+  return out << '<' << (uint32_t)id.hash << ',' << (uint32_t)id.id << '>';
+}
+#endif
+
 #ifdef SERVER_ONLY
 class Simulation;
 

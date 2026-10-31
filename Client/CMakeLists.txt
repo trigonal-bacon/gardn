@@ -68,7 +68,6 @@ set(SRCS
     ../Shared/Entity.cc
     ../Shared/EntityDef.cc
     ../Shared/Map.cc
-    ../Shared/Simulation.cc
     ../Shared/StaticData.cc
 )
 

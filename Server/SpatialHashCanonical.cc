@@ -1,7 +1,6 @@
 #include <Server/SpatialHash.hh>
 
-#include <Shared/Entity.hh>
-#include <Shared/Simulation.hh>
+#include <Server/Simulation.hh>
 
 #include <unordered_set>
 

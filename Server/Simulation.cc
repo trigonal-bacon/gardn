@@ -1,4 +1,4 @@
-#include <Shared/Simulation.hh>
+#include <Server/Simulation.hh>
 
 #include <Server/Client.hh>
 #include <Server/EntityFunctions.hh>
@@ -38,8 +38,8 @@ void Simulation::on_tick() {
   if (frand() < 1.0f / TPS) {
     for (uint32_t i = 0; i < 10; ++i) {
       Vector v;
-      if (Map::find_spawn_location(*this, 500, v))
-        Map::spawn_random_mob(*this, v.x, v.y);
+      if (find_spawn_location(500, v))
+        spawn_random_mob(v.x, v.y);
     }
   }
   for_each_entity([](Simulation& sim, Entity& ent) {
@@ -90,4 +90,54 @@ void Simulation::post_tick() {
       entity_on_death(sim, ent);
     ++ent.deletion_tick;
   });
+}
+
+void Simulation::remove_mob(uint32_t zone) {
+  DEBUG_ONLY(assert(zone < MAP_DATA.size());)
+  --zone_mob_counts[zone];
+}
+
+void Simulation::spawn_random_mob(float x, float y) {
+  uint32_t zone_id = Map::get_zone_from_pos(x, y);
+  const ZoneDefinition& zone = MAP_DATA[zone_id];
+  if (zone.density * (zone.right - zone.left) * (zone.bottom - zone.top) /
+      (500 * 500) <
+      zone_mob_counts[zone_id])
+    return;
+  float sum = 0;
+  for (const SpawnChance& s : zone.spawns)
+    sum += s.chance;
+  sum *= frand();
+  for (const SpawnChance& s : zone.spawns) {
+    sum -= s.chance;
+    if (sum <= 0) {
+      Entity& ent = alloc_mob(*this, s.id, x, y, NULL_ENTITY, [=, this](Entity& mob) {
+        mob.zone = zone_id;
+        mob.immunity_ticks = TPS;
+        Bits::set(mob.flags, EntityFlags::kSpawnedFromZone);
+        Bits::set(mob.flags, EntityFlags::kHasCulling);
+        this->zone_mob_counts[zone_id]++;
+        mob.score_reward = MOB_DATA[mob.get_mob_id()].xp;
+      });
+      return;
+    }
+  }
+}
+
+bool Simulation::find_spawn_location(float d, Vector& vref) {
+  for (uint32_t i = 0; i < 10; ++i) {
+    vref.set(frand() * ARENA_WIDTH, frand() * ARENA_HEIGHT);
+    bool valid = true;
+    for_each<kFlower>([&](Simulation&, Entity& ent) {
+      if (ent.has_component<kMob>())
+        return;
+      if (!valid)
+        return;
+      if (Vector(ent.get_x() - vref.x, ent.get_y() - vref.y).magnitude() < d)
+        valid = false;
+    });
+    if (valid)
+      return true;
+  }
+  return false;
 }

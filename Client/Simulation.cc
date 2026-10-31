@@ -1,4 +1,4 @@
-#include <Shared/Simulation.hh>
+#include <Client/Simulation.hh>
 
 #include <Client/Game.hh>
 
@@ -91,4 +91,16 @@ void Simulation::on_tick() {
 
 void Simulation::post_tick() {
   for_each_entity([](Simulation& sim, Entity& ent) { ent.reset_protocol(); });
+}
+
+
+Entity& Simulation::force_alloc_ent(const EntityID id) {
+  assert(id.id < ENTITY_CAP);
+  DEBUG_ONLY(std::cout << "ent_create " << id << "\n";)
+  assert(!entity_tracker[id.id]);
+  entities[id.id].init();
+  entity_tracker.set(id.id, 1);
+  hash_tracker[id.id] = id.hash;
+  entities[id.id].id = id;
+  return entities[id.id];
 }
