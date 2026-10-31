@@ -67,3 +67,45 @@ public:
   }
   constexpr void clear() { start = length = 0; };
 };
+
+template<size_t... dims>
+struct Shape {
+    static constexpr size_t size = (dims * ... * 1);
+    static constexpr size_t rank = sizeof...(dims);
+
+    using Indices = std::array<uint32_t, rank>;
+
+    static constexpr size_t index(const Indices& indices) {
+        constexpr std::array<size_t, rank> dim_arr{dims...};
+
+        size_t flat = 0;
+        for (size_t i = 0; i < rank; ++i)
+            flat = flat * dim_arr[i] + indices[i];
+
+        return flat;
+    }
+};
+
+template<typename T, size_t... dims>
+struct NDArray {
+    using shape = Shape<dims...>;
+    using Indices = shape::Indices;
+
+    std::array<T, shape::size> data;
+
+    constexpr T& operator()(const Indices& indices) {
+        return data[shape::index(indices)];
+    }
+
+    constexpr const T& operator()(const Indices& indices) const {
+        return data[shape::index(indices)];
+    }
+
+    constexpr const T& operator[](uint32_t i) const {
+      return data[i];
+    }
+
+    constexpr T& operator[](uint32_t i) {
+      return data[i];
+    }
+};

@@ -29,7 +29,7 @@ void entity_clear_references(Simulation& sim, Entity& ent) {
         !sim.ent_exists(FilterCast<EntityID, type>::get(ent.get_##name())))   \
       ent.set_##name(FilterCast<type, EntityID>::get(NULL_ENTITY));            \
   }
-#define MULTIPLE(component, name, type, count)
+#define MULTIPLE(component, name, type, ...)
   PERFIELD
 #undef SINGLE
 #undef MULTIPLE

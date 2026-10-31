@@ -114,7 +114,7 @@ std::unique_ptr<Element> Ui::make_title_info_box() {
                                           return false;
                                         return Game::simulation
                                                    .get_ent(Game::camera_id)
-                                                   .get_inventory(0) >
+                                                   .get_inventory({0}) >
                                                PetalID::kBasic;
                                       }})),
                       0, 0),

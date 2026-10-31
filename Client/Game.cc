@@ -173,7 +173,7 @@ void Game::tick(double time) {
     const Entity& player = simulation.get_ent(player_id);
     Game::loadout_count = player.get_loadout_count();
     for (uint32_t i = 0; i < MAX_SLOT_COUNT + Game::loadout_count; ++i) {
-      cached_loadout[i] = player.get_loadout_ids(i);
+      cached_loadout[i] = player.get_loadout_ids({i});
       Game::seen_petals[cached_loadout[i]] = 1;
     }
     score = player.get_score();

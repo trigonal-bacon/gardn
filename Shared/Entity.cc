@@ -57,11 +57,10 @@ PERCOMPONENT
     DEBUG_ONLY(assert(has_component<k##component>());)                         \
     return component->name;                                                    \
   }
-#define MULTIPLE(component, name, type, amt)                                   \
-  const type& Entity::get_##name(uint32_t i) const {                           \
+#define MULTIPLE(component, name, type, ...)                                   \
+  const type& Entity::get_##name##_flat(uint32_t index) const { \
     DEBUG_ONLY(assert(has_component<k##component>());)                         \
-    DEBUG_ONLY(assert(i < amt);)                                               \
-    return component->name[i];                                                 \
+    return component->name[index];                                              \
   }
 PERFIELD
 #undef SINGLE
@@ -83,22 +82,33 @@ PERCOMPONENT
     DEBUG_ONLY(assert(has_component<k##component>());)                         \
     return name;                                                               \
   }
-#define MULTIPLE(component, name, type, amt)                                   \
-  const type& Entity::get_##name(uint32_t i) const {                           \
+#define MULTIPLE(component, name, type, ...)                                   \
+  const type& Entity::get_##name##_flat(uint32_t index) const { \
     DEBUG_ONLY(assert(has_component<k##component>());)                         \
-    DEBUG_ONLY(assert(i < amt);)                                               \
-    return name[i];                                                            \
+    return name[index];                                                        \
   }
 PERFIELD
 #undef SINGLE
 #undef MULTIPLE
 #endif
 
+#define SINGLE(component, name, type) ;
+#define MULTIPLE(component, name, type, ...) \
+  const type& Entity::get_##name(const Shape<__VA_ARGS__>::Indices index) const { \
+    return get_##name##_flat(Shape<__VA_ARGS__>::index(index)); \
+  } \
+  type& Entity::get_##name##_flat_mut(uint32_t i) { \
+    return const_cast<type&>(get_##name##_flat(i)); \
+  }
+PERFIELD
+#undef SINGLE
+#undef MULTIPLE
+
 #define SINGLE(component, name, type)                                          \
   type& Entity::get_##name##_mut() { return const_cast<type&>(get_##name()); }
-#define MULTIPLE(component, name, type, amt)                                   \
-  type& Entity::get_##name##_mut(uint32_t i) {                                 \
-    return const_cast<type&>(get_##name(i));                                   \
+#define MULTIPLE(component, name, type, ...)                                   \
+  type& Entity::get_##name##_mut(const Shape<__VA_ARGS__>::Indices index) { \
+    return const_cast<type&>(get_##name(index));                                   \
   }
 PERFIELD
 #undef SINGLE
@@ -113,17 +123,14 @@ PERFIELD
     get_##name##_mut() = v;                                                    \
     state.set(k##name, 1);                                                     \
   }
-#define MULTIPLE(component, name, type, amt)                                   \
-  void Entity::set_##name(uint32_t i, const type& v) {                         \
+#define MULTIPLE(component, name, type, ...)                                   \
+  void Entity::set_##name(const Shape<__VA_ARGS__>::Indices index, const type& v) {     \
     DEBUG_ONLY(assert(has_component<k##component>());)                         \
-    DEBUG_ONLY(assert(i < amt);)                                               \
-    if (i >= amt)                                                              \
+    if (get_##name(index) == v)                                                \
       return;                                                                  \
-    if (get_##name(i) == v)                                                    \
-      return;                                                                  \
-    get_##name##_mut(i) = v;                                                   \
+    get_##name##_mut(index) = v;                                               \
     state.set(k##name, 1);                                                     \
-    vector_state.set(_BIT_OFFSETS[k##name]+i, 1);                              \
+    vector_state.set(_BIT_OFFSETS[k##name]+Shape<__VA_ARGS__>::index(index), 1); \
   }
 PERFIELD
 #undef SINGLE
@@ -136,10 +143,10 @@ template <> void Entity::write<true>(Writer& writer) const {
   {                                                                            \
     writer.write<type>(get_##name());                                          \
   }
-#define MULTIPLE(component, name, type, amt)                                   \
+#define MULTIPLE(component, name, type, ...)                                   \
   {                                                                            \
-    for (uint32_t n = 0; n < amt; ++n)                                         \
-      writer.write<type>(get_##name(n));                                       \
+    for (uint32_t n = 0; n < Shape<__VA_ARGS__>::size; ++n)                    \
+      writer.write<type>(get_##name##_flat(n));                                \
   }
 #define COMPONENT(name)                                                        \
   if (has_component<k##name>()) {                                              \
@@ -157,16 +164,16 @@ template <> void Entity::write<false>(Writer& writer) const {
     writer.write<uint8_t>(k##name);                                            \
     writer.write<type>(get_##name());                                          \
   }
-#define MULTIPLE(component, name, type, amt)                                   \
+#define MULTIPLE(component, name, type, ...)                                   \
   if (state[k##name]) {                                                        \
     writer.write<uint8_t>(k##name);                                            \
-    for (uint32_t n = 0; n < amt; ++n) {                                       \
+    for (uint32_t n = 0; n < Shape<__VA_ARGS__>::size; ++n) {                  \
       if (vector_state[_BIT_OFFSETS[k##name]+n]) {                             \
         writer.write<uint8_t>(n);                                              \
-        writer.write<type>(get_##name(n));                                     \
+        writer.write<type>(get_##name##_flat(n));                              \
       }                                                                        \
     }                                                                          \
-    writer.write<uint8_t>(amt);                                                \
+    writer.write<uint8_t>(Shape<__VA_ARGS__>::size);                               \
   }
 #define COMPONENT(name)                                                        \
   if (has_component<k##name>()) {                                              \
@@ -200,12 +207,12 @@ template <> void Entity::read<true>(Reader& reader) {
     reader.read<type>(get_##name##_mut());                                     \
     state.set(k##name, 1);                                                     \
   }
-#define MULTIPLE(component, name, type, amt)                                   \
+#define MULTIPLE(component, name, type, ...)                                   \
   {                                                                            \
     state.set(k##name, 1);                                                     \
-    for (uint32_t n = 0; n < amt; ++n) {                                       \
+    for (uint32_t n = 0; n < Shape<__VA_ARGS__>::size; ++n) {                                       \
       vector_state.set(_BIT_OFFSETS[k##name]+n, 1);                            \
-      reader.read<type>(get_##name##_mut(n));                                  \
+      reader.read<type>(get_##name##_flat_mut(n));                                  \
     }                                                                          \
   }
 #define COMPONENT(name)                                                        \
@@ -231,14 +238,14 @@ template <> void Entity::read<false>(Reader& reader) {
     state.set(k##name, 1);                                                     \
     break;                                                                     \
   }
-#define MULTIPLE(component, name, type, amt)                                   \
+#define MULTIPLE(component, name, type, ...)                                   \
   case k##name: {                                                              \
     state.set(k##name, 1);                                                     \
     while (1) {                                                                \
       uint8_t index = reader.read<uint8_t>();                                  \
-      if (index >= amt)                                                        \
+      if (index >= Shape<__VA_ARGS__>::size)                                                        \
         break;                                                                 \
-      reader.read<type>(get_##name##_mut(index));                              \
+      reader.read<type>(get_##name##_flat_mut(index));                              \
       vector_state.set(_BIT_OFFSETS[k##name]+index, 1);                        \
     }                                                                          \
     break;                                                                     \
@@ -263,10 +270,10 @@ void Entity::read(Reader& reader, uint8_t create) {
     return state[k##name];                                                     \
   }
 
-#define MULTIPLE(component, name, type, amt)                                   \
-  uint8_t Entity::get_state_##name(uint32_t i) const {                         \
+#define MULTIPLE(component, name, type, ...)                                   \
+  uint8_t Entity::get_state_##name(const Shape<__VA_ARGS__>::Indices index) const {                         \
     DEBUG_ONLY(assert(has_component<k##component>());)                         \
-    return vector_state[_BIT_OFFSETS[k##name]+i];                              \
+    return vector_state[_BIT_OFFSETS[k##name]+Shape<__VA_ARGS__>::index(index)];                              \
   }
 PERFIELD
 #undef SINGLE

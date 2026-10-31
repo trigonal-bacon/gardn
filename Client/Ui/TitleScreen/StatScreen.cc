@@ -58,7 +58,7 @@ TitlePetalSlot::TitlePetalSlot(uint8_t p) : Element(50, 50, {}), pos(p) {
     if (p >=
         loadout_slots_at_level(camera.get_respawn_level()) + MAX_SLOT_COUNT)
       return false;
-    return camera.get_inventory(p) > PetalID::kBasic;
+    return camera.get_inventory({p}) > PetalID::kBasic;
   };
 }
 
@@ -66,7 +66,7 @@ void TitlePetalSlot::on_render(Renderer& ctx) {
   if (!Game::simulation.ent_exists(Game::camera_id))
     return;
   const Entity& camera = Game::simulation.get_ent(Game::camera_id);
-  uint8_t id = camera.get_inventory(pos);
+  uint8_t id = camera.get_inventory({pos});
   if (id == PetalID::kNone)
     return;
   ctx.scale(width / 60);
@@ -77,7 +77,7 @@ void TitlePetalSlot::on_event(uint8_t event) {
   if (!Game::simulation.ent_exists(Game::camera_id))
     return;
   const Entity& camera = Game::simulation.get_ent(Game::camera_id);
-  uint8_t id = camera.get_inventory(pos);
+  uint8_t id = camera.get_inventory({pos});
   if (event != kFocusLost && id != PetalID::kNone) {
     rendering_tooltip = 1;
     tooltip = Ui::UiLoadout::petal_tooltips[id].get();

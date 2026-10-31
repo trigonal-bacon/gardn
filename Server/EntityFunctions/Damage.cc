@@ -13,7 +13,7 @@ static bool _yggdrasil_revival_clause(Simulation& sim, Entity& player) {
       continue;
     if (player.loadout[i].get_petal_id() != PetalID::kYggdrasil)
       continue;
-    player.set_loadout_ids(i, PetalID::kNone);
+    player.set_loadout_ids({i}, PetalID::kNone);
     PetalTracker::remove_petal(sim, PetalID::kYggdrasil);
     return true;
   }

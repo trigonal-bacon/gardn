@@ -152,9 +152,9 @@ void tick_player_behavior(Simulation& sim, Entity& player) {
     LoadoutSlot& slot = player.loadout[i];
     // player.set_loadout_ids(i, slot.id);
     // other way around. loadout_ids should dictate loadout
-    if (slot.get_petal_id() != player.get_loadout_ids(i) ||
+    if (slot.get_petal_id() != player.get_loadout_ids({i}) ||
         player.get_overlevel_timer() >= PETAL_DISABLE_DELAY * TPS)
-      slot.update_id(sim, player.get_loadout_ids(i));
+      slot.update_id(sim, player.get_loadout_ids({i}));
     PetalID::T slot_petal_id = slot.get_petal_id();
     const PetalData& petal_data = PETAL_DATA[slot_petal_id];
     DEBUG_ONLY(assert(petal_data.count <= MAX_PETALS_IN_CLUMP);)
@@ -163,7 +163,7 @@ void tick_player_behavior(Simulation& sim, Entity& player) {
       continue;
     // if overleveled timer too large
     if (player.get_overlevel_timer() >= PETAL_DISABLE_DELAY * TPS) {
-      player.set_loadout_reloads(i, 0);
+      player.set_loadout_reloads({i}, 0);
       continue;
     }
     float min_reload = 1;
@@ -272,7 +272,7 @@ void tick_player_behavior(Simulation& sim, Entity& player) {
     // clump
     if (petal_data.attributes.clump_radius > 0)
       ++rot_pos;
-    player.set_loadout_reloads(i, min_reload * 255);
+    player.set_loadout_reloads({i}, min_reload * 255);
   };
   if (Bits::at(player.input, InputFlags::kAttacking))
     player.set_face_flags(player.get_face_flags() |

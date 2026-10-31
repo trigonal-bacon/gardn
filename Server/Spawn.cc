@@ -217,13 +217,13 @@ Entity& alloc_cpu_camera(Simulation& sim, const EntityID team) {
   };
 
   for (uint32_t i = 0; i < loadout_slots_at_level(ent.get_respawn_level()); ++i)
-    ent.set_inventory(i, inventory[i]);
+    ent.set_inventory({i}, inventory[i]);
 
   if (frand() < 0.001 &&
       PetalTracker::get_count(sim, PetalID::kUniqueBasic) == 0)
-    ent.set_inventory(0, PetalID::kUniqueBasic);
+    ent.set_inventory({0}, PetalID::kUniqueBasic);
   for (uint32_t i = 0; i < loadout_slots_at_level(ent.get_respawn_level()); ++i)
-    PetalTracker::add_petal(sim, ent.get_inventory(i));
+    PetalTracker::add_petal(sim, ent.get_inventory({i}));
   return ent;
 }
 
@@ -244,18 +244,18 @@ void player_spawn(Simulation& sim, Entity& camera, Entity& player) {
   player.set_loadout_count(loadout_slots_at_level(camera.get_respawn_level()));
   player.health = player.max_health = hp_at_level(camera.get_respawn_level());
   for (uint32_t i = 0; i < player.get_loadout_count(); ++i) {
-    PetalID::T id = camera.get_inventory(i);
+    PetalID::T id = camera.get_inventory({i});
     LoadoutSlot& slot = player.loadout[i];
-    player.set_loadout_ids(i, id);
+    player.set_loadout_ids({i}, id);
     slot.update_id(sim, id);
     slot.force_reload();
   }
 
   for (uint32_t i = player.get_loadout_count();
        i < player.get_loadout_count() + MAX_SLOT_COUNT; ++i)
-    player.set_loadout_ids(i, camera.get_inventory(i));
+    player.set_loadout_ids({i}, camera.get_inventory({i}));
 
   // peaceful transfer, no petal tracking needed
   for (uint32_t i = 0; i < MAX_SLOT_COUNT * 2; ++i)
-    camera.set_inventory(i, PetalID::kNone);
+    camera.set_inventory({i}, PetalID::kNone);
 }

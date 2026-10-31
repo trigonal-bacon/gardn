@@ -108,11 +108,11 @@ void entity_on_death(Simulation& sim, const Entity& ent) {
   if (ent.has_component<kFlower>()) {
     std::vector<PetalID::T> potential = {};
     for (uint32_t i = 0; i < ent.get_loadout_count() + MAX_SLOT_COUNT; ++i) {
-      DEBUG_ONLY(assert(ent.get_loadout_ids(i) < PetalID::kNumPetals));
-      PetalTracker::remove_petal(sim, ent.get_loadout_ids(i));
-      if (ent.get_loadout_ids(i) != PetalID::kNone &&
-          ent.get_loadout_ids(i) != PetalID::kBasic && frand() < 0.95)
-        potential.push_back(ent.get_loadout_ids(i));
+      DEBUG_ONLY(assert(ent.get_loadout_ids({i}) < PetalID::kNumPetals));
+      PetalTracker::remove_petal(sim, ent.get_loadout_ids({i}));
+      if (ent.get_loadout_ids({i}) != PetalID::kNone &&
+          ent.get_loadout_ids({i}) != PetalID::kBasic && frand() < 0.95)
+        potential.push_back(ent.get_loadout_ids({i}));
     }
     for (uint32_t i = 0; i < ent.deleted_petals.size(); ++i) {
       DEBUG_ONLY(assert(ent.deleted_petals[i] < PetalID::kNumPetals));
@@ -158,21 +158,21 @@ void entity_on_death(Simulation& sim, const Entity& ent) {
     num_left = std::min(num_left, max_possible);
     // fill petals
     for (uint32_t i = 0; i < 2 * MAX_SLOT_COUNT; ++i)
-      camera.set_inventory(i, PetalID::kNone); // force reset
+      camera.set_inventory({i}, PetalID::kNone); // force reset
     for (uint32_t i = 0; i < num_left; ++i) {
       DEBUG_ONLY(assert(potential.back() < PetalID::kNumPetals));
       PetalTracker::add_petal(sim, potential.back());
-      camera.set_inventory(i, potential.back());
+      camera.set_inventory({i}, potential.back());
       potential.pop_back();
     }
     // only track up to max_possible
     for (uint32_t i = num_left; i < max_possible; ++i)
-      camera.set_inventory(i, PetalID::kNone); // don't track kNone
+      camera.set_inventory({i}, PetalID::kNone); // don't track kNone
     // fill with basics
     for (uint32_t i = num_left; i < loadout_slots_at_level(respawn_level);
          ++i) {
       PetalTracker::add_petal(sim, PetalID::kBasic);
-      camera.set_inventory(i, PetalID::kBasic);
+      camera.set_inventory({i}, PetalID::kBasic);
     }
   } else if (ent.has_component<kDrop>()) {
     if (Bits::at(ent.flags, EntityFlags::kIsDespawning))

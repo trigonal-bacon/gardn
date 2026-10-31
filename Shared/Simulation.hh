@@ -13,36 +13,28 @@ template<class Derived>
 class SimulationBase {
   friend Derived;
   std::bitset<ENTITY_CAP> entity_tracker;
-  std::array<EntityID::hash_type, ENTITY_CAP> hash_tracker;
-  std::array<Entity, ENTITY_CAP> entities;
   StaticArray<EntityID::id_type, ENTITY_CAP> active_entities;
+  std::array<Entity, ENTITY_CAP> entities;
+  std::array<EntityID::hash_type, ENTITY_CAP> hash_tracker;
 
 public:
   Arena arena_info;
   SimulationBase() {}
   void reset() {
-    /*
-    active_entities.clear();
-    hash_tracker = {0};
-    entity_tracker = {0};
-
-    for (EntityID::id_type i = 0; i < ENTITY_CAP; ++i)
-      entities[i].init();
-
-    arena_info.init();
-    */
     std::destroy_at(static_cast<Derived*>(this));
     std::construct_at(static_cast<Derived*>(this));
   }
   Entity& alloc_ent() {
-    for (EntityID::id_type i = 1; i < ENTITY_CAP; ++i) {
+    for (EntityID::id_type i = 0; i < ENTITY_CAP; ++i) {
       if (entity_tracker[i])
         continue;
+      if (++hash_tracker[i] == 0) ++hash_tracker[i];
+      DEBUG_ONLY(assert(hash_tracker[i] != 0);)
       entity_tracker.set(i, 1);
       entities[i].init();
-      DEBUG_ONLY(std::cout << "ent_create " << EntityID(i, hash_tracker[i])
-                          << "\n";)
+      DEBUG_ONLY(std::cout << "ent_create " << EntityID(i, hash_tracker[i]) << "\n";)
       entities[i].id = EntityID(i, hash_tracker[i]);
+      DEBUG_ONLY(assert(entities[i].id != NULL_ENTITY);)
       return entities[i];
     }
     assert(!"Entity cap reached");
@@ -51,7 +43,6 @@ public:
     DEBUG_ONLY(std::cout << "ent_delete " << id << "\n";)
     DEBUG_ONLY(assert(ent_exists(id)));
     entity_tracker.set(id.id, 0);
-    hash_tracker[id.id]++;
   } // DANGEROUS
   void request_delete(const EntityID id) {
     DEBUG_ONLY(assert(ent_exists(id)));
@@ -89,6 +80,7 @@ public:
       cb(static_cast<Derived&>(*this), ent);
     }
   }
+
   template <uint8_t component, typename F> 
   void for_each(F&& cb) {
     for (EntityID::id_type id : active_entities) {

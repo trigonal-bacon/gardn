@@ -34,7 +34,7 @@ enum Components {
 class Entity {
   enum Fields {
 #define SINGLE(component, name, type) k##name,
-#define MULTIPLE(component, name, type, amt) k##name,
+#define MULTIPLE(component, name, type, ...) k##name,
     PERFIELD
 #undef SINGLE
 #undef MULTIPLE
@@ -42,7 +42,7 @@ class Entity {
   };
   static constexpr std::array<uint32_t, kFieldCount+1> _BIT_OFFSETS = [](){
 #define SINGLE(component, name, type) (0),
-#define MULTIPLE(component, name, type, amount) (amount),
+#define MULTIPLE(component, name, type, ...) (Shape<__VA_ARGS__>::size),
     constexpr std::array<uint32_t, kFieldCount> increments = {
       PERFIELD
     };
@@ -60,7 +60,7 @@ class Entity {
   std::bitset<_BIT_OFFSETS.back()> vector_state;
 
 #define SINGLE(component, name, type) type name;
-#define MULTIPLE(component, name, type, amt) std::array<type, amt> name;
+#define MULTIPLE(component, name, type, ...) NDArray<type, __VA_ARGS__> name;
 #ifdef USE_UPTR_ENTITY
 #define COMPONENT(component) \
 struct Component_##component { \
@@ -76,7 +76,10 @@ std::unique_ptr<Component_##component> component;
 #undef MULTIPLE
 
 #define SINGLE(component, name, type) type& get_##name##_mut();
-#define MULTIPLE(component, name, type, amt) type& get_##name##_mut(uint32_t i);
+#define MULTIPLE(component, name, type, ...) \
+  const type& get_##name##_flat(uint32_t) const; \
+  type& get_##name##_flat_mut(uint32_t); \
+  type& get_##name##_mut(const Shape<__VA_ARGS__>::Indices);
   PERFIELD
 #undef SINGLE
 #undef MULTIPLE
@@ -103,8 +106,8 @@ template<> uint8_t has_component<k##component>() const;
 #undef COMPONENT
 
 #define SINGLE(component, name, type) const type& get_##name() const;
-#define MULTIPLE(component, name, type, amt)                                   \
-  const type& get_##name(uint32_t) const;
+#define MULTIPLE(component, name, type, ...)                                   \
+  const type& get_##name(const Shape<__VA_ARGS__>::Indices) const;
   PERFIELD
 #undef SINGLE
 #undef MULTIPLE
@@ -120,8 +123,8 @@ template<> uint8_t has_component<k##component>() const;
 
   template <bool> void write(Writer&) const;
 #define SINGLE(component, name, type) void set_##name(const type&);
-#define MULTIPLE(component, name, type, amt)                                   \
-  void set_##name(uint32_t, const type&);
+#define MULTIPLE(component, name, type, ...)                                   \
+  void set_##name(const Shape<__VA_ARGS__>::Indices, const type&);
   PERFIELD
 #undef SINGLE
 #undef MULTIPLE
@@ -132,8 +135,8 @@ template<> uint8_t has_component<k##component>() const;
   template <bool> void read(Reader&);
 
 #define SINGLE(component, name, type) uint8_t get_state_##name() const;
-#define MULTIPLE(component, name, type, amt)                                   \
-  uint8_t get_state_##name(uint32_t) const;
+#define MULTIPLE(component, name, type, ...)                                   \
+  uint8_t get_state_##name(const Shape<__VA_ARGS__>::Indices) const;
   PERFIELD
 #undef SINGLE
 #undef MULTIPLE

@@ -113,12 +113,12 @@ void GameInstance::add_client(Client* client) {
   ent.set_fov(BASE_FOV);
   ent.set_respawn_level(1);
   for (uint32_t i = 0; i < loadout_slots_at_level(ent.get_respawn_level()); ++i)
-    ent.set_inventory(i, PetalID::kBasic);
+    ent.set_inventory({i}, PetalID::kBasic);
   if (frand() < 0.001 &&
       PetalTracker::get_count(simulation, PetalID::kUniqueBasic) == 0)
-    ent.set_inventory(0, PetalID::kUniqueBasic);
+    ent.set_inventory({0}, PetalID::kUniqueBasic);
   for (uint32_t i = 0; i < loadout_slots_at_level(ent.get_respawn_level()); ++i)
-    PetalTracker::add_petal(simulation, ent.get_inventory(i));
+    PetalTracker::add_petal(simulation, ent.get_inventory({i}));
   client->camera = ent.id;
   client->seen_arena = 0;
 }
@@ -133,7 +133,7 @@ void GameInstance::remove_client(Client* client) {
     if (simulation.ent_exists(c.get_player()))
       simulation.request_delete(c.get_player());
     for (uint32_t i = 0; i < 2 * MAX_SLOT_COUNT; ++i)
-      PetalTracker::remove_petal(simulation, c.get_inventory(i));
+      PetalTracker::remove_petal(simulation, c.get_inventory({i}));
     simulation.request_delete(client->camera);
   }
   client->game = nullptr;
