@@ -746,7 +746,7 @@ const std::array<struct PetalData, PetalID::kNumPetals> PETAL_DATA = {{
     {
         .name = "Lightning",
         .description = "Strikes several nearby enemies",
-        .health = 1.0,
+        .health = 0.0,
         .damage = 12.0,
         .radius = 10.0,
         .reload = 3.0,

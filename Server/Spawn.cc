@@ -165,6 +165,7 @@ Entity& alloc_petal(Simulation& sim, PetalID::T petal_id,
   petal.add_component<kPetal>();
   petal.set_petal_id(petal_id);
   petal.set_split_projectile(petal_data.attributes.split_projectile);
+  //max_health=0 -> death on touch (even if 0 damage)
   petal.add_component<kHealth>();
   petal.health = petal.max_health = petal_data.health;
   petal.damage = petal_data.damage;

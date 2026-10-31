@@ -159,21 +159,25 @@ void inflict_lightning(Simulation& sim, const EntityID atk_id,
     last = target;
   }
   last = NULL_ENTITY;
-  for (const EntityID& id : hit_entities) {
-    inflict_damage(sim, atk_id, id, amt, DamageType::kLightning);
-    const Entity& target = sim.get_ent(id);
+  auto create_lightning_anim = [&](float x, float y) {
     Entity& anim = sim.alloc_ent();
     anim.add_component<kPhysics>();
     anim.set_radius(3.5);
-    anim.set_x(target.get_x());
-    anim.set_y(target.get_y());
+    anim.set_x(x);
+    anim.set_y(y);
     anim.add_component<kRelations>();
     anim.set_parent(last);
     anim.add_component<kAnimation>();
     entity_set_despawn_tick(anim, 0.1 * TPS);
     Bits::set(anim.flags, EntityFlags::kNoPhysicalCollision);
-
     last = anim.id;
+  };
+
+  create_lightning_anim(attacker.get_x(), attacker.get_y());
+  for (const EntityID& id : hit_entities) {
+    inflict_damage(sim, atk_id, id, amt, DamageType::kLightning);
+    const Entity& target = sim.get_ent(id);
+    create_lightning_anim(target.get_x(), target.get_y());
   }
 }
 

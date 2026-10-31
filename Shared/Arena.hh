@@ -10,8 +10,8 @@
 SERVER_ONLY(class Writer;)
 CLIENT_ONLY(class Reader;)
 
-SERVER_ONLY(typedef float Float;)
-CLIENT_ONLY(typedef LerpFloat Float;)
+SERVER_ONLY(using Float = float;)
+CLIENT_ONLY(using Float = LerpFloat;)
 
 #define FIELDS_Arena                                                           \
   SINGLE(player_count, uint32_t)                                               \

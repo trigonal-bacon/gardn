@@ -37,7 +37,8 @@ void Entity::init() {
 void Entity::reset_protocol() {
   state.reset();
 #define SINGLE(component, name, type) ;
-#define MULTIPLE(component, name, type, amt) ;                                                                           \
+#define MULTIPLE(component, name, type, amt)                                   \
+  ;                                                                            \
   state_per_##name.reset();
   PERFIELD
 #undef SINGLE
@@ -45,18 +46,16 @@ void Entity::reset_protocol() {
 }
 
 #ifdef USE_UPTR_ENTITY
-#define COMPONENT(component) \
-template<> \
-void Entity::add_component<k##component>() { \
-  DEBUG_ONLY(assert(!has_component<k##component>());) \
-  Bits::set(components, k##component); \
-  component = std::make_unique<Component_##component>(); \
-} \
-template<> \
-uint8_t Entity::has_component<k##component>() const { \
-  return Bits::at(components, k##component); \
-}
-  PERCOMPONENT
+#define COMPONENT(component)                                                   \
+  template <> void Entity::add_component<k##component>() {                     \
+    DEBUG_ONLY(assert(!has_component<k##component>());)                        \
+    Bits::set(components, k##component);                                       \
+    component = std::make_unique<Component_##component>();                     \
+  }                                                                            \
+  template <> uint8_t Entity::has_component<k##component>() const {            \
+    return Bits::at(components, k##component);                                 \
+  }
+PERCOMPONENT
 #undef COMPONENT
 
 #define SINGLE(component, name, type)                                          \
@@ -74,17 +73,15 @@ PERFIELD
 #undef SINGLE
 #undef MULTIPLE
 #else
-#define COMPONENT(component) \
-template<> \
-void Entity::add_component<k##component>() { \
-  DEBUG_ONLY(assert(!has_component<k##component>());) \
-  Bits::set(components, k##component); \
-} \
-template<> \
-uint8_t Entity::has_component<k##component>() const { \
-  return Bits::at(components, k##component); \
-}
-  PERCOMPONENT
+#define COMPONENT(component)                                                   \
+  template <> void Entity::add_component<k##component>() {                     \
+    DEBUG_ONLY(assert(!has_component<k##component>());)                        \
+    Bits::set(components, k##component);                                       \
+  }                                                                            \
+  template <> uint8_t Entity::has_component<k##component>() const {            \
+    return Bits::at(components, k##component);                                 \
+  }
+PERCOMPONENT
 #undef COMPONENT
 
 #define SINGLE(component, name, type)                                          \
@@ -98,22 +95,18 @@ uint8_t Entity::has_component<k##component>() const { \
     DEBUG_ONLY(assert(i < amt);)                                               \
     return name[i];                                                            \
   }
-  PERFIELD
+PERFIELD
 #undef SINGLE
 #undef MULTIPLE
 #endif
 
 #define SINGLE(component, name, type)                                          \
-  type& Entity::get_##name##_mut() {                                           \
-    return const_cast<type&>(get_##name());                                    \
-  }
+  type& Entity::get_##name##_mut() { return const_cast<type&>(get_##name()); }
 #define MULTIPLE(component, name, type, amt)                                   \
   type& Entity::get_##name##_mut(uint32_t i) {                                 \
-    DEBUG_ONLY(assert(has_component<k##component>());)                         \
-    DEBUG_ONLY(assert(i < amt);)                                               \
     return const_cast<type&>(get_##name(i));                                   \
   }
-  PERFIELD
+PERFIELD
 #undef SINGLE
 #undef MULTIPLE
 
@@ -182,7 +175,7 @@ template <> void Entity::write<false>(Writer& writer) const {
     writer.write<uint8_t>(amt);                                                \
   }
 #define COMPONENT(name)                                                        \
-  if (has_component<k##name>()) {                                                \
+  if (has_component<k##name>()) {                                              \
     FIELDS_##name                                                              \
   }
   PERCOMPONENT
@@ -203,8 +196,9 @@ void Entity::write(Writer& writer, uint8_t create) const {
 template <> void Entity::read<true>(Reader& reader) {
   uint32_t set_components = reader.read<uint32_t>();
 #define COMPONENT(component)                                                   \
-if (Bits::at(set_components, k##component)) add_component<k##component>();
-PERCOMPONENT
+  if (Bits::at(set_components, k##component))                                  \
+    add_component<k##component>();
+  PERCOMPONENT
 #undef COMPONENT
   lifetime = reader.read<uint32_t>();
 #define SINGLE(component, name, type)                                          \
@@ -221,7 +215,7 @@ PERCOMPONENT
     }                                                                          \
   }
 #define COMPONENT(name)                                                        \
-  if (has_component<k##name>()) {                                                \
+  if (has_component<k##name>()) {                                              \
     FIELDS_##name                                                              \
   }
   PERCOMPONENT
@@ -271,13 +265,13 @@ void Entity::read(Reader& reader, uint8_t create) {
 
 #define SINGLE(component, name, type)                                          \
   uint8_t Entity::get_state_##name() const {                                   \
-    DEBUG_ONLY(assert(has_component<k##component>());)                           \
+    DEBUG_ONLY(assert(has_component<k##component>());)                         \
     return state[k##name];                                                     \
   }
 
 #define MULTIPLE(component, name, type, amt)                                   \
   uint8_t Entity::get_state_##name(uint32_t i) const {                         \
-    DEBUG_ONLY(assert(has_component<k##component>());)                           \
+    DEBUG_ONLY(assert(has_component<k##component>());)                         \
     return state_per_##name[i];                                                \
   }
 PERFIELD

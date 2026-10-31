@@ -13,22 +13,22 @@
 #include <vector>
 #include <memory>
 
-typedef CircularArray<PetalID::T, MAX_SLOT_COUNT> circ_arr_t;
+using circ_arr_t = CircularArray<PetalID::T, MAX_SLOT_COUNT>;
 
 SERVER_ONLY(class Writer;)
 CLIENT_ONLY(class Reader;)
 
-SERVER_ONLY(typedef uint8_t StickyFlag;)
-CLIENT_ONLY(typedef PersistentFlag StickyFlag;)
+SERVER_ONLY(using StickyFlag = uint8_t;)
+CLIENT_ONLY(using StickyFlag = PersistentFlag;)
 
-SERVER_ONLY(typedef float Float;)
-CLIENT_ONLY(typedef LerpFloat Float;)
+SERVER_ONLY(using Float = float;)
+CLIENT_ONLY(using Float = LerpFloat;)
 
 enum Components {
 #define COMPONENT(name) k##name,
   PERCOMPONENT
 #undef COMPONENT
-      kComponentCount
+  kComponentCount
 };
 
 class Entity {
@@ -50,13 +50,11 @@ struct Component_##component { \
 FIELDS_##component \
 }; \
 std::unique_ptr<Component_##component> component;
-PERCOMPONENT
+  PERCOMPONENT
 #undef COMPONENT
 #else
-PERFIELD
+  PERFIELD
 #endif
-
-
 #undef SINGLE
 #undef MULTIPLE
   std::bitset<kFieldCount> state;
@@ -76,6 +74,7 @@ public:
   void init();
   void reset_protocol();
   Entity(const Entity&) = delete;
+  Entity(Entity&&) = delete;
   Entity& operator=(const Entity&) = delete;
   Entity& operator=(Entity&&) = delete;
   uint32_t lifetime;

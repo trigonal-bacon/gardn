@@ -11,7 +11,7 @@
 
 #include <emscripten.h>
 
-std::unordered_map<int, std::unique_ptr<WebSocket>> WS_MAP;
+static std::unordered_map<int, std::unique_ptr<WebSocket>> WS_MAP;
 
 const size_t MAX_BUFFER_LEN = 1024;
 static uint8_t INCOMING_BUFFER[MAX_BUFFER_LEN] = {0};
@@ -37,7 +37,6 @@ void tick() { Server::tick(); }
 
 void on_message(int ws_id, uint32_t len) {
   auto iter = WS_MAP.find(ws_id);
-  // WebSocket *ws = WS_MAP[ws_id];
   if (iter == WS_MAP.end())
     return;
   std::string_view message(reinterpret_cast<const char*>(INCOMING_BUFFER), len);

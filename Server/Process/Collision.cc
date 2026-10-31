@@ -133,7 +133,7 @@ void on_collide(Simulation& sim, Entity& ent1, Entity& ent2) {
   }
 
   if (BOTH(kHealth) && ent1.get_team() != ent2.get_team()) {
-    if (ent1.health > 0 && ent2.health > 0) {
+    if (sim.ent_alive(ent1.id) && sim.ent_alive(ent2.id)) {
       _on_contact_damage(sim, ent1, ent2);
       _on_contact_damage(sim, ent2, ent1);
     }

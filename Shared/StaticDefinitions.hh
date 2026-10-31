@@ -21,7 +21,7 @@ enum : uint8_t { kContact, kPoison, kReflect, kSponge, kLightning };
 }
 
 namespace PetalID {
-typedef uint8_t T;
+using T = uint8_t;
 enum : T {
   kNone,
   kBasic,
@@ -80,7 +80,7 @@ enum : T {
 }; // namespace PetalID
 
 namespace MobID {
-typedef uint8_t T;
+using T = uint8_t;
 enum : T {
   kBabyAnt,
   kWorkerAnt,

@@ -4,7 +4,7 @@
 
 #include <cstdint>
 
-typedef uint16_t game_tick_t;
+using game_tick_t = uint16_t;
 
 #define PERCOMPONENT                                                           \
   COMPONENT(Physics)                                                           \
@@ -140,8 +140,8 @@ typedef uint16_t game_tick_t;
 
 class EntityID {
 public:
-  typedef uint8_t hash_type;
-  typedef uint16_t id_type;
+  using hash_type = uint8_t;
+  using id_type = uint16_t;
   id_type id;
   hash_type hash;
   constexpr EntityID() : id(0), hash(0) {};
