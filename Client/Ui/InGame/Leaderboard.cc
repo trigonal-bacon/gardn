@@ -15,12 +15,12 @@ LeaderboardSlot::LeaderboardSlot(uint8_t p)
     : Element(LEADERBOARD_WIDTH, 18), pos(p) {
   ratio.set(1);
   style.animate = [&](Element&, Renderer&) {
-    if (pos >= Game::simulation.arena_info.player_count)
+    if (pos >= Game::simulation.arena_info.get_player_count())
       return;
     float r = 1;
-    if (((float)Game::simulation.arena_info.scores[0]) != 0)
-      r = (float)Game::simulation.arena_info.scores[pos] /
-          (float)Game::simulation.arena_info.scores[0];
+    if (((float)Game::simulation.arena_info.get_scores({0})) != 0)
+      r = (float)Game::simulation.arena_info.get_scores({pos}) /
+          (float)Game::simulation.arena_info.get_scores({0});
     ratio.set(r);
     ratio.step(Ui::lerp_amount);
   };
@@ -28,7 +28,7 @@ LeaderboardSlot::LeaderboardSlot(uint8_t p)
 
 void LeaderboardSlot::on_render(Renderer& ctx) {
   // we do not hide it though
-  if (pos >= Game::simulation.arena_info.player_count)
+  if (pos >= Game::simulation.arena_info.get_player_count())
     return;
   ctx.set_stroke(0xff222222);
   ctx.set_line_width(height);
@@ -37,18 +37,18 @@ void LeaderboardSlot::on_render(Renderer& ctx) {
   ctx.move_to(-(width - height) / 2, 0);
   ctx.line_to((width - height) / 2, 0);
   ctx.stroke();
-  ctx.set_stroke(FLOWER_COLORS[Game::simulation.arena_info.colors[pos]]);
+  ctx.set_stroke(FLOWER_COLORS[Game::simulation.arena_info.get_colors({pos})]);
   ctx.set_line_width(height * 0.8);
   ctx.begin_path();
   ctx.move_to(-(width - height) / 2, 0);
-  ctx.line_to(-(width - height) / 2 + (width - height) * ((float)ratio), 0);
+  ctx.line_to(-(width - height) / 2 + (width - height) * (std::max((float)ratio, 0.0001f)), 0);
   ctx.stroke();
   std::string format_string =
       std::format("{} - {}",
-                  Game::simulation.arena_info.names[pos].size() == 0
+                  Game::simulation.arena_info.get_names({pos}).size() == 0
                       ? "Unnamed"
-                      : Game::simulation.arena_info.names[pos],
-                  format_score((float)Game::simulation.arena_info.scores[pos]));
+                      : Game::simulation.arena_info.get_names({pos}),
+                  format_score((float)Game::simulation.arena_info.get_scores({pos})));
   ctx.set_fill(0xffffffff);
   ctx.set_stroke(0xff222222);
   ctx.center_text_align();
@@ -67,10 +67,10 @@ std::unique_ptr<Element> Ui::make_leaderboard() {
                   18,
                   []() {
                     std::string format_string{"1 Flower"};
-                    if (Game::simulation.arena_info.player_count != 1)
+                    if (Game::simulation.arena_info.get_player_count() != 1)
                       format_string =
                           std::format("{} Flowers",
-                                      Game::simulation.arena_info.player_count);
+                                      Game::simulation.arena_info.get_player_count());
                     return format_string;
                   })),
               LEADERBOARD_WIDTH + 20, 48,

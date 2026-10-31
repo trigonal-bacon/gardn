@@ -2,6 +2,8 @@
 
 #include <Shared/StaticData.hh>
 
+#include <Helpers/Array.hh>
+
 #include <array>
 #include <bitset>
 #include <cstdint>
@@ -30,24 +32,33 @@ class Arena {
   };
   std::bitset<kFieldCount> state;
 #define SINGLE(name, type) ;
-#define MULTIPLE(name, type, amt) std::bitset<amt> state_per_##name;
+#define MULTIPLE(name, type, ...) std::bitset<Shape<__VA_ARGS__>::size> state_per_##name;
 FIELDS_Arena
 #undef SINGLE
 #undef MULTIPLE
-    public :
 #define SINGLE(name, type) type name;
-#define MULTIPLE(name, type, count) std::array<type, count> name;
+#define MULTIPLE(name, type, ...) NDArray<type, __VA_ARGS__> name;
     FIELDS_Arena
 #undef SINGLE
 #undef MULTIPLE
+  public :
 
-    Arena();
+  Arena();
   void init();
   void reset_protocol();
+#define SINGLE(name, type) \
+  const type& get_##name() const; \
+  type& get_##name##_mut();
+#define MULTIPLE(name, type, ...) \
+  const type& get_##name(const Shape<__VA_ARGS__>::Indices) const; \
+  type& get_##name##_mut(const Shape<__VA_ARGS__>::Indices);
+  FIELDS_Arena
+#undef SINGLE
+#undef MULTIPLE
 #ifdef SERVERSIDE
   void write(Writer&, uint8_t);
-#define SINGLE(name, type) void set_##name(type const);
-#define MULTIPLE(name, type, amt) void set_##name(uint32_t, type const);
+#define SINGLE(name, type) void set_##name(const type&);
+#define MULTIPLE(name, type, ...) void set_##name(const Shape<__VA_ARGS__>::Indices, const type&);
   FIELDS_Arena
 #undef SINGLE
 #undef MULTIPLE

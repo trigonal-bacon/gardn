@@ -27,9 +27,9 @@ static void calculate_leaderboard(Simulation& sim) {
   sim.arena_info.set_player_count(num);
   num = std::min(num, LEADERBOARD_SIZE);
   for (uint32_t i = 0; i < num; ++i) {
-    sim.arena_info.set_names(i, players[i].get().get_name());
-    sim.arena_info.set_scores(i, players[i].get().get_score());
-    sim.arena_info.set_colors(i, players[i].get().get_color());
+    sim.arena_info.set_names({i}, players[i].get().get_name());
+    sim.arena_info.set_scores({i}, players[i].get().get_score());
+    sim.arena_info.set_colors({i}, players[i].get().get_color());
   }
 }
 

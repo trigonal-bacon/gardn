@@ -81,12 +81,12 @@ void Simulation::on_tick() {
     }
   });
 
-  for (uint32_t i = 0; i < std::min(arena_info.player_count, LEADERBOARD_SIZE);
+  for (uint32_t i = 0; i < std::min(arena_info.get_player_count(), LEADERBOARD_SIZE);
        ++i)
-    arena_info.scores[i].step(Ui::lerp_amount);
+    arena_info.get_scores_mut({i}).step(Ui::lerp_amount);
 
-  for (uint32_t i = arena_info.player_count; i < LEADERBOARD_SIZE; ++i)
-    arena_info.scores[i] = 0;
+  for (uint32_t i = arena_info.get_player_count(); i < LEADERBOARD_SIZE; ++i)
+    arena_info.get_scores_mut({i}) = 0;
 }
 
 void Simulation::post_tick() {
