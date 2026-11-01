@@ -25,21 +25,18 @@ void Arena::reset_protocol() {
 }
 
 #define SINGLE(name, type)                                                     \
-  const type& Arena::get_##name() const {                                      \
-    return name;                                                               \
-  }                                                                            \
-  type& Arena::get_##name##_mut() {                                            \
-    return const_cast<type&>(get_##name());                                    \
-  }
+  const type& Arena::get_##name() const { return name; }                       \
+  type& Arena::get_##name##_mut() { return const_cast<type&>(get_##name()); }
 #define MULTIPLE(name, type, ...)                                              \
-  const type& Arena::get_##name(const Shape<__VA_ARGS__>::Indices index) const { \
+  const type& Arena::get_##name(const Shape<__VA_ARGS__>::Indices index)       \
+      const {                                                                  \
     uint32_t i = Shape<__VA_ARGS__>::index(index);                             \
     return name[i];                                                            \
   }                                                                            \
   type& Arena::get_##name##_mut(const Shape<__VA_ARGS__>::Indices index) {     \
     return const_cast<type&>(get_##name(index));                               \
   }
-  FIELDS_Arena
+FIELDS_Arena
 #undef SINGLE
 #undef MULTIPLE
 
@@ -52,7 +49,8 @@ void Arena::reset_protocol() {
     state.set(k##name, 1);                                                     \
   }
 #define MULTIPLE(name, type, ...)                                              \
-  void Arena::set_##name(const Shape<__VA_ARGS__>::Indices index, const type& v) { \
+  void Arena::set_##name(const Shape<__VA_ARGS__>::Indices index,              \
+                         const type& v) {                                      \
     uint32_t i = Shape<__VA_ARGS__>::index(index);                             \
     if (name[i] == v)                                                          \
       return;                                                                  \
@@ -60,33 +58,33 @@ void Arena::reset_protocol() {
     state.set(k##name, 1);                                                     \
     state_per_##name.set(i, 1);                                                \
   }
-FIELDS_Arena
+    FIELDS_Arena
 #undef SINGLE
 #undef MULTIPLE
 
-void Arena::write(Writer& writer, uint8_t create) {
+    void Arena::write(Writer& writer, uint8_t create) {
   if (create) {
 #define SINGLE(name, type) writer.write<type>(name);
-#define MULTIPLE(name, type, ...)                                            \
-  for (uint32_t i = 0; i < Shape<__VA_ARGS__>::size; ++i)                    \
+#define MULTIPLE(name, type, ...)                                              \
+  for (uint32_t i = 0; i < Shape<__VA_ARGS__>::size; ++i)                      \
     writer.write<type>(name[i]);
     FIELDS_Arena
 #undef SINGLE
 #undef MULTIPLE
   } else {
-#define SINGLE(name, type)                                                    \
-  if (state[k##name]) {                                                       \
-    writer.write<uint8_t>(k##name);                                           \
-    writer.write<type>(name);                                                 \
+#define SINGLE(name, type)                                                     \
+  if (state[k##name]) {                                                        \
+    writer.write<uint8_t>(k##name);                                            \
+    writer.write<type>(name);                                                  \
   }
-#define MULTIPLE(name, type, ...)                                             \
-  if (state[k##name]) {                                                       \
-    writer.write<uint8_t>(k##name);                                           \
-    for (uint32_t n = 0; n < Shape<__VA_ARGS__>::size; ++n)                   \
-      if (state_per_##name[n]) {                                              \
+#define MULTIPLE(name, type, ...)                                              \
+  if (state[k##name]) {                                                        \
+    writer.write<uint8_t>(k##name);                                            \
+    for (uint32_t n = 0; n < Shape<__VA_ARGS__>::size; ++n)                    \
+      if (state_per_##name[n]) {                                               \
         writer.write<uint32_t>(n);                                             \
-        writer.write<type>(name[n]);                                          \
-      }                                                                       \
+        writer.write<type>(name[n]);                                           \
+      }                                                                        \
     writer.write<uint32_t>(Shape<__VA_ARGS__>::size);                          \
   }
     FIELDS_Arena
@@ -96,7 +94,7 @@ void Arena::write(Writer& writer, uint8_t create) {
   }
 }
 #else
-void Arena::read(Reader& reader, uint8_t create) {
+    void Arena::read(Reader& reader, uint8_t create) {
   if (create) {
 #define SINGLE(name, type) reader.read<type>(name);
 #define MULTIPLE(name, type, ...)                                              \
@@ -113,7 +111,7 @@ void Arena::read(Reader& reader, uint8_t create) {
       }
 #define SINGLE(name, type)                                                     \
   case k##name: {                                                              \
-    reader.read<type>(name);                                                  \
+    reader.read<type>(name);                                                   \
     state.set(k##name, 1);                                                     \
     break;                                                                     \
   }

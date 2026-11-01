@@ -76,13 +76,11 @@ struct Shape {
     using Indices = std::array<uint32_t, rank>;
 
     static constexpr size_t index(const Indices& indices) {
-        constexpr std::array<size_t, rank> dim_arr{dims...};
+      size_t flat = 0;
+      size_t i = 0;
 
-        size_t flat = 0;
-        for (size_t i = 0; i < rank; ++i)
-            flat = flat * dim_arr[i] + indices[i];
-
-        return flat;
+      ((DEBUG_ONLY(assert(indices[i] < dims),) flat = flat * dims + indices[i++]), ...);
+      return flat;
     }
 };
 
@@ -101,11 +99,13 @@ struct NDArray {
         return data[shape::index(indices)];
     }
 
-    constexpr const T& operator[](uint32_t i) const {
+    constexpr const T& operator[](size_t i) const {
+      DEBUG_ONLY(assert(i < shape::size);)
       return data[i];
     }
 
-    constexpr T& operator[](uint32_t i) {
+    constexpr T& operator[](size_t i) {
+      DEBUG_ONLY(assert(i < shape::size);)
       return data[i];
     }
 };

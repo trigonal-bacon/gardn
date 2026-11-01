@@ -10,8 +10,8 @@
 #include <array>
 #include <bitset>
 #include <cstdint>
-#include <vector>
 #include <memory>
+#include <vector>
 
 using circ_arr_t = CircularArray<PetalID::T, MAX_SLOT_COUNT>;
 
@@ -28,7 +28,7 @@ enum Components {
 #define COMPONENT(name) k##name,
   PERCOMPONENT
 #undef COMPONENT
-  kComponentCount
+      kComponentCount
 };
 
 class Entity {
@@ -40,17 +40,15 @@ class Entity {
 #undef MULTIPLE
         kFieldCount
   };
-  static constexpr std::array<uint32_t, kFieldCount+1> _BIT_OFFSETS = [](){
+  static constexpr std::array<uint32_t, kFieldCount + 1> _BIT_OFFSETS = []() {
 #define SINGLE(component, name, type) (0),
 #define MULTIPLE(component, name, type, ...) (Shape<__VA_ARGS__>::size),
-    constexpr std::array<uint32_t, kFieldCount> increments = {
-      PERFIELD
-    };
+    constexpr std::array<uint32_t, kFieldCount> increments = {PERFIELD};
 #undef SINGLE
 #undef MULTIPLE
-    std::array<uint32_t, kFieldCount+1> res = {};
+    std::array<uint32_t, kFieldCount + 1> res = {};
     for (size_t i = 0; i < kFieldCount; ++i) {
-      res[i+1] = res[i] + increments[i];
+      res[i + 1] = res[i] + increments[i];
     }
     return res;
   }();
@@ -62,11 +60,11 @@ class Entity {
 #define SINGLE(component, name, type) type name;
 #define MULTIPLE(component, name, type, ...) NDArray<type, __VA_ARGS__> name;
 #ifdef USE_UPTR_ENTITY
-#define COMPONENT(component) \
-struct Component_##component { \
-FIELDS_##component \
-}; \
-std::unique_ptr<Component_##component> component;
+#define COMPONENT(component)                                                   \
+  struct Component_##component {                                               \
+    FIELDS_##component                                                         \
+  };                                                                           \
+  std::unique_ptr<Component_##component> component;
   PERCOMPONENT
 #undef COMPONENT
 #else
@@ -76,9 +74,9 @@ std::unique_ptr<Component_##component> component;
 #undef MULTIPLE
 
 #define SINGLE(component, name, type) type& get_##name##_mut();
-#define MULTIPLE(component, name, type, ...) \
-  const type& get_##name##_flat(uint32_t) const; \
-  type& get_##name##_flat_mut(uint32_t); \
+#define MULTIPLE(component, name, type, ...)                                   \
+  const type& get_##name##_flat(uint32_t) const;                               \
+  type& get_##name##_flat_mut(uint32_t);                                       \
   type& get_##name##_mut(const Shape<__VA_ARGS__>::Indices);
   PERFIELD
 #undef SINGLE
@@ -94,14 +92,12 @@ public:
   uint32_t lifetime;
   EntityID id;
   uint8_t pending_delete;
-  template<uint32_t component>
-  void add_component();
-  template<uint32_t component>
-  uint8_t has_component() const;
+  template <uint32_t component> void add_component();
+  template <uint32_t component> uint8_t has_component() const;
 
-#define COMPONENT(component) \
-template<> void add_component<k##component>(); \
-template<> uint8_t has_component<k##component>() const;
+#define COMPONENT(component)                                                   \
+  template <> void add_component<k##component>();                              \
+  template <> uint8_t has_component<k##component>() const;
   PERCOMPONENT
 #undef COMPONENT
 

@@ -1,6 +1,6 @@
 #ifdef SERVERSIDE
-#include <Shared/EntityDef.hh>
 #include <Server/Simulation.hh>
+#include <Shared/EntityDef.hh>
 #include <Shared/StaticDefinitions.hh>
 
 LoadoutSlot::LoadoutSlot() { reset(); }

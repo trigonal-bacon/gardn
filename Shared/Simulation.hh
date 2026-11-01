@@ -9,8 +9,7 @@
 
 inline const uint32_t ENTITY_CAP = 8192;
 
-template<class Derived>
-class SimulationBase {
+template <class Derived> class SimulationBase {
   friend Derived;
   std::bitset<ENTITY_CAP> entity_tracker;
   StaticArray<EntityID::id_type, ENTITY_CAP> active_entities;
@@ -28,11 +27,13 @@ public:
     for (EntityID::id_type i = 0; i < ENTITY_CAP; ++i) {
       if (entity_tracker[i])
         continue;
-      if (++hash_tracker[i] == 0) ++hash_tracker[i];
+      if (++hash_tracker[i] == 0)
+        ++hash_tracker[i];
       DEBUG_ONLY(assert(hash_tracker[i] != 0);)
       entity_tracker.set(i, 1);
       entities[i].init();
-      DEBUG_ONLY(std::cout << "ent_create " << EntityID(i, hash_tracker[i]) << "\n";)
+      DEBUG_ONLY(std::cout << "ent_create " << EntityID(i, hash_tracker[i])
+                           << "\n";)
       entities[i].id = EntityID(i, hash_tracker[i]);
       DEBUG_ONLY(assert(entities[i].id != NULL_ENTITY);)
       return entities[i];
@@ -57,8 +58,8 @@ public:
     return entity_tracker[id.id] && hash_tracker[id.id] == id.hash;
   }
   uint8_t ent_alive(const EntityID id) const {
-    return ent_exists(id) && !entities[id.id].pending_delete 
-    SERVER_ONLY(&& entities[id.id].deletion_tick == 0);
+    return ent_exists(id) && !entities[id.id].pending_delete SERVER_ONLY(
+                                 &&entities[id.id].deletion_tick == 0);
   }
   void tick() {
     active_entities.clear();
@@ -71,8 +72,7 @@ public:
   }
 
   // will only consider active entities from the start of the tick() call
-  template<typename F>
-  void for_each_entity(F&& cb) {
+  template <typename F> void for_each_entity(F&& cb) {
     for (EntityID::id_type id : active_entities) {
       if (!entity_tracker[id])
         continue;
@@ -81,8 +81,7 @@ public:
     }
   }
 
-  template <uint8_t component, typename F> 
-  void for_each(F&& cb) {
+  template <uint8_t component, typename F> void for_each(F&& cb) {
     for (EntityID::id_type id : active_entities) {
       if (!entity_tracker[id])
         continue;
