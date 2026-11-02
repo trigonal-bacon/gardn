@@ -108,32 +108,18 @@ template <> std::string Decoder::read<std::string>() {
 }
 } // namespace StorageProtocol
 
-static bool should_update = 0;
-
-template <typename T> class MutationObserver {
-  T prev = {};
-
+namespace {
+template<auto &ref>
+class MutationObserver {
 public:
-  MutationObserver(const T& o) : prev(o) {};
-  void cmp(T& o) {
-    if (o == prev)
-      return;
-    should_update = 1;
-    prev = o;
-    return;
+  [[nodiscard]] static bool changed() {
+    static std::remove_reference_t<decltype(ref)> prev = ref;
+    if (ref == prev) return false;
+    prev = ref;
+    return true;
   }
 };
-
-#define STORED                                                                 \
-  X(0, Game::nickname)                                                         \
-  X(1, Game::seen_mobs)                                                        \
-  X(2, Game::seen_petals)                                                      \
-  X(3, Input::keyboard_movement)                                               \
-  X(4, Input::movement_helper)
-
-#define X(ct, name) static auto checker_##ct = MutationObserver(name);
-STORED
-#undef X
+}
 
 using namespace StorageProtocol;
 
@@ -141,7 +127,7 @@ void Storage::retrieve() {
   Game::seen_petals[PetalID::kBasic] = 1;
   {
     uint32_t len = StorageProtocol::retrieve("mobs", 256);
-    Decoder reader(&StorageProtocol::buffer[0]);
+    Decoder reader(StorageProtocol::buffer.data());
     while (reader.at < StorageProtocol::buffer.data() + len) {
       MobID::T mob_id = reader.read<uint8_t>();
       if (mob_id >= MobID::kNumMobs)
@@ -151,7 +137,7 @@ void Storage::retrieve() {
   }
   {
     uint32_t len = StorageProtocol::retrieve("petals", 256);
-    Decoder reader(&StorageProtocol::buffer[0]);
+    Decoder reader(StorageProtocol::buffer.data());
     while (reader.at < StorageProtocol::buffer.data() + len) {
       PetalID::T petal_id = reader.read<uint8_t>();
       if (petal_id >= PetalID::kNumPetals || petal_id == PetalID::kNone)
@@ -162,7 +148,7 @@ void Storage::retrieve() {
   {
     uint32_t len = StorageProtocol::retrieve("settings", 1);
     if (len > 0) {
-      Decoder reader(&StorageProtocol::buffer[0]);
+      Decoder reader(StorageProtocol::buffer.data());
       uint8_t opts = reader.read<uint8_t>();
       Input::movement_helper = Bits::at(opts, 0);
       Input::keyboard_movement = Bits::at(opts, 1);
@@ -172,7 +158,7 @@ void Storage::retrieve() {
     uint32_t len = StorageProtocol::retrieve(
         "nickname", sizeof(uint32_t) * MAX_NAME_LENGTH + 4);
     if (len > 0 && len <= sizeof(uint32_t) * MAX_NAME_LENGTH + 4) {
-      Decoder reader(&StorageProtocol::buffer[0]);
+      Decoder reader(StorageProtocol::buffer.data());
       Game::nickname = reader.read<std::string>();
     }
   }
@@ -185,33 +171,28 @@ void Storage::retrieve() {
 }
 
 void Storage::set() {
-#define X(ct, name) checker_##ct.cmp(name);
-  STORED
-#undef X
-  if (should_update == 0)
-    return;
-  should_update = 0;
-  {
-    Encoder writer(&StorageProtocol::buffer[0]);
+  if (MutationObserver<Game::seen_petals>::changed()) {
+    Encoder writer(StorageProtocol::buffer.data());
     for (PetalID::T id = PetalID::kBasic; id < PetalID::kNumPetals; ++id)
       if (Game::seen_petals[id])
-        writer.write<uint8_t>(id);
+        writer.write<PetalID::T>(id);
     StorageProtocol::store("petals", writer.at - writer.base);
   }
-  {
-    Encoder writer(&StorageProtocol::buffer[0]);
+  if (MutationObserver<Game::seen_mobs>::changed()) {
+    Encoder writer(StorageProtocol::buffer.data());
     for (MobID::T id = 0; id < MobID::kNumMobs; ++id)
       if (Game::seen_mobs[id])
-        writer.write<uint8_t>(id);
+        writer.write<MobID::T>(id);
     StorageProtocol::store("mobs", writer.at - writer.base);
   }
-  {
-    Encoder writer(&StorageProtocol::buffer[0]);
+  if (MutationObserver<Game::nickname>::changed()) {
+    Encoder writer(StorageProtocol::buffer.data());
     writer.write<std::string>(Game::nickname);
     StorageProtocol::store("nickname", writer.at - writer.base);
   }
-  {
-    Encoder writer(&StorageProtocol::buffer[0]);
+  if (MutationObserver<Input::movement_helper>::changed() | 
+      MutationObserver<Input::keyboard_movement>::changed()) {
+    Encoder writer(StorageProtocol::buffer.data());
     writer.write<uint8_t>(Input::movement_helper |
                           (Input::keyboard_movement << 1));
     StorageProtocol::store("settings", writer.at - writer.base);

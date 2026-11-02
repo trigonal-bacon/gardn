@@ -3,8 +3,23 @@
 #include <Helpers/Bits.hh>
 #include <Helpers/UTF8.hh>
 
-static const uint32_t PROTOCOL_FLOAT_SCALE = 64;
+static constexpr uint32_t PROTOCOL_FLOAT_SCALE = 64;
 
+namespace {
+  template<std::signed_integral T>
+  constexpr std::make_unsigned_t<T> zigzag(T v) {
+      using U = std::make_unsigned_t<T>;
+      return (U(v) << 1) ^ U(-int(v < 0));
+  }
+
+  template<std::signed_integral T>
+  constexpr T unzigzag(std::make_unsigned_t<T> v) {
+      using U = std::make_unsigned_t<T>;
+      if (v & 1)
+          return T(-static_cast<T>(v >> 1) - 1);
+      return T(v >> 1);
+  }
+}
 Writer::Writer(uint8_t* v) : at(v), packet(v) {}
 
 void Writer::push(uint8_t val) { *at++ = val; }
@@ -46,22 +61,12 @@ void Writer::Encoder<uint64_t>::write(Writer& w, const uint64_t& val) {
 
 template <>
 void Writer::Encoder<int32_t>::write(Writer& w, const int32_t& val) {
-  int32_t v = val;
-  uint32_t sign = v < 0;
-  if (sign)
-    v *= -1;
-  v = (v << 1) | sign;
-  w.write<uint64_t>(v);
+  w.write<uint32_t>(zigzag(val));
 }
 
 template <>
 void Writer::Encoder<int64_t>::write(Writer& w, const int64_t& val) {
-  int64_t v = val;
-  uint32_t sign = v < 0;
-  if (sign)
-    v *= -1;
-  v = (v << 1) | sign;
-  w.write<uint64_t>(v);
+  w.write<uint64_t>(zigzag(val));
 }
 
 template <> void Writer::Encoder<float>::write(Writer& w, const float& v) {
@@ -129,21 +134,11 @@ template <> uint64_t Reader::Decoder<uint64_t>::read(Reader& r) {
 }
 
 template <> int32_t Reader::Decoder<int32_t>::read(Reader& r) {
-  uint32_t u = r.read<uint32_t>();
-  uint32_t s = u & 1;
-  int32_t ret = u >> 1;
-  if (s)
-    ret *= -1;
-  return ret;
+  return unzigzag<int32_t>(r.read<uint32_t>());
 }
 
 template <> int64_t Reader::Decoder<int64_t>::read(Reader& r) {
-  uint64_t u = r.read<uint64_t>();
-  uint32_t s = u & 1;
-  int64_t ret = u >> 1;
-  if (s)
-    ret *= -1;
-  return ret;
+  return unzigzag<int32_t>(r.read<uint64_t>());
 }
 
 template <> float Reader::Decoder<float>::read(Reader& r) {
