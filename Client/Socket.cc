@@ -9,8 +9,8 @@
 
 #include <emscripten.h>
 
-uint8_t INCOMING_PACKET[64 * 1024] = {0};
-uint8_t OUTGOING_PACKET[1 * 1024] = {0};
+uint8_t INCOMING_PACKET[MAX_CLIENTBOUND_PACKET_LEN] = {0};
+uint8_t OUTGOING_PACKET[MAX_SERVERBOUND_PACKET_LEN] = {0};
 
 extern "C" {
 void on_message(uint8_t type, uint32_t len, char* reason) {

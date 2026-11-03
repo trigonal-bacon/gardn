@@ -11,9 +11,9 @@ uWS::App Server::server =
         .ws<Client>("/*",
                     {/* Settings */
                      .compression = uWS::DISABLED,
-                     .maxPayloadLength = 1024,
+                     .maxPayloadLength = MAX_SERVERBOUND_PACKET_LEN,
                      .idleTimeout = 15,
-                     .maxBackpressure = 1024 * MAX_PACKET_LEN,
+                     .maxBackpressure = 64 * MAX_CLIENTBOUND_PACKET_LEN,
                      .closeOnBackpressureLimit = true,
                      .resetIdleTimeoutOnSend = false,
                      .sendPingsAutomatically = true,

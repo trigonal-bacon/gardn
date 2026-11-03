@@ -95,12 +95,6 @@ public:
   template <uint32_t component> void add_component();
   template <uint32_t component> uint8_t has_component() const;
 
-#define COMPONENT(component)                                                   \
-  template <> void add_component<k##component>();                              \
-  template <> uint8_t has_component<k##component>() const;
-  PERCOMPONENT
-#undef COMPONENT
-
 #define SINGLE(component, name, type) const type& get_##name() const;
 #define MULTIPLE(component, name, type, ...)                                   \
   const type& get_##name(const Shape<__VA_ARGS__>::Indices) const;
@@ -138,3 +132,9 @@ public:
 #undef MULTIPLE
 #endif
 };
+
+#define COMPONENT(component)                                                   \
+  template <> void Entity::add_component<k##component>();                      \
+  template <> uint8_t Entity::has_component<k##component>() const;
+  PERCOMPONENT
+#undef COMPONENT

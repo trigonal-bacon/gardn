@@ -108,6 +108,7 @@ void Server::run() {
 }
 
 void Client::send_packet(const uint8_t* packet, size_t size) {
+  if (size > 12000) std::cout << size << '\n';
   if (ws == nullptr)
     return;
   ws->send(packet, size);

@@ -4,12 +4,13 @@
 #include <Server/Game.hh>
 
 #include <Shared/Binary.hh>
+#include <Shared/Config.hh>
 
 #include <chrono>
 #include <iostream>
 
 namespace Server {
-uint8_t OUTGOING_PACKET[MAX_PACKET_LEN] = {0};
+uint8_t OUTGOING_PACKET[MAX_CLIENTBOUND_PACKET_LEN] = {0};
 GameInstance game;
 } // namespace Server
 

@@ -30,8 +30,7 @@ void Particle::tick_title(Renderer& ctx, double dt) {
     ctx.translate(part.x,
                   part.y + 12.5 * sin(Game::timestamp / 500 + part.sin_offset));
     ctx.scale(Ui::scale * part.radius);
-    if (PETAL_DATA[part.id].attributes.rotation_style ==
-        PetalAttributes::kPassiveRot)
+    if (PETAL_DATA[part.id].attributes.rotation_style == PetalAttributes::kPassiveRot) 
       ctx.rotate(part.angle);
     if (part.id == PetalID::kPeas || part.id == PetalID::kPoisonPeas)
       draw_static_petal(part.id, ctx);

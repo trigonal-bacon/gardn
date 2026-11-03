@@ -147,11 +147,13 @@ void Game::render_game() {
     RenderGuard context(renderer);
     renderer.translate(ent.get_x(), ent.get_y());
     renderer.rotate(ent.get_angle());
-    float rot_amt = ent.get_petal_id() == PetalID::kWing ? 10.0 : 1.0;
-    if (ent.id.id % 2)
-      renderer.rotate(rot_amt * ent.lifetime / TPS);
-    else
-      renderer.rotate(-rot_amt * ent.lifetime / TPS);
+    if (PETAL_DATA[ent.get_petal_id()].attributes.rotation_style == PetalAttributes::kPassiveRot) {
+      float rot_amt = ent.get_petal_id() == PetalID::kWing ? 10.0 : 1.0;
+      if (ent.id.id % 2)
+        renderer.rotate(rot_amt * ent.lifetime / TPS);
+      else
+        renderer.rotate(-rot_amt * ent.lifetime / TPS);
+      }
     _apply_damage_filter(renderer, ent);
     render_petal(renderer, ent);
   });

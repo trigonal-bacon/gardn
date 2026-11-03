@@ -1,10 +1,12 @@
 #pragma once
 
+#include <Shared/Config.hh>
+
 #include <cstdint>
 #include <string>
 
-extern uint8_t INCOMING_PACKET[64 * 1024];
-extern uint8_t OUTGOING_PACKET[1 * 1024];
+extern uint8_t INCOMING_PACKET[MAX_CLIENTBOUND_PACKET_LEN];
+extern uint8_t OUTGOING_PACKET[MAX_SERVERBOUND_PACKET_LEN];
 
 class Socket {
 public:
