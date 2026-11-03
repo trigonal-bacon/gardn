@@ -113,7 +113,7 @@ template<auto &ref>
 class MutationObserver {
 public:
   [[nodiscard]] static bool changed() {
-    static std::remove_reference_t<decltype(ref)> prev = ref;
+    static std::remove_cvref_t<decltype(ref)> prev = ref;
     if (ref == prev) return false;
     prev = ref;
     return true;

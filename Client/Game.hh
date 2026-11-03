@@ -8,6 +8,7 @@
 
 
 #include <array>
+#include <bitset>
 
 namespace Game {
 extern Simulation simulation;
@@ -21,8 +22,8 @@ extern EntityID camera_id;
 extern EntityID player_id;
 extern std::string nickname;
 extern std::string disconnect_message;
-extern std::array<uint8_t, PetalID::kNumPetals> seen_petals;
-extern std::array<uint8_t, MobID::kNumMobs> seen_mobs;
+extern std::bitset<PetalID::kNumPetals> seen_petals;
+extern std::bitset<MobID::kNumMobs> seen_mobs;
 
 extern double timestamp;
 

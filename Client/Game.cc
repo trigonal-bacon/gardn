@@ -10,8 +10,7 @@
 
 #include <cmath>
 
-static double g_last_time = 0;
-constexpr float MAX_TRANSITION_CIRCLE = 2500;
+static constexpr float MAX_TRANSITION_CIRCLE = 2500;
 
 static int _c = setup_canvas();
 static int _i = setup_inputs();
@@ -28,8 +27,8 @@ EntityID camera_id;
 EntityID player_id;
 std::string nickname;
 std::string disconnect_message;
-std::array<uint8_t, PetalID::kNumPetals> seen_petals;
-std::array<uint8_t, MobID::kNumMobs> seen_mobs;
+std::bitset<PetalID::kNumPetals> seen_petals;
+std::bitset<MobID::kNumMobs> seen_mobs;
 std::array<PetalID::T, 2 * MAX_SLOT_COUNT> cached_loadout = {PetalID::kNone};
 
 double timestamp = 0;
@@ -151,10 +150,9 @@ void Game::poll_ui_event(const Ui::ScreenEvent& event) {
 
 void Game::tick(double time) {
   double tick_start = Debug::get_timestamp();
+  Ui::dt = time - Game::timestamp;
   Game::timestamp = time;
-  Ui::dt = time - g_last_time;
   Ui::lerp_amount = 1 - pow(1 - 0.25, Ui::dt * 60 / 1000);
-  g_last_time = time;
   simulation.tick();
 
   renderer.reset();
