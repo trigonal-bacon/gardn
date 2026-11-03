@@ -7,7 +7,7 @@
 #include <functional>
 #include <string>
 
-inline const uint32_t ENTITY_CAP = 8192;
+inline const EntityID::id_type ENTITY_CAP = 8192;
 
 template <class Derived> class SimulationBase {
   friend Derived;
@@ -15,30 +15,12 @@ template <class Derived> class SimulationBase {
   StaticArray<EntityID::id_type, ENTITY_CAP> active_entities;
   std::array<Entity, ENTITY_CAP> entities;
   std::array<EntityID::hash_type, ENTITY_CAP> hash_tracker;
-
 public:
   Arena arena_info;
   SimulationBase() {}
   void reset() {
     std::destroy_at(static_cast<Derived*>(this));
     std::construct_at(static_cast<Derived*>(this));
-  }
-  Entity& alloc_ent() {
-    for (EntityID::id_type i = 0; i < ENTITY_CAP; ++i) {
-      if (entity_tracker[i])
-        continue;
-      if (++hash_tracker[i] == 0)
-        ++hash_tracker[i];
-      DEBUG_ONLY(assert(hash_tracker[i] != 0);)
-      entity_tracker.set(i, 1);
-      entities[i].init();
-      DEBUG_ONLY(std::cout << "ent_create " << EntityID(i, hash_tracker[i])
-                           << "\n";)
-      entities[i].id = EntityID(i, hash_tracker[i]);
-      DEBUG_ONLY(assert(entities[i].id != NULL_ENTITY);)
-      return entities[i];
-    }
-    assert(!"Entity cap reached");
   }
   void _delete_ent(const EntityID id) {
     DEBUG_ONLY(std::cout << "ent_delete " << id << "\n";)
@@ -63,7 +45,7 @@ public:
   }
   void tick() {
     active_entities.clear();
-    for (EntityID::id_type i = 1; i < ENTITY_CAP; ++i) {
+    for (EntityID::id_type i = 0; i < ENTITY_CAP; ++i) {
       if (!entity_tracker[i])
         continue;
       active_entities.push(entities[i].id.id);

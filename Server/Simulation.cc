@@ -33,6 +33,26 @@ static void calculate_leaderboard(Simulation& sim) {
   }
 }
 
+Entity& Simulation::alloc_ent() {
+  if (free_ids.size() == 0) assert(!"Entity cap reached");
+  EntityID::id_type i = free_ids.pop();
+  if (++hash_tracker[i] == 0)
+  ++hash_tracker[i];
+  DEBUG_ONLY(assert(hash_tracker[i] != 0);)
+  entity_tracker.set(i, 1);
+  entities[i].init();
+  DEBUG_ONLY(std::cout << "ent_create " << EntityID(i, hash_tracker[i])
+                      << "\n";)
+  entities[i].id = EntityID(i, hash_tracker[i]);
+  DEBUG_ONLY(assert(entities[i].id != NULL_ENTITY);)
+  return entities[i];
+}
+
+void Simulation::_delete_ent(const EntityID id) {
+  SimulationBase<Simulation>::_delete_ent(id);
+  free_ids.push(id.id);
+}
+
 void Simulation::on_tick() {
   spatial_hash.refresh(ARENA_WIDTH, ARENA_HEIGHT);
   if (frand() < 1.0f / TPS) {
@@ -100,9 +120,7 @@ void Simulation::remove_mob(uint32_t zone) {
 void Simulation::spawn_random_mob(float x, float y) {
   uint32_t zone_id = Map::get_zone_from_pos(x, y);
   const ZoneDefinition& zone = MAP_DATA[zone_id];
-  if (zone.density * (zone.right - zone.left) * (zone.bottom - zone.top) /
-      (500 * 500) <
-      zone_mob_counts[zone_id])
+  if (zone.density * zone.width() * zone.height() / (500 * 500) < zone_mob_counts[zone_id])
     return;
   float sum = 0;
   for (const SpawnChance& s : zone.spawns)

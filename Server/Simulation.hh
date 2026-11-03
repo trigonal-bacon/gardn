@@ -8,9 +8,15 @@ class Simulation : public SimulationBase<Simulation> {
     friend class PetalTracker;
     std::array<uint32_t, PetalID::kNumPetals> petal_count_tracker;
     std::array<uint32_t, MAP_DATA.size()> zone_mob_counts;
+    StaticArray<EntityID::id_type, ENTITY_CAP> free_ids;
 public:
     SpatialHash spatial_hash;
-    Simulation() : SimulationBase<Simulation>(), spatial_hash(*this) {}
+    Simulation() : SimulationBase<Simulation>(), spatial_hash(*this) {
+        for (EntityID::id_type i = ENTITY_CAP; i --> 0;) free_ids.push(i);
+    }
+    Entity& alloc_ent();
+    void _delete_ent(const EntityID);
+
     void on_tick();
     void post_tick();
     void remove_mob(uint32_t);

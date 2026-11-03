@@ -69,15 +69,6 @@ public:
     operator bool() const { return get() != nullptr; }
   };
 
-private:
-  uint32_t handle;
-
-protected:
-  std::vector<std::unique_ptr<Element>> children;
-  Handle<Element> tooltip;
-  uint32_t touch_id = (uint32_t)-1;
-
-public:
   Handle<Element> parent;
   float width = 0;
   float height = 0;
@@ -109,6 +100,14 @@ public:
   virtual void on_event(uint8_t);
   virtual void refactor();
   virtual void poll_events(const ScreenEvent&);
+
+private:
+  uint32_t handle;
+
+protected:
+  std::vector<std::unique_ptr<Element>> children;
+  Handle<Element> tooltip;
+  uint32_t touch_id = (uint32_t)-1;
 };
 
 std::vector<std::unique_ptr<Element>>

@@ -19,11 +19,13 @@ void tick_petal_behavior(Simulation& sim, Entity& petal) {
   const PetalData& petal_data = PETAL_DATA[petal.get_petal_id()];
   if (petal_data.attributes.rotation_style == PetalAttributes::kPassiveRot) {
     // simulate on clientside
+    /*
     float rot_amt = petal.get_petal_id() == PetalID::kWing ? 10.0 : 1.0;
     if (petal.id.id % 2)
       petal.set_angle(petal.get_angle() + rot_amt / TPS);
     else
       petal.set_angle(petal.get_angle() - rot_amt / TPS);
+    */
   } else if (petal_data.attributes.rotation_style ==
                  PetalAttributes::kFollowRot &&
              !(Bits::at(petal.flags, EntityFlags::kIsDespawning))) {

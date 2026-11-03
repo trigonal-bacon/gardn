@@ -12,9 +12,9 @@ class UTF8Parser {
 
 public:
   UTF8Parser(const char*, size_t);
-  UTF8Parser(const std::string&);
-  static std::string trunc_string(const std::string&, uint32_t);
-  static bool is_valid_utf8(const std::string&);
+  UTF8Parser(std::string_view);
+  static std::string trunc_string(std::string_view, uint32_t);
+  static bool is_valid_utf8(std::string_view);
   uint32_t next_symbol();
   uint32_t next_symbol_len() const;
   uint32_t offset() const;

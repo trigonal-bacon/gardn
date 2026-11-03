@@ -258,4 +258,6 @@ struct ZoneDefinition {
   uint32_t difficulty;
   uint32_t color;
   std::string_view name;
+  float width() const { return right - left; }
+  float height() const { return bottom - top; }
 };

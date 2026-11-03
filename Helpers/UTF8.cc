@@ -3,10 +3,10 @@
 UTF8Parser::UTF8Parser(const char* s, size_t len)
     : str(s), at(s), end(s + len) {}
 
-UTF8Parser::UTF8Parser(const std::string& str)
-    : UTF8Parser(str.c_str(), str.size()) {}
+UTF8Parser::UTF8Parser(std::string_view str)
+    : UTF8Parser(str.data(), str.size()) {}
 
-std::string UTF8Parser::trunc_string(const std::string& str, uint32_t max) {
+std::string UTF8Parser::trunc_string(std::string_view str, uint32_t max) {
   UTF8Parser parser(str);
 #ifdef USE_CODEPOINT_LEN
   for (uint32_t i = 0; i < max; ++i) {
@@ -15,7 +15,7 @@ std::string UTF8Parser::trunc_string(const std::string& str, uint32_t max) {
     if (parser.next_symbol() == 0)
       break;
   }
-  return str.substr(0, parser.offset());
+  return std::string{str.substr(0, parser.offset())};
 #else
   uint32_t last = 0;
   while (last <= max) {
@@ -26,7 +26,7 @@ std::string UTF8Parser::trunc_string(const std::string& str, uint32_t max) {
       break;
     last = len;
   }
-  return str.substr(0, last);
+  return std::string{str.substr(0, last)};
 #endif
 }
 
@@ -43,7 +43,7 @@ uint32_t UTF8Parser::fail() {
   return 0;
 }
 
-bool UTF8Parser::is_valid_utf8(const std::string& str) {
+bool UTF8Parser::is_valid_utf8(std::string_view str) {
   uint32_t at = 0;
   while (at < str.size()) {
     uint8_t c = (uint8_t)str[at++];

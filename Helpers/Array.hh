@@ -7,22 +7,23 @@
 #include <cstdint>
 #include <initializer_list>
 
-template <typename T, uint32_t capacity> class StaticArray {
-  std::array<T, capacity> values;
+template <typename T, uint32_t Capacity> class StaticArray {
+  std::array<T, Capacity> values;
   uint32_t length;
 
 public:
   constexpr StaticArray() : length(0) {};
   constexpr StaticArray(std::initializer_list<T> elts) : length(0) {
-    assert(elts.size() <= capacity);
+    assert(elts.size() <= Capacity);
     for (T x : elts)
       values[length++] = x;
   };
   constexpr T& operator[](uint32_t at) { return values[at]; };
   constexpr const T& operator[](uint32_t at) const { return values[at]; };
   constexpr uint32_t size() const { return length; };
+  constexpr uint32_t capacity() const { return Capacity; };
   constexpr void push(T val) {
-    DEBUG_ONLY(assert(length < capacity);) values[length++] = val;
+    DEBUG_ONLY(assert(length < Capacity);) values[length++] = val;
   };
   constexpr T pop() {
     DEBUG_ONLY(assert(length > 0);) return values[--length];
@@ -34,36 +35,36 @@ public:
   constexpr const T* end() const { return values.data() + length; };
 };
 
-template <typename T, uint32_t max_len> class CircularArray {
-  std::array<T, max_len> values;
+template <typename T, uint32_t Capacity> class CircularArray {
+  std::array<T, Capacity> values;
   uint32_t start;
   uint32_t length;
 
 public:
   constexpr CircularArray() : start(0), length(0) {
-    static_assert(max_len > 0);
+    static_assert(Capacity > 0);
   };
   constexpr uint32_t size() const { return length; }
-  constexpr uint32_t capacity() const { return max_len; }
+  constexpr uint32_t capacity() const { return Capacity; }
   constexpr T& operator[](uint32_t idx) {
     DEBUG_ONLY(assert(idx < size());)
-    return values[(start + idx) % max_len];
+    return values[(start + idx) % Capacity];
   };
   constexpr T operator[](uint32_t idx) const {
     DEBUG_ONLY(assert(idx < size());)
-    return values[(start + idx) % max_len];
+    return values[(start + idx) % Capacity];
   };
   constexpr void push_back(const T& val) {
-    values[(start + length) % max_len] = val;
-    if (length == max_len)
-      start = (start + 1) % max_len;
+    values[(start + length) % Capacity] = val;
+    if (length == Capacity)
+      start = (start + 1) % Capacity;
     else
       ++length;
   };
   constexpr T pop_back() {
     DEBUG_ONLY(assert(size() > 0);)
     --length;
-    return values[(start + length) % max_len];
+    return values[(start + length) % Capacity];
   }
   constexpr void clear() { start = length = 0; };
 };
