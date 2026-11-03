@@ -17,9 +17,9 @@ void _apply_damage_filter(Renderer& ctx, const Entity& ent) {
   ctx.set_global_alpha(1 - ent.deletion_animation);
   ctx.scale(1 + ent.deletion_animation);
   if (ent.damage_flash > 0.9)
-    ctx.add_color_filter(0xffffffff, ent.damage_flash);
+    ctx.set_color_filter(0xffffffff, ent.damage_flash);
   else if (ent.damage_flash > 0.01)
-    ctx.add_color_filter(0xffff0000, ent.damage_flash);
+    ctx.set_color_filter(0xffff0000, ent.damage_flash);
 }
 
 static float screen_shake_radius = 0;
@@ -67,19 +67,20 @@ void Game::render_game() {
     }
     renderer.set_stroke(alpha);
     renderer.set_line_width(0.5);
+    constexpr float GRID_SPACING = 50;
     float scale = 1 / (2 * camera.get_fov() * Ui::scale);
     float leftX = camera.get_camera_x() - renderer.width * scale;
     float rightX = camera.get_camera_x() + renderer.width * scale;
     float topY = camera.get_camera_y() - renderer.height * scale;
     float bottomY = camera.get_camera_y() + renderer.height * scale;
-    float newLeftX = ceilf(leftX / 50) * 50;
-    float newTopY = ceilf(topY / 50) * 50;
+    float newLeftX = ceilf(leftX / GRID_SPACING) * GRID_SPACING;
+    float newTopY = ceilf(topY / GRID_SPACING) * GRID_SPACING;
     renderer.begin_path();
-    for (; newLeftX < rightX; newLeftX += 50) {
+    for (; newLeftX < rightX; newLeftX += GRID_SPACING) {
       renderer.move_to(newLeftX, topY);
       renderer.line_to(newLeftX, bottomY);
     }
-    for (; newTopY < bottomY; newTopY += 50) {
+    for (; newTopY < bottomY; newTopY += GRID_SPACING) {
       renderer.move_to(leftX, newTopY);
       renderer.line_to(rightX, newTopY);
     }

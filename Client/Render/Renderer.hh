@@ -47,6 +47,10 @@ public:
   float width = 0;
   float height = 0;
   Renderer();
+  Renderer(const Renderer&) = delete;
+  Renderer& operator=(const Renderer&) = delete;
+  Renderer(Renderer&&) = delete;
+  Renderer& operator=(Renderer&&) = delete;
   ~Renderer();
 
   static uint32_t HSV(uint32_t, float);
@@ -57,7 +61,7 @@ public:
 
   void set_dimensions(float, float);
 
-  void add_color_filter(uint32_t, float);
+  void set_color_filter(uint32_t, float);
   void set_fill(uint32_t);
   void set_stroke(uint32_t);
 

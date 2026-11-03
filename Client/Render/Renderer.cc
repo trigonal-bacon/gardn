@@ -230,7 +230,7 @@ void Renderer::set_dimensions(float w, float h) {
   js_bind_set_dimensions(id, w, h);
 }
 
-void Renderer::add_color_filter(uint32_t c, float v) {
+void Renderer::set_color_filter(uint32_t c, float v) {
   context.color_filter = c;
   context.amount = v;
 }
