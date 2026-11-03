@@ -13,10 +13,10 @@
 
 #include <emscripten.h>
 
-EM_JS(void, js_bind_RenderContext, (uint32_t arg0),
+EM_JS(void, js_bind_RenderGuard, (uint32_t arg0),
       { Module.ctxs[arg0].save(); });
 
-EM_JS(void, js_bind_destroy_RenderContext, (uint32_t arg0),
+EM_JS(void, js_bind_destroy_RenderGuard, (uint32_t arg0),
       { Module.ctxs[arg0].restore(); });
 
 EM_JS(void, js_bind_Renderer, (uint32_t arg0), {
@@ -162,26 +162,23 @@ std::vector<Renderer*> Renderer::renderers;
 static std::vector<uint32_t> free_ids;
 static uint32_t next_id = 0;
 
-RenderContext::RenderContext() {}
-RenderContext::RenderContext(Renderer* r) {
-  *this = r->context;
-  renderer = r;
-  js_bind_RenderContext(r->id);
-}
-
-void RenderContext::reset() {
+void RenderContext::reset(const Renderer& renderer) {
   amount = 0;
   color_filter = 0;
-  clip_x = renderer->width / 2;
-  clip_y = renderer->height / 2;
+  clip_x = renderer.width / 2;
+  clip_y = renderer.height / 2;
   // prevents premature unrendering
-  clip_w = std::max<float>(renderer->width, 10000.0);
-  clip_h = std::max<float>(renderer->height, 10000.0);
+  clip_w = std::max<float>(renderer.width, 10000.0);
+  clip_h = std::max<float>(renderer.height, 10000.0);
 }
 
-RenderContext::~RenderContext() {
-  renderer->context = *this;
-  js_bind_destroy_RenderContext(renderer->id);
+RenderGuard::RenderGuard(Renderer& r) : RenderContext(r.context), renderer(r) {
+  js_bind_RenderGuard(r.id);
+}
+
+RenderGuard::~RenderGuard() {
+  renderer.context = RenderContext(*this);
+  js_bind_destroy_RenderGuard(renderer.id);
 }
 
 Renderer::Renderer() : context() {
@@ -194,8 +191,7 @@ Renderer::Renderer() : context() {
   js_bind_Renderer(id);
   DEBUG_ONLY(std::cout << "created canvas " << id << '\n';)
   Renderer::renderers.push_back(this);
-  context.renderer = this;
-  context.reset();
+  context.reset(*this);
 }
 
 Renderer::~Renderer() {
@@ -225,7 +221,7 @@ void Renderer::reset() {
   round_line_join();
   center_text_align();
   center_text_baseline();
-  context.reset();
+  context.reset(*this);
 }
 
 void Renderer::set_dimensions(float w, float h) {

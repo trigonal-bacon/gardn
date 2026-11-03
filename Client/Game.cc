@@ -212,7 +212,7 @@ void Game::tick(double time) {
     title_ui_window.on_render_skip(renderer);
 
   if (should_render_game_ui()) {
-    RenderContext c(&renderer);
+    RenderGuard c(renderer);
     if (should_render_title_ui()) {
       renderer.set_stroke(0xff222222);
       renderer.set_line_width(Ui::scale * 10);
@@ -223,7 +223,7 @@ void Game::tick(double time) {
     }
     render_game();
     if (!Game::alive()) {
-      RenderContext c(&renderer);
+      RenderGuard c(renderer);
       renderer.reset_transform();
       renderer.set_fill(0x20000000);
       renderer.fill_rect(0, 0, renderer.width, renderer.height);

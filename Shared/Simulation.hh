@@ -11,9 +11,9 @@ inline const EntityID::id_type ENTITY_CAP = 8192;
 
 template <class Derived> class SimulationBase {
   friend Derived;
+  std::array<Entity, ENTITY_CAP> entities;
   std::bitset<ENTITY_CAP> entity_tracker;
   StaticArray<EntityID::id_type, ENTITY_CAP> active_entities;
-  std::array<Entity, ENTITY_CAP> entities;
   std::array<EntityID::hash_type, ENTITY_CAP> hash_tracker;
 public:
   Arena arena_info;

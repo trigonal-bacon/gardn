@@ -56,7 +56,7 @@ void Element::render(Renderer& ctx) {
   /*
   #ifdef DEBUG
   if (visible) {
-      RenderContext context(&ctx);
+      RenderGuard context(ctx);
       if (focus_state != kFocusLost)
           ctx.set_stroke(0x80ff0000);
       else
@@ -153,7 +153,7 @@ void Element::on_render_tooltip(Renderer& ctx) {
     t->on_render(ctx);
   }
   for (auto& elt : children) {
-    RenderContext context(&ctx);
+    RenderGuard context(ctx);
     if (!elt->visible)
       continue;
     elt->on_render_tooltip(ctx);

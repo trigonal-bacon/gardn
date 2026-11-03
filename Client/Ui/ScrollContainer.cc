@@ -56,10 +56,10 @@ void ScrollContainer::on_render(Renderer& ctx) {
     content->y = lerp(content->y, -ratio * lerp_scroll, Ui::lerp_amount);
   } else
     content->y = scroll->y = 0;
-  RenderContext c(&ctx);
+  RenderGuard c(ctx);
   ctx.clip_rect(0, 0, width, height);
   for (auto& elt : children) {
-    RenderContext context(&ctx);
+    RenderGuard context(ctx);
     ctx.translate(elt->x, elt->y);
     ctx.translate(elt->style.h_justify * (width - elt->width) / 2,
                   elt->style.v_justify * (height - elt->height) / 2);

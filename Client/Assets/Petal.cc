@@ -963,7 +963,7 @@ void draw_static_petal(PetalID::T id, Renderer& ctx) {
   const PetalData& data = PETAL_DATA[id];
   uint32_t count = data.count > 1 ? data.count : 1;
   for (uint32_t i = 0; i < count; ++i) {
-    RenderContext context(&ctx);
+    RenderGuard context(ctx);
     float rad = 10;
     if (data.attributes.clump_radius != 0)
       rad = data.attributes.clump_radius;
@@ -976,7 +976,7 @@ void draw_static_petal(PetalID::T id, Renderer& ctx) {
 }
 
 void draw_loadout_background(Renderer& ctx, uint8_t id, float reload) {
-  RenderContext c(&ctx);
+  RenderGuard c(ctx);
   ctx.set_fill(Renderer::HSV(RARITY_COLORS[PETAL_DATA[id].rarity], 0.8));
   ctx.round_line_join();
   ctx.round_line_cap();
@@ -991,7 +991,7 @@ void draw_loadout_background(Renderer& ctx, uint8_t id, float reload) {
   if (reload < 1) {
     {
       float rld = 2 * M_PI * reload * reload;
-      RenderContext context(&ctx);
+      RenderGuard context(ctx);
       ctx.set_fill(0x40000000);
       ctx.begin_path();
       ctx.move_to(0, 0);
@@ -1001,7 +1001,7 @@ void draw_loadout_background(Renderer& ctx, uint8_t id, float reload) {
   }
   ctx.translate(0, -5);
   {
-    RenderContext r(&ctx);
+    RenderGuard r(ctx);
     ctx.scale(0.833);
     if (PETAL_DATA[id].radius > 20)
       ctx.scale(20 / PETAL_DATA[id].radius);

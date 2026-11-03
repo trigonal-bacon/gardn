@@ -19,7 +19,7 @@ void Container::on_render(Renderer& ctx) {
     for (auto& elt : children) {
       if (elt->style.layer != layer)
         continue;
-      RenderContext context(&ctx);
+      RenderGuard context(ctx);
       ctx.translate(elt->x, elt->y);
       ctx.translate(elt->style.h_justify * (width - elt->width) / 2,
                     elt->style.v_justify * (height - elt->height) / 2);

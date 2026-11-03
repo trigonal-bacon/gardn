@@ -13,7 +13,7 @@ static std::vector<TitleParticleEntity> title_particles;
 static std::vector<GameParticleEntity> game_particles;
 
 void Particle::tick_title(Renderer& ctx, double dt) {
-  RenderContext c(&ctx);
+  RenderGuard c(ctx);
   ctx.reset_transform();
   size_t len = title_particles.size();
   for (size_t i = len; i > 0; --i) {
@@ -24,7 +24,7 @@ void Particle::tick_title(Renderer& ctx, double dt) {
       title_particles.pop_back();
       continue;
     }
-    RenderContext c(&ctx);
+    RenderGuard c(ctx);
     part.x += part.x_velocity * (dt / 1000) * Ui::scale;
     part.angle += dt / 1000 * Ui::scale;
     ctx.translate(part.x,
@@ -78,7 +78,7 @@ void Particle::tick_game(Renderer& ctx, double dt) {
       game_particles.pop_back();
       continue;
     }
-    RenderContext c(&ctx);
+    RenderGuard c(ctx);
     part.x += part.x_velocity * dt / 1000;
     part.y += part.y_velocity * dt / 1000;
     part.opacity = fclamp(part.opacity - dt / 1000, 0, 1);

@@ -6,7 +6,7 @@
 
 void draw_static_flower(Renderer& ctx, FlowerRenderAttributes attributes) {
   if (Bits::at(attributes.equip_flags, EquipmentFlags::kCutter)) {
-    RenderContext context(&ctx);
+    RenderGuard context(ctx);
     ctx.scale(attributes.radius / 25);
     ctx.rotate(attributes.cutter_angle);
     draw_static_petal_single(PetalID::kCutter, ctx);
@@ -25,7 +25,7 @@ void draw_static_flower(Renderer& ctx, FlowerRenderAttributes attributes) {
   ctx.stroke();
   ctx.scale(attributes.radius / 25);
   {
-    RenderContext context(&ctx);
+    RenderGuard context(ctx);
     ctx.set_fill(0xff222222);
     ctx.set_stroke(0xff222222);
     ctx.set_line_width(1);
@@ -80,7 +80,7 @@ void draw_static_flower(Renderer& ctx, FlowerRenderAttributes attributes) {
   if (!Bits::at(attributes.face_flags, FaceFlags::kDeadEyes) &&
       attributes.mouth <= 8 &&
       Bits::at(attributes.face_flags, FaceFlags::kAttacking)) {
-    RenderContext context(&ctx);
+    RenderGuard context(ctx);
     ctx.translate(0, -attributes.mouth - 8);
     ctx.set_fill(base_color);
     ctx.begin_path();
@@ -91,7 +91,7 @@ void draw_static_flower(Renderer& ctx, FlowerRenderAttributes attributes) {
     ctx.fill();
   }
   if (Bits::at(attributes.equip_flags, EquipmentFlags::kThirdEye)) {
-    RenderContext g(&ctx);
+    RenderGuard g(ctx);
     ctx.translate(0, -14);
     ctx.scale(0.5);
     if (Bits::at(attributes.face_flags, FaceFlags::kDeadEyes)) {
@@ -108,11 +108,11 @@ void draw_static_flower(Renderer& ctx, FlowerRenderAttributes attributes) {
       draw_static_petal(PetalID::kThirdEye, ctx);
   }
   if (Bits::at(attributes.equip_flags, EquipmentFlags::kObserver)) {
-    RenderContext g(&ctx);
+    RenderGuard g(ctx);
     ctx.translate(0, -35);
     draw_static_petal(PetalID::kObserver, ctx);
   } else if (Bits::at(attributes.equip_flags, EquipmentFlags::kAntennae)) {
-    RenderContext g(&ctx);
+    RenderGuard g(ctx);
     ctx.translate(0, -35);
     draw_static_petal(PetalID::kAntennae, ctx);
   }

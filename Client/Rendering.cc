@@ -25,7 +25,7 @@ void _apply_damage_filter(Renderer& ctx, const Entity& ent) {
 static float screen_shake_radius = 0;
 
 void Game::render_game() {
-  RenderContext context(&renderer);
+  RenderGuard context(renderer);
   DEBUG_ONLY(assert(simulation.ent_exists(camera_id));)
   const Entity& camera = simulation.get_ent(camera_id);
   renderer.translate(renderer.width / 2, renderer.height / 2);
@@ -45,7 +45,7 @@ void Game::render_game() {
   }
   uint32_t alpha = (uint32_t)(camera.get_fov() * 255 * 0.2) << 24;
   {
-    RenderContext context(&renderer);
+    RenderGuard context(renderer);
     renderer.reset_transform();
     renderer.set_fill(0xff987d72);
     renderer.fill_rect(0, 0, renderer.width, renderer.height);
@@ -53,7 +53,7 @@ void Game::render_game() {
     renderer.fill_rect(0, 0, renderer.width, renderer.height);
   }
   {
-    RenderContext context(&renderer);
+    RenderGuard context(renderer);
     for (const ZoneDefinition& def : MAP_DATA) {
       renderer.set_fill(def.color);
       renderer.fill_rect(def.left, def.top, def.right - def.left,
@@ -94,7 +94,7 @@ void Game::render_game() {
     Vector delta{norm_mouse_x, norm_mouse_y};
     float dist = delta.magnitude();
     if (dist >= player.get_radius() + 80) {
-      RenderContext context(&renderer);
+      RenderGuard context(renderer);
       renderer.reset_transform();
       renderer.translate(renderer.width / 2, renderer.height / 2);
       renderer.scale(Ui::scale);
@@ -124,26 +124,26 @@ void Game::render_game() {
   Particle::tick_game(renderer, Ui::dt);
 
   simulation.for_each<kWeb>([](Simulation& sim, const Entity& ent) {
-    RenderContext context(&renderer);
+    RenderGuard context(renderer);
     renderer.translate(ent.get_x(), ent.get_y());
     renderer.rotate(ent.get_angle());
     renderer.scale(ent.animation);
     render_web(renderer, ent);
   });
   simulation.for_each<kDrop>([](Simulation& sim, const Entity& ent) {
-    RenderContext context(&renderer);
+    RenderGuard context(renderer);
     renderer.translate(ent.get_x(), ent.get_y());
     renderer.rotate(ent.get_angle() + (ent.animation - 1) * 3 * M_PI);
     renderer.scale(ent.animation);
     render_drop(renderer, ent);
   });
   simulation.for_each<kHealth>([](Simulation& sim, const Entity& ent) {
-    RenderContext context(&renderer);
+    RenderGuard context(renderer);
     renderer.translate(ent.get_x(), ent.get_y());
     render_health(renderer, ent);
   });
   simulation.for_each<kPetal>([](Simulation& sim, const Entity& ent) {
-    RenderContext context(&renderer);
+    RenderGuard context(renderer);
     renderer.translate(ent.get_x(), ent.get_y());
     renderer.rotate(ent.get_angle());
     float rot_amt = ent.get_petal_id() == PetalID::kWing ? 10.0 : 1.0;
@@ -157,7 +157,7 @@ void Game::render_game() {
   simulation.for_each<kMob>([](Simulation& sim, const Entity& ent) {
     if (ent.get_mob_id() != MobID::kAntHole)
       return;
-    RenderContext context(&renderer);
+    RenderGuard context(renderer);
     renderer.translate(ent.get_x(), ent.get_y());
     if (!ent.has_component<kFlower>())
       renderer.rotate(ent.get_angle());
@@ -167,7 +167,7 @@ void Game::render_game() {
   simulation.for_each<kMob>([](Simulation& sim, const Entity& ent) {
     if (ent.get_mob_id() == MobID::kAntHole)
       return;
-    RenderContext context(&renderer);
+    RenderGuard context(renderer);
     renderer.translate(ent.get_x(), ent.get_y());
     if (!ent.has_component<kFlower>())
       renderer.rotate(ent.get_angle());
@@ -175,24 +175,24 @@ void Game::render_game() {
     render_mob(renderer, ent);
   });
   simulation.for_each<kFlower>([](Simulation& sim, const Entity& ent) {
-    RenderContext context(&renderer);
+    RenderGuard context(renderer);
     renderer.translate(ent.get_x(), ent.get_y());
     _apply_damage_filter(renderer, ent);
     render_flower(renderer, ent);
   });
   simulation.for_each<kName>([](Simulation& sim, const Entity& ent) {
-    RenderContext context(&renderer);
+    RenderGuard context(renderer);
     renderer.translate(ent.get_x(), ent.get_y());
     render_name(renderer, ent);
   });
   simulation.for_each<kAnimation>([](Simulation& sim, const Entity& ent) {
-    RenderContext context(&renderer);
+    RenderGuard context(renderer);
     render_animation(renderer, ent);
   });
 }
 
 void Game::render_title_screen() {
-  RenderContext context(&renderer);
+  RenderGuard context(renderer);
   renderer.reset_transform();
   renderer.set_fill(0xff1ea761);
   renderer.fill_rect(0, 0, renderer.width, renderer.height);

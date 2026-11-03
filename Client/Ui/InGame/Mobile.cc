@@ -37,7 +37,7 @@ void MobileJoyStick::on_render(Renderer& ctx) {
     Input::game_inputs.y = 0;
   }
   if (is_pressed) {
-    RenderContext c(&ctx);
+    RenderGuard c(ctx);
     ctx.reset_transform();
     ctx.translate(joystick_x, joystick_y);
     ctx.scale(Ui::scale);

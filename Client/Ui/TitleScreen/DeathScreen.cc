@@ -35,7 +35,7 @@ void DeadFlowerIcon::on_render(Renderer& ctx) {
     float offset_y = sinf(angle) * 25;
     if (offset_y > 0)
       continue;
-    RenderContext c(&ctx);
+    RenderGuard c(ctx);
     PetalID::T id = physical_loadout[i];
     ctx.translate(offset_x, offset_y);
     ctx.rotate(PETAL_DATA[id].attributes.icon_angle);
@@ -44,7 +44,7 @@ void DeadFlowerIcon::on_render(Renderer& ctx) {
     draw_static_petal_single(id, ctx);
   }
   {
-    RenderContext c(&ctx);
+    RenderGuard c(ctx);
     ctx.rotate(-0.2);
     float flower_radius = width / 3;
     draw_static_flower(ctx, {.radius = 25,
@@ -58,7 +58,7 @@ void DeadFlowerIcon::on_render(Renderer& ctx) {
     float offset_y = sinf(angle) * 25;
     if (offset_y <= 0)
       continue;
-    RenderContext c(&ctx);
+    RenderGuard c(ctx);
     PetalID::T id = physical_loadout[i];
     ctx.translate(offset_x, offset_y);
     ctx.rotate(PETAL_DATA[id].attributes.icon_angle);

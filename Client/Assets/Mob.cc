@@ -76,7 +76,7 @@ void draw_static_mob(MobID::T mob_id, Renderer& ctx, MobRenderAttributes attr) {
     ctx.stroke();
     ctx.set_fill(0x80eeeeee);
     {
-      RenderContext context(&ctx);
+      RenderGuard context(ctx);
       ctx.begin_path();
       ctx.rotate(0.1 * animation_value);
       ctx.translate(-11, -8);
@@ -85,7 +85,7 @@ void draw_static_mob(MobID::T mob_id, Renderer& ctx, MobRenderAttributes attr) {
       ctx.fill();
     }
     {
-      RenderContext context(&ctx);
+      RenderGuard context(ctx);
       ctx.begin_path();
       ctx.rotate(-0.1 * animation_value);
       ctx.translate(-11, 8);
@@ -126,7 +126,7 @@ void draw_static_mob(MobID::T mob_id, Renderer& ctx, MobRenderAttributes attr) {
     ctx.ellipse(0, 0, 30, 20);
     ctx.fill();
     {
-      RenderContext context(&ctx);
+      RenderGuard context(ctx);
       ctx.clip();
       ctx.set_fill(0xff333333);
       ctx.fill_rect(-30, -20, 10, 40);
@@ -196,7 +196,7 @@ void draw_static_mob(MobID::T mob_id, Renderer& ctx, MobRenderAttributes attr) {
     ctx.qcurve_to(10, 0, 24.760068893432617, 16.939273834228516);
     ctx.fill(1);
     {
-      RenderContext context(&ctx);
+      RenderGuard context(ctx);
       ctx.clip();
       if (mob_id == MobID::kDarkLadybug)
         ctx.set_fill(Renderer::HSV(base_color, 1.2));
@@ -273,7 +273,7 @@ void draw_static_mob(MobID::T mob_id, Renderer& ctx, MobRenderAttributes attr) {
     ctx.round_line_join();
     ctx.translate(35, 0);
     {
-      RenderContext context(&ctx);
+      RenderGuard context(ctx);
       ctx.rotate(-0.1 * animation_value);
       ctx.move_to(-10, 15);
       ctx.qcurve_to(15, 30, 35, 15);
@@ -283,7 +283,7 @@ void draw_static_mob(MobID::T mob_id, Renderer& ctx, MobRenderAttributes attr) {
       ctx.stroke();
     }
     {
-      RenderContext context(&ctx);
+      RenderGuard context(ctx);
       ctx.rotate(0.1 * animation_value);
       ctx.move_to(-10, -15);
       ctx.qcurve_to(15, -30, 35, -15);
@@ -354,7 +354,7 @@ void draw_static_mob(MobID::T mob_id, Renderer& ctx, MobRenderAttributes attr) {
     ctx.ellipse(0, 0, 30, 20);
     ctx.fill();
     {
-      RenderContext context(&ctx);
+      RenderGuard context(ctx);
       ctx.clip();
       ctx.set_fill(0xff333333);
       ctx.fill_rect(-30, -20, 10, 40);
@@ -382,7 +382,7 @@ void draw_static_mob(MobID::T mob_id, Renderer& ctx, MobRenderAttributes attr) {
     SET_BASE_COLOR(0xff32a852)
     uint32_t vertices = radius / 10 + 5;
     {
-      RenderContext context(&ctx);
+      RenderGuard context(ctx);
       ctx.set_fill(0xff222222);
       ctx.begin_path();
       for (uint32_t i = 0; i < vertices; ++i) {
@@ -556,7 +556,7 @@ void draw_static_mob(MobID::T mob_id, Renderer& ctx, MobRenderAttributes attr) {
     ctx.round_line_cap();
     ctx.round_line_join();
     {
-      RenderContext context(&ctx);
+      RenderGuard context(ctx);
       ctx.rotate(-0.05 * animation_value);
       ctx.begin_path();
       ctx.move_to(5, 10.5);
@@ -565,7 +565,7 @@ void draw_static_mob(MobID::T mob_id, Renderer& ctx, MobRenderAttributes attr) {
       ctx.close_path();
     }
     {
-      RenderContext context(&ctx);
+      RenderGuard context(ctx);
       ctx.rotate(0.05 * animation_value);
       ctx.move_to(5, -10.5);
       ctx.qcurve_to(30, -21.5, 50, -10.5);
@@ -673,7 +673,7 @@ void draw_static_mob(MobID::T mob_id, Renderer& ctx, MobRenderAttributes attr) {
     ctx.arc(0, 0, 21.5);
     ctx.fill();
     {
-      RenderContext context(&ctx);
+      RenderGuard context(ctx);
       ctx.rotate(animation_value * 0.1);
       ctx.begin_path();
       ctx.ellipse(-14, -16, 30, 14, M_PI / 10);
@@ -681,7 +681,7 @@ void draw_static_mob(MobID::T mob_id, Renderer& ctx, MobRenderAttributes attr) {
       ctx.fill();
     }
     {
-      RenderContext context(&ctx);
+      RenderGuard context(ctx);
       ctx.rotate(-animation_value * 0.1);
       ctx.begin_path();
       ctx.ellipse(-14, 16, 30, 14, -M_PI / 10);

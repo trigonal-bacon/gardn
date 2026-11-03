@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -7,24 +8,28 @@
 class Renderer;
 
 class RenderContext {
+public:
+  std::array<float, 6> transform_matrix;
+  uint32_t color_filter = 0;
+  float amount = 0;
+  float clip_x = 0;
+  float clip_y = 0;
+  float clip_w = 0;
+  float clip_h = 0;
+  void reset(const Renderer&);
+};
+
+class RenderGuard : private RenderContext {
 protected:
   friend class Renderer;
-  Renderer* renderer;
-
+  Renderer& renderer;
 public:
-  float transform_matrix[6];
-  uint32_t color_filter;
-  float amount;
-  float clip_x;
-  float clip_y;
-  float clip_w;
-  float clip_h;
-  RenderContext();
-  RenderContext(Renderer*);
-  RenderContext(const RenderContext&) = delete;
-  RenderContext& operator=(const RenderContext&) = default;
-  void reset();
-  ~RenderContext();
+  RenderGuard(Renderer&);
+  RenderGuard(const RenderGuard&) = delete;
+  RenderGuard& operator=(const RenderGuard&) = delete;
+  RenderGuard(RenderGuard&&) = delete;
+  RenderGuard& operator=(RenderGuard&&) = delete;
+  ~RenderGuard();
 };
 
 class Renderer {
